@@ -1,0 +1,1453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Scr_Settings</class>
+ <widget class="QDialog" name="Scr_Settings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>550</width>
+    <height>271</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Safejumper</string>
+  </property>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>551</width>
+     <height>271</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QFrame
+{
+	background-color: #f8f8f8;
+	border: 0;
+}</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QPushButton" name="b_AdvSettings">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>6</y>
+      <width>170</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+color: #3c3c3c;
+background: transparent;
+border-image: url(:/imgs/b-adv-settings.png);
+}</string>
+    </property>
+    <property name="text">
+     <string>Advanced Settings</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="b_Showlogs">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>40</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	color: #ffffff;
+	border-image: url(:/imgs/b-showlogs-norm.png);
+}
+QPushButton:hover:!pressed
+{
+	border-image: url(:/imgs/b-showlogs-hover.png);
+}
+QPushButton:pressed
+{
+	border-image: url(:/imgs/b-showlogs-pressed.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="b_Update">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>40</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	color: #ffffff;
+	border-image: url(:/imgs/b-update-norm.png);
+}
+QPushButton:hover:!pressed
+{
+	border-image: url(:/imgs/b-update-hover.png);
+}
+QPushButton:pressed
+{
+	border-image: url(:/imgs/b-update-pressed.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cb_Startup">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>255</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	color: #b1b1b1;
+border-image: url(:/imgs/cb-row-norm.png);
+
+image-position: left;
+text-align: left;
+}
+QPushButton:checked
+{
+color: #3c3c3c;
+border-image: url(:/imgs/cb-row-checked.png);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Auto-launch app on startup</string>
+    </property>
+    <property name="icon">
+     <iconset resource="imgs.qrc">
+      <normaloff>:/imgs/cb-empty.png</normaloff>:/imgs/cb-empty.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>17</width>
+      <height>17</height>
+     </size>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="b_LogoBack">
+    <property name="geometry">
+     <rect>
+      <x>6</x>
+      <y>10</y>
+      <width>71</width>
+      <height>57</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	color: #ff0000;
+background: transparent;
+border-image: url(:/imgs/logo3-norm.png);
+}
+QPushButton:hover
+{
+border-image: url(:/imgs/logo3.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="L_Bottom">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>250</y>
+      <width>271</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel
+{
+color: #d6d6d6;
+padding: 0;
+margin: 0;
+background: transparent;
+}</string>
+    </property>
+    <property name="text">
+     <string>Settings are saved as you select/edit them</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignHCenter|Qt::AlignTop</set>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="vline_1">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>5</y>
+      <width>2</width>
+      <height>240</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QGraphicsView
+{
+	border-image: url(:/imgs/v-line-settings.png);
+}</string>
+    </property>
+    <property name="interactive">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cb_AutoConnect">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>106</y>
+      <width>255</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	color: #b1b1b1;
+border-image: url(:/imgs/cb-row-norm.png);
+
+image-position: left;
+text-align: left;
+}
+QPushButton:checked
+{
+color: #3c3c3c;
+border-image: url(:/imgs/cb-row-checked.png);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Auto-connect when app starts</string>
+    </property>
+    <property name="icon">
+     <iconset resource="imgs.qrc">
+      <normaloff>:/imgs/cb-empty.png</normaloff>:/imgs/cb-empty.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>17</width>
+      <height>17</height>
+     </size>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cb_Reconnect">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>132</y>
+      <width>255</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	color: #b1b1b1;
+border-image: url(:/imgs/cb-row-norm.png);
+
+image-position: left;
+text-align: left;
+}
+QPushButton:checked
+{
+color: #3c3c3c;
+border-image: url(:/imgs/cb-row-checked.png);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Re-connect when connection drops</string>
+    </property>
+    <property name="icon">
+     <iconset resource="imgs.qrc">
+      <normaloff>:/imgs/cb-empty.png</normaloff>:/imgs/cb-empty.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>17</width>
+      <height>17</height>
+     </size>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cb_UnsecureWiFi">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>158</y>
+      <width>255</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>12</pointsize>
+      <strikeout>false</strikeout>
+      <kerning>true</kerning>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	color: #b1b1b1;
+border-image: url(:/imgs/cb-row-norm.png);
+
+image-position: left;
+text-align: left;
+}
+QPushButton:checked
+{
+color: #3c3c3c;
+border-image: url(:/imgs/cb-row-checked.png);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Auto-connect when unsecured WiFi</string>
+    </property>
+    <property name="icon">
+     <iconset resource="imgs.qrc">
+      <normaloff>:/imgs/cb-empty.png</normaloff>:/imgs/cb-empty.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>17</width>
+      <height>17</height>
+     </size>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cb_ShowNodes">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>184</y>
+      <width>255</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	color: #b1b1b1;
+border-image: url(:/imgs/cb-row-norm.png);
+
+image-position: left;
+text-align: left;
+}
+QPushButton:checked
+{
+color: #3c3c3c;
+border-image: url(:/imgs/cb-row-checked.png);
+}
+</string>
+    </property>
+    <property name="text">
+     <string>Display all individual node servers</string>
+    </property>
+    <property name="icon">
+     <iconset resource="imgs.qrc">
+      <normaloff>:/imgs/cb-empty.png</normaloff>:/imgs/cb-empty.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>17</width>
+      <height>17</height>
+     </size>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cb_BlockOnDisconnect">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>210</y>
+      <width>255</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	color: #b1b1b1;
+border-image: url(:/imgs/cb-row-norm.png);
+
+image-position: left;
+text-align: left;
+}
+QPushButton:checked
+{
+color: #3c3c3c;
+border-image: url(:/imgs/cb-row-checked.png);
+}</string>
+    </property>
+    <property name="text">
+     <string>Kill internet when VPN disconnects</string>
+    </property>
+    <property name="icon">
+     <iconset resource="imgs.qrc">
+      <normaloff>:/imgs/cb-empty.png</normaloff>:/imgs/cb-empty.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>17</width>
+      <height>17</height>
+     </size>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>10</y>
+      <width>251</width>
+      <height>241</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QFrame
+{
+	background-color: #f8f8f8;
+	border: 0;
+}</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="cb_DisableIpv6">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>185</y>
+       <width>255</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+	border:0px;
+	color: #b1b1b1;
+border-image: url(:/imgs/cb-row-norm.png);
+
+image-position: left;
+text-align: left;
+}
+QPushButton:checked
+{
+color: #3c3c3c;
+border-image: url(:/imgs/cb-row-checked.png);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Disable IPv6 leak</string>
+     </property>
+     <property name="icon">
+      <iconset resource="imgs.qrc">
+       <normaloff>:/imgs/cb-empty.png</normaloff>:/imgs/cb-empty.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>17</width>
+       <height>17</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cb_FixDnsLeak">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>211</y>
+       <width>255</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+	border:0px;
+	color: #b1b1b1;
+border-image: url(:/imgs/cb-row-norm.png);
+
+image-position: left;
+text-align: left;
+}
+QPushButton:checked
+{
+color: #3c3c3c;
+border-image: url(:/imgs/cb-row-checked.png);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Fix DNS leak (proxy.sh servers)</string>
+     </property>
+     <property name="icon">
+      <iconset resource="imgs.qrc">
+       <normaloff>:/imgs/cb-empty.png</normaloff>:/imgs/cb-empty.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>17</width>
+       <height>17</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="L_Country">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>3</y>
+       <width>241</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+background: transparent;
+}</string>
+     </property>
+     <property name="text">
+      <string>Local OpenVPN port/encryption:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="e_LocalPort">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>115</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="toolTipDuration">
+      <number>-5</number>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit
+{
+border-radius: 3px;
+padding: 2px 10px 2px 10px;
+border: 0 transparent #b8d4e9;
+color: #444444;
+border-image: url(:/imgs/e-ip-inactive.png);
+}
+QLineEdit:focus
+{
+border-image: url(:/imgs/e-ip-active.png);
+}</string>
+     </property>
+     <property name="text">
+      <string>6842</string>
+     </property>
+     <property name="placeholderText">
+      <string>port</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="dd_Encryption">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>128</x>
+       <y>23</y>
+       <width>115</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QComboBox
+{
+color: #444444;
+
+border-image: url(:/imgs/dd-encryption.png);
+}
+QComboBox QAbstractItemView 
+{
+subcontrol-origin: margin;
+subcontrol-position: top left;
+}
+QComboBox::drop-down 
+{
+width: 25px;
+border-top-right-radius: 3px;
+border-bottom-right-radius: 3px;
+}
+QComboBox::down-arrow 
+{
+image: none;
+width: 25px;
+height: 25px;
+}
+QComboBox::down-arrow:hover
+{
+image: none;
+width: 25px;
+height: 25px;
+}
+
+QComboBox {
+	padding-left: 10px;
+	padding-right: 0px; /* space for the arrow */
+}
+
+QComboBox::drop-down {
+	subcontrol-origin: top;
+	subcontrol-position: top right;
+	width: 0px;
+	border-style: none;
+	border-image: none;
+}
+</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>Encryption</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLineEdit" name="e_PrimaryDns">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>82</y>
+       <width>115</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="toolTipDuration">
+      <number>-5</number>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit
+{
+padding: 2px 10px 2px 10px;
+border: 0 transparent #b8d4e9;
+color: #444444;
+border-image: url(:/imgs/e-ip-inactive.png);
+}
+QLineEdit:focus
+{
+border-image: url(:/imgs/e-ip-active.png);
+}</string>
+     </property>
+     <property name="inputMask">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string notr="true">146.185.134.104</string>
+     </property>
+     <property name="placeholderText">
+      <string>___.___.___.___</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="L_Country_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>63</y>
+       <width>121</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+background: transparent;
+}</string>
+     </property>
+     <property name="text">
+      <string>Primary DNS:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="e_SecondaryDns">
+     <property name="geometry">
+      <rect>
+       <x>128</x>
+       <y>82</y>
+       <width>115</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="toolTipDuration">
+      <number>-5</number>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit
+{
+border-radius: 3px;
+padding: 2px 10px 2px 10px;
+border: 0 transparent #b8d4e9;
+color: #444444;
+border-image: url(:/imgs/e-ip-inactive.png);
+}
+QLineEdit:focus
+{
+border-image: url(:/imgs/e-ip-active.png);
+}</string>
+     </property>
+     <property name="inputMask">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string notr="true">192.241.172.159</string>
+     </property>
+     <property name="placeholderText">
+      <string>___.___.___.___</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="L_Country_3">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>63</y>
+       <width>121</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+background: transparent;
+}</string>
+     </property>
+     <property name="text">
+      <string>Secondary DNS:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="e_Ports">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>140</y>
+       <width>241</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="toolTipDuration">
+      <number>-5</number>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit
+{
+border-radius: 3px;
+padding: 2px 10px 2px 10px;
+border: 0 transparent #b8d4e9;
+color: #444444;
+
+border-image: url(:/imgs/e-inactive-241.png);
+}
+QLineEdit:focus
+{
+border-image: url(:/imgs/e-active-241.png);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>port1, port2, port3</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="L_Country_4">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>123</y>
+       <width>241</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+background: transparent;
+}</string>
+     </property>
+     <property name="text">
+      <string>Ports to open in VPN's firewall:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QListView" name="lv_Encryption">
+     <property name="geometry">
+      <rect>
+       <x>-10</x>
+       <y>300</y>
+       <width>256</width>
+       <height>192</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QListView
+{
+background: solid #f7f7f7;
+}
+QListView::item 
+{
+color: #202020;
+height: 24;
+border-image: url(:/imgs/dd-row.png);
+background: solid #f7f7f7;
+}
+QListView::item:selected
+{
+border-image: url(:/imgs/dd-encryption-selection.png);
+}</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="b_BlockOnDisconnect_Line2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>31</x>
+      <y>225</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+border:0px;
+color: #b1b1b1;
+background: transparent;
+}
+QPushButton:checked
+{
+color: #3c3c3c;
+}</string>
+    </property>
+    <property name="text">
+     <string>(kill switch)</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources>
+  <include location="imgs.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>b_LogoBack</sender>
+   <signal>clicked()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>ToScr_Connect()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>41</x>
+     <y>38</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_BlockOnDisconnect</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Toggle_BlockOnDisconnect_Line2(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>218</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>61</x>
+     <y>234</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_BlockOnDisconnect_Line2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Toggle_cb_BlockOnDisconnect(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>61</x>
+     <y>234</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>e_PrimaryDns</sender>
+   <signal>editingFinished()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Validate_e_Dns()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>357</x>
+     <y>115</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>e_SecondaryDns</sender>
+   <signal>editingFinished()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Validate_e_SecondaryDns()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>485</x>
+     <y>115</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_Showlogs</sender>
+   <signal>clicked()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>ToScr_Logs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>129</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>e_LocalPort</sender>
+   <signal>editingFinished()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Validate_e_LocalPort()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>357</x>
+     <y>45</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>e_Ports</sender>
+   <signal>editingFinished()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Validate_e_Ports()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>420</x>
+     <y>165</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_Startup</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Toggle_cb_Startup(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>88</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_AutoConnect</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Toggle_cb_AutoConnect(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>114</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_Reconnect</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Toggle_cb_Reconnect(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>140</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_UnsecureWiFi</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Toggle_cb_UnsecureWiFi(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>166</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_ShowNodes</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Toggle_cb_ShowNodes(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_DisableIpv6</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Toggle_cb_DisableIpv6(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>427</x>
+     <y>203</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_FixDnsLeak</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Toggle_cb_FixDnsLeak(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>427</x>
+     <y>229</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dd_Encryption</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Changed_dd_Encryption(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>485</x>
+     <y>45</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_Update</sender>
+   <signal>clicked()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Clicked_Update()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>219</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
