@@ -6,6 +6,10 @@ This piece of software is a custom OpenVPN client for Mac. It has been specifica
 
 This code is licensed to GNU-GPL. It means you can take the code and modify it as you wish, but you must also make such a modified code subsequently open source. This is a win-win situation. If you improve our code, we enjoy updates. If we improve it, you do too.
 
+## Checksum
+
+The latest version of Safejumper is available under the binary safejumper.dmg whose SHA-1 checksum is: f6b09dce8f66e867335b8039b27f1c4cddc5a3c2
+
 ## Bounty
 
 If you are a talented developer, you can contribute to the code. You can implement new features or fix bugs. Just fork and submit your code improvements. We will happily reward you with some satoshis (Bitcoin).
