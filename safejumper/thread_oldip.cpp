@@ -16,7 +16,7 @@ void Thread_OldIp::run()
 	if (re > -1)
 	{
 		memcpy(z, &sa.sin_addr, 4);
-fprintf(stderr, "OldIp::run(): %u.%u.%u.%u", z[0], z[1], z[2], z[3]);
+fprintf(stderr, "OldIp::run(): %u.%u.%u.%u\n", z[0], z[1], z[2], z[3]);
 		ip.sprintf("%u.%u.%u.%u", z[0], z[1], z[2], z[3]);
 	}
 

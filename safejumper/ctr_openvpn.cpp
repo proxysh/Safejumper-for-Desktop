@@ -403,16 +403,20 @@ void Ctr_Openvpn::Stop()
 			}
 			QObject * to = _soc.release();
 			to->deleteLater();
+
+			for (int cn = 0; cn < 8 && IsOvRunning(); ++cn)
+				QThread::msleep(100);		// just sleep now; without this delay it fails to jump
 		}
 
 		QThread::msleep(200);
 		if (_process.get() != NULL)
-			delete _process.release();
-		for (int cn = 0; cn < 8 && IsOvRunning(); ++cn)
-			QThread::msleep(100);		// just sleep now; without this delay it fails to jump
-		
+		{
+			QProcess * t = _process.release();
+			t->deleteLater();
+		}
+
 		if (IsOvRunning())
-			KillRunningOV();
+			log::logt("Stop(): cannot soft stop OpenVPN process");
 			
 		SetState(ovsDisconnected);
 	}
