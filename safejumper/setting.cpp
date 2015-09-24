@@ -89,6 +89,16 @@ bool Setting::IsAutoconnect()
 	return Scr_Settings::Instance()->Is_cb_AutoConnect();
 }
 
+bool Setting::IsStartup()
+{
+	return Scr_Settings::Instance()->Is_cb_Startup();
+}
+
+bool Setting::IsReconnect()
+{
+	return Scr_Settings::Instance()->Is_cb_Reconnect();
+}
+
 void Setting::ToggleShowNodes(bool v)
 {
 	SaveCb("cb_ShowNodes", v);

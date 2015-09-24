@@ -43,7 +43,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 		ui->cb_BlockOnDisconnect->setChecked(settings.value("cb_BlockOnDisconnect", true).toBool());
 		ui->cb_DisableIpv6->setChecked(settings.value("cb_DisableIpv6", true).toBool());
 		ui->cb_FixDnsLeak->setChecked(settings.value("cb_FixDnsLeak", true).toBool());
-		ui->cb_Reconnect->setChecked(settings.value("cb_Reconnect", false).toBool());
+		ui->cb_Reconnect->setChecked(settings.value("cb_Reconnect", true).toBool());
 		ui->cb_ShowNodes->setChecked(settings.value("cb_ShowNodes", false).toBool());
 		ui->cb_Startup->setChecked(settings.value("cb_Startup", true).toBool());
 		ui->cb_UnsecureWiFi->setChecked(settings.value("cb_UnsecureWiFi", true).toBool());

@@ -35,6 +35,8 @@ public:
 	void DoClose();
 
 	void ConstructConnecttoMenu();
+	void ReconnectTimer();
+
 private:
 	Ui::SjMainWindow *ui;
 	explicit SjMainWindow(QWidget *parent = 0);
@@ -89,12 +91,15 @@ private:
 	std::auto_ptr<QMenu> _ct_menu;
 	std::vector<QMenu *> _hub_menus;
 
+	int _reconnect_attempt;
+
 private slots:
 	void cbRememberMe_Togg();
 	void Clicked_b_Cancel();
 	void Icon_Activated(QSystemTrayIcon::ActivationReason reason);
 	void Timer_FixIcon();
 	void Timer_Constructed();
+	void Timer_Reconnect();
 
 public slots:
 	void AppFocusChanged(QWidget*, QWidget*);

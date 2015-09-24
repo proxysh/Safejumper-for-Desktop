@@ -231,6 +231,17 @@ void Ctr_Openvpn::CheckState()
 			AttachMgmt();
 		}
 	}
+	else
+	{
+		if (State() == ovsConnected)
+		{
+			// handle crush
+			if (Setting::Instance()->IsReconnect())
+				Start();
+			else
+				SetState(ovsDisconnected);
+		}
+	}
 }
 
 void Ctr_Openvpn::LogfileChanged(const QString & pfn)
@@ -613,7 +624,15 @@ void Ctr_Openvpn::ProcessStateWord(const QString & word, const QString & s)
 	} else { if (word.compare("AUTH", Qt::CaseInsensitive) == 0) {
 		WndManager::Instance()->HandleState(word);
 	} else { if (word.compare("EXITING", Qt::CaseInsensitive) == 0) {
-		WndManager::Instance()->HandleDisconnected();
+		if (Setting::Instance()->IsReconnect())
+		{	// initiate autoreconnect
+			SjMainWindow::Instance()->ReconnectTimer();
+			WndManager::Instance()->HandleConnecting();
+		}
+		else
+		{
+			WndManager::Instance()->HandleDisconnected();
+		}
 	} else { if (word.compare("RECONNECTING", Qt::CaseInsensitive) == 0) {
 		SetState(ovsConnecting);
 		WndManager::Instance()->HandleState(word);

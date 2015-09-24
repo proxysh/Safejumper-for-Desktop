@@ -24,6 +24,8 @@ public:
 	void ToggleShowNodes(bool v);
 
 	bool IsAutoconnect();
+	bool IsStartup();
+	bool IsReconnect();
 
 	void SaveServer(int ixsrv, const QString & newsrv);
 	void LoadServer();
