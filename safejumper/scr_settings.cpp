@@ -40,13 +40,13 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 	{
 		SETTINGS_OBJ;
 		ui->cb_AutoConnect->setChecked(settings.value("cb_AutoConnect", false).toBool());
-		ui->cb_BlockOnDisconnect->setChecked(settings.value("cb_BlockOnDisconnect", true).toBool());
+		ui->cb_BlockOnDisconnect->setChecked(settings.value("cb_BlockOnDisconnect", false).toBool());
 		ui->cb_DisableIpv6->setChecked(settings.value("cb_DisableIpv6", true).toBool());
 		ui->cb_FixDnsLeak->setChecked(settings.value("cb_FixDnsLeak", true).toBool());
 		ui->cb_Reconnect->setChecked(settings.value("cb_Reconnect", true).toBool());
 		ui->cb_ShowNodes->setChecked(settings.value("cb_ShowNodes", false).toBool());
 		ui->cb_Startup->setChecked(settings.value("cb_Startup", true).toBool());
-		ui->cb_UnsecureWiFi->setChecked(settings.value("cb_UnsecureWiFi", true).toBool());
+		ui->cb_UnsecureWiFi->setChecked(settings.value("cb_UnsecureWiFi", false).toBool());
 
 		ui->e_LocalPort->setText(settings.value("e_LocalPort", "9090").toString());
 		ui->e_Ports->setText(settings.value("e_Ports", "").toString());
@@ -55,6 +55,12 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 
 		ui->dd_Encryption->setCurrentIndex(settings.value("dd_Encryption", 0).toInt());
 	}
+
+	// OS-specific not implemented features
+#ifdef Q_OS_LINUX
+	ui->cb_UnsecureWiFi->setEnabled(false);
+	ui->cb_BlockOnDisconnect->setEnabled(false);
+#endif
 
 	// disable non-implemented
 	//const char * st = "QPushButton\n{\n	border:0px;\n	color: #b1b1b1;\nborder-image: url(:/imgs/cb-row-norm.png);\n\nimage-position: left;\ntext-align: left;\n}\nQPushButton:checked\n{\ncolor: #3c3c3c;\nborder-image: url(:/imgs/cb-row-checked.png);\n}\nQPushButton:!enabled\n{\n	color: #f0f0f0;\n}";
@@ -75,6 +81,9 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 		if (ui->e_SecondaryDns->text().isEmpty())
 			ui->e_SecondaryDns->setText(Setting::Instance()->DefaultDns2());
 	}
+
+	if (ui->cb_Startup->isEnabled())
+		OsSpecific::Instance()->SetStartup(ui->cb_Startup->isChecked());
 }
 
 void Scr_Settings::closeEvent(QCloseEvent * event)
@@ -161,7 +170,7 @@ void Scr_Settings::Toggle_cb_BlockOnDisconnect(bool v)
 void Scr_Settings::Toggle_cb_Startup(bool v)
 {
 	SaveCb("cb_Startup", v);
-	// TODO: -1 not implemented
+	OsSpecific::Instance()->SetStartup(v);
 }
 
 void Scr_Settings::Toggle_cb_AutoConnect(bool v)

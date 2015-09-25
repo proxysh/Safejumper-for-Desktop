@@ -25,6 +25,8 @@ public:
 	// throw std::exception on error
 	void SetRights();
 
+	void SetStartup(bool b);		// Auto-launch app on startup
+
 	int Ping(const QString & adr);			// -1 on error / unavailable
 	void StartPing(QProcess & pr, const QString & adr);		// pr must have already connected finished() signal
 	int ExtractPing(QProcess & pr);		// exract ping value from pr's stdout; -1 on error / unavailable

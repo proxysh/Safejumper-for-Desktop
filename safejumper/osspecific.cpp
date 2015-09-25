@@ -244,12 +244,12 @@ void OsSpecific::ExecAsRoot(const QString & cmd, const QStringList & args)
 #endif	// Q_OS_MAC
 	// bring our window back to front after OS password dialog
 	WndManager::Instance()->ToFront();
-	
+
 	log::logt("ExecAsRoot() success");
 }
 
 void OsSpecific::SetRights()
-{	
+{
 	// Qt uses permissions in HEX while OS's in 8-based !
 
 //	SetChmod("744", PathHelper::Instance()->UpScriptPfn());				// chown need not
@@ -270,7 +270,7 @@ void OsSpecific::SetRights()
 	SetChmod("04755", PathHelper::Instance()->LauncherPfn());
 	SetChown(PathHelper::Instance()->LauncherPfn());
 #endif		// Q_OS_MAC
-	
+
 #ifdef Q_OS_LINUX
 	SetChown(PathHelper::Instance()->LauncherPfn());
 	SetChmod("04755", PathHelper::Instance()->LauncherPfn());				// odrer is important
@@ -476,7 +476,7 @@ int OsSpecific::Ping(const QString & adr)
 }
 
 
-static const bool gs_isMac = 
+static const bool gs_isMac =
 #ifdef Q_OS_MAC
 	true
 #else
@@ -798,4 +798,85 @@ void OsSpecific::EnableTap()
 #endif	// Q_OS_WIN
 }
 
+void OsSpecific::SetStartup(bool b)
+{
+#ifdef Q_OS_WIN
+	{
+		QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
+		static const char * keyname = "proxy_sh";
+		if (!b)
+		{
+			settings.remove(keyname);
+		}
+		else
+		{
+			QString val = "\"" + QCoreApplication::applicationFilePath() + "\"";
+			val.replace("/","\\");
+			settings.setValue(keyname, val);
+		}
+	}
+#endif	// Q_OS_WIN
 
+
+#ifdef Q_OS_OSX
+	QString dir = QDir::homePath() + "/Library/LaunchAgents";
+	QString pfn = dir + "/sh.proxy.safejumper.plist";
+	QFile pa(pfn);
+	if (pa.exists())
+	{
+		if (!pa.remove())
+			log::logt("Cannot delete startup file '"+ pfn + "'");
+	}
+	if (b)
+	{
+		QDir d(dir);
+		if (!d.exists())
+		{
+			d.mkpath(dir);
+		}
+		if (!pa.open(QIODevice::WriteOnly))
+		{
+			log::logt("Cannot open startup file '"+ pfn + "' for writing");
+		}
+		else
+		{
+
+			QString s =
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+				"<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
+				"<plist version=\"1.0\">\n"
+				"<dict>\n"
+					"<key>Label</key>\n"
+					"<string>sh.proxy.safejumper</string>\n"
+
+					"<key>LimitLoadToSessionType</key>\n"
+					"<string>Aqua</string>\n"
+					"<key>OnDemand</key>\n"
+					"<true/>\n"
+
+					"<key>Program</key>\n"
+					"<string>"
+				;
+
+			s +=
+				QCoreApplication::applicationFilePath() + "</string>\n"
+
+				//	  "<key>ProgramArguments</key>\n"
+				//	  "<array>\n"
+				//	  "<string>";
+				// <string>arguments_here</string>\n
+				//	"</array>\n"
+
+					"<key>KeepAlive</key>\n"
+					"<false/>\n"
+					"<key>RunAtLoad</key>\n"
+					"<true/>\n"
+				"</dict>\n"
+				"</plist>\n"
+				;
+			pa.write(s.toLatin1());
+		}
+	}
+#endif	// Q_OS_OSX
+
+}

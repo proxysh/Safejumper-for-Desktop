@@ -138,7 +138,7 @@ QPushButton:pressed
    </widget>
    <widget class="QPushButton" name="cb_Startup">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -194,7 +194,7 @@ border-image: url(:/imgs/cb-row-checked.png);
      <bool>true</bool>
     </property>
     <property name="checked">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="b_LogoBack">
@@ -402,7 +402,7 @@ border-image: url(:/imgs/cb-row-checked.png);
    </widget>
    <widget class="QPushButton" name="cb_UnsecureWiFi">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -526,7 +526,7 @@ border-image: url(:/imgs/cb-row-checked.png);
    </widget>
    <widget class="QPushButton" name="cb_BlockOnDisconnect">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -581,7 +581,7 @@ border-image: url(:/imgs/cb-row-checked.png);
      <bool>true</bool>
     </property>
     <property name="checked">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QFrame" name="frame_2">
@@ -1127,7 +1127,7 @@ border-image: url(:/imgs/dd-encryption-selection.png);
    </widget>
    <widget class="QPushButton" name="b_BlockOnDisconnect_Line2">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -1168,7 +1168,7 @@ color: #3c3c3c;
      <bool>true</bool>
     </property>
     <property name="checked">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
    </widget>
   </widget>
