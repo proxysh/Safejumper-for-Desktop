@@ -26,7 +26,8 @@ void log::logt(const QString & s)
 		ff.close();
 	}
 
-	Scr_Logs::Instance()->Log(s1);
+	if (Scr_Logs::IsExists())
+		Scr_Logs::Instance()->Log(s1);
 }
 
 
