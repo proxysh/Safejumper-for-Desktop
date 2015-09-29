@@ -32,6 +32,7 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 	, _ConnectAfterLogin(false)
 	, _fixed(false)
 	, _activatedcount(0)
+	, _wifi_processing(false)
 {
 	ui->setupUi(this);
 	setWindowFlags(Qt::Dialog);
@@ -97,6 +98,9 @@ void SjMainWindow::Timer_Constructed()
 	connect(g_pTheApp, SIGNAL(showUp()), this, SLOT(ToScr_Primary()));
 #endif
 
+	Scr_Logs * l = Scr_Logs::Instance();
+
+	if (l->IsExists())		// force construction
 	if (Ctr_Openvpn::Instance()->IsOvRunning())
 		Ctr_Openvpn::Instance()->KillRunningOV();
 
@@ -111,6 +115,11 @@ void SjMainWindow::Timer_Constructed()
 	{
 		_ConnectAfterLogin = true;
 		DoLogin();
+	}
+
+	if (Setting::Instance()->IsInsecureWifi())
+	{
+		StartWifiWatcher();
 	}
 }
 
@@ -814,3 +823,74 @@ void SjMainWindow::Timer_Reconnect()
 		c->Start();
 	}
 }
+
+void SjMainWindow::StartWifiWatcher()
+{
+	if (NULL == _timer_wifi.get())
+	{
+		_wifi_processing = false;
+		_timer_wifi.reset(new QTimer());
+		connect(_timer_wifi.get(), SIGNAL(timeout()), this, SLOT(Timer_WifiWatcher()));
+		_timer_wifi->start(5000);
+	}
+}
+
+void SjMainWindow::StopWifiWatcher()
+{
+	if (NULL != _timer_wifi.get())
+	{
+		QTimer * t = _timer_wifi.release();
+		t->stop();
+		t->deleteLater();
+	}
+}
+
+void SjMainWindow::Timer_WifiWatcher()
+{
+	if (NULL != _timer_wifi.get() 		// if not terminating now
+		&& !_wifi_processing)				// and not already in the body below
+	{
+		_wifi_processing = true;
+		bool stopped = false;
+		if (!AuthManager::IsExists())
+		{
+			stopped = true;
+		}
+		else
+		{
+			if (!Ctr_Openvpn::IsExists())
+			{
+				stopped = true;
+			}
+			else
+			{
+				if (ovsDisconnected == Ctr_Openvpn::Instance()->State())
+					stopped = true;
+			}
+		}
+
+		if (stopped)
+		{
+			if (!AuthManager::Instance()->IsLoggedin())
+			{
+				if (Setting::Instance()->IsAutoconnect())		// log in only if checked Auto-connect when app starts
+				{
+					if (OsSpecific::Instance()->HasInsecureWifi())
+					{
+						_ConnectAfterLogin = true;
+						DoLogin();
+					}
+				}
+			}
+			else
+			{
+				if (OsSpecific::Instance()->HasInsecureWifi())
+					DoConnect();
+			}
+		}
+		_wifi_processing = false;
+	}
+}
+
+
+

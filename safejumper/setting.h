@@ -26,6 +26,7 @@ public:
 	bool IsAutoconnect();
 	bool IsStartup();
 	bool IsReconnect();
+	bool IsInsecureWifi();
 
 	void SaveServer(int ixsrv, const QString & newsrv);
 	void LoadServer();

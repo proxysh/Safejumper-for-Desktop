@@ -33,6 +33,7 @@ public:
 
 	void SetIPv6(bool enable);		// throw std::exception on error
 	bool IPv6();	// test OS and return enabled	// throw std::exception on error
+	bool HasInsecureWifi();
 
 	void EnableTap();	// for Windows enumerate interfaces and for all TAP force call Enable
 	

@@ -89,6 +89,11 @@ bool Setting::IsAutoconnect()
 	return Scr_Settings::Instance()->Is_cb_AutoConnect();
 }
 
+bool Setting::IsInsecureWifi()
+{
+	return Scr_Settings::Instance()->Is_cb_InsecureWiFi();
+}
+
 bool Setting::IsStartup()
 {
 	return Scr_Settings::Instance()->Is_cb_Startup();

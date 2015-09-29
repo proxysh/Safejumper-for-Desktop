@@ -400,7 +400,7 @@ border-image: url(:/imgs/cb-row-checked.png);
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="cb_UnsecureWiFi">
+   <widget class="QPushButton" name="cb_InsecureWiFi">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -1354,10 +1354,10 @@ color: #3c3c3c;
    </hints>
   </connection>
   <connection>
-   <sender>cb_UnsecureWiFi</sender>
+   <sender>cb_InsecureWiFi</sender>
    <signal>toggled(bool)</signal>
    <receiver>Scr_Settings</receiver>
-   <slot>Toggle_cb_UnsecureWiFi(bool)</slot>
+   <slot>Toggle_cb_InsecureWiFi(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>137</x>

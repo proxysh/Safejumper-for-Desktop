@@ -29,7 +29,7 @@ public:
 	bool Is_cb_Startup();
 	bool Is_cb_AutoConnect();
 	bool Is_cb_Reconnect();
-	bool Is_cb_UnsecureWiFi();
+	bool Is_cb_InsecureWiFi();
 	bool Is_cb_ShowNodes();
 	bool Is_cb_DisableIpv6();
 	bool Is_cb_FixDnsLeak();
@@ -60,7 +60,7 @@ private slots:
 	void Toggle_cb_Startup(bool v);
 	void Toggle_cb_AutoConnect(bool v);
 	void Toggle_cb_Reconnect(bool v);
-	void Toggle_cb_UnsecureWiFi(bool v);
+	void Toggle_cb_InsecureWiFi(bool v);
 	void Toggle_cb_ShowNodes(bool v);
 	void Toggle_cb_DisableIpv6(bool v);
 	void Toggle_cb_FixDnsLeak(bool v);

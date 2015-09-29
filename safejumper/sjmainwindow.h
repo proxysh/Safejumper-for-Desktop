@@ -36,6 +36,8 @@ public:
 
 	void ConstructConnecttoMenu();
 	void ReconnectTimer();
+	void StartWifiWatcher();
+	void StopWifiWatcher();
 
 private:
 	Ui::SjMainWindow *ui;
@@ -85,6 +87,9 @@ private:
 	std::auto_ptr<QTimer> _timer_icon;
 	void DisconnectIconWatcher();
 
+	std::auto_ptr<QTimer> _timer_wifi;
+	bool _wifi_processing;
+
 	void ClearConnecttoMenu();
 	void CreateMenuItem(QMenu * m, const QString & name, size_t srv);
 	std::vector<AcConnectto *> _connectto;
@@ -100,6 +105,7 @@ private slots:
 	void Timer_FixIcon();
 	void Timer_Constructed();
 	void Timer_Reconnect();
+	void Timer_WifiWatcher();
 
 public slots:
 	void AppFocusChanged(QWidget*, QWidget*);

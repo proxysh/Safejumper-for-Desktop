@@ -20,6 +20,12 @@
 #include <Security/AuthorizationTags.h>
 #endif
 
+#include <QtCore/qshareddata.h>
+#include <QtCore/qscopedpointer.h>
+#include <QtNetwork/qhostaddress.h>
+
+#include <QNetworkInterface>
+
 #include <exception>
 #include <stdexcept>
 
@@ -880,3 +886,86 @@ void OsSpecific::SetStartup(bool b)
 #endif	// Q_OS_OSX
 
 }
+
+// returns stdout
+QString RunFastCmd(const char * cmd)
+{
+	std::auto_ptr<QProcess> pr(new QProcess());
+	pr->start(cmd);
+	if (!pr->waitForFinished(500))
+	{
+		QString s1(pr->readAllStandardError());
+		log::logt("RunFastCmd(): Error: " + s1);
+		if (QProcess::NotRunning != pr->state())
+		{
+			pr->terminate();
+			pr->kill();
+		}
+	}
+	QString s0(pr->readAllStandardOutput());
+	pr.release()->deleteLater();
+	return s0;
+}
+
+bool OsSpecific::HasInsecureWifi()
+{
+	bool has = false;
+
+#ifdef Q_OS_OSX
+	std::vector<std::string> wifi_devices;
+	QString s0 = RunFastCmd("/usr/sbin/networksetup -listallhardwareports");
+	QStringList sl0 = s0.split(QString("Hardware Port:"), QString::SkipEmptyParts);
+	for (int k = 0; k < sl0.length(); ++k)
+	{
+		const QString & rs = sl0.at(k);
+		if (rs.contains("Wi-Fi", Qt::CaseInsensitive) || rs.contains("Airport", Qt::CaseInsensitive))		// since 10.7 changed to Wi-Fi
+		{
+			static const QString s_device = "Device: ";
+			int p = rs.indexOf(s_device, 0, Qt::CaseInsensitive);
+			if (p > -1)
+			{
+				int p1 = rs.indexOf('\n', p + s_device.length(), Qt::CaseInsensitive);
+				if (p1 > -1)
+				{
+					QString dev = rs.mid(p + s_device.length(), p1 - p - s_device.length());
+					dev = dev.trimmed();
+					if (dev.length() > 1)
+						wifi_devices.push_back(dev.toStdString());
+				}
+			}
+		}
+
+	}
+
+	bool on = false;
+	// 	get protocol for each wi-fi device
+	for (size_t k = 0; !on && k < wifi_devices.size(); ++k)
+	{
+		std::string s = "/usr/sbin/networksetup -getairportpower " + wifi_devices.at(k);
+		QString s1 = RunFastCmd(s.c_str());
+		if (s1.contains("on", Qt::CaseInsensitive))
+			on = true;
+	}
+
+	if (on)
+	{
+		QString s1 = RunFastCmd("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I");
+		int p1 = s1.indexOf("link auth:", 0, Qt::CaseInsensitive);
+		if (p1 > -1)
+		{
+			int p2 = s1.indexOf('\n', p1 + 1, Qt::CaseInsensitive);
+			QString s2 = s1.mid(p1, p2 - p1 + 1);
+			if (!s2.contains("wpa2", Qt::CaseInsensitive))
+			{
+				has = true;
+				log::logt("Detected unsecure Wi-Fi with " + s2.trimmed());
+			}
+		}
+	}
+#endif	// Q_OS_OSX
+
+	return has;
+}
+
+
+

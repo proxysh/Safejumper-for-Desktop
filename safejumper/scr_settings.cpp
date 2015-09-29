@@ -46,7 +46,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 		ui->cb_Reconnect->setChecked(settings.value("cb_Reconnect", true).toBool());
 		ui->cb_ShowNodes->setChecked(settings.value("cb_ShowNodes", false).toBool());
 		ui->cb_Startup->setChecked(settings.value("cb_Startup", true).toBool());
-		ui->cb_UnsecureWiFi->setChecked(settings.value("cb_UnsecureWiFi", false).toBool());
+		ui->cb_InsecureWiFi->setChecked(settings.value("cb_InsecureWiFi", false).toBool());
 
 		ui->e_LocalPort->setText(settings.value("e_LocalPort", "9090").toString());
 		ui->e_Ports->setText(settings.value("e_Ports", "").toString());
@@ -58,7 +58,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 
 	// OS-specific not implemented features
 #ifdef Q_OS_LINUX
-	ui->cb_UnsecureWiFi->setEnabled(false);
+	ui->cb_InsecureWiFi->setEnabled(false);
 	ui->cb_BlockOnDisconnect->setEnabled(false);
 #endif
 
@@ -71,7 +71,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 	if (!ui->cb_Reconnect->isEnabled()) ui->cb_Reconnect->setChecked(false);
 	if (!ui->cb_ShowNodes->isEnabled()) ui->cb_ShowNodes->setChecked(false);
 	if (!ui->cb_Startup->isEnabled()) ui->cb_Startup->setChecked(false);
-	if (!ui->cb_UnsecureWiFi->isEnabled()) ui->cb_UnsecureWiFi->setChecked(false);
+	if (!ui->cb_InsecureWiFi->isEnabled()) ui->cb_InsecureWiFi->setChecked(false);
 
 
 	if (ui->cb_FixDnsLeak->isChecked())
@@ -106,7 +106,7 @@ Scr_Settings::~Scr_Settings()
 		settings.setValue("cb_Reconnect", ui->cb_Reconnect->isChecked());
 		settings.setValue("cb_ShowNodes", ui->cb_ShowNodes->isChecked());
 		settings.setValue("cb_Startup", ui->cb_Startup->isChecked());
-		settings.setValue("cb_UnsecureWiFi", ui->cb_UnsecureWiFi->isChecked());
+		settings.setValue("cb_InsecureWiFi", ui->cb_InsecureWiFi->isChecked());
 
 		if (IsValidPort(ui->e_LocalPort->text()))
 			settings.setValue("e_LocalPort", ui->e_LocalPort->text());
@@ -185,10 +185,13 @@ void Scr_Settings::Toggle_cb_Reconnect(bool v)
 	// TODO: -1 not implemented
 }
 
-void Scr_Settings::Toggle_cb_UnsecureWiFi(bool v)
+void Scr_Settings::Toggle_cb_InsecureWiFi(bool v)
 {
-	SaveCb("cb_UnsecureWiFi", v);
-	// TODO: -1 not implemented
+	SaveCb("cb_InsecureWiFi", v);
+	if (v)
+		SjMainWindow::Instance()->StartWifiWatcher();
+	else
+		SjMainWindow::Instance()->StopWifiWatcher();
 }
 
 void Scr_Settings::Toggle_cb_ShowNodes(bool v)
@@ -244,9 +247,9 @@ bool Scr_Settings::Is_cb_Reconnect()
 	return ui->cb_Reconnect->isChecked();
 }
 
-bool Scr_Settings::Is_cb_UnsecureWiFi()
+bool Scr_Settings::Is_cb_InsecureWiFi()
 {
-	return ui->cb_UnsecureWiFi->isChecked();
+	return ui->cb_InsecureWiFi->isChecked();
 }
 
 bool Scr_Settings::Is_cb_ShowNodes()
