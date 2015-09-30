@@ -38,6 +38,7 @@ public:
 	void ReconnectTimer();
 	void StartWifiWatcher();
 	void StopWifiWatcher();
+	void BlockOnDisconnect(bool block);
 
 private:
 	Ui::SjMainWindow *ui;

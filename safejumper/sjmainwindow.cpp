@@ -892,5 +892,34 @@ void SjMainWindow::Timer_WifiWatcher()
 	}
 }
 
+void SjMainWindow::BlockOnDisconnect(bool block)
+{
+	// implementation is the same as in the old Safejumper
+	bool doblock = false;
+	if (AuthManager::IsExists())
+	{
+		if (!AuthManager::Instance()->IsLoggedin())
+		{
+			doblock = block;
+		}
+		else
+		{
+			if (!Ctr_Openvpn::IsExists())
+			{
+				doblock = block;
+			}
+			else
+			{
+				if (Ctr_Openvpn::Instance()->State() == ovsDisconnected)
+					doblock = block;
+				// otherwise unblocked and should be unblocked
+			}
+		}
+	}
 
+	if (doblock)
+	{
+		;
+	}
+}
 

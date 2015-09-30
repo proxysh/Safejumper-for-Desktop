@@ -94,6 +94,11 @@ bool Setting::IsInsecureWifi()
 	return Scr_Settings::Instance()->Is_cb_InsecureWiFi();
 }
 
+bool Setting::IsBlockOnDisconnect()
+{
+	return Scr_Settings::Instance()->Is_cb_BlockOnDisconnect();
+}
+
 bool Setting::IsStartup()
 {
 	return Scr_Settings::Instance()->Is_cb_Startup();

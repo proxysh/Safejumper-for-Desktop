@@ -313,6 +313,8 @@ log::logt("Set state " + QString::number(st));
 			}
 			case ovsDisconnected:
 			{
+				if (Setting::Instance()->IsBlockOnDisconnect())
+					SjMainWindow::Instance()->BlockOnDisconnect(true);
 				WndManager::Instance()->HandleDisconnected();
 				break;
 			}

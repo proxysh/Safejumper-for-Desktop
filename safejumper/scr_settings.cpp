@@ -165,6 +165,7 @@ void Scr_Settings::Toggle_cb_BlockOnDisconnect(bool v)
 	bool checked = ui->b_BlockOnDisconnect_Line2->isChecked();
 	ui->cb_BlockOnDisconnect->setChecked(checked);
 	SaveCb("b_BlockOnDisconnect", v);
+	SjMainWindow::Instance()->BlockOnDisconnect(v);
 }
 
 void Scr_Settings::Toggle_cb_Startup(bool v)
