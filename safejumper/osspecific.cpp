@@ -663,7 +663,7 @@ void OsSpecific::SetIPv6(bool enable)
 			ExecAsRoot(gs_ns, a);
 		}
 #else
-		throw std::logic_error("OsSpecific::SetIPv6() Not implemented for this OS");
+		// throw std::logic_error("OsSpecific::SetIPv6() Not implemented for this OS");
 #endif
 #endif	// Q_OS_WIN
 	}
@@ -753,7 +753,7 @@ bool OsSpecific::IPv6()
 	if (!on)
 		on =	AdapterHasIpv6(gs_ether);
 #else
-	throw std::logic_error("OsSpecific::IPv6() Not implemented for this OS");
+	//throw std::logic_error("OsSpecific::IPv6() Not implemented for this OS");
 #endif
 #endif	// Q_OS_WIN
 	return on;

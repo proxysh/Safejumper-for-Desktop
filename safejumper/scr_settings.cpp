@@ -58,8 +58,8 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 
 	// OS-specific not implemented features
 #ifdef Q_OS_LINUX
-	ui->cb_InsecureWiFi->setEnabled(false);
-	ui->cb_BlockOnDisconnect->setEnabled(false);
+	//ui->cb_InsecureWiFi->setEnabled(false);
+	//ui->cb_BlockOnDisconnect->setEnabled(false);
 #endif
 
 	// disable non-implemented
