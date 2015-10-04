@@ -26,6 +26,9 @@ Scr_Connect::Scr_Connect(QWidget *parent) :
 #ifdef Q_OS_WIN
 	ui->L_Until->setFont(FontHelper::pt(7));
 	ui->L_Email->setFont(FontHelper::pt(10));
+#else		// linux
+	ui->L_Until->setFont(FontHelper::pt(7));
+	ui->L_Package->setFont(FontHelper::pt(10));
 #endif
 	QPoint p1 = ui->L_LOAD->pos();
 	p1.setX(p1.x() + 10);
