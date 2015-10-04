@@ -887,12 +887,16 @@ void OsSpecific::SetStartup(bool b)
 
 }
 
-// returns stdout
-QString RunFastCmd(const char * cmd)
+QString OsSpecific::RunFastCmd(const QString & cmd, uint16_t ms /* = 500 */)
+{
+	return RunFastCmd(cmd.toStdString().c_str(), ms);
+}
+
+QString OsSpecific::RunFastCmd(const char * cmd, uint16_t ms /* = 500 */)
 {
 	std::auto_ptr<QProcess> pr(new QProcess());
 	pr->start(cmd);
-	if (!pr->waitForFinished(500))
+	if (!pr->waitForFinished(ms))
 	{
 		QString s1(pr->readAllStandardError());
 		log::logt("RunFastCmd(): Error: " + s1);

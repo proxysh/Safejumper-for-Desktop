@@ -46,6 +46,9 @@ public:
 	const char * IconConnected_Selected();
 	
 	const char * IsRunningCmd();
+
+	QString RunFastCmd(const char * cmd, uint16_t ms = 500);			// returns stdout
+	QString RunFastCmd(const QString & cmd, uint16_t ms = 500);
 	
 private:
 	OsSpecific();
