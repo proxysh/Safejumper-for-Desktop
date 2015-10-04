@@ -226,7 +226,7 @@ void PortForwarder::Finished_SetPort()
 		if (ba.isEmpty())
 		{
 			err = true;
-			log::logt("FinishedFirstPage(): Server's answer is empty");
+			log::logt("Finished_SetPort(): Server's answer is empty");
 		}
 
 		if (!err)
