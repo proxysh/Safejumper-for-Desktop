@@ -1,6 +1,6 @@
-# Safejumper for Mac
+# Safejumper for Desktop
 
-This piece of software is a custom OpenVPN client for Mac. It has been specifically designed to work with the Proxy.sh VPN network.
+This piece of software is a custom OpenVPN client for Desktop. It has been specifically designed to work with the Proxy.sh VPN network.
 
 ## License
 
@@ -24,5 +24,3 @@ This software has been developed by the following persons or entities:
 * The Proxy.sh Team, in particular Paul, Pauline, Boian, Vicki and Lou.
 * Three Monkeys International Inc. (consultancy, outsourcing).
 * Andrei Anufriev <andrey144@gmail.com>
-
-
