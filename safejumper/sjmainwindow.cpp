@@ -65,8 +65,6 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 			QPoint p = settings.value("pos").toPoint();
 			WndManager::Instance()->trans(p, this);
 		}
-
-		//ui->cb_Rememberme->setChecked(settings.value("RememberMe", true).toBool());
 		ui->cb_Rememberme->setChecked(settings.value("cb_Rememberme", true).toBool());
 
 		if (ui->cb_Rememberme->isChecked())
@@ -85,11 +83,23 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 		ui->ePsw->setFocus();
 	else
 		ui->eLogin->setFocus();
-	_ac_Logout->setEnabled(false);
-	_ac_Jump->setEnabled(false);
-	_ac_SwitchCountry->setEnabled(false);
+	DisableButtonsOnLogout();
 
 	QTimer::singleShot(210, this, SLOT(Timer_Constructed()));
+}
+
+void SjMainWindow::DisableButtonsOnLogout()
+{
+	_ac_Logout->setEnabled(false);	_ac_Logout->setIcon(QIcon(":/icons-tm/close-grey.png"));
+	_ac_Jump->setEnabled(false);	_ac_Jump->setIcon(QIcon(":/icons-tm/jump-grey.png"));
+	_ac_SwitchCountry->setEnabled(false);	_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-grey.png"));
+}
+
+void SjMainWindow::EnableButtonsOnLogin()
+{
+	_ac_Logout->setEnabled(true);	_ac_Logout->setIcon(QIcon(":/icons-tm/close-red.png"));
+	_ac_Jump->setEnabled(true);		_ac_Jump->setIcon(QIcon(":/icons-tm/jump-red.png"));
+	_ac_SwitchCountry->setEnabled(true);	_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-red.png"));
 }
 
 void SjMainWindow::Timer_Constructed()
@@ -224,50 +234,50 @@ void SjMainWindow::CreateTrayMenu()
 
 void SjMainWindow::CreateActions()
 {
-	_ac_Connect.reset(new QAction(tr("&Connect"), this));
+	_ac_Connect.reset(new QAction(QIcon(":/icons-tm/connect-red.png"), tr("&Connect"), this));
 	connect(_ac_Connect.get(), SIGNAL(triggered()), this, SLOT(ac_Connect()));
 
-	_ac_ConnectTo.reset(new QAction(tr("&Connect to ..."), this));
+	_ac_ConnectTo.reset(new QAction(QIcon(":/icons-tm/connect-grey.png"), tr("&Connect to ..."), this));
 	_ac_ConnectTo->setEnabled(false);
 	//connect(_ac_ConnectTo.get(), SIGNAL(triggered()), this, SLOT(ac_ConnectTo()));
 
-	_ac_Disconnect.reset(new QAction(tr("&Disconnect"), this));
+	_ac_Disconnect.reset(new QAction(QIcon(":/icons-tm/disconnect-grey.png"), tr("&Disconnect"), this));
 	connect(_ac_Disconnect.get(), SIGNAL(triggered()), this, SLOT(ac_Disconnect()));
 
-	_ac_Status.reset(new QAction(tr("&Status"), this));
+	_ac_Status.reset(new QAction(QIcon(":/icons-tm/status-red.png"), tr("&Status"), this));
 	connect(_ac_Status.get(), SIGNAL(triggered()), this, SLOT(ac_Status()));
 
-	_ac_Jump.reset(new QAction(tr("&Jump to Faster"), this));
+	_ac_Jump.reset(new QAction(QIcon(":/icons-tm/status-grey.png"), tr("&Jump to Faster"), this));
 	connect(_ac_Jump.get(), SIGNAL(triggered()), this, SLOT(ac_Jump()));
 
-	_ac_SwitchCountry.reset(new QAction(tr("Switch Country"), this));
+	_ac_SwitchCountry.reset(new QAction(QIcon(":/icons-tm/country-grey.png"), tr("Switch Country"), this));
 	connect(_ac_SwitchCountry.get(), SIGNAL(triggered()), this, SLOT(ac_SwitchCountry()));
 
-	_ac_Settings.reset(new QAction(tr("Se&ttings"), this));
+	_ac_Settings.reset(new QAction(QIcon(":/icons-tm/settings-red.png"), tr("Se&ttings"), this));
 	connect(_ac_Settings.get(), SIGNAL(triggered()), this, SLOT(ac_Settings()));
 
-	_ac_Logs.reset(new QAction(tr("&Logs"), this));
+	_ac_Logs.reset(new QAction(QIcon(":/icons-tm/logs-red.png"), tr("&Logs"), this));
 	connect(_ac_Logs.get(), SIGNAL(triggered()), this, SLOT(ac_Logs()));
 
-	_ac_WebManag.reset(new QAction(tr("&Web Management"), this));
+	_ac_WebManag.reset(new QAction(QIcon(":/icons-tm/webmanag-red.png"), tr("&Web Management"), this));
 	connect(_ac_WebManag.get(), SIGNAL(triggered()), this, SLOT(ac_WebManag()));
 
-	_ac_Support.reset(new QAction(tr("&Feedback/Support"), this));
+	_ac_Support.reset(new QAction(QIcon(":/icons-tm/support-red.png"), tr("&Feedback/Support"), this));
 	connect(_ac_Support.get(), SIGNAL(triggered()), this, SLOT(ac_Support()));
 
-	_ac_Bug.reset(new QAction(tr("&Report Bug"), this));
+	_ac_Bug.reset(new QAction(QIcon(":/icons-tm/bug-red.png"), tr("&Report Bug"), this));
 	connect(_ac_Bug.get(), SIGNAL(triggered()), this, SLOT(ac_Bug()));
 
-	_ac_Earn.reset(new QAction(tr("&Earn Money"), this));
+	_ac_Earn.reset(new QAction(QIcon(":/icons-tm/earn-red.png"), tr("&Earn Money"), this));
 	connect(_ac_Earn.get(), SIGNAL(triggered()), this, SLOT(ac_Earn()));
 
 	//_ac_About.reset(new QAction(tr("&About"), this));
 	//connect(_ac_About.get(), SIGNAL(triggered()), this, SLOT(ac_About()));
 
-	_ac_Logout.reset(new QAction(tr("Logout"), this));
+	_ac_Logout.reset(new QAction(QIcon(":/icons-tm/close-grey.png"), tr("Logout"), this));
 	connect(_ac_Logout.get(), SIGNAL(triggered()), this, SLOT(ac_Logout()));
 
-	_ac_Close.reset(new QAction(tr("Close"), this));
+	_ac_Close.reset(new QAction(QIcon(":/icons-tm/close-red.png"), tr("Close"), this));
 	connect(_ac_Close.get(), SIGNAL(triggered()), this, SLOT(ac_Close()));
 }
 
@@ -464,9 +474,10 @@ void SjMainWindow::ac_Logout()
 	if (AuthManager::IsExists())
 		AuthManager::Instance()->DoLogout();
 	WndManager::Instance()->ToPrimary();
-	_ac_Logout->setEnabled(false);
-	_ac_Jump->setEnabled(false);
-	_ac_SwitchCountry->setEnabled(false);
+	ClearConnecttoMenu();
+	_ct_menu->setEnabled(false);
+	_ct_menu->setIcon(QIcon(":/icons-tm/connect-grey.png"));
+	DisableButtonsOnLogout();
 }
 
 std::auto_ptr<SjMainWindow> SjMainWindow::_inst;
@@ -592,22 +603,14 @@ log::logt("sleeping 3");
 			}
 		}
 		WndManager::Instance()->ToPrimary();
-
-		_ac_Logout->setEnabled(true);
-		_ac_Jump->setEnabled(true);
-		_ac_SwitchCountry->setEnabled(true);
-
+		EnableButtonsOnLogin();
 		ConstructConnecttoMenu();
-
 		if (_ConnectAfterLogin)
 			DoConnect();
 	}
 	else
 	{
-		_ac_Logout->setEnabled(false);
-		_ac_Jump->setEnabled(false);
-		_ac_SwitchCountry->setEnabled(false);
-
+		DisableButtonsOnLogout();
 		if (!_CancelLogin)
 		{
 			WndManager::Instance()->ToFront(this);
@@ -640,37 +643,15 @@ void SjMainWindow::ConstructConnecttoMenu()
 			const std::vector<AServer> & hubs = am->GetHubs();
 			if (_ct_menu.get() == NULL)		// one time during entire program run
 			{
-				_TrayMenu->removeAction(_ac_ConnectTo.get());
-				
-				//_ct_menu.reset(new QMenu("Connect to ...222", _TrayMenu.get()));
 				_ct_menu.reset(_TrayMenu->addMenu("Connect to ..."));
-//				_TrayMenu->insertMenu()
-/*
-_ct_menu->setBaseSize(200, 300);
-
-_ct_menu->setVisible(true);
-_ct_menu->setEnabled(true);
-QAction * ac0 = _ct_menu->addAction("AAAAAAAAAAA");
-ac0->setVisible(true);
-*/			
+				_TrayMenu->removeAction(_ac_ConnectTo.get());
 				_TrayMenu->insertMenu(_ac_Disconnect.get(), _ct_menu.get());
-				
-//_ct_menu->setSizePolicy(Qt::Preferred);
-//_ct_menu->setSizePolicy(QSizePolicy::Policy::Preferred);
-
-//QAction * ac0 = _ct_menu->addAction("AAAAAAAAAAA");
-
-//bool bb = _ct_menu->isEmpty();
-//if (!bb)
-//	QAction * ac3 = _ct_menu->addAction("AA33333333AA");
 			}
+			_ct_menu->setEnabled(true);
+			_ct_menu->setIcon(QIcon(":/icons-tm/connect-red.png"));
 
 			if (!Setting::Instance()->IsShowNodes())
 			{
-//QAction * ac0 = _ct_menu->addAction("DDDDDDDDDDDD");
-//ac0->setVisible(true);
-//ac0->
-//return;
 				for (size_t k = 0; k < hubs.size(); ++k)
 					CreateMenuItem(_ct_menu.get(), hubs[k].name, am->ServerIdFromHubId(k));
 			}
@@ -751,8 +732,8 @@ void SjMainWindow::StatusConnecting()
 void SjMainWindow::StatusConnected()
 {
 	UpdIcon(ovsConnected);
-	_ac_Jump->setEnabled(true);
-	_ac_SwitchCountry->setEnabled(true);
+	_ac_Jump->setEnabled(true);			_ac_Jump->setIcon(QIcon(":/icons-tm/jump-red.png"));
+	_ac_SwitchCountry->setEnabled(true);	_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-red.png"));
 }
 
 void SjMainWindow::StatusDisconnected()
@@ -761,17 +742,39 @@ void SjMainWindow::StatusDisconnected()
 	UpdIcon(ovsDisconnected);
 }
 
+static void s_set_enabled(QAction * ac, bool enabled, const char * icon_word)
+{
+	if (!ac)
+		return;
+	ac->setEnabled(enabled);
+	QString fn = ":/icons-tm/";
+	fn += icon_word;
+	fn += (enabled ? "-red.png" : "-grey.png");
+	ac->setIcon(QIcon(fn));
+}
 void SjMainWindow::DisableMenuItems(bool connecting)
 {
-	_ac_Connect->setEnabled(!connecting);
-	_ac_ConnectTo->setEnabled(!connecting);
-	_ac_Disconnect->setEnabled(connecting);
-	_ac_Jump->setEnabled(!connecting);
+	QAction * ar[] = {_ac_Connect.get(), _ac_Jump.get()};
+	static const char * words[] = {"connect", "jump"};
+	for (size_t k = 0; k < sizeof(words) / sizeof(words[0]); ++k)
+		s_set_enabled(ar[k], !connecting, words[k]);
+
+	static const char * country = "country";
+	static const char * disconn = "disconnect";
+	static const char * conn = "connect";
 	if (AuthManager::Instance()->IsLoggedin())
-		_ac_SwitchCountry->setEnabled(!connecting);
+	{
+		s_set_enabled(_ac_SwitchCountry.get(), !connecting, country);
+		s_set_enabled(_ac_Disconnect.get(), connecting, disconn);
+		s_set_enabled(_ac_ConnectTo.get(), !connecting, conn);
+
+	}
 	else
-		_ac_SwitchCountry->setEnabled(false);
-	//_ac_Settings->setEnabled(!connecting);
+	{
+		s_set_enabled(_ac_SwitchCountry.get(), false, country);
+		s_set_enabled(_ac_Disconnect.get(), false, disconn);
+		s_set_enabled(_ac_ConnectTo.get(), false, conn);
+	}
 }
 
 void SjMainWindow::Finished_Updates()

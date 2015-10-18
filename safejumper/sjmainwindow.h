@@ -99,6 +99,9 @@ private:
 
 	int _reconnect_attempt;
 
+	void DisableButtonsOnLogout();
+	void EnableButtonsOnLogin();
+
 private slots:
 	void cbRememberMe_Togg();
 	void Clicked_b_Cancel();

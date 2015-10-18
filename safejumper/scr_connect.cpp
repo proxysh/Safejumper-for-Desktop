@@ -291,7 +291,6 @@ void Scr_Connect::ShowPackageUrl()
 void Scr_Connect::Clicked_Connect()
 {
 	Ctr_Openvpn::Instance()->Start();		// handle visuals inside
-
 }
 
 void Scr_Connect::Clicked_Cancel()

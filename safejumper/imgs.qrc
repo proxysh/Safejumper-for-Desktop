@@ -123,6 +123,35 @@
 		<file alias="icon-tray-hover-cycle.png">images/icon-tray-hover-cycle.png</file>
 		<file alias="icon-tray-hover-cross.png">images/icon-tray-hover-cross.png</file>
 	</qresource>
+	<qresource prefix="/icons-tm">
+		<file alias="connect-red.png">icons-tm/connect-red.png</file>
+		<file alias="about-grey.png">icons-tm/about-grey.png</file>
+		<file alias="about-red.png">icons-tm/about-red.png</file>
+		<file alias="bug-grey.png">icons-tm/bug-grey.png</file>
+		<file alias="bug-red.png">icons-tm/bug-red.png</file>
+		<file alias="close-grey.png">icons-tm/close-grey.png</file>
+		<file alias="close-red.png">icons-tm/close-red.png</file>
+		<file alias="connect-grey.png">icons-tm/connect-grey.png</file>
+		<file alias="connect-red.png">icons-tm/connect-red.png</file>
+		<file alias="country-grey.png">icons-tm/country-grey.png</file>
+		<file alias="country-red.png">icons-tm/country-red.png</file>
+		<file alias="disconnect-grey.png">icons-tm/disconnect-grey.png</file>
+		<file alias="disconnect-red.png">icons-tm/disconnect-red.png</file>
+		<file alias="earn-grey.png">icons-tm/earn-grey.png</file>
+		<file alias="earn-red.png">icons-tm/earn-red.png</file>
+		<file alias="jump-grey.png">icons-tm/jump-grey.png</file>
+		<file alias="jump-red.png">icons-tm/jump-red.png</file>
+		<file alias="logs-grey.png">icons-tm/logs-grey.png</file>
+		<file alias="logs-red.png">icons-tm/logs-red.png</file>
+		<file alias="settings-grey.png">icons-tm/settings-grey.png</file>
+		<file alias="settings-red.png">icons-tm/settings-red.png</file>
+		<file alias="status-grey.png">icons-tm/status-grey.png</file>
+		<file alias="status-red.png">icons-tm/status-red.png</file>
+		<file alias="support-grey.png">icons-tm/support-grey.png</file>
+		<file alias="support-red.png">icons-tm/support-red.png</file>
+		<file alias="webmanag-grey.png">icons-tm/webmanag-grey.png</file>
+		<file alias="webmanag-red.png">icons-tm/webmanag-red.png</file>
+	</qresource>
 	
 	<qresource prefix="/fonts">
 		<file alias="opensans">fonts/opensans-regular.ttf</file>
