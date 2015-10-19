@@ -40,9 +40,17 @@ void Ctr_Openvpn::Start(size_t srv)
 
 void Ctr_Openvpn::Start()
 {
+	WndManager::Instance()->ClosePortDlg();
+	_PortDlgShown = false;
+	_InPortLoop = false;	// TODO: -0
+	_reconnect_attempt = 0;
+	StartImpl();
+}
+
+void Ctr_Openvpn::StartImpl()
+{
 
 	{
-		SetState(ovsDisconnected);
 		Stop();
 		// TODO: -1 cleanup
 	}
@@ -80,12 +88,7 @@ void Ctr_Openvpn::Start()
 			delete _watcher.release();
 		}
 
-		if (NULL != _soc.get())
-		{
-			_soc->abort();
-			_soc->disconnect();
-			delete _soc.release();
-		}
+		RemoveSoc();
 
 		QFile ff(PathHelper::Instance()->OpenvpnConfigPfn());
 		if (ff.open(QIODevice::WriteOnly))
@@ -133,7 +136,10 @@ void Ctr_Openvpn::Start()
 			<< "--management-hold"
 			<< "--management-query-passwords"
 			<< "--log" << PathHelper::Instance()->OpenvpnLogPfn()			// /tmp/openvpn.log
-			<< "--script-security" << "3" << "system"
+
+//			<< "--script-security" << "3" << "system"
+//			<< "--script-security" << "2" << "execve"		// https://openvpn.net/index.php/open-source/documentation/manuals/69-openvpn-21.html
+			<< "--script-security" << "3"
 
 #ifdef Q_OS_MAC			// TODO: -0 DNS on linux
 			<< "--up" << PathHelper::Instance()->UpScriptPfn()				// /Applications/Safejumper.app/Contents/Resources/client.up.safejumper.sh
@@ -171,15 +177,23 @@ void Ctr_Openvpn::Start()
 			arg3 << _paramFile->fileName();
 			_paramFile->close();
 
-
-
+//#ifdef Q_OS_MAC
+//			log::logt("######  touch launcher ####");
+//			OsSpecific::Instance()->RunFastCmd("touch -a " + PathHelper::Instance()->LauncherPfn());
+//#endif
 			log::logt("######  before exec ####");
-			int r3 = QProcess::execute(PathHelper::Instance()->LauncherPfn(), arg3);	// 30ms block
+
+//#ifdef Q_OS_MAC
+//			OsSpecific::Instance()->ExecAsRoot(prog, args);		// force password dialog; without launcher
+//#else
+			int r3 = QProcess::execute(PathHelper::Instance()->LauncherPfn(), arg3);	// 30ms block internally
 			log::logt("QProcess::execute() returns " + QString::number(r3));
 			log::logt("###############");
 			if (r3 != 0)
 				throw std::runtime_error(("Cannot run OpenVPN. Error code is: " + QString::number(r3)).toStdString());
-			AttachMgmt();
+//#endif
+
+			AttachMgmt();	// TODO: -1 wait for slow starting cases
 #else
 			_process.reset(new QProcess());
 			sc->connect(_process.get(), SIGNAL(error(QProcess::ProcessError)), sc, SLOT(ConnectError(QProcess::ProcessError)));
@@ -204,7 +218,10 @@ void Ctr_Openvpn::Start()
 			delete _paramFile.release();
 
 		if (ok)
+		{
+			_dtStart = QDateTime::currentDateTimeUtc().toTime_t();
 			Scr_Connect::Instance()->StartTimer();
+		}
 		else
 			SetState(ovsDisconnected);
 	}
@@ -240,6 +257,25 @@ void Ctr_Openvpn::CheckState()
 				Start();
 			else
 				SetState(ovsDisconnected);
+		}
+	}
+
+	if (State() == ovsConnecting)
+	{
+		uint d = QDateTime::currentDateTimeUtc().toTime_t() - _dtStart;
+		if (!_PortDlgShown && !_InPortLoop)
+		{
+			if (d > G_PortQuestionDelay)
+			{
+				_PortDlgShown = true;
+				WndManager::Instance()->ShowPortDlg();
+			}
+		}
+
+		if (_InPortLoop)
+		{
+			if (d > G_PortIterationDelay)
+				ToNextPort();
 		}
 	}
 }
@@ -422,16 +458,20 @@ void Ctr_Openvpn::Stop()
 		}
 
 		QThread::msleep(200);
-		if (_process.get() != NULL)
-		{
-			QProcess * t = _process.release();
-			t->deleteLater();
-		}
+		RemoveProcess();
 
 		if (IsOvRunning())
 			log::logt("Stop(): cannot soft stop OpenVPN process");
-			
-		SetState(ovsDisconnected);
+	}
+	SetState(ovsDisconnected);
+}
+
+void Ctr_Openvpn::RemoveProcess()
+{
+	if (_process.get() != NULL)
+	{
+		QProcess * t = _process.release();
+		t->deleteLater();
 	}
 }
 
@@ -460,8 +500,7 @@ void Ctr_Openvpn::Finished(int exitCode, QProcess::ExitStatus exitStatus)
 		// MANAGEMENT: Socket bind failed on local address [AF_INET]127.0.0.1:6842: Address already in use
 
 // TODO: -0 delete or not? it spawns child and exits
-//		if (NULL != _process.get())
-//			delete _process.release();
+//		RemoveProcess();
 		if (!IsOvRunning())
 			SetState(ovsDisconnected);
 	}
@@ -491,18 +530,23 @@ void Ctr_Openvpn::InitWatcher()
 	}
 }
 
-void Ctr_Openvpn::AttachMgmt()
+void Ctr_Openvpn::RemoveSoc()
 {
-	SjMainWindow * sc = SjMainWindow::Instance();
-
 	if (NULL != _soc.get())
 	{
+		SjMainWindow * sc = SjMainWindow::Instance();
 		sc->disconnect(_soc.get(), SIGNAL(error(QAbstractSocket::SocketError)), sc, SLOT(Soc_Error(QAbstractSocket::SocketError)));
 		sc->disconnect(_soc.get(), SIGNAL(readyRead()), sc, SLOT(Soc_ReadyRead()));
 		_soc->abort();
+		_soc.release()->deleteLater();
 	}
+}
 
+void Ctr_Openvpn::AttachMgmt()
+{
+	RemoveSoc();
 	_soc.reset(new QTcpSocket());
+	SjMainWindow * sc = SjMainWindow::Instance();
 	sc->connect(_soc.get(), SIGNAL(error(QAbstractSocket::SocketError)), sc, SLOT(Soc_Error(QAbstractSocket::SocketError)));
 	sc->connect(_soc.get(), SIGNAL(readyRead()), sc, SLOT(Soc_ReadyRead()));
 	_soc->connectToHost(_LocalAddr, _LocalPort);
@@ -512,7 +556,7 @@ void Ctr_Openvpn::Soc_Error(QAbstractSocket::SocketError er)
 {
 	log::logt("Error connecting to OpenVPN managemet socket");
 	if (NULL != _soc.get())
-		delete _soc.release();
+		_soc.release()->deleteLater();
 }
 
 void Ctr_Openvpn::Soc_ReadyRead()
@@ -628,7 +672,7 @@ void Ctr_Openvpn::ProcessStateWord(const QString & word, const QString & s)
 	} else { if (word.compare("EXITING", Qt::CaseInsensitive) == 0) {
 		if (Setting::Instance()->IsReconnect())
 		{	// initiate autoreconnect
-			SjMainWindow::Instance()->ReconnectTimer();
+			ReconnectTimer();
 			WndManager::Instance()->HandleConnecting();
 		}
 		else
@@ -723,8 +767,8 @@ void Ctr_Openvpn::ProcessRtWord(const QString & word, const QString & s)
 
 void Ctr_Openvpn::ShowErrMsgAndCleanup(QString msg)
 {
-	delete _soc.release();
-	delete _process.release();
+	RemoveSoc();
+	RemoveProcess();
 
 	SetState(ovsDisconnected);
 	WndManager::Instance()->ErrMsg(msg);
@@ -758,24 +802,38 @@ AA();		if (_soc->isOpen())
 {AA();			is = true;
 }	}
 AA();
-	if (!is)		// lookup child
+//	if (!is)		// lookup child
 	{
 #ifdef WIN32
 		   ;        // TODO: -0
 #else
+
+/*	command composition '|' does not work here
+	QString sout = OsSpecific::Instance()->RunFastCmd(OsSpecific::Instance()->IsRunningCmd());
+	QString s3 = sout.trimmed();
+	int p = s3.indexOf(' ');
+	QString s4 = s3.mid(0, p);
+	bool converted;
+	_pid = s4.toInt(&converted);
+	if (converted)
+	{
+		if (_pid > 0)
+			is = true;
+	}
+	return is;
+*/
+
 AA();		QTemporaryFile file(QDir::tempPath() + "/safejumper-tmp-XXXXXX.sh");
 		QTemporaryFile outf(QDir::tempPath() + "/safejumper-tmp-XXXXXX.out");
 		if (file.open())
 		if (outf.open())
 		{
-AA();			QString script = OsSpecific::Instance()->IsRunningCmd() + outf.fileName();
+AA();			QString script = QString(OsSpecific::Instance()->IsRunningCmd()) + " > " + outf.fileName();
 			file.write(script.toLatin1());
 			file.flush();
 
-			QStringList args;
-			args << file.fileName();
 
-AA();			int re = QProcess::execute("/bin/bash", args);
+AA();			int re = QProcess::execute("/bin/bash", QStringList() << file.fileName());
 AA();			switch (re)
 			{
 				case -2: log::logt("IsOvRunning(): -2 the process cannot be started");
@@ -851,4 +909,47 @@ log::logt(QString("KillRunningOV() enter"));
 log::logt(QString("KillRunningOV() exit"));
 }
 
+void Ctr_Openvpn::StartPortLoop()
+{
+	if (State() != ovsConnected)		// if not connected already during this call
+	{
+		_InPortLoop = true;
+		uint dt = QDateTime::currentDateTimeUtc().toTime_t();
+		if ((dt - _dtStart) > G_PortQuestionDelay)
+		{
+			ToNextPort();
+		}
+	}
+}
+
+void Ctr_Openvpn::ToNextPort()
+{
+	_dtStart = QDateTime::currentDateTimeUtc().toTime_t();		// force start interval - prevent double port change
+	Setting::Instance()->SwitchToNextPort();
+	StartImpl();
+}
+
+void Ctr_Openvpn::ReconnectTimer()
+{
+	QTimer::singleShot(1000, SjMainWindow::Instance(), SLOT(Timer_Reconnect()));
+}
+
+void Ctr_Openvpn::Timer_Reconnect()
+{
+	++_reconnect_attempt;
+	if (IsOvRunning())
+	{
+		if (_reconnect_attempt < 20)
+			QTimer::singleShot(200, SjMainWindow::Instance(), SLOT(Timer_Reconnect()));
+		else
+		{
+			Stop();
+			StartImpl();	// force stop then start
+		}
+	}
+	else
+	{
+		StartImpl();
+	}
+}
 

@@ -7,7 +7,6 @@
 #include "authmanager.h"
 #include "retina.h"
 #include "dlg_error.h"
-#include "dlg_confirmation.h"
 
 #include <cassert>
 #include <QBitmap>
@@ -291,6 +290,7 @@ void WndManager::HandleConnecting()
 
 void WndManager::HandleConnected()
 {
+	ClosePortDlg();
 	Scr_Connect::Instance()->StatusConnected();
 	SjMainWindow::Instance()->StatusConnected();
 }
@@ -322,3 +322,23 @@ int WndManager::Confirmation(const QString & msg)
 	return dlg.exec();
 }
 
+void WndManager::ShowPortDlg()
+{
+	ToPrimary();
+	_DlgPort.reset(new Dlg_confirmation("Connection failed? Let's try another port.", Primary()));
+	//_DlgPort->setWindowModality(Qt::ApplicationModal);
+	Scr_Connect * w = Scr_Connect::Instance();
+	w->connect(_DlgPort.get(), SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
+	_DlgPort->open();
+}
+
+void WndManager::ClosePortDlg()
+{
+	if (_DlgPort.get() != NULL)
+	{
+		Scr_Connect * w = Scr_Connect::Instance();
+		w->disconnect(_DlgPort.get(), SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
+		_DlgPort->close();
+		delete _DlgPort.release();
+	}
+}

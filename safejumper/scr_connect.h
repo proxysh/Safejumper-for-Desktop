@@ -51,6 +51,8 @@ public slots:
 	void ConnectStdout();
 
 	void LogfileChanged(const QString & pfn);
+
+	void PortDlgAction(int action);
 private:
 	Ui::Scr_Connect *ui;
 	static std::auto_ptr<Scr_Connect> _inst;

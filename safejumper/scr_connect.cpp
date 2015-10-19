@@ -386,8 +386,13 @@ void Scr_Connect::keyPressEvent(QKeyEvent * e)
 		QDialog::keyPressEvent(e);
 }
 
-
-
+void Scr_Connect::PortDlgAction(int action)
+{
+	if (QDialog::Accepted == action)
+	{
+		Ctr_Openvpn::Instance()->StartPortLoop();
+	}
+}
 
 
 

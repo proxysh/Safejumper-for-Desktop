@@ -5,6 +5,8 @@
 #include <QDialog>
 #include <memory>
 
+#include "dlg_confirmation.h"
+
 
 //  WndManager::Instance()->ToPrimary(this);
 //  WndManager::Instance()->HideThis(this);
@@ -42,6 +44,9 @@ public:
 	void ToFront();
 
 	int Confirmation(const QString & msg);		// switch to primary, return dialog code: QDialog::Accepted or another
+
+	void ShowPortDlg();
+	void ClosePortDlg();
 private:
 	WndManager();
 	static std::auto_ptr<WndManager> _inst;
@@ -57,6 +62,7 @@ private:
 
 	void SaveAndHide(QWidget * from);
 	void DoTrans(QWidget * to);
+	std::auto_ptr<Dlg_confirmation> _DlgPort;
 };
 
 #endif // WNDMANAGER_H

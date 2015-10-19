@@ -263,17 +263,21 @@ void OsSpecific::SetRights()
 
 	// will ask for elevated rights inside
 #ifdef Q_OS_MAC
-
 	SetChmod("04755", PathHelper::Instance()->UpScriptPfn());
+//	SetChmod("0744", PathHelper::Instance()->UpScriptPfn());
 	SetChown(PathHelper::Instance()->UpScriptPfn());
 
 	SetChmod("04755", PathHelper::Instance()->DownScriptPfn());
+//	SetChmod("0744", PathHelper::Instance()->DownScriptPfn());
 	SetChown(PathHelper::Instance()->DownScriptPfn());
 
 	// TODO: -0 will be gone once launcher be rewritten to execv()
 	SetChmod("04755", PathHelper::Instance()->OpenvpnPathfilename());		 // 04755 for running up/down script with sudo enabled
+//	SetChmod("0755", PathHelper::Instance()->OpenvpnPathfilename());
 	SetChown(PathHelper::Instance()->OpenvpnPathfilename());
+
 	SetChmod("04755", PathHelper::Instance()->LauncherPfn());
+	//SetChmod("04555", PathHelper::Instance()->LauncherPfn());
 	SetChown(PathHelper::Instance()->LauncherPfn());
 #endif		// Q_OS_MAC
 
@@ -573,9 +577,9 @@ const char * OsSpecific::IsRunningCmd()
 {
 	return
 #ifdef Q_OS_MAC
-	"ps -xa | grep open | grep execut | grep Safeju > "
+	"ps -xa | grep open | grep execut | grep Safeju"
 #else
-	"ps -xa | grep open | grep vpn | grep safej> "
+	"ps -xa | grep open | grep vpn | grep safej"
 #endif
 	;
 }

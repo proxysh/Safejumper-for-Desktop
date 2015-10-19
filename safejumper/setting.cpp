@@ -225,6 +225,16 @@ QString Setting::Port()
 	return QString::number(p);
 }
 
+void Setting::SwitchToNextPort()
+{
+	int ix = Scr_Map::Instance()->CurrProto();
+	++ix;
+	int sz = (int)(sizeof(gs_ports)/sizeof(gs_ports[0]));
+	if (ix >= sz)
+		ix = 0;
+	Scr_Map::Instance()->SetProtocol(ix);
+}
+
 QString Setting::LocalPort()
 {
 	QString p = Scr_Settings::Instance()->LocalPort();

@@ -7,6 +7,8 @@
 #include <QFileSystemWatcher>
 #include <QTemporaryFile>
 
+#include "dlg_confirmation.h"
+
 enum OvState
 {
 	ovsDisconnected = 0,
@@ -15,6 +17,9 @@ enum OvState
 
 	ovsTotal
 };
+
+#define G_PortQuestionDelay 60
+#define G_PortIterationDelay 80
 
 class Ctr_Openvpn
 {
@@ -47,15 +52,19 @@ public:
 
 	void KillRunningOV();		// kill process executed previously: connect to it first, if fails: kill -9
 
+	void Timer_Reconnect();
+	void StartPortLoop();
 private:
 	Ctr_Openvpn();
 	static std::auto_ptr<Ctr_Openvpn> _inst;
 
 	std::auto_ptr<QTemporaryFile> _paramFile;
 	std::auto_ptr<QProcess> _process;
+	void RemoveProcess();
 	int _pid;		// for running process (run safejumper after crash)
 	void AttachMgmt();	// attach to OpenVPN management socket
 	std::auto_ptr<QTcpSocket> _soc;
+	void RemoveSoc();
 	QString _LocalAddr;	// remember at moment of OpenVPN launch - do not depend on user changes
 	quint16 _LocalPort;
 
@@ -79,6 +88,14 @@ private:
 
 	OvState _state;
 	void SetState(OvState st);
+
+	void ReconnectTimer();
+	int _reconnect_attempt;
+	bool _PortDlgShown;
+	uint _dtStart;
+	bool _InPortLoop;
+	void StartImpl();
+	void ToNextPort();
 };
 
 #endif // CRT_OPENVPN_H

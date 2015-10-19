@@ -802,29 +802,9 @@ void SjMainWindow::Soc_ReadyRead()
 	Ctr_Openvpn::Instance()->Soc_ReadyRead();
 }
 
-void SjMainWindow::ReconnectTimer()
-{
-	QTimer::singleShot(1000, this, SLOT(Timer_Reconnect()));
-	_reconnect_attempt = 0;
-}
-
 void SjMainWindow::Timer_Reconnect()
 {
-	++_reconnect_attempt;
-	Ctr_Openvpn * c = Ctr_Openvpn::Instance();
-	if (c->IsOvRunning())
-	{
-		if (_reconnect_attempt < 20)
-			QTimer::singleShot(200, this, SLOT(Timer_Reconnect()));
-		else
-		{
-			c->Start();	// force stop then start
-		}
-	}
-	else
-	{
-		c->Start();
-	}
+	Ctr_Openvpn::Instance()->Timer_Reconnect();
 }
 
 void SjMainWindow::StartWifiWatcher()

@@ -35,7 +35,6 @@ public:
 	void DoClose();
 
 	void ConstructConnecttoMenu();
-	void ReconnectTimer();
 	void StartWifiWatcher();
 	void StopWifiWatcher();
 	void BlockOnDisconnect(bool block);
@@ -96,8 +95,6 @@ private:
 	std::vector<AcConnectto *> _connectto;
 	std::auto_ptr<QMenu> _ct_menu;
 	std::vector<QMenu *> _hub_menus;
-
-	int _reconnect_attempt;
 
 	void DisableButtonsOnLogout();
 	void EnableButtonsOnLogin();

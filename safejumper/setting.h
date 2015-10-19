@@ -55,6 +55,8 @@ public:
 	bool IsCheckForUpdates();
 	void UpdateMsgShown();
 
+	void SwitchToNextPort();
+
 private:
 	Setting();
 	static std::auto_ptr<Setting> _inst;
