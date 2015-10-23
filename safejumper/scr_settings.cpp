@@ -19,6 +19,7 @@ static const char * g_ar [] = {
 Scr_Settings::Scr_Settings(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::Scr_Settings)
+	, _moving(false)
 {
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
@@ -36,6 +37,13 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 		ui->dd_Encryption->addItem(g_ar[k]);
 	ui->dd_Encryption->setView(ui->lv_Encryption);
 	ui->dd_Encryption->setCurrentIndex(1);
+
+
+//	QPoint p0 = _WndStart = pos();
+	WndManager::DoShape(this);
+//	QPoint p1 = pos();
+//		move(p0);
+	qApp->installEventFilter(this);
 
 	{
 		SETTINGS_OBJ;
@@ -415,4 +423,51 @@ void Scr_Settings::keyPressEvent(QKeyEvent * e)
 	if(e->key() != Qt::Key_Escape)
 		QDialog::keyPressEvent(e);
 }
+
+
+bool Scr_Settings::eventFilter(QObject *obj, QEvent *event)
+{
+	switch (event->type())
+	{
+		case QEvent::MouseMove:
+		{
+			if (_moving)
+			{
+				QPoint d = QCursor::pos() - _CursorStart;
+				if (d.x() != 0 || d.y() != 0)
+				{
+					QPoint NewAbs = _WndStart + d;
+					this->move(NewAbs);
+				}
+			}
+			return false;
+		}
+		case QEvent::MouseButtonRelease:
+		{
+			_moving = false;
+//			_WndStart = pos();
+			return false;
+		}
+		default:
+			return QDialog::eventFilter(obj, event);
+	}
+}
+
+void Scr_Settings::Pressed_Head()
+{
+	_WndStart = this->pos();
+	_CursorStart = QCursor::pos();
+	_moving = true;
+}
+
+void Scr_Settings::Clicked_Min()
+{
+	WndManager::Instance()->HideThis(this);
+}
+
+void Scr_Settings::Clicked_Cross()
+{
+	SjMainWindow::Instance()->DoClose();
+}
+
 

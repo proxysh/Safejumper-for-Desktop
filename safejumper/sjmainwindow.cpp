@@ -33,6 +33,7 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 	, _fixed(false)
 	, _activatedcount(0)
 	, _wifi_processing(false)
+	, _moving(false)
 {
 	ui->setupUi(this);
 	setWindowFlags(Qt::Dialog);
@@ -65,6 +66,7 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 			QPoint p = settings.value("pos").toPoint();
 			WndManager::Instance()->trans(p, this);
 		}
+//		_WndStart = pos();
 		ui->cb_Rememberme->setChecked(settings.value("cb_Rememberme", true).toBool());
 
 		if (ui->cb_Rememberme->isChecked())
@@ -78,12 +80,13 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 
 	StatusDisconnected();
 
-	// WndManager::DoShape(this);
 	if (!ui->eLogin->text().isEmpty() && ui->ePsw->text().isEmpty())
 		ui->ePsw->setFocus();
 	else
 		ui->eLogin->setFocus();
 	DisableButtonsOnLogout();
+
+	WndManager::DoShape(this);
 
 	QTimer::singleShot(210, this, SLOT(Timer_Constructed()));
 }
@@ -109,6 +112,20 @@ void SjMainWindow::Timer_Constructed()
 #endif
 
 	Scr_Logs * l = Scr_Logs::Instance();
+
+//	QPoint p0 =
+
+//	QPoint p1 = pos();
+//	if (p0 != p1)
+//	{
+//		log::logt("Non equal! Move back;");
+//		move(p0);
+//	}
+
+	qApp->installEventFilter(this);
+//	QPoint p2 = pos();
+//	if (p0 != p2)
+//		log::logt("Main Window position bug detected");
 
 	if (l->IsExists())		// force construction
 	if (Ctr_Openvpn::Instance()->IsOvRunning())
@@ -522,9 +539,27 @@ void SjMainWindow::Clicked_b_Cancel()
 	DoCancelLogin();
 }
 
+void SjMainWindow::Clicked_Min()
+{
+	WndManager::Instance()->HideThis(this);
+}
+
+void SjMainWindow::Clicked_Cross()
+{
+	DoClose();
+}
+
 void SjMainWindow::ToScr_Connect()
 {
 	DoLogin();
+}
+
+void SjMainWindow::Pressed_Head()
+{
+	_WndStart = this->pos();
+	_CursorStart = QCursor::pos();
+	log::logt(QString().sprintf("_WndStart =  (%d,%d), _CursorStart = (%d,%d)", _WndStart.x(), _WndStart.y(), _CursorStart.x(), _CursorStart.y()));
+	_moving = true;
 }
 
 void SjMainWindow::DoCancelLogin()
@@ -905,4 +940,36 @@ void SjMainWindow::BlockOnDisconnect(bool block)
 		;
 	}
 }
+
+bool SjMainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+	switch (event->type())
+	{
+		case QEvent::MouseMove:
+		{
+			if (_moving)
+			{
+				QPoint p =	QCursor::pos();
+				QPoint d = p - _CursorStart;
+				if (d.x() != 0 || d.y() != 0)
+				{
+//					static bool first_time = true;
+					QPoint NewAbs = _WndStart + d;
+//log::logt(QString().sprintf("Moving to NewAbs = (%d,%d) d = (%d,%d), p = (%d,%d), _WndStart = (%d,%d), _CursorStart = (%d,%d)", NewAbs.x(), NewAbs.y(), d.x(), d.y(), p.x(), p.y(), _WndStart.x(), _WndStart.y(), _CursorStart.x(), _CursorStart.y()));
+					this->move(NewAbs);
+				}
+			}
+			return false;
+		}
+		case QEvent::MouseButtonRelease:
+		{
+			_moving = false;
+//			_WndStart = pos();
+			return false;
+		}
+		default:
+			return QMainWindow::eventFilter(obj, event);
+	}
+}
+
 

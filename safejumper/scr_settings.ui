@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>550</width>
-    <height>271</height>
+    <height>293</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
+     <y>22</y>
      <width>551</width>
      <height>271</height>
     </rect>
@@ -1172,6 +1172,142 @@ color: #3c3c3c;
     </property>
    </widget>
   </widget>
+  <widget class="QFrame" name="frameHead">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>550</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QFrame
+{
+	background-color: #ffffff;
+	border: 0;
+}</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QLabel" name="line_5">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>21</y>
+      <width>550</width>
+      <height>2</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel
+{
+	border:0px;
+	border-image: url(:/imgs/h-line-mb.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="L_Caption">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>3</y>
+      <width>100</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>14</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Safejumper</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="b_Head">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>550</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	border-image: url(:/imgs/cb-empty.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="b_Minimize">
+    <property name="geometry">
+     <rect>
+      <x>515</x>
+      <y>6</y>
+      <width>10</width>
+      <height>10</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	border-image: url(:/imgs/b-min.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="b_Cross">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>6</y>
+      <width>10</width>
+      <height>10</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	border-image: url(:/imgs/b-cross.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+  </widget>
  </widget>
  <resources>
   <include location="imgs.qrc"/>
@@ -1446,6 +1582,54 @@ color: #3c3c3c;
     <hint type="destinationlabel">
      <x>274</x>
      <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_Head</sender>
+   <signal>pressed()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Pressed_Head()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>274</x>
+     <y>10</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>146</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_Minimize</sender>
+   <signal>clicked()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Clicked_Min()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>519</x>
+     <y>10</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>146</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_Cross</sender>
+   <signal>clicked()</signal>
+   <receiver>Scr_Settings</receiver>
+   <slot>Clicked_Cross()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>534</x>
+     <y>10</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>146</y>
     </hint>
    </hints>
   </connection>

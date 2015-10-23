@@ -1,4 +1,9 @@
 #include "wndmanager.h"
+
+#include <cassert>
+#include <QBitmap>
+#include <QPainter>
+
 #include "scr_settings.h"
 #include "sjmainwindow.h"
 #include "scr_map.h"
@@ -7,10 +12,7 @@
 #include "authmanager.h"
 #include "retina.h"
 #include "dlg_error.h"
-
-#include <cassert>
-#include <QBitmap>
-#include <QPainter>
+#include "log.h"
 
 WndManager::WndManager()
 {
@@ -200,24 +202,82 @@ void WndManager::ApplyCoords(QWidget * to)
 	int tw = to->width();
 	//assert(tw > 0);
 	int nx = _x + 187 - (to->width() / 2);
+
+//log::logt(QString().sprintf("ApplyCoords(): moving to (%d,%d)", nx, _y));
 	to->move(nx, _y);
 }
 
 void WndManager::DoShape(QWidget * d)
 {
-
 	d->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
-QSize sz = d->size();
-	QBitmap bmp(d->size());
+	if (IsRetina())
+	{
+		QSize sz = d->size();
+static		QBitmap bmp(d->size());
 
-	bmp.clear();
-
-	QPainter painter(&bmp);
-	painter.setRenderHint(QPainter::Antialiasing, true);
-	painter.setPen(QColor(Qt::black));
-	painter.setBrush(QColor(Qt::black));
-	painter.drawRoundedRect(d->geometry(), 3.0f, 3.0f, Qt::AbsoluteSize);
-	d->setMask(bmp);
+		QPainter painter(&bmp);
+		painter.setRenderHint(QPainter::Antialiasing, true);
+		painter.setPen(QColor(Qt::black));
+		painter.setBrush(QColor(Qt::black));
+		static float R = 3.0f;
+//	QRect rec = d->geometry();
+		painter.drawRoundedRect(d->geometry(), R, R, Qt::AbsoluteSize);
+		d->setMask(bmp);
+		log::logt("Cast main form for retina()");
+	}
+	else
+	{
+		QString fn = ":/imgs/shape-dlg";
+		int h = d->height();
+		switch (h)
+		{
+			case 168:
+			case 146: //fn += "-146"; break;
+			{
+//				static QBitmap b146(":/imgs/shape-dlg-146.bmp");
+				static QBitmap b146(":/imgs/shape-dlg-168.bmp");
+				d->setMask(b146);
+				return;
+			}
+			case 197:
+			case 175: //fn += "-175"; break;
+			{
+//				static QBitmap b175(":/imgs/shape-dlg-175.bmp");
+				static QBitmap b175(":/imgs/shape-dlg-197.bmp");
+				d->setMask(b175);
+				return;
+			}
+			case 293:
+			case 271: //fn += "-271"; break;
+			{
+//				static QBitmap b271(":/imgs/shape-dlg-271.bmp");
+				static QBitmap b271(":/imgs/shape-dlg-293.bmp");
+				d->setMask(b271);
+				return;
+			}
+			case 300:
+			case 278: //fn += "-278"; break;
+			{
+//				static QBitmap b278(":/imgs/shape-dlg-278.bmp");
+				static QBitmap b278(":/imgs/shape-dlg-300.bmp");
+				d->setMask(b278);
+				return;
+			}
+			case 360:
+			case 338:
+			default:
+			{
+				//static QBitmap b338(":/imgs/shape-dlg.bmp");
+				static QBitmap b338(":/imgs/shape-dlg-360.bmp");
+				d->setMask(b338);
+				return;
+			}
+		}
+//		if (IsRetina())
+//			fn += "@2x";
+		fn += ".bmp";
+		d->setMask(QBitmap(fn));
+	}
 
 	//QString n = (IsRetina() ? ":/imgs/region-dlg-err@2x.png" : ":/imgs/region-dlg-err.png");
 	//QPixmap msk(n);

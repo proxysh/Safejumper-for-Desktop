@@ -40,6 +40,9 @@ private:
 	void DisplayMark(const QString & name);
 	QPoint _default;
 	void SetRowStyle(bool show_nodes);
+	bool _moving;
+	QPoint _WndStart;
+	QPoint _CursorStart;
 
 private slots:
 	void ToScr_Connect();
@@ -50,10 +53,15 @@ private slots:
 
 	void Clicked_b_Tmp();
 	void Changed_xy();
+public slots:
+	void Pressed_Head();
+	void Clicked_Min();
+	void Clicked_Cross();
 protected:
 	virtual void closeEvent(QCloseEvent * event);
 	virtual void keyPressEvent(QKeyEvent * event);
 	virtual void mouseMoveEvent(QMouseEvent *event);
+	virtual bool eventFilter(QObject *obj, QEvent *event);
 	QPoint _curr;
 
 };

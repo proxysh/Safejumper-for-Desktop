@@ -17,6 +17,8 @@ Dlg_Error::Dlg_Error(const QString & msg, const QString & caption, QWidget *pare
 	FontHelper::SetFont(this);
 #endif
 	WndManager::DoShape(this);
+	this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+
 	this->setAttribute(Qt::WA_MacNoShadow, false);
 	ui->L_Caption->setText(caption);
 	ui->L_Text->setText(msg);

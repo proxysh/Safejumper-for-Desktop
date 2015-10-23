@@ -7,16 +7,24 @@
 #include "common.h"
 #include "wndmanager.h"
 #include "fonthelper.h"
+#include "sjmainwindow.h"
 
 Scr_Logs::Scr_Logs(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::Scr_Logs)
+   , _moving(false)
 {
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 #ifndef Q_OS_MAC
 	FontHelper::SetFont(this);
 #endif
+
+//	QPoint p0 = _WndStart = pos();
+	WndManager::DoShape(this);
+//	QPoint p1 = pos();
+//		move(p0);
+	qApp->installEventFilter(this);
 }
 
 void Scr_Logs::closeEvent(QCloseEvent * event)
@@ -71,3 +79,47 @@ void Scr_Logs::keyPressEvent(QKeyEvent * e)
 		QDialog::keyPressEvent(e);
 }
 
+bool Scr_Logs::eventFilter(QObject *obj, QEvent *event)
+{
+	switch (event->type())
+	{
+		case QEvent::MouseMove:
+		{
+			if (_moving)
+			{
+				QPoint d = QCursor::pos() - _CursorStart;
+				if (d.x() != 0 || d.y() != 0)
+				{
+					QPoint NewAbs = _WndStart + d;
+					this->move(NewAbs);
+				}
+			}
+			return false;
+		}
+		case QEvent::MouseButtonRelease:
+		{
+			_moving = false;
+//			_WndStart = pos();
+			return false;
+		}
+		default:
+			return QDialog::eventFilter(obj, event);
+	}
+}
+
+void Scr_Logs::Pressed_Head()
+{
+	_WndStart = this->pos();
+	_CursorStart = QCursor::pos();
+	_moving = true;
+}
+
+void Scr_Logs::Clicked_Min()
+{
+	WndManager::Instance()->HideThis(this);
+}
+
+void Scr_Logs::Clicked_Cross()
+{
+	SjMainWindow::Instance()->DoClose();
+}

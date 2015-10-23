@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>375</width>
-    <height>338</height>
+    <height>360</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
+     <y>22</y>
      <width>375</width>
      <height>89</height>
     </rect>
@@ -402,7 +402,7 @@ color: #0f0f0f;
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>89</y>
+     <y>111</y>
      <width>375</width>
      <height>251</height>
     </rect>
@@ -718,10 +718,7 @@ QPushButton:pressed
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">QLabel
-{
-background: transparent;
-}</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>USA</string>
@@ -782,7 +779,6 @@ background: transparent;
      <string notr="true">QLabel
 {
 color: #818181;
-background: transparent;
 }</string>
     </property>
     <property name="text">
@@ -1013,10 +1009,7 @@ background: transparent;
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">QLabel
-{
-background: transparent;
-}</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>123.36.29.128</string>
@@ -1442,7 +1435,7 @@ QPushButton:pressed
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>500</y>
+     <y>0</y>
      <width>375</width>
      <height>22</height>
     </rect>
@@ -1493,6 +1486,8 @@ QPushButton:pressed
      <font>
       <family>Helvetica Neue</family>
       <pointsize>14</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
      </font>
     </property>
     <property name="text">
@@ -1736,22 +1731,6 @@ QPushButton:pressed
    </hints>
   </connection>
   <connection>
-   <sender>b_Head</sender>
-   <signal>released()</signal>
-   <receiver>Scr_Connect</receiver>
-   <slot>Released_Head()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>187</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>179</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>b_Minimize</sender>
    <signal>clicked()</signal>
    <receiver>Scr_Connect</receiver>
@@ -1771,7 +1750,7 @@ QPushButton:pressed
    <sender>b_Cross</sender>
    <signal>clicked()</signal>
    <receiver>Scr_Connect</receiver>
-   <slot>Clicked_Min()</slot>
+   <slot>Clicked_Cross()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>359</x>

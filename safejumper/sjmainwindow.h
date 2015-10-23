@@ -99,14 +99,21 @@ private:
 	void DisableButtonsOnLogout();
 	void EnableButtonsOnLogin();
 
+	bool _moving;
+	QPoint _WndStart;
+	QPoint _CursorStart;
+
 private slots:
 	void cbRememberMe_Togg();
 	void Clicked_b_Cancel();
+	void Clicked_Min();
+	void Clicked_Cross();
 	void Icon_Activated(QSystemTrayIcon::ActivationReason reason);
 	void Timer_FixIcon();
 	void Timer_Constructed();
 	void Timer_Reconnect();
 	void Timer_WifiWatcher();
+	void Pressed_Head();
 
 public slots:
 	void AppFocusChanged(QWidget*, QWidget*);
@@ -147,6 +154,7 @@ public slots:
 protected:
 	virtual void closeEvent(QCloseEvent * event);
 	virtual void resizeEvent(QResizeEvent *) {}
+	virtual bool eventFilter(QObject *obj, QEvent *event);
 };
 
 #endif // SJMAINWINDOW_H

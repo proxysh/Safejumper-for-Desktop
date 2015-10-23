@@ -43,7 +43,43 @@ Scr_Connect::Scr_Connect(QWidget *parent) :
 	ui->L_Amount->setText("-");
 	ui->L_OldIp->setText("");
 
-	//WndManager::DoShape(this);
+//	QPoint p0 = _WndStart = pos();
+	WndManager::DoShape(this);
+//	QPoint p1 = pos();
+//	if (p0 != p1)
+//	{
+//		log::logt("Non equal! Move back;");
+//		move(p0);
+//	}
+	qApp->installEventFilter(this);
+}
+
+bool Scr_Connect::eventFilter(QObject *obj, QEvent *event)
+{
+	switch (event->type())
+	{
+		case QEvent::MouseMove:
+		{
+			if (_moving)
+			{
+				QPoint d = QCursor::pos() - _CursorStart;
+				if (d.x() != 0 || d.y() != 0)
+				{
+					QPoint NewAbs = _WndStart + d;
+					this->move(NewAbs);
+				}
+			}
+			return false;
+		}
+		case QEvent::MouseButtonRelease:
+		{
+			_moving = false;
+//			_WndStart = pos();
+			return false;
+		}
+		default:
+			return QDialog::eventFilter(obj, event);
+	}
 }
 
 void Scr_Connect::Init()
@@ -308,6 +344,11 @@ void Scr_Connect::Clicked_Min()
 	WndManager::Instance()->HideThis(this);
 }
 
+void Scr_Connect::Clicked_Cross()
+{
+	SjMainWindow::Instance()->DoClose();
+}
+
 void Scr_Connect::ConnectError(QProcess::ProcessError error)
 {
 	log::logt("Scr_Connect::ConnectError(): error = " + QString::number(error));
@@ -348,36 +389,9 @@ void Scr_Connect::ConnectStdout()
 
 void Scr_Connect::Pressed_Head()
 {
+	_WndStart = this->pos();
+	_CursorStart = QCursor::pos();
 	_moving = true;
-	_prevMouse = QCursor::pos();
-	log::logt("Pressed_Head()");
-}
-
-void Scr_Connect::Released_Head()
-{
-	_moving = false;
-	log::logt("Released_Head()");
-}
-
-void Scr_Connect::mouseMoveEvent(QMouseEvent* event)
-{
-	//log::logt("mouseMoveEvent()");
-	//if (event->type() == QEvent::MouseMove)
-	{
-		if (_moving)
-		{
-			int x = event->x();
-			int y = event->y();
-			QPoint curr = QCursor::pos();
-			if (curr != _prevMouse)
-			{
-				QPoint d1 = curr - _prevMouse;
-				log::logt("moving " + QString::number(d1.x()) + "," + QString::number(d1.y()) );
-				this->move(this->pos() + (curr - _prevMouse) );
-				_prevMouse = curr;
-			}
-		}
-	}
 }
 
 void Scr_Connect::keyPressEvent(QKeyEvent * e)

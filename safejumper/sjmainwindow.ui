@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>375</width>
-    <height>278</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,7 +27,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>22</y>
       <width>375</width>
       <height>89</height>
      </rect>
@@ -192,7 +192,7 @@ margin: 0;
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>89</y>
+      <y>111</y>
       <width>375</width>
       <height>191</height>
      </rect>
@@ -688,7 +688,7 @@ QPushButton:pressed
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>500</y>
+      <y>0</y>
       <width>375</width>
       <height>22</height>
      </rect>
@@ -719,13 +719,111 @@ QPushButton:pressed
       <string notr="true">QLabel
 {
 	border:0px;
-	border-image: url(:/imgs/h-line-2.png);
+	border-image: url(:/imgs/h-line-mb.png);
 }</string>
      </property>
      <property name="text">
       <string/>
      </property>
     </widget>
+    <widget class="QPushButton" name="b_Cross">
+     <property name="geometry">
+      <rect>
+       <x>355</x>
+       <y>6</y>
+       <width>10</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+	border:0px;
+	border-image: url(:/imgs/b-cross.png);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="L_Caption">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>3</y>
+       <width>100</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>14</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Safejumper</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="b_Minimize">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>6</y>
+       <width>10</width>
+       <height>10</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+	border:0px;
+	border-image: url(:/imgs/b-min.png);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="b_Head">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>375</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+	border:0px;
+	border-image: url(:/imgs/cb-empty.png);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <zorder>L_Caption</zorder>
+    <zorder>b_Head</zorder>
+    <zorder>b_Cross</zorder>
+    <zorder>line_4</zorder>
+    <zorder>b_Minimize</zorder>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -734,7 +832,7 @@ QPushButton:pressed
      <x>0</x>
      <y>0</y>
      <width>375</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuExit">
@@ -803,6 +901,54 @@ QPushButton:pressed
    </hints>
   </connection>
   <connection>
+   <sender>b_Minimize</sender>
+   <signal>clicked()</signal>
+   <receiver>SjMainWindow</receiver>
+   <slot>Clicked_Min()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>344</x>
+     <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>187</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_Head</sender>
+   <signal>pressed()</signal>
+   <receiver>SjMainWindow</receiver>
+   <slot>Pressed_Head()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>187</x>
+     <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>187</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_Cross</sender>
+   <signal>clicked()</signal>
+   <receiver>SjMainWindow</receiver>
+   <slot>Clicked_Cross()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>359</x>
+     <y>32</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>187</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>b_Cancel</sender>
    <signal>clicked()</signal>
    <receiver>SjMainWindow</receiver>
@@ -810,11 +956,11 @@ QPushButton:pressed
    <hints>
     <hint type="sourcelabel">
      <x>96</x>
-     <y>258</y>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>187</x>
-     <y>138</y>
+     <y>149</y>
     </hint>
    </hints>
   </connection>

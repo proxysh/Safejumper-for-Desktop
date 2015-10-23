@@ -12,6 +12,7 @@ Dlg_confirmation::Dlg_confirmation(const QString & msg, QWidget *parent) :
 #ifndef Q_OS_MAC
 	FontHelper::SetFont(this);
 #endif
+	this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
 	WndManager::DoShape(this);
 	
 	this->setAttribute(Qt::WA_MacNoShadow, false);

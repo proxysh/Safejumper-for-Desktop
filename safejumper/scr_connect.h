@@ -68,8 +68,9 @@ private:
 	std::auto_ptr<QTimer> _timer_state;		// check Ovpn state;
 
 	bool _moving;
-	QPoint _prevMouse;
 	void DwnlStrs();
+	QPoint _WndStart;
+	QPoint _CursorStart;
 
 private slots:
 	void Clicked_Connect();
@@ -77,6 +78,7 @@ private slots:
 	void Clicked_Jump();
 
 	void Clicked_Min();
+	void Clicked_Cross();
 
 	void ToScr_Settings();
 	void ToScr_Primary();
@@ -85,13 +87,12 @@ private slots:
 	void ShowPackageUrl();
 
 	void Pressed_Head();
-	void Released_Head();
 
 	void Timer_CheckState();
 protected:
 	virtual void closeEvent(QCloseEvent * event);
-	virtual void mouseMoveEvent(QMouseEvent* event);
 	virtual void keyPressEvent(QKeyEvent * event);
+	virtual bool eventFilter(QObject *obj, QEvent *event);
 };
 
 

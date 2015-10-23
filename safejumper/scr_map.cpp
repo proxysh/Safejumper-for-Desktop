@@ -17,10 +17,12 @@
 #include "lvrowdelegate.h"
 #include "lvrowdelegateprotocol.h"
 #include "fonthelper.h"
+#include "sjmainwindow.h"
 
 Scr_Map::Scr_Map(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::Scr_Map)
+    , _moving(false)
 {
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
@@ -46,6 +48,11 @@ Scr_Map::Scr_Map(QWidget *parent) :
 		ui->dd_Protocol->addItem(Setting::GetAllProt().at(k));
 	ui->dd_Protocol->setItemText(0, PROTOCOL_SELECTION_STR);	// HACK: -2
 
+//	QPoint p0 = _WndStart = pos();
+	WndManager::DoShape(this);
+//	QPoint p1 = pos();
+//		move(p0);
+	qApp->installEventFilter(this);
 
 
 	ui->dd_Location->setView(ui->lv_Location);
@@ -343,3 +350,51 @@ void Scr_Map::keyPressEvent(QKeyEvent * e)
 	if(e->key() != Qt::Key_Escape)
 		QDialog::keyPressEvent(e);
 }
+
+
+bool Scr_Map::eventFilter(QObject *obj, QEvent *event)
+{
+	switch (event->type())
+	{
+		case QEvent::MouseMove:
+		{
+			if (_moving)
+			{
+				QPoint d = QCursor::pos() - _CursorStart;
+				if (d.x() != 0 || d.y() != 0)
+				{
+					QPoint NewAbs = _WndStart + d;
+					this->move(NewAbs);
+				}
+			}
+			return false;
+		}
+		case QEvent::MouseButtonRelease:
+		{
+			_moving = false;
+//			_WndStart = pos();
+			return false;
+		}
+		default:
+			return QDialog::eventFilter(obj, event);
+	}
+}
+
+void Scr_Map::Pressed_Head()
+{
+	_WndStart = this->pos();
+	_CursorStart = QCursor::pos();
+	_moving = true;
+}
+
+void Scr_Map::Clicked_Min()
+{
+	WndManager::Instance()->HideThis(this);
+}
+
+void Scr_Map::Clicked_Cross()
+{
+	SjMainWindow::Instance()->DoClose();
+}
+
+

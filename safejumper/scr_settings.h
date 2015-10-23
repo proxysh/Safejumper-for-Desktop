@@ -46,13 +46,21 @@ private:
 	bool IsPortsValid(USet * out_ports = NULL);
 	void SaveDns(QLineEdit * dns, const char * name, QSettings & settings);
 	QString GetDns(QLineEdit * dns);
+	bool _moving;
+	QPoint _WndStart;
+	QPoint _CursorStart;
+
 
 
 protected:
 	virtual void closeEvent(QCloseEvent * event);
 	virtual void keyPressEvent(QKeyEvent * event);
+	virtual bool eventFilter(QObject *obj, QEvent *event);
 
 public slots:
+	void Pressed_Head();
+	void Clicked_Min();
+	void Clicked_Cross();
 
 private slots:
 	void Toggle_BlockOnDisconnect_Line2(bool v);
