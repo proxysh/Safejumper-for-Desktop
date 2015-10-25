@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>375</width>
-    <height>360</height>
+    <height>338</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>22</y>
+     <y>0</y>
      <width>375</width>
      <height>89</height>
     </rect>
@@ -476,7 +476,7 @@ border-image: url(:/imgs/dd-selectionrow.png);
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>111</y>
+     <y>89</y>
      <width>375</width>
      <height>251</height>
     </rect>
@@ -813,7 +813,7 @@ padding-bottom: 7px;
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
+     <y>500</y>
      <width>375</width>
      <height>22</height>
     </rect>

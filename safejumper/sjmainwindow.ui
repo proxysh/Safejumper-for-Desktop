@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>375</width>
-    <height>300</height>
+    <height>278</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,7 +27,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>22</y>
+      <y>0</y>
       <width>375</width>
       <height>89</height>
      </rect>
@@ -192,7 +192,7 @@ margin: 0;
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>111</y>
+      <y>89</y>
       <width>375</width>
       <height>191</height>
      </rect>
@@ -688,7 +688,7 @@ QPushButton:pressed
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>500</y>
       <width>375</width>
       <height>22</height>
      </rect>

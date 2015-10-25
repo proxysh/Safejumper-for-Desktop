@@ -44,7 +44,7 @@ Scr_Connect::Scr_Connect(QWidget *parent) :
 	ui->L_OldIp->setText("");
 
 //	QPoint p0 = _WndStart = pos();
-	WndManager::DoShape(this);
+//	WndManager::DoShape(this);
 //	QPoint p1 = pos();
 //	if (p0 != p1)
 //	{

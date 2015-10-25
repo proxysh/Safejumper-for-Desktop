@@ -40,7 +40,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 
 
 //	QPoint p0 = _WndStart = pos();
-	WndManager::DoShape(this);
+//	WndManager::DoShape(this);
 //	QPoint p1 = pos();
 //		move(p0);
 	qApp->installEventFilter(this);

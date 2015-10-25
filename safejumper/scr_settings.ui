@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>550</width>
-    <height>293</height>
+    <height>271</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>22</y>
+     <y>0</y>
      <width>551</width>
      <height>271</height>
     </rect>
@@ -1176,7 +1176,7 @@ color: #3c3c3c;
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
+     <y>500</y>
      <width>550</width>
      <height>22</height>
     </rect>

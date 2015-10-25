@@ -86,7 +86,7 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 		ui->eLogin->setFocus();
 	DisableButtonsOnLogout();
 
-	WndManager::DoShape(this);
+//	WndManager::DoShape(this);
 
 	QTimer::singleShot(210, this, SLOT(Timer_Constructed()));
 }

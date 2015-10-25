@@ -49,7 +49,7 @@ Scr_Map::Scr_Map(QWidget *parent) :
 	ui->dd_Protocol->setItemText(0, PROTOCOL_SELECTION_STR);	// HACK: -2
 
 //	QPoint p0 = _WndStart = pos();
-	WndManager::DoShape(this);
+//	WndManager::DoShape(this);
 //	QPoint p1 = pos();
 //		move(p0);
 	qApp->installEventFilter(this);

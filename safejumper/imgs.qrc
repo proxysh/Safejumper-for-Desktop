@@ -1,17 +1,5 @@
 <RCC>
 	<qresource prefix="/imgs">
-		<file alias="shape-dlg.bmp">images/shape-dlg.bmp</file>
-		<file alias="shape-dlg-146.bmp">images/shape-dlg-146.bmp</file>
-		<file alias="shape-dlg-175.bmp">images/shape-dlg-175.bmp</file>
-		<file alias="shape-dlg-271.bmp">images/shape-dlg-271.bmp</file>
-		<file alias="shape-dlg-278.bmp">images/shape-dlg-278.bmp</file>
-
-		<file alias="shape-dlg-168.bmp">images/shape-dlg-168.bmp</file>
-		<file alias="shape-dlg-197.bmp">images/shape-dlg-197.bmp</file>
-		<file alias="shape-dlg-293.bmp">images/shape-dlg-293.bmp</file>
-		<file alias="shape-dlg-300.bmp">images/shape-dlg-300.bmp</file>
-		<file alias="shape-dlg-360.bmp">images/shape-dlg-360.bmp</file>
-
 		<file alias="button-normal.png">images/button-normal.png</file>
 		<file alias="button-hover.png">images/button-hover.png</file>
 		<file alias="button-pressed.png">images/button-pressed.png</file>
