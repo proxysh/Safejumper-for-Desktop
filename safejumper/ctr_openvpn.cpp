@@ -49,7 +49,9 @@ void Ctr_Openvpn::Start()
 
 void Ctr_Openvpn::StartImpl()
 {
-
+//#ifdef Q_OS_MAC
+//#define NO_PARAMFILE
+//#endif
 	{
 		Stop();
 		// TODO: -1 cleanup
@@ -82,14 +84,14 @@ void Ctr_Openvpn::StartImpl()
 		_tunerr = false;
 		_err = false;
 		_processing = false;
-		if (NULL != _watcher.get())
+		if (NULL != _watcher.get())			// OpenVPN log file watcher
 		{
 			_watcher->removePath(PathHelper::Instance()->OpenvpnLogPfn());
 			delete _watcher.release();
 		}
 
 		RemoveSoc();
-
+#ifndef NO_PARAMFILE
 		QFile ff(PathHelper::Instance()->OpenvpnConfigPfn());
 		if (ff.open(QIODevice::WriteOnly))
 		{
@@ -122,16 +124,47 @@ void Ctr_Openvpn::StartImpl()
 			WndManager::Instance()->ErrMsg(se);
 			return;
 		}
+#endif
 
 		QStringList args;
 		args
 //			<< "--auth-nocache"
+#ifndef NO_PARAMFILE
 			<< "--config" << PathHelper::Instance()->OpenvpnConfigPfn() // /tmp/proxysh.ovpn
+#endif
+#ifdef NO_PARAMFILE
+<< "--client"
+#endif
 
 #ifndef Q_OS_WIN
 			<< "--daemon"	// does not work at windows
 #endif
+
+#ifdef NO_PARAMFILE
+<< "--dev tun0"
+<< "--proto" << Setting::Instance()->Protocol()
+<< "--remote-random"
+<< "--remote" << Setting::Instance()->Server() << Setting::Instance()->Port()
+
+<< "--cipher" << "AES-256-CBC"
+<< "--auth" << "SHA512"
+<< "--remote-cert-tls" << "server"
+
+<< "--auth-user-pass"
+
+<< "--resolv-retry" << "infinite"
+<< "--nobind"
+<< "--persist-key"
+<< "--persist-tun"
+#endif
+
 			<< "--ca" << PathHelper::Instance()->ProxyshCaCert()	// /tmp/proxysh.crt
+#ifdef NO_PARAMFILE
+<< "--verb" << "3"
+<< "--comp-lzo"
+<< "--route-delay" << "2"
+<< "--allow-pull-fqdn"
+#endif
 			<< "--management" << _LocalAddr << Setting::Instance()->LocalPort()
 			<< "--management-hold"
 			<< "--management-query-passwords"
@@ -225,6 +258,7 @@ void Ctr_Openvpn::StartImpl()
 		else
 			SetState(ovsDisconnected);
 	}
+#undef NO_PARAMFILE
 }
 
 void Ctr_Openvpn::CheckState()

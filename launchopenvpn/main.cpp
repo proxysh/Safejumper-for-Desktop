@@ -117,10 +117,34 @@ printf("@@@ parent launcher  pid = %d\n", processId);
 
 int exec_QProcess(const QString & pfnOV, const QStringList & args)
 {
-	QApplication::setSetuidAllowed(true);
-printf("@@ before QProcess::execute()");
-	int r = QProcess::execute(pfnOV, args);
-printf("@@ QProcess::execute() returns %d\n", r);
+	int ret = 0;
+
+
+printf("@@ before QProcess::execute(pfnOV, args)\n");
+	bool b = QProcess::execute(pfnOV, args);
+	printf("@@ QProcess::start() execute %s\n", (b ? "true" : "false"));
+
+//printf("@@ before QProcess::start()");
+//	QProcess pr;
+//	pr.start(pfnOV, args);
+//	bool b = pr.waitForStarted(2000);
+//printf("@@ QProcess::start() returns %s\n", (b ? "true" : "false"));
+//	if (QProcess::NotRunning == pr.state())
+//		ret = pr.exitCode();
+
+// whoami:
+//QProcess pr;
+//pr.start("/usr/bin/whoami");
+//bool b6 = pr.waitForFinished(2000);
+//printf("@@ QProcess::start() returns %s\n", (b6 ? "true" : "false"));
+//QString s6(pr.readAllStandardOutput());
+//printf("@@ stdout = %s\n", s6.toStdString().c_str());
+//printf("@@@@@@@@@@@@4\n");
+
+	printf("@@@@@@@@@@@@3\n");
+
+	return ret;
+}
 
 #if 0
 printf("Exec NULL\n");
@@ -136,12 +160,38 @@ printf("system() returns %d\n", r);
 
 #endif
 
-printf("@@@@@@@@@@@@3\n");
-	return r;
+void become_root()
+{
+	uid_t uidBefore  = getuid();
+	uid_t euidBefore = geteuid();
+	printf("@@ uidBefore = %d, euidBefore = %d, %s\n", uidBefore, euidBefore, (uidBefore == euidBefore ? "EQUAL" : "NOT EQUAL") );
+
+	if ( (uidBefore != 0) || (euidBefore != 501))
+		fprintf(stderr, "@@ Error: become root: Not root and not non-root\n");
+
+	if (euidBefore != 0)
+	{
+		int result = seteuid(0);
+		if (result != 0)
+			fprintf(stderr, "Error: Unable to become root, res = %d\n", result);
+		else
+			printf("@@seteuid(0), res = %d\n", result);
+		printf("@@ euid = %d\n", geteuid());
+	}
+
+	if (uidBefore != 0)
+	{
+		int r3 = setuid(0);
+		if (r3 != 0)
+			fprintf(stderr, "Error: Unable to setuid(0), res = %d\n", r3);
+		else
+			printf("@@setuid(0), res = %d\n", r3);
+	}
+
+	printf("@@ uid = %d\n", getuid());
+	printf("@@ euid = %d\n", geteuid());
 }
 
-//
-//
 QApplication * g_pTheApp;
 int main(int argc, char *argv[])
 {
@@ -149,6 +199,11 @@ int main(int argc, char *argv[])
 		return 2;		// param: tmp file with parameters
 printf("@@@ 01\n");
 
+//	QApplication::setSetuidAllowed(true);
+//	QApplication a(argc, argv);
+//	g_pTheApp = &a;
+
+	become_root();
 
 	QString pfnOV;
 	QStringList args;
@@ -173,6 +228,8 @@ printf("@@ args: %s\n", args.join(' ').toStdString().c_str());
 //char ch = getchar(); char t = ch;char t2 = t;ch++;ch = t2;
 printf("@@@ 011\n");
 	return r2;
+
+
 
 #if 0
 	//QApplication::setSetuidAllowed(true);

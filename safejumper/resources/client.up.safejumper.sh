@@ -10,6 +10,10 @@ echo "Start of UP script"
 echo "===== whoami ====="
 whoami
 echo "====="
+echo "===== sudo whoami ====="
+sudo whoami
+echo "====="
+
 
 #set +e # "grep" will return error status (1) if no matches are found, so don't fail on individual errors
 PSID=$( (scutil | grep PrimaryService | sed -e 's/.*PrimaryService : //')<<- EOF
@@ -62,11 +66,11 @@ done
 echo "===== APP_NAME ====="
 echo $APP_NAME
 
-echo "BBBBBBBBBBBBB"
+echo "AAAAAAAAAAAAA"
 echo $dns_index
 echo "=====DNServers======"
 echo ${DNServers[*]} 
-echo "BBBBBBBBBBBBB"
+echo "AAAAAAAAAAAAA"
 
 if [ $dns_index -eq 0 ]; then
 	exit 0
