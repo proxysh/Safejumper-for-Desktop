@@ -588,7 +588,7 @@ void Ctr_Openvpn::AttachMgmt()
 
 void Ctr_Openvpn::Soc_Error(QAbstractSocket::SocketError er)
 {
-	log::logt("Error connecting to OpenVPN managemet socket");
+	log::logt("Error connecting to OpenVPN management socket");
 	if (NULL != _soc.get())
 		_soc.release()->deleteLater();
 }
