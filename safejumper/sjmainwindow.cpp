@@ -521,7 +521,9 @@ SjMainWindow * SjMainWindow::Instance()
 
 void SjMainWindow::DoClose()
 {
-	if (WndManager::Instance()->ScrVisible() != NULL)
+
+// HACK: workaround: without any form visible program exits => force show() primary
+//	if (WndManager::Instance()->ScrVisible() != NULL)
 		WndManager::Instance()->ToPrimary();
 	int res = WndManager::Instance()->Confirmation("Would you like to shut Safejumper down?");
 	if (res == QDialog::Accepted)
