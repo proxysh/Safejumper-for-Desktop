@@ -39,6 +39,7 @@ AuthManager::AuthManager()
 	 _logged(false)
    , _seeded(false)
    , _CancelLogin(false)
+   , _ip_attempt_count(0)
 {}
 
 AuthManager::~AuthManager()
@@ -357,6 +358,16 @@ void AuthManager::StartDwnl_Updates()
 		_reply_update.reset(AuthManager::Instance()->_nam.get(BuildRequest(QUrl(us))));
 		sj->connect(_reply_update.get(), SIGNAL(finished()), sj, SLOT(Finished_Updates()));
 	}
+}
+
+void AuthManager::StartDwnl_OldIp()
+{
+	++_ip_attempt_count;
+	log::logt("StartDwnl_OldIp() attempt " + QString::number(_ip_attempt_count));
+	static const QString us = "https://proxy.sh/ip.php";
+	SjMainWindow * sj = SjMainWindow::Instance();
+	_reply_IP.reset(AuthManager::Instance()->_nam.get(BuildRequest(QUrl(us))));
+	sj->connect(_reply_IP.get(), SIGNAL(finished()), sj, SLOT(Finished_OldIpHttp()));
 }
 
 void AuthManager::StartDwnl_Dns()
@@ -973,12 +984,17 @@ void AuthManager::Jump()
 
 void AuthManager::DetermineOldIp()
 {
-	if (_th_oldip.get() == NULL)
+	// start http request to proxy.sh
+	StartDwnl_OldIp();
+
+	// omit STUN due to it does not always work
+/*	if (_th_oldip.get() == NULL)
 	{
 		_th_oldip.reset(new Thread_OldIp(SjMainWindow::Instance()));
 		SjMainWindow::Instance()->connect(_th_oldip.get(), &Thread_OldIp::resultReady, SjMainWindow::Instance(), &SjMainWindow::Finished_OldIp);
 		_th_oldip->start();
 	}
+*/
 }
 
 uint64_t AuthManager::GetRnd64()
@@ -998,6 +1014,68 @@ void AuthManager::ProcessOldIp(QString ip)
 	delete _th_oldip.release();
 	// do not push value - Scr_Connect was not constructed yet
 	//	Scr_Connect::Instance()->SetOldIp(_oldip);
+}
+
+void AuthManager::ProcessOldIpHttp()
+{
+	log::logt("ProcessOldIpHttp() attempt " + QString::number(_ip_attempt_count));
+	QString ip;
+	bool err = true;
+	if (_reply_IP->error() != QNetworkReply::NoError)
+	{
+		log::logt(_reply_IP->errorString());
+	}
+	else
+	{
+		QByteArray ba = _reply_IP->readAll();
+		if (ba.isEmpty())
+		{
+			log::logt("Cannot get old IP address. Server response is empty.");
+		}
+		else
+		{
+			QString s(ba);
+			int p[3];
+			int t = 0;
+			bool ok = true;
+			for (size_t k = 0; k < 3; ++k)
+			{
+				p[k] = s.indexOf('.', t);
+				if (p[k] < 0)
+				{
+					ok = false;
+					break;
+				}
+				t = p[k] + 1;
+			}
+			if (ok)
+			{
+				if (s.length() >= QString("2.2.2.2").length()
+					&& s.length() <= QString("123.123.123.123").length())
+				{
+					ip = s;
+					err = false;
+				}
+			}
+		}
+	}
+
+	if (err)
+	{
+		log::logt("ProcessOldIpHttp() attempt " + QString::number(_ip_attempt_count) + " fails");
+		if (_ip_attempt_count < 4)
+			StartDwnl_OldIp();
+		else
+			log::logt("ProcessOldIpHttp() conceide at attempt " + QString::number(_ip_attempt_count));
+	}
+	else
+	{
+		log::logt("Determined old IP:  " + ip);
+		_oldip = ip;
+		// try to push value (if Scr_Connect was constructed yet)
+		if (Scr_Connect::IsExists())
+			Scr_Connect::Instance()->SetOldIp(_oldip);
+	}
 }
 
 void AuthManager::ForwardPorts()

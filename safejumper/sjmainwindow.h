@@ -121,6 +121,7 @@ public slots:
 	void AccTypeFinished();
 	void ExpireFinished();
 	void Finished_OldIp(const QString & s);
+	void Finished_OldIpHttp();
 	void Finished_Dns();
 	void Finished_Updates();
 

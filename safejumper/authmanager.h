@@ -90,10 +90,12 @@ public:
 	bool ProcessAccountXml(QString & out_msg);
 	bool ProcessExpireXml(QString & out_msg);
 	void ProcessOldIp(QString ip);
+	void ProcessOldIpHttp();
 	void ProcessDnsXml();
 	void ProcessUpdatesXml();
 
 	void StartDwnl_Updates();		// use own reply; can download in parallel with others; executed by main window at start regardless other actions
+	void StartDwnl_OldIp();
 
 	void PingComplete(size_t idWaiter);
 	void PingErr(size_t idWaiter);
@@ -139,6 +141,8 @@ private:
 
 	QNetworkAccessManager _nam;
 	std::auto_ptr<QNetworkReply> _reply;
+	std::auto_ptr<QNetworkReply> _reply_IP;
+	int _ip_attempt_count;
 	void ClearReply();
 	std::auto_ptr<QNetworkReply> _reply_update;
 

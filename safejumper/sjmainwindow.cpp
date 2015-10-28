@@ -833,6 +833,11 @@ void SjMainWindow::Finished_Updates()
 	AuthManager::Instance()->ProcessUpdatesXml();
 }
 
+void SjMainWindow::Finished_OldIpHttp()
+{
+	AuthManager::Instance()->ProcessOldIpHttp();
+}
+
 void SjMainWindow::Finished_OldIp(const QString & s)
 {
 	AuthManager::Instance()->ProcessOldIp(s);
