@@ -802,6 +802,54 @@ void OsSpecific::EnableTap()
 #endif	// Q_OS_WIN
 }
 
+#ifdef Q_OS_LINUX
+
+static const QString gs_desktop = 
+	"[Desktop Entry]\n"
+	"Type=Application\n"
+	"Name=Safejumper\n"
+	"Exec=/opt/safejumper/safejumper.sh\n"
+	"Icon=/usr/share/icons/hicolor/64x64/apps/safejumper.png\n"
+	"Comment=OpenVPN client for proxy.sh\n"
+	"X-GNOME-Autostart-enabled=true\n"
+	;
+
+// f - opened for read-write
+void delete_startup(QFile & f)
+{
+	int ncount = gs_desktop.count('\n');
+	int n3 = 0;
+	for (int k = 0; k < 3; ++k)
+		n3 = gs_desktop.indexOf('\n', n3 + 1);
+	if (n3 < 0)
+		return;
+
+	QString s(f.readAll());
+	
+	QString begining = gs_desktop.mid(0, n3);
+	int p = s.indexOf(begining);
+	if (p < 0)
+		return;
+	
+	int lastn = p;
+	for (int k = 0; lastn > -1 && k < ncount; ++k)
+		lastn = gs_desktop.indexOf('\n', lastn + 1);
+	if (lastn < 0)
+	{
+		log::logt("Openned .desktop file but cannot find proper " + QString::number(ncount) + " lines");
+		return;	// err
+	}
+	
+	QString remains = s.mid(0, p);
+	remains += s.mid(lastn + 1);
+	
+	QByteArray out = remains.toLatin1();
+	f.resize(out.length());
+	f.write(out);
+	f.flush();
+}
+#endif
+
 void OsSpecific::SetStartup(bool b)
 {
 #ifdef Q_OS_WIN
@@ -821,6 +869,43 @@ void OsSpecific::SetStartup(bool b)
 	}
 #endif	// Q_OS_WIN
 
+#ifdef Q_OS_LINUX
+	{
+		QString dir = QDir::homePath() + "/.config/autostart";
+		QString pfn = dir + "/.desktop";
+		if (b)
+		{
+			QDir d;
+			if (d.mkpath(dir))
+			{
+				QFile f(pfn);
+				if (f.exists())
+				{
+					f.open(QIODevice::ReadWrite);
+					delete_startup(f);
+				}
+				else
+				{
+					f.open(QIODevice::Append);
+				}
+				f.write(gs_desktop.toLatin1());
+				f.flush();
+				f.close();
+			}
+		}
+		else
+		{
+			QFile f(pfn);
+			if (f.exists())
+			{
+				f.open(QIODevice::ReadWrite);
+				delete_startup(f);
+				f.flush();
+				f.close();
+			}
+		}
+	}
+#endif	// Q_OS_LINUX
 
 #ifdef Q_OS_OSX
 	QString dir = QDir::homePath() + "/Library/LaunchAgents";
