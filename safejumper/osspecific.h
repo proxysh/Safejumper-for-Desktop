@@ -2,6 +2,7 @@
 #define OSSPECIFIC_H
 
 #include <memory>
+#include <stdint.h>
 
 #include <QString>
 #include <QProcess>
