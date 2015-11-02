@@ -9,10 +9,15 @@ This code is licensed to GNU-GPL. It means you can take the code and modify it a
 ## Checksum
 
 The latest version of Safejumper is available under various binaries whose SHA-1 checksums are:
-25537832f66b646e060a9b7a146f96aedade28e7  safejumper_linux.zip
-aa9038fc6416f65a0cf95361c5d3f82727eb92da  safejumper.dmg
-e15ccc14f2c04175f215469d9745b70f718283ed  safejumper.exe
 
+safejumper.exe
+e15ccc14f2c04175f215469d9745b70f718283ed  
+
+safejumper.dmg
+aa9038fc6416f65a0cf95361c5d3f82727eb92da  
+
+safejumper_linux.zip
+25537832f66b646e060a9b7a146f96aedade28e7  
 
 ## Bounty
 
