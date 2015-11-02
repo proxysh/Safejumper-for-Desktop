@@ -8,7 +8,11 @@ This code is licensed to GNU-GPL. It means you can take the code and modify it a
 
 ## Checksum
 
-The latest version of Safejumper is available under the binary safejumper.dmg whose SHA-1 checksum is: f6b09dce8f66e867335b8039b27f1c4cddc5a3c2
+The latest version of Safejumper is available under various binaries whose SHA-1 checksums are:
+25537832f66b646e060a9b7a146f96aedade28e7  safejumper_linux.zip
+aa9038fc6416f65a0cf95361c5d3f82727eb92da  safejumper.dmg
+e15ccc14f2c04175f215469d9745b70f718283ed  safejumper.exe
+
 
 ## Bounty
 
