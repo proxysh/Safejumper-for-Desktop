@@ -6,18 +6,9 @@ This piece of software is a custom OpenVPN client for Desktop. It has been speci
 
 This code is licensed to GNU-GPL. It means you can take the code and modify it as you wish, but you must also make such a modified code subsequently open source. This is a win-win situation. If you improve our code, we enjoy updates. If we improve it, you do too.
 
-## Checksum
+## PGP Signature
 
-The latest version of Safejumper is available under various binaries whose SHA-1 checksums are:
-
-safejumper.exe
-e15ccc14f2c04175f215469d9745b70f718283ed  
-
-safejumper.dmg
-aa9038fc6416f65a0cf95361c5d3f82727eb92da  
-
-safejumper_linux.zip
-25537832f66b646e060a9b7a146f96aedade28e7  
+The latest version of Safejumper is available under various binaries whose PGP signature are: https://paste.proxy.sh/?c26bafbdaa60487e#02IjAwAkopm6BR3UP/cHaNXM4Ns1b89JuudEBmvGmUA=
 
 ## Bounty
 
