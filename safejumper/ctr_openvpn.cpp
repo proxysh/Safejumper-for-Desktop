@@ -223,7 +223,22 @@ void Ctr_Openvpn::StartImpl()
 			log::logt("QProcess::execute() returns " + QString::number(r3));
 			log::logt("###############");
 			if (r3 != 0)
-				throw std::runtime_error(("Cannot run OpenVPN. Error code is: " + QString::number(r3)).toStdString());
+			{
+				std::string ts;
+				switch (r3)
+				{
+					case -2:		// cannot be started
+					case -1:		// the process crashes
+					{
+						ts = ("OpenVPN couldn't be reached (" + QString::number(r3) + "). Please reboot and/or re-install Safejumper.").toStdString();
+						break;
+					}
+					default:
+						ts = ("Cannot run OpenVPN. Error code is: " + QString::number(r3)).toStdString();
+						break;
+				}
+				throw std::runtime_error(ts);
+			}
 //#endif
 
 			AttachMgmt();	// TODO: -1 wait for slow starting cases
