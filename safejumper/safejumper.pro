@@ -59,7 +59,8 @@ SOURCES += main.cpp\
     lvrowdelegate.cpp \
     lvrowdelegateprotocol.cpp \
     fonthelper.cpp \
-    singleapplication.cpp
+    singleapplication.cpp \
+    dlg_newnode.cpp
 
 HEADERS  += sjmainwindow.h \
 	retina.h \
@@ -90,7 +91,8 @@ HEADERS  += sjmainwindow.h \
     fonthelper.h \
     version.h \
     update.h \
-    singleapplication.h
+    singleapplication.h \
+    dlg_newnode.h
 
 FORMS	+= sjmainwindow.ui \
 	scr_connect.ui \
@@ -98,7 +100,8 @@ FORMS	+= sjmainwindow.ui \
 	scr_logs.ui \
 	scr_map.ui \
 	dlg_error.ui \
-    dlg_confirmation.ui
+    dlg_confirmation.ui \
+    dlg_newnode.ui
 
 RESOURCES += \
 	imgs.qrc

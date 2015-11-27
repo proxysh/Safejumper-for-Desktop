@@ -53,7 +53,7 @@ public:
 	void KillRunningOV();		// kill process executed previously: connect to it first, if fails: kill -9
 
 	void Timer_Reconnect();
-	void StartPortLoop();
+	void StartPortLoop(bool port);		// true - cycle ports; false - cycle nodes
 private:
 	Ctr_Openvpn();
 	static std::auto_ptr<Ctr_Openvpn> _inst;
@@ -96,6 +96,7 @@ private:
 	bool _InPortLoop;
 	void StartImpl();
 	void ToNextPort();
+	bool _IsPort;
 };
 
 #endif // CRT_OPENVPN_H

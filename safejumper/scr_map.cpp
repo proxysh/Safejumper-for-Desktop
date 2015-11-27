@@ -200,6 +200,18 @@ int Scr_Map::CurrSrv()
 	return srv;
 }
 
+void Scr_Map::SwitchToNextNode()
+{
+	int ix = ui->dd_Location->currentIndex();
+	if(ix > 0)
+	{
+		++ix;
+		if (ix >= ui->dd_Location->count())
+			ix = 1;
+		ui->dd_Location->setCurrentIndex(ix);
+	}
+}
+
 void Scr_Map::ToScr_Connect()
 {
 	int srv = CurrSrv();

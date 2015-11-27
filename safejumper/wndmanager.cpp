@@ -15,13 +15,13 @@
 #include "log.h"
 
 WndManager::WndManager()
-{
-
-}
+	: _DlgPort(NULL)
+{}
 
 WndManager::~WndManager()
 {
-
+	if (_DlgPort != NULL)
+		_DlgPort->deleteLater();
 }
 
 void WndManager::ToPrimary()
@@ -313,20 +313,29 @@ int WndManager::Confirmation(const QString & msg)
 void WndManager::ShowPortDlg()
 {
 	ToPrimary();
-	_DlgPort.reset(new Dlg_confirmation("Connection failed? Let's try another port.", Primary()));
+	if (_DlgPort != NULL)
+		_DlgPort->deleteLater();
+	_DlgPort = new Dlg_newnode("Connection failed? Try another node or port.", Primary());
 	//_DlgPort->setWindowModality(Qt::ApplicationModal);
 	Scr_Connect * w = Scr_Connect::Instance();
-	w->connect(_DlgPort.get(), SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
+	w->connect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
 	_DlgPort->open();
 }
 
 void WndManager::ClosePortDlg()
 {
-	if (_DlgPort.get() != NULL)
+	if (_DlgPort != NULL)
 	{
 		Scr_Connect * w = Scr_Connect::Instance();
-		w->disconnect(_DlgPort.get(), SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
+		w->disconnect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
 		_DlgPort->close();
-		delete _DlgPort.release();
 	}
+}
+
+bool WndManager::IsCyclePort()
+{
+	bool b = true;
+	if (_DlgPort != NULL)
+		b = _DlgPort->IsCyclePort();
+	return b;
 }

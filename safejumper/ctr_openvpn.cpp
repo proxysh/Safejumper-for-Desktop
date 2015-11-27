@@ -958,14 +958,15 @@ log::logt(QString("KillRunningOV() enter"));
 log::logt(QString("KillRunningOV() exit"));
 }
 
-void Ctr_Openvpn::StartPortLoop()
+void Ctr_Openvpn::StartPortLoop(bool port)
 {
 	if (State() != ovsConnected)		// if not connected already during this call
 	{
 		_InPortLoop = true;
-		uint dt = QDateTime::currentDateTimeUtc().toTime_t();
-		if ((dt - _dtStart) > G_PortQuestionDelay)
+//		uint dt = QDateTime::currentDateTimeUtc().toTime_t();
+//		if ((dt - _dtStart) > G_PortQuestionDelay)
 		{
+			_IsPort = port;
 			ToNextPort();
 		}
 	}
@@ -974,7 +975,10 @@ void Ctr_Openvpn::StartPortLoop()
 void Ctr_Openvpn::ToNextPort()
 {
 	_dtStart = QDateTime::currentDateTimeUtc().toTime_t();		// force start interval - prevent double port change
-	Setting::Instance()->SwitchToNextPort();
+	if (_IsPort)
+		Setting::Instance()->SwitchToNextPort();
+	else
+		Setting::Instance()->SwitchToNextNode();
 	StartImpl();
 }
 

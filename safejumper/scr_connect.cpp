@@ -404,7 +404,7 @@ void Scr_Connect::PortDlgAction(int action)
 {
 	if (QDialog::Accepted == action)
 	{
-		Ctr_Openvpn::Instance()->StartPortLoop();
+		Ctr_Openvpn::Instance()->StartPortLoop(WndManager::Instance()->IsCyclePort());
 	}
 }
 

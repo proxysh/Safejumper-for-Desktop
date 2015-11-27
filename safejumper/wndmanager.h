@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "dlg_confirmation.h"
-
+#include "dlg_newnode.h"
 
 //  WndManager::Instance()->ToPrimary(this);
 //  WndManager::Instance()->HideThis(this);
@@ -47,6 +47,7 @@ public:
 
 	void ShowPortDlg();
 	void ClosePortDlg();
+	bool IsCyclePort();		// true - if cycle ports; false - cycle nodes
 private:
 	WndManager();
 	static std::auto_ptr<WndManager> _inst;
@@ -62,7 +63,7 @@ private:
 
 	void SaveAndHide(QWidget * from);
 	void DoTrans(QWidget * to);
-	std::auto_ptr<Dlg_confirmation> _DlgPort;
+	Dlg_newnode * _DlgPort;
 };
 
 #endif // WNDMANAGER_H

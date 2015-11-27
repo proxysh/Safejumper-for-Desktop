@@ -109,6 +109,14 @@
 
 		<file alias="map-border.png">images/map-border.png</file>
 
+		<file alias="b-newnode.png">images/b-newnode.png</file>
+		<file alias="b-newnode-hover.png">images/b-newnode-hover.png</file>
+		<file alias="b-newnode-pressed.png">images/b-newnode-pressed.png</file>
+
+		<file alias="b-newport.png">images/b-newport.png</file>
+		<file alias="b-newport-hover.png">images/b-newport-hover.png</file>
+		<file alias="b-newport-pressed.png">images/b-newport-pressed.png</file>
+
 	</qresource>
 	<qresource prefix="/icons">
 		<file alias="icon-tray.png">images/icon-tray.png</file>

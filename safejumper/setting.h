@@ -56,6 +56,7 @@ public:
 	void UpdateMsgShown();
 
 	void SwitchToNextPort();
+	void SwitchToNextNode();
 
 private:
 	Setting();

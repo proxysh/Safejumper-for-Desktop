@@ -32,6 +32,8 @@ public:
 	void StatusConnected();
 	void StatusDisconnected();
 
+	void SwitchToNextNode();
+
 private:
 	Ui::Scr_Map *ui;
 	static std::auto_ptr<Scr_Map> _inst;

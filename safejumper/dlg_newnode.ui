@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dlg_newnode</class>
+ <widget class="QDialog" name="Dlg_newnode">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>315</width>
+    <height>146</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string/>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog
+{
+  background-color: #ffffff;
+  border: 0;
+  border-radius: 16px;
+}</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>315</width>
+     <height>146</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QFrame
+{
+  background-color: #FFFFFF;
+  border: 0;
+}</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QLabel" name="line_1">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>315</width>
+      <height>2</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel
+{
+  border:0px;
+  border-image: url(:/imgs/h-line-mb.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>76</y>
+      <width>315</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QFrame
+{
+  background-color: #fbfbfb;
+  border: 0;
+}</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="line_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>315</width>
+       <height>3</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel
+{
+  border:0px;
+  border-image: url(:/imgs/h-line.png);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="b_Cancel">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>17</y>
+       <width>110</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+  border:0px;
+  color: #ffffff;
+  border-image: url(:/imgs/b-newnode.png);
+}
+QPushButton:hover:!pressed
+{
+  border-image: url(:/imgs/b-newnode-hover.png);
+}
+QPushButton:pressed
+{
+  border-image: url(:/imgs/b-newnode-pressed.png);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="b_Confirm">
+     <property name="geometry">
+      <rect>
+       <x>165</x>
+       <y>17</y>
+       <width>110</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton
+{
+  border:0px;
+  color: #ffffff;
+  border-image: url(:/imgs/b-newport.png);
+}
+QPushButton:hover:!pressed
+{
+  border-image: url(:/imgs/b-newport-hover.png);
+}
+QPushButton:pressed
+{
+  border-image: url(:/imgs/b-newport-pressed.png);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="L_Text">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>16</y>
+      <width>301</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Helvetica Neue</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <zorder>line_1</zorder>
+   <zorder>L_Text</zorder>
+   <zorder>frame_2</zorder>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>b_Cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>Dlg_newnode</receiver>
+   <slot>_ac_Cancel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>109</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>72</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_Confirm</sender>
+   <signal>clicked()</signal>
+   <receiver>Dlg_newnode</receiver>
+   <slot>_ac_Confirm()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>219</x>
+     <y>109</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>72</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

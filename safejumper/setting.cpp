@@ -235,6 +235,11 @@ void Setting::SwitchToNextPort()
 	Scr_Map::Instance()->SetProtocol(ix);
 }
 
+void Setting::SwitchToNextNode()
+{
+	Scr_Map::Instance()->SwitchToNextNode();
+}
+
 QString Setting::LocalPort()
 {
 	QString p = Scr_Settings::Instance()->LocalPort();
