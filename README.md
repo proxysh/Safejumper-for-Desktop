@@ -1,14 +1,14 @@
-# Safejumper for Mac
+# Safejumper for Desktop
 
-This piece of software is a custom OpenVPN client for Mac. It has been specifically designed to work with the Proxy.sh VPN network.
+This piece of software is a custom OpenVPN client for Desktop. It has been specifically designed to work with the Proxy.sh VPN network.
 
 ## License
 
 This code is licensed to GNU-GPL. It means you can take the code and modify it as you wish, but you must also make such a modified code subsequently open source. This is a win-win situation. If you improve our code, we enjoy updates. If we improve it, you do too.
 
-## Checksum
+## PGP Signature
 
-The latest version of Safejumper is available under the binary safejumper.dmg whose SHA-1 checksum is: f6b09dce8f66e867335b8039b27f1c4cddc5a3c2
+The latest version of Safejumper is available under various binaries whose PGP signature are: https://paste.proxy.sh/?8756891b0e6ec193#EMPgFqTsGcJTwO8T7DbJa5cRu65rGGuFikXP2DVjFRY=
 
 ## Bounty
 
@@ -24,5 +24,3 @@ This software has been developed by the following persons or entities:
 * The Proxy.sh Team, in particular Paul, Pauline, Boian, Vicki and Lou.
 * Three Monkeys International Inc. (consultancy, outsourcing).
 * Andrei Anufriev <andrey144@gmail.com>
-
-
