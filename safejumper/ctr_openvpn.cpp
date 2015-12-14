@@ -174,7 +174,7 @@ void Ctr_Openvpn::StartImpl()
 //			<< "--script-security" << "2" << "execve"		// https://openvpn.net/index.php/open-source/documentation/manuals/69-openvpn-21.html
 			<< "--script-security" << "3"
 
-#ifdef Q_OS_MAC			// TODO: -0 DNS on linux
+#ifndef Q_OS_WIN			// TODO: -0 DNS on linux
 			<< "--up" << PathHelper::Instance()->UpScriptPfn()				// /Applications/Safejumper.app/Contents/Resources/client.up.safejumper.sh
 			<< "--down" << PathHelper::Instance()->DownScriptPfn()		// /Applications/Safejumper.app/Contents/Resources/client.down.safejumper.sh
 #endif

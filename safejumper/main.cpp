@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
 	QApplication::setApplicationName("Safejumper");
 	QApplication::setOrganizationName("proxysh");
 #endif
-	THE_APP_CLASS a(argc, argv);	//QApplication a(argc, argv);
+	THE_APP_CLASS a(argc, argv);
+	//QApplication a(argc, argv);
 	g_pTheApp = &a;
 
 	log::logt("Starting Application");
