@@ -31,6 +31,8 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 	ui->e_Ports->setAttribute(Qt::WA_MacShowFocusRect, 0);
 #else
 	FontHelper::SetFont(this);
+	ui->e_PrimaryDns->setFont(FontHelper::pt(10));
+	ui->e_PrimaryDns->setFont(FontHelper::pt(10));
 #endif
 	// fill Encryption drop down
 	for (int k = 0, sz = (sizeof(g_ar)/sizeof(g_ar[0])); k < sz; ++k)
