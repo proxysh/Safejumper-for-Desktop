@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QProcess>
 #include <QThread>
+#include <QSysInfo>
 
 #ifdef Q_OS_WIN
 #include <winsock2.h>
@@ -1054,5 +1055,17 @@ bool OsSpecific::HasInsecureWifi()
 	return has;
 }
 
+void OsSpecific::FixDnsLeak()
+{
+#ifdef Q_OS_WIN
+	QSysInfo::WinVersion v = QSysInfo::windowsVersion();
+	if (v >= QSysInfo::WV_WINDOWS8)
+	{
+		QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient", QSettings::NativeFormat);
+		QVariant val = 1;
+		settings.setValue("DisableSmartNameResolution", val);
+	}
+#endif
+}
 
 

@@ -99,6 +99,11 @@ bool Setting::IsBlockOnDisconnect()
 	return Scr_Settings::Instance()->Is_cb_BlockOnDisconnect();
 }
 
+bool Setting::IsFixDns()
+{
+	return Scr_Settings::Instance()->Is_cb_FixDnsLeak();
+}
+
 bool Setting::IsStartup()
 {
 	return Scr_Settings::Instance()->Is_cb_Startup();

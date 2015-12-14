@@ -110,7 +110,14 @@ void Ctr_Openvpn::StartImpl()
 			ff.write("reneg-sec 0\n");
 			ff.write("route-method exe\n");
 			ff.write("route-delay 2\n");
-			
+#ifdef Q_OS_WIN
+			if (Setting::Instance()->IsFixDns())
+			{
+				if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS10)
+					ff.write("plugin fix-dns-leak-32.dll\n");
+			}
+#endif
+
 //ff.write("dhcp-option DNS 146.185.134.104\n");
 //ff.write("dhcp-option DNS 146.185.134.104\n");
 
@@ -124,7 +131,7 @@ void Ctr_Openvpn::StartImpl()
 			WndManager::Instance()->ErrMsg(se);
 			return;
 		}
-#endif
+#endif	// NO_PARAMFILE
 
 		QStringList args;
 		args
@@ -181,6 +188,11 @@ void Ctr_Openvpn::StartImpl()
 			<< "--up-restart"
 
 		;
+
+
+
+		if (Setting::Instance()->IsFixDns() || !Setting::Instance()->Dns1().isEmpty() || !Setting::Instance()->Dns2().isEmpty())
+			OsSpecific::Instance()->FixDnsLeak();
 
 		if (!Setting::Instance()->Dns1().isEmpty())
 			args << "--dhcp-option" << "DNS" << Setting::Instance()->Dns1();
