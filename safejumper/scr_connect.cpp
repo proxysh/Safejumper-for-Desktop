@@ -332,6 +332,7 @@ void Scr_Connect::Clicked_Connect()
 void Scr_Connect::Clicked_Cancel()
 {
 	Ctr_Openvpn::Instance()->Stop();
+	SjMainWindow::Instance()->BlockOnDisconnect();
 }
 
 void Scr_Connect::Clicked_Jump()

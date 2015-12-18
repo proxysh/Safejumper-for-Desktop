@@ -51,6 +51,7 @@ OsSpecific * OsSpecific::Instance()
 }
 
 OsSpecific::OsSpecific()
+	: _netdown(false)
 {}
 
 bool _auth(false);
@@ -271,6 +272,9 @@ void OsSpecific::SetRights()
 	SetChmod("0755", PathHelper::Instance()->OpenvpnPathfilename());
 	SetChown(PathHelper::Instance()->OpenvpnPathfilename());
 
+	SetChmod("04555", PathHelper::Instance()->NetDownPfn());
+	SetChown(PathHelper::Instance()->NetDownPfn());
+
 	SetChmod("04555", PathHelper::Instance()->LauncherPfn());
 	SetChown(PathHelper::Instance()->LauncherPfn());
 
@@ -281,7 +285,7 @@ void OsSpecific::SetRights()
 	SetChmod("04755", PathHelper::Instance()->LauncherPfn());				// odrer is important
 #endif
 
-	ReleaseRights();
+	//ReleaseRights();
 
 	QThread::msleep(200);		// HACK: -1 wait till file system changes become effective
 }
@@ -969,6 +973,25 @@ void OsSpecific::SetStartup(bool b)
 	}
 #endif	// Q_OS_OSX
 
+}
+
+void OsSpecific::NetDown()
+{
+	try
+	{
+#ifdef Q_OS_OSX
+	SetRights();
+	log::logt("NetDown()");
+	QString ss = RunFastCmd(PathHelper::Instance()->NetDownPfn());
+	_netdown = true;
+	if (!ss.isEmpty())
+		log::logt(ss);
+#endif	// Q_OS_OSX
+	}
+	catch(std::exception & ex)
+	{
+		log::logt(ex.what());
+	}
 }
 
 QString OsSpecific::RunFastCmd(const QString & cmd, uint16_t ms /* = 500 */)

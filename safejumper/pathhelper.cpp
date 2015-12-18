@@ -141,6 +141,12 @@ QString PathHelper::DownScriptPfn()
 	return ResourcesPath() + "/client.down.safejumper.sh";
 }
 
+QString PathHelper::NetDownPfn()
+{
+	//return ResourcesPath() + "/net.down.sh";
+	return ResourcesPath() + "/netdown";
+}
+
 QString PathHelper::ScriptPath()
 {
 	return ResourcesPath();

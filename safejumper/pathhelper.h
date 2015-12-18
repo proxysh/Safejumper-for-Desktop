@@ -24,6 +24,8 @@ public:
 	QString DownScriptPfn();
 	QString LauncherPfn();
 
+	QString NetDownPfn();
+
 	QString ResourcesPath();			// Resources
 	QString ContentPath();
 

@@ -21,7 +21,11 @@ WndManager::WndManager()
 WndManager::~WndManager()
 {
 	if (_DlgPort != NULL)
+	{
+		if (_DlgPort->isVisible())
+			ClosePortDlg();
 		_DlgPort->deleteLater();
+	}
 }
 
 void WndManager::ToPrimary()
@@ -326,8 +330,11 @@ void WndManager::ClosePortDlg()
 {
 	if (_DlgPort != NULL)
 	{
-		Scr_Connect * w = Scr_Connect::Instance();
-		w->disconnect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
+		if (Scr_Connect::IsExists())
+		{
+			Scr_Connect * w = Scr_Connect::Instance();
+			w->disconnect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
+		}
 		_DlgPort->close();
 	}
 }

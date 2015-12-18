@@ -37,7 +37,7 @@ public:
 	void ConstructConnecttoMenu();
 	void StartWifiWatcher();
 	void StopWifiWatcher();
-	void BlockOnDisconnect(bool block);
+	void BlockOnDisconnect();
 
 private:
 	Ui::SjMainWindow *ui;

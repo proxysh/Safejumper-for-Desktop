@@ -401,6 +401,7 @@ log::logt("Set state " + QString::number(st));
 			case ovsConnected:
 			{
 				WndManager::Instance()->HandleConnected();
+				OsSpecific::Instance()->SetNetdown(false);
 				break;
 			}
 			case ovsConnecting:
@@ -410,8 +411,6 @@ log::logt("Set state " + QString::number(st));
 			}
 			case ovsDisconnected:
 			{
-				if (Setting::Instance()->IsBlockOnDisconnect())
-					SjMainWindow::Instance()->BlockOnDisconnect(true);
 				WndManager::Instance()->HandleDisconnected();
 				break;
 			}
@@ -477,6 +476,7 @@ void Ctr_Openvpn::ExtractNewIp(const QString & s)
 void Ctr_Openvpn::Cancel(const QString & msg)
 {
 	Stop();
+	SjMainWindow::Instance()->BlockOnDisconnect();
 	WndManager::Instance()->ErrMsg(msg);
 }
 
@@ -753,9 +753,16 @@ void Ctr_Openvpn::ProcessStateWord(const QString & word, const QString & s)
 		WndManager::Instance()->HandleState(word);
 	} else { if (word.compare("TCP_CONNECT'", Qt::CaseInsensitive) == 0) {
 		WndManager::Instance()->HandleState(word);
+	} else { if (word.compare("RESOLVE", Qt::CaseInsensitive) == 0) {
+		WndManager::Instance()->HandleState(word);
+		if (OsSpecific::Instance()->IsNetdown())
+		{
+			Stop();
+			WndManager::Instance()->ErrMsg("Turn Internet connection on manually, please");
+		}
 	} else {
 		WndManager::Instance()->HandleState(word);
-	}}}}}}}}}}
+	}}}}}}}}}}}
 	_prev_st_word = word;
 }
 
@@ -770,7 +777,8 @@ void Ctr_Openvpn::ProcessPlainWord(const QString & word, const QString & s)
 		log::logt("processing plain word '" + word + "'");
 		if (word.compare("SUCCESS", Qt::CaseInsensitive) == 0) {
 		;
-	} else { if (word.compare("ERROR", Qt::CaseInsensitive) == 0) {
+	} else { if (word.compare("ERROR", Qt::CaseInsensitive) == 0 || word.compare("FATAL", Qt::CaseInsensitive) == 0) {
+		SjMainWindow::Instance()->BlockOnDisconnect();
 		WndManager::Instance()->ErrMsg(s);
 	}}}
 }

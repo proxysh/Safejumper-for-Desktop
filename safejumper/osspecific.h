@@ -36,6 +36,7 @@ public:
 	bool IPv6();	// test OS and return enabled	// throw std::exception on error
 	bool HasInsecureWifi();
 	void FixDnsLeak();
+	void NetDown();
 
 	void EnableTap();	// for Windows enumerate interfaces and for all TAP force call Enable
 	
@@ -48,6 +49,9 @@ public:
 	const char * IconConnected_Selected();
 	
 	const char * IsRunningCmd();
+
+	bool IsNetdown() { return _netdown; }
+	void SetNetdown(bool b) { _netdown = b; }
 
 	QString RunFastCmd(const char * cmd, uint16_t ms = 500);			// returns stdout
 	QString RunFastCmd(const QString & cmd, uint16_t ms = 500);
@@ -65,6 +69,7 @@ private:
 
 	const QString & GetCmd();			// both for StartPing()
 	QStringList FormatArgs(const QString & adr);
+	bool _netdown;
 };
 
 #endif // OSSPECIFIC_H
