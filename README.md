@@ -8,7 +8,8 @@ This code is licensed to GNU-GPL. It means you can take the code and modify it a
 
 ## PGP Signature
 
-The latest version of Safejumper is available under various binaries whose PGP signature are: https://paste.proxy.sh/?b62e12d8df3bd058#zo+GLHgwRCfwvacPRVqp10GXSI4BVG4yMehLRJc+pmM=
+The latest version of Safejumper is available under various binaries whose PGP signature are: 
+https://paste.proxy.sh/?d9b8da6b49f3d667#nzOD8mFDkbEWHwYbTb9Q1kqa+kS66NBnEleSmBW2H6Y=
 
 ## Bounty
 
