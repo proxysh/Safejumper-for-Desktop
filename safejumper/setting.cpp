@@ -56,18 +56,18 @@ const std::vector<QString> & Setting::GetAllProt()
 			{
 				static const char * gs_protocols [] =
 				{
-					"OpenVPN TCP 80"
-					, "OpenVPN TCP 110"
-					, "OpenVPN TCP 443"
+					"TCP 80 (RSA)"
+					, "TCP 110 (RSA)"
+					, "TCP 443 (RSA)"
 
-					, "OpenVPN TCP 843"
+					, "TCP 843 (RSA)"
 
-					, "OpenVPN UDP 53"
+					, "UDP 53 (RSA)"
 
-					, "OpenVPN UDP 1194"
-					, "OpenVPN UDP 1443"
-					, "OpenVPN UDP 8080"
-					, "OpenVPN UDP 9201"
+					, "UDP 1194 (RSA)"
+					, "UDP 1443 (RSA)"
+					, "UDP 8080 (RSA)"
+					, "UDP 9201 (RSA)"
 				};
 				static const int gs_ports [] =
 				{
@@ -91,7 +91,7 @@ const std::vector<QString> & Setting::GetAllProt()
 			{
 				static const char * gs_protocols1 [] =
 				{
-					"Obfsproxy TCP 888"
+					"TCP 888 (RSA+TOR)"
 				};
 				static const int gs_ports1 [] =
 				{
@@ -105,13 +105,11 @@ const std::vector<QString> & Setting::GetAllProt()
 			{
 				static const char * gs_protocols2 [] =
 				{
-					"OpenVPN TCP 465 ECC"
-					, "OpVPN TCP 44144 ECC"
+					"TCP 465 (ECC)"
 				};
 				static const int gs_ports2 [] =
 				{
 					465
-					, 44144
 				};
 				size_t sz = sizeof(gs_protocols2)/sizeof(gs_protocols2[0]);
 				PopulateColls(_protocols[enc], _ports[enc], sz, gs_protocols2, gs_ports2);
@@ -121,7 +119,7 @@ const std::vector<QString> & Setting::GetAllProt()
 			{
 				static const char * gs_protocols2 [] =
 				{
-					"VPN TCP 995 ECC+XOR"
+					"TCP 995 (ECC+XOR)"
 				};
 				static const int gs_ports2 [] =
 				{
@@ -210,8 +208,8 @@ const char * Setting::EncText(size_t enc)
 {
 	static const char * g_ar [] = {
 		"RSA 4096-bit"
-		, "TOR's obfsproxy"
-		, "ECC"
+		, "RSA + TOR’s Obfs"
+		, "ECC (secp384r1)"
 		, "ECC + XOR"
 	};
 	if (enc >= ENCRYPTION_COUNT || enc >= (sizeof(g_ar)/sizeof(g_ar[0])))
