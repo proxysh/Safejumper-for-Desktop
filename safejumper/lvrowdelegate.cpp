@@ -19,10 +19,14 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
 	int id = index.row() - 1;
 
 	int idsrv = -1;
-	bool nodes = Setting::Instance()->IsShowNodes();
-	if (id > -1)
-		idsrv = nodes ? id : AuthManager::Instance()->ServerIdFromHubId(id);
-	AServer sr = nodes ? 	AuthManager::Instance()->GetSrv(id) : AuthManager::Instance()->GetHub(id);
+//	bool nodes = Setting::Instance()->IsShowNodes();
+//	if (id > -1)
+//		idsrv = nodes ? id : AuthManager::Instance()->ServerIdFromHubId(id);
+	if (Scr_Map::IsExists() && id > -1)
+	{
+		idsrv = Scr_Map::Instance()->SrvIxFromLineIx(id);
+	}
+	AServer sr = AuthManager::Instance()->GetSrv(idsrv);	//AServer sr = nodes ? 	AuthManager::Instance()->GetSrv(id) : AuthManager::Instance()->GetHub(id);
 
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
@@ -40,7 +44,7 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
 	{
 		static QString sthubs = ":/imgs/dd-selectionrow-244.png";
 		static QString stsrvs = ":/imgs/dd-selectionrow-322.png";
-		QPixmap pm(nodes ? stsrvs : sthubs);
+		QPixmap pm(Scr_Map::Instance()->UseSrvColl() ? stsrvs : sthubs);
 		painter->drawPixmap(option.rect, pm);
 	}
 

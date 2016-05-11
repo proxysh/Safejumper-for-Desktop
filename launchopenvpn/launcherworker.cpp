@@ -1,11 +1,11 @@
 #include "launcherworker.h"
 #include <QFile>
-#include <QApplication>
+//#include <QApplication>
 #include <QProcess>
 
 #include "pathhelper.h"
 
-extern QApplication * g_pTheApp;
+//extern QApplication * g_pTheApp;
 
 LauncherWorker::LauncherWorker(const QString & pfnParams, QObject *parent)
 	: QObject(parent)

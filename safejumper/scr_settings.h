@@ -39,6 +39,8 @@ public:
 	QString LocalPort();	 // "" if invalid
 	USet Ports();
 
+	int Encryption();		// 0 = usual RSA, 1 = obfs proxy, 2 =
+
 private:
 	Ui::Scr_Settings * ui;
 	static std::auto_ptr<Scr_Settings> _inst;

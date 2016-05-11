@@ -24,7 +24,7 @@ WndManager::~WndManager()
 	{
 		if (_DlgPort->isVisible())
 			ClosePortDlg();
-		_DlgPort->deleteLater();
+		//_DlgPort->deleteLater();
 	}
 }
 

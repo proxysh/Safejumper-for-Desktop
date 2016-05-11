@@ -66,7 +66,7 @@ AuthorizationRef & GetAuth()
 		QString msg = "Safejumper requires to make some modifications to your network settings.\n\n";
 		QByteArray ba = msg.toUtf8();
 		AuthorizationItem environmentItems[] = {
-		{kAuthorizationEnvironmentPrompt, ba.size(), (void*)ba.data(), 0},
+		{kAuthorizationEnvironmentPrompt, (size_t)ba.size(), (void*)ba.data(), 0},
 	//	        {kAuthorizationEnvironmentIcon, iconPathLength, (void*)iconPathC, 0}
 		};
 		AuthorizationEnvironment myEnvironment = {1, environmentItems};
@@ -283,6 +283,9 @@ void OsSpecific::SetRights()
 #ifdef Q_OS_LINUX
 	SetChown(PathHelper::Instance()->LauncherPfn());
 	SetChmod("04755", PathHelper::Instance()->LauncherPfn());				// odrer is important
+	
+	SetChown(PathHelper::Instance()->NetDownPfn());
+	SetChmod("04755", PathHelper::Instance()->NetDownPfn());
 #endif
 
 	//ReleaseRights();
@@ -979,14 +982,66 @@ void OsSpecific::NetDown()
 {
 	try
 	{
-#ifdef Q_OS_OSX
+#ifndef Q_OS_WIN
 	SetRights();
 	log::logt("NetDown()");
 	QString ss = RunFastCmd(PathHelper::Instance()->NetDownPfn());
 	_netdown = true;
 	if (!ss.isEmpty())
 		log::logt(ss);
-#endif	// Q_OS_OSX
+#else	// Q_OS_WIN
+	// https://airvpn.org/topic/12599-“air-vpn-hack-executed’/#entry21338
+
+	// https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
+	ULONG sz = 0;
+	ULONG fl = 0
+		| GAA_FLAG_SKIP_DNS_SERVER
+		| GAA_FLAG_INCLUDE_TUNNEL_BINDINGORDER
+		| GAA_FLAG_INCLUDE_PREFIX
+		| GAA_FLAG_INCLUDE_ALL_INTERFACES
+	;
+	ULONG r = GetAdaptersAddresses(0, fl, 0, NULL, &sz);
+	if (ERROR_BUFFER_OVERFLOW != r)
+		return;
+	std::vector<byte> v;
+	v.assign(sz, 0);
+	IP_ADAPTER_ADDRESSES * p = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(&v[0]);
+	r = GetAdaptersAddresses(0, fl, 0, p, &sz);
+	if (NO_ERROR != r)
+	{
+		log::logt("Cannot enumerate adapters, error code: " + QString::number(r));
+	}
+	else
+	{
+		for (int k = 1; p != NULL && k < 5; p = p->Next, ++k)		// adpters in order - so try first 4
+		{
+			QString s = QString::fromWCharArray(p->Description);
+			if (s.indexOf("TAP-Windows") > -1) continue;
+			if (s.indexOf("WAN Miniport") > -1) continue;
+			if (s.indexOf("Kernel Debug") > -1) continue;
+			if (s.indexOf("ISATAP") > -1) continue;
+			if (s.indexOf("Tunelling") > -1) continue;
+			QString name = QString::fromWCharArray(p->FriendlyName);
+			if (name.indexOf("isatap") > -1) continue;
+			if (name.indexOf("isatap") > -1) continue;
+
+
+			{
+				std::wstring prog = L"netsh";
+				std::wstring wa = L"interface set interface name=\"" + std::wstring(p->FriendlyName) + L"\" admin=disable";
+				log::logt("ShellExecute '" + QString::fromStdWString(prog) + "' , Args: '" + QString::fromStdWString(wa) + "'");
+				HINSTANCE hi = ShellExecute(NULL, NULL, prog.c_str(), (LPWSTR)wa.c_str(), NULL, SW_HIDE);	// already admin
+				if ((int)hi <= 32)
+					log::logt("Cannot ShellExecute hi = " + QString::number((int)hi) + " err code = " + QString::number(GetLastError()));
+				else
+				{
+					log::logt("ShellExecute OK");
+					_netdown = true;
+				}
+			}
+		}
+	}
+#endif	// Q_OS_WIN
 	}
 	catch(std::exception & ex)
 	{
@@ -1089,6 +1144,47 @@ void OsSpecific::FixDnsLeak()
 		settings.setValue("DisableSmartNameResolution", val);
 	}
 #endif
+}
+
+static std::auto_ptr<QProcess> _obfs;
+void OsSpecific::RunObfs()
+{
+	if (!IsObfsInstalled())
+		InstallObfs();
+
+#ifdef Q_OS_MAC
+	if (!IsObfsRunning())
+	{
+		_obfs.reset(new QProcess());
+		_obfs->start("/usr/local/bin/obfsproxy obfs2 socks 127.0.0.1:1050");
+		QThread::msleep(200);
+	}
+#endif	// 	Q_OS_MAC
+
+}
+
+void OsSpecific::InstallObfs()
+{
+	;
+}
+
+bool OsSpecific::IsObfsInstalled()
+{
+	return true;
+}
+
+bool OsSpecific::IsObfsRunning()
+{
+	return true;
+	bool b = false;
+//	if (_obfs.get() != NULL)
+	{
+		static const char * q = "ps aux | grep obfs | grep pro";
+		QString s = RunFastCmd(q);
+		if (!s.isEmpty())
+			b = true;
+	}
+	return b;
 }
 
 

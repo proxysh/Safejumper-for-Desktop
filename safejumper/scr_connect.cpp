@@ -13,6 +13,8 @@
 #include "flag.h"
 #include "fonthelper.h"
 
+ Scr_Connect::HmWords Scr_Connect::_StateWord_Img;
+
 Scr_Connect::Scr_Connect(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::Scr_Connect)
@@ -20,6 +22,13 @@ Scr_Connect::Scr_Connect(QWidget *parent) :
 {
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
+
+	ui->L_Country->setText("");
+	ui->L_Percent->setText("0%");
+	ui->L_OldIp->setText("");
+	ui->L_NewIp->setText("");
+	SetNoSrv();
+	
 
 #ifndef Q_OS_MAC
 	FontHelper::SetFont(this);
@@ -84,13 +93,15 @@ bool Scr_Connect::eventFilter(QObject *obj, QEvent *event)
 
 void Scr_Connect::Init()
 {
-	Setting::Instance()->LoadServer();
+	// Setting::Instance()->LoadServer();
 	Setting::Instance()->LoadProt();
 
 	// TODO: -1  get actual data
 	ui->L_Until->setText("active until\n-");
 	ui->L_Amount->setText("-");
 	SetOldIp(AuthManager::Instance()->OldIp());
+	UpdEnc();
+	UpdProtocol();
 }
 
 void Scr_Connect::SetNoSrv()
@@ -142,6 +153,12 @@ void Scr_Connect::UpdNewIp(const QString & s)
 	ui->L_NewIp->show();
 }
 
+void Scr_Connect::UpdEnc()
+{
+	int enc = Setting::Encryption();
+	ui->L_Encryption->setText(Setting::EncText(enc));
+}
+
 void Scr_Connect::SetOldIp(const QString & s)
 {
 	ui->L_OldIp->setText(s);
@@ -188,6 +205,11 @@ void Scr_Connect::SetProtocol(int ix)
 		ui->L_Protocol->setText(Setting::Instance()->ProtoStr(ix));
 }
 
+void Scr_Connect::UpdProtocol()
+{
+	SetProtocol(Setting::Instance()->CurrProto());
+}
+
 Scr_Connect::~Scr_Connect()
 {
 	{
@@ -217,24 +239,72 @@ void Scr_Connect::StartTimer()
 
 static const char * gs_ConnGreen = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-green.png);\n}";
 static const char * gs_ConnRed = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-red.png);\n}";
-static const char * gs_ConnYellow = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-yellow.png);\n}";
+static const char * gs_Conn_Connecting = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-yellow.png);\n}";
+static const char * gs_Conn_Connecting_Template_start = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-y-";
+static const char * gs_Conn_Connecting_Template_end =  ".png);\n}";
+
+void Scr_Connect::InitStateWords()
+{
+	if (_StateWord_Img.empty())
+	{
+		_StateWord_Img.insert(std::make_pair("AUTH", "auth"));
+		_StateWord_Img.insert(std::make_pair("GET_CONFIG", "config"));
+		_StateWord_Img.insert(std::make_pair("ASSIGN_IP", "ip"));
+		_StateWord_Img.insert(std::make_pair("TCP_CONNECT", "connect"));
+		_StateWord_Img.insert(std::make_pair("RESOLVE", "resolve"));
+		
+		// CONNECTING - default - must be absent in this collection
+		
+		_StateWord_Img.insert(std::make_pair("WAIT", "wait"));
+		_StateWord_Img.insert(std::make_pair("RECONNECTING", "reconn"));
+	}
+}
+
 void Scr_Connect::StatusConnecting()
 {
-	ui->L_ConnectStatus->setStyleSheet(gs_ConnYellow);
+	ui->L_ConnectStatus->setStyleSheet(gs_Conn_Connecting);
 	SetEnabledButtons(false);
 }
 
 void Scr_Connect::StatusConnecting(const QString & word)
 {
-	ModifyWndTitle(word);
-	this->StatusConnecting();
+//	ModifyWndTitle(word);
+//	this->StatusConnecting();
+	SetEnabledButtons(false);
+	InitStateWords();
+	
+if (word.compare("WAIT", Qt::CaseInsensitive) == 0)
+{
+	log::logt("WAIT found!");
+}
+	
+	QString s;
+	HmWords::iterator it = _StateWord_Img.find(word);
+	if (it != _StateWord_Img.end())
+	{
+		s = gs_Conn_Connecting_Template_start;
+		s += it->second;
+		s += gs_Conn_Connecting_Template_end;
+	}
+	else
+	{
+		s = gs_Conn_Connecting;
+		if (word.compare("WAIT", Qt::CaseInsensitive) == 0)
+		{
+			log::logt("Cannot find WAIT in the collection! Do actions manualy!");
+			s = gs_Conn_Connecting_Template_start;
+			s += "wait";
+			s += gs_Conn_Connecting_Template_end;
+		}
+	}
+	ui->L_ConnectStatus->setStyleSheet(s);
 }
 
 void Scr_Connect::ModifyWndTitle(const QString & word)
 {
 	QString s = "Safejumper";
-	if (!word.isEmpty())
-		s += " " + word;
+//	if (!word.isEmpty())
+//		s += " " + word;
 	this->setWindowTitle(s);
 }
 

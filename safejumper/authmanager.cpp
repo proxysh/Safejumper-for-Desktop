@@ -3,6 +3,7 @@
 #include <cassert>
 #include <algorithm>
 #include <set>
+#include <stdexcept>
 
 #include <QDomDocument>
 
@@ -151,29 +152,43 @@ void AuthManager::SetNewIp(const QString & ip)
 		Scr_Connect::Instance()->UpdNewIp(ip);
 }
 
-const std::vector<AServer> & AuthManager::GetHubs()
+const std::vector<size_t> & AuthManager::GetAllServers()
+{
+	int enc = Setting::Encryption();
+	if (_srv_ids[enc].empty())
+	{
+		;
+	}
+	return _srv_ids[enc];
+}
+
+const std::vector<size_t> & AuthManager::GetHubs()
 {
 	if (!_servers.empty() && _hubs.empty())
+	{
 		for (size_t k = 0; k < _servers.size(); ++k)
 		{
 			if (_servers[k].name.contains("Hub", Qt::CaseInsensitive))
 			{
 				_hubs.push_back(_servers[k]);
-				_HubToServer.push_back(k);
+				_HubToServer.push_back(k);			// the same as _hub_ids[0]
+				_hub_ids[0].push_back(k);
 				_SrvidToHubId.insert(IIMap::value_type(k, _hubs.size() - 1));
-				QString cleared = flag::ClearName(_servers[k].name);
+				std::string cleared = flag::ClearName(_servers[k].name).toStdString();		// QString cleared = flag::ClearName(_servers[k].name);
 				_HubClearedId.insert(std::make_pair(cleared, _hubs.size() - 1));
 			}
 		}
-	return _hubs;
+	}
+	int enc = Setting::Encryption();
+	return _hub_ids[enc];
 }
 
 int AuthManager::HubidForServerNode(size_t srv)
 {
 	int hub = -1;
 	AServer & rs = _servers.at(srv);
-	QString cleared = flag::ClearName(rs.name);
-	std::map<QString, size_t>::iterator it = _HubClearedId.find(cleared);
+	std::string cleared = flag::ClearName(rs.name).toStdString();	// QString cleared = flag::ClearName(rs.name);
+	std::map<std::string, size_t>::iterator it = _HubClearedId.find(cleared);
 	if (it != _HubClearedId.end())
 		hub = (int)(*it).second;
 	return hub;
@@ -190,21 +205,22 @@ void AuthManager::PrepareLevels()
 	// TODO: -1 special hub for boost
 	if (!_servers.empty() && _level0.empty())
 	{
-		const std::vector<AServer> & h = GetHubs();
+		const std::vector<size_t> & h = GetHubs();
 		std::set<int> hub_srvids;
 		for (size_t k =0; k < h.size(); ++k)
 		{
-			int srv = ServerIdFromHubId(k);
+			int srv = h.at(k);	//ServerIdFromHubId(k);
 			hub_srvids.insert(srv);
 			std::vector<int> v;
 			v.push_back(srv);
 			_level1.insert(std::make_pair(k, v));
 		}
 
-		const std::vector<AServer> & sr = GetAllServers();
+		const std::vector<size_t> & sr = GetAllServers();
 		for (size_t k = 0; k < sr.size(); ++k)
 		{
-			std::set<int>::iterator it = hub_srvids.find(k);
+			int srv = sr.at(k);
+			std::set<int>::iterator it = hub_srvids.find(srv);
 			if (it != hub_srvids.end())
 			{
 				_level0.push_back(std::make_pair(true, HubIdFromItsSrvId(*it)));	// aready at lvl 1
@@ -325,6 +341,46 @@ void AuthManager::ClearReply()
 	}
 }
 
+void AuthManager::StartDwnl_ObfsName()
+{
+	ClearReply();
+	// https://api.proxy.sh/safejumper/get_obfs/name
+	_reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+		QUrl("https://api.proxy.sh/safejumper/get_obfs/name"))));
+	SjMainWindow * sj = SjMainWindow::Instance();
+	sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_ObfsName()));
+}
+
+void AuthManager::StartDwnl_EccName()
+{
+	ClearReply();
+	// https://api.proxy.sh/safejumper/get_ecc/name
+	_reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+		QUrl("https://api.proxy.sh/safejumper/get_ecc/name"))));
+	SjMainWindow * sj = SjMainWindow::Instance();
+	sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_EccName()));
+}
+
+//void AuthManager::StartDwnl_EccxorName()
+//{
+//	ClearReply();
+//	// https://api.proxy.sh/safejumper/get_ecc/name
+//	_reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+//		QUrl("https://api.proxy.sh/safejumper/get_ecc/name"))));
+//	SjMainWindow * sj = SjMainWindow::Instance();
+//	sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_EccxorName()));
+//}
+
+//void AuthManager::StartDwnl_ObfsAddr()
+//{
+//	ClearReply();
+//	// https://api.proxy.sh/safejumper/get_obfs/name
+//	_reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+//		QUrl("https://api.proxy.sh/safejumper/get_obfs/name"))));
+//	SjMainWindow * sj = SjMainWindow::Instance();
+//	sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(AccTypeFinishedZZ()));
+//}
+
 void AuthManager::StartDwnl_AccType()
 {
 	ClearReply();
@@ -407,11 +463,11 @@ bool AuthManager::ProcessExpireXml(QString & out_msg)
 		{
 			// parse XML response
 /*
-QFile f("/tmp/expire.xml");
+{QFile f("/tmp/expire.xml");
 f.open(QIODevice::WriteOnly);
 f.write(ba);
 f.flush();
-f.close();
+f.close();}
 */
 			// <?xml version="1.0"?>
 			// <root><expire_date>2015-05-28</expire_date></root>
@@ -653,6 +709,263 @@ QByteArray ba =
 	}
 }
 
+bool AuthManager::ProcessXml_ObfsName(QString & out_msg)
+{
+	bool err = ProcessXml_EncryptionName(ENCRYPTION_OBFS_TOR, out_msg);
+	
+	// do not get obfs addresses: proceed
+	StartDwnl_EccName();
+	
+	if (!err)
+		ForceRepopulation(ENCRYPTION_OBFS_TOR);
+	
+	return !err;
+
+
+#if 0
+	bool err = false;
+	out_msg.clear();
+	if (_reply->error() != QNetworkReply::NoError)
+	{
+		log::logt(_reply->errorString());
+	}
+	else
+	{
+		QByteArray ba = _reply->readAll();
+
+//{QFile f("/tmp/obfsname.xml");
+//f.open(QIODevice::WriteOnly);
+//f.write(ba);
+//f.flush();
+//f.close();}
+
+/*
+<?xml version="1.0"?>
+<root>
+	<0>U.S. California 3</0>
+	<1>U.S. Georgia 1</1>
+
+	<130>Boost - Singapore - SoftLayer</130>
+</root>
+*/
+		QDomDocument doc;
+		std::vector<QString> v;
+		QString w(ba);
+		if (!doc.setContent(w, &out_msg))
+		{
+			int p0 = w.indexOf("<root>");
+			int p1 = w.indexOf('<', p0 + 1);
+			int end = w.indexOf("</root>", p1 + 1);
+			if (end > -1)
+			{
+				for (int t = p1; t > -1 && t < end; )
+				{
+					int p2 = w.indexOf('>', t + 1);
+					int p3 = w.indexOf("</", p2 + 1);
+					QString internal = w.mid(p2 +1, p3 - p2 - 1);
+					if (!internal.isEmpty())
+						v.push_back(internal);
+					t = w.indexOf('<', p3 + 1);
+				}
+			}
+			else
+			{
+				err = true;
+				out_msg = "Error parsing Obfs name XML\n" + out_msg;
+			}
+		}
+		else
+		{
+			QDomNodeList roots = doc.elementsByTagName("root");
+			if (roots.size() > 0)
+			{
+				QDomNode root = roots.item(0);
+				QDomNodeList chs = root.childNodes();
+				if (!chs.isEmpty())
+				{
+					for (int k = 0, sz = chs.size(); k < sz; ++k)
+					{
+						QDomNode n = chs.at(k);
+						QString s = n.toElement().text();
+						v.push_back(s);
+					}
+				}
+				else
+				{
+					err = true;
+					out_msg = "empty obfs name list";
+				}
+			}
+			else
+			{
+				err = true;
+				out_msg = "Missing root node";
+			}
+		}
+
+		if (!err && !v.empty())
+		{
+			_obfs_names.swap(v);
+			MatchObfsServers();
+		}
+	}
+
+	// do not get obfs addresses: proceed
+	//	StartDwnl_AccType();
+	StartDwnl_EccName();
+
+	// force update of locations: if needed, previously empy
+	if (Setting::IsExists() && Scr_Map::IsExists())
+	{
+		Scr_Map::Instance()->RePopulateLocations();
+		// TODO: -0 LoadServer()
+	}
+#endif
+}
+
+bool AuthManager::ProcessXml_EncryptionName(int enc, QString & out_msg)
+{
+	out_msg.clear();
+	std::vector<QString> names;
+	bool err = ProcessXml_Names(names, out_msg);
+
+	if (!err && !names.empty())
+		MatchObfsServers(names, _srv_ids[enc]);
+
+	return err;
+}
+
+void AuthManager::ForceRepopulation(int enc)
+{
+	// force update of locations: if needed, previously empy
+	if (Setting::Encryption() == enc)
+	{
+		if (Setting::IsExists() && Scr_Map::IsExists())
+		{
+			Scr_Map::Instance()->RePopulateLocations();
+			// TODO: -0 LoadServer()
+		}
+	}
+}
+
+bool AuthManager::ProcessXml_EccName(QString & out_msg)
+{
+	bool err = ProcessXml_EncryptionName(ENCRYPTION_ECC, out_msg);
+	
+	// do not get obfs addresses: proceed
+	StartDwnl_AccType();
+	
+	if (!err)
+	{
+		// clone ECC nodes into ECC+XOR
+		// TODO: -2 is there a specific for ECC+XOR  API page?
+		_srv_ids[ENCRYPTION_ECCXOR].clear();
+		_srv_ids[ENCRYPTION_ECCXOR].assign(_srv_ids[ENCRYPTION_ECC].begin(), _srv_ids[ENCRYPTION_ECC].end());
+		ForceRepopulation(ENCRYPTION_ECC);
+		ForceRepopulation(ENCRYPTION_ECCXOR);
+	}
+	
+	
+	
+	return !err;
+}
+
+bool AuthManager::ProcessXml_Names(std::vector<QString> & v, QString & out_msg)
+{
+	bool err = false;
+	if (_reply->error() != QNetworkReply::NoError)
+	{
+		log::logt(_reply->errorString());
+		err = true;
+		out_msg = "Network error: " + _reply->errorString();
+	}
+	else
+	{
+		QByteArray ba = _reply->readAll();
+
+//{QFile f("/tmp/obfsname.xml");
+//f.open(QIODevice::WriteOnly);
+//f.write(ba);
+//f.flush();
+//f.close();}
+
+/*
+<?xml version="1.0"?>
+<root>
+	<0>U.S. California 3</0>
+	<1>U.S. Georgia 1</1>
+
+	<130>Boost - Singapore - SoftLayer</130>
+</root>
+*/
+
+		QString w(ba);
+
+			int p0 = w.indexOf("<root>");
+			int p1 = w.indexOf('<', p0 + 1);
+			int end = w.indexOf("</root>", p1 + 1);
+			if (end > -1)
+			{
+				for (int t = p1; t > -1 && t < end; )
+				{
+					int p2 = w.indexOf('>', t + 1);
+					int p3 = w.indexOf("</", p2 + 1);
+					QString internal = w.mid(p2 +1, p3 - p2 - 1);
+					if (!internal.isEmpty())
+						v.push_back(internal);
+					t = w.indexOf('<', p3 + 1);
+				}
+			}
+			else
+			{
+				err = true;
+				out_msg = "Error parsing Obfs name XML\n" + out_msg;
+			}
+
+	}
+	return err;
+}
+
+
+void AuthManager::MatchObfsServers(const std::vector<QString> & names, std::vector<size_t> & found)
+{
+	HMSI name_id;
+	for (size_t j = 0, ses = _servers.size(); j < ses; ++j)
+	{
+		{
+			HMSI::iterator it = name_id.find(_servers.at(j).name);
+			if (it != name_id.end())
+			{
+				QString dub = _servers.at(j).name;
+				log::logt("Duplicate server found: " + dub);
+			}
+		}
+		name_id.insert(HMSI::value_type(_servers.at(j).name, j));
+	}
+
+	std::vector<size_t> paid;
+	for (size_t k = 0, sz = names.size(); k < sz; ++k)		// for each obfs server name
+	{
+		HMSI::iterator it = name_id.find(names.at(k));
+		if (it != name_id.end())
+			paid.push_back((*it).second);
+	}
+	std::sort(paid.begin(), paid.end());
+	found.swap(paid);
+}
+
+bool AuthManager::IsObfs(int id)
+{
+	bool b = false;
+//	std::set<int>::iterator it = _obfs_enabled_srvs.find(id);
+//	if (it != _obfs_enabled_srvs.end())
+//		b = true;
+	if (id > -1)
+		b = std::binary_search(_srv_ids[ENCRYPTION_OBFS_TOR].begin(), _srv_ids[ENCRYPTION_OBFS_TOR].end(), id);
+
+	return b;
+}
+
 bool AuthManager::ProcessServersXml(QString & msg)
 {
 	ClearColls();
@@ -730,6 +1043,7 @@ bool AuthManager::ProcessServersXml(QString & msg)
 						s2.name = loc.text();
 						s2.load = load.text();
 						_servers.push_back(s2);
+						_srv_ids[0].push_back(_servers.size() - 1);
 					}
 					_vpnlogin = login;
 					_vpnpsw = psw;
@@ -748,10 +1062,12 @@ bool AuthManager::ProcessServersXml(QString & msg)
 	if (!err)
 	{
 		// force hubs
-		const std::vector<AServer> & hr = AuthManager::GetHubs();
+		const std::vector<size_t> & hr = AuthManager::GetHubs();
 		if (hr.empty())
 			log::logt("Cannot parse hubs");
-		StartDwnl_AccType();
+
+		StartDwnl_ObfsName();
+//		StartDwnl_AccType();
 	}
 
 	if (!err)
@@ -985,16 +1301,16 @@ void AuthManager::Jump()
 void AuthManager::DetermineOldIp()
 {
 	// start http request to proxy.sh
-	StartDwnl_OldIp();
+//	StartDwnl_OldIp();
 
 	// omit STUN due to it does not always work
-/*	if (_th_oldip.get() == NULL)
+	if (_th_oldip.get() == NULL)
 	{
 		_th_oldip.reset(new Thread_OldIp(SjMainWindow::Instance()));
 		SjMainWindow::Instance()->connect(_th_oldip.get(), &Thread_OldIp::resultReady, SjMainWindow::Instance(), &SjMainWindow::Finished_OldIp);
 		_th_oldip->start();
 	}
-*/
+
 }
 
 uint64_t AuthManager::GetRnd64()

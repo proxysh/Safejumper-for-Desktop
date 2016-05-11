@@ -14,6 +14,24 @@
 #include <string>
 #include <vector>
 
+#ifdef __GNUC__
+#include <ext/hash_map>
+
+namespace std
+{
+ using namespace __gnu_cxx;
+}
+
+#else
+#include <hash_map>
+#endif
+
+#define ENCRYPTION_RSA 0
+#define ENCRYPTION_OBFS_TOR 1
+#define ENCRYPTION_ECC 2
+#define ENCRYPTION_ECCXOR 3
+#define ENCRYPTION_COUNT 4
+
 #define PORT_FORWARD_MAX 5
 
 extern QApplication * g_pTheApp;
@@ -41,6 +59,30 @@ struct AServer
 	QString name;		// "Chile Hub" - Hub at the end indicates hub
 	QString load;			// double
 };
+
+#ifdef std::unordered_map
+#define THE_HM std::unordered_map
+#else
+#ifdef std::hash_map
+#define THE_HM std::hash_map
+#else
+#ifdef __gnu_cxx::hash_map
+#define THE_HM __gnu_cxx::hash_map
+#else
+#ifdef std::tr1::hash_map
+#define THE_HM std::tr1::hash_map
+#else
+#ifdef stdext::hash_map
+#define THE_HM stdext:hash_map
+#else
+#define THE_HM std::map
+#endif
+#endif
+#endif
+#endif
+#endif
+
+typedef THE_HM<QString, size_t>  HMSI;
 
 typedef std::map<std::string, int> SIMap;
 typedef std::map<int, int> IIMap;

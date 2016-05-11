@@ -11,17 +11,18 @@ QT       -= gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = launchopenvpn
+#CONFIG   += console
+#CONFIG   -= app_bundle
+
 TEMPLATE = app
 
 QMAKE_INCDIR += ../safejumper/
 
 SOURCES += main.cpp \
-    launcherworker.cpp \
 	../safejumper/pathhelper.cpp \
     common.cpp
 
 HEADERS  += \
-    launcherworker.h \
 	../safejumper/pathhelper.h \
     common.h
 

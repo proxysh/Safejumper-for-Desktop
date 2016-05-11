@@ -11,10 +11,9 @@
 #include "fonthelper.h"
 #include "osspecific.h"
 #include "log.h"
+#include "lvrowdelegateencryption.h"
 
-static const char * g_ar [] = {
-	"RSA 4096-bit"
-};
+static bool _repopulation_inprogress = false;
 
 Scr_Settings::Scr_Settings(QWidget *parent) :
 	QDialog(parent),
@@ -32,14 +31,17 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 #else
 	FontHelper::SetFont(this);
 	ui->e_PrimaryDns->setFont(FontHelper::pt(10));
-	ui->e_PrimaryDns->setFont(FontHelper::pt(10));
+	ui->e_SecondaryDns->setFont(FontHelper::pt(10));
 #endif
-	// fill Encryption drop down
-	for (int k = 0, sz = (sizeof(g_ar)/sizeof(g_ar[0])); k < sz; ++k)
-		ui->dd_Encryption->addItem(g_ar[k]);
-	ui->dd_Encryption->setView(ui->lv_Encryption);
-	ui->dd_Encryption->setCurrentIndex(1);
 
+	// fill Encryption drop down
+	_repopulation_inprogress = true;
+	ui->dd_Encryption->clear();
+	for (int k = 0; k < ENCRYPTION_COUNT; ++k)
+		ui->dd_Encryption->addItem(Setting::EncText(k));
+	ui->dd_Encryption->setView(ui->lv_Encryption);
+	ui->dd_Encryption->setItemDelegate(new LvRowDelegateEncryption(this));
+	_repopulation_inprogress = false;
 
 //	QPoint p0 = _WndStart = pos();
 //	WndManager::DoShape(this);
@@ -277,12 +279,26 @@ bool Scr_Settings::Is_cb_FixDnsLeak()
 	return ui->cb_FixDnsLeak->isChecked();
 }
 
+int Scr_Settings::Encryption()
+{
+	return ui->dd_Encryption->currentIndex();
+}
 
 void Scr_Settings::Changed_dd_Encryption(int ix)
 {
+	if (_repopulation_inprogress)
+		return;
 	SETTINGS_OBJ;
 	settings.setValue("dd_Encryption", ix);
-	// TODO: -1 not implemented
+
+	if (Scr_Map::IsExists())
+	{
+		Scr_Map::Instance()->RePopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
+		Setting::Instance()->LoadProt();
+		Scr_Map::Instance()->RePopulateLocations();
+	}
+	if (Scr_Connect::IsExists())
+		Scr_Connect::Instance()->UpdEnc();
 }
 
 static const char * gs_sErrStyle =

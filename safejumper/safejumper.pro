@@ -60,7 +60,8 @@ SOURCES += main.cpp\
     lvrowdelegateprotocol.cpp \
     fonthelper.cpp \
     singleapplication.cpp \
-    dlg_newnode.cpp
+    dlg_newnode.cpp \
+    lvrowdelegateencryption.cpp
 
 HEADERS  += sjmainwindow.h \
 	retina.h \
@@ -92,7 +93,8 @@ HEADERS  += sjmainwindow.h \
     version.h \
     update.h \
     singleapplication.h \
-    dlg_newnode.h
+    dlg_newnode.h \
+    lvrowdelegateencryption.h
 
 FORMS	+= sjmainwindow.ui \
 	scr_connect.ui \

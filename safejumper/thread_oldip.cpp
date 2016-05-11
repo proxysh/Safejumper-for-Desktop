@@ -1,4 +1,7 @@
 #include "thread_oldip.h"
+
+#include <stdint.h>
+
 #include "authmanager.h"
 #include "stun.h"
 

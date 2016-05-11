@@ -26,6 +26,7 @@ public:
 
 	void SetServer(int srv);	// -1 or id inside all servers
 	void UpdNewIp(const QString & s);
+	void UpdEnc();
 
 	void SetOldIp(const QString & ip);
 	void SetAccName(const QString & s);
@@ -61,7 +62,7 @@ private:
 
 	void SetFlag(int srv);
 	void SetNoSrv();
-	void SetNoProtocol();
+	void UpdProtocol();
 	void SetEnabledButtons(bool enabled);
 	void ModifyWndTitle(const QString & word);
 
@@ -71,6 +72,10 @@ private:
 	void DwnlStrs();
 	QPoint _WndStart;
 	QPoint _CursorStart;
+		
+	static void InitStateWords();
+	typedef THE_HM<QString, const char *> HmWords;
+	static HmWords _StateWord_Img;
 
 private slots:
 	void Clicked_Connect();

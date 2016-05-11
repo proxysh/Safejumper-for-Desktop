@@ -35,10 +35,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <stdint.h>
 #ifdef WIN32
 #include <winsock2.h>
 #pragma comment(lib, "Ws2_32.lib")
-#include <stdint.h>
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

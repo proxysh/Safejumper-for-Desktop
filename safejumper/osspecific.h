@@ -55,6 +55,9 @@ public:
 
 	QString RunFastCmd(const char * cmd, uint16_t ms = 500);			// returns stdout
 	QString RunFastCmd(const QString & cmd, uint16_t ms = 500);
+
+	void RunObfs();
+	bool IsObfsRunning();
 	
 private:
 	OsSpecific();
@@ -70,6 +73,9 @@ private:
 	const QString & GetCmd();			// both for StartPing()
 	QStringList FormatArgs(const QString & adr);
 	bool _netdown;
+
+	void InstallObfs();
+	bool IsObfsInstalled();
 };
 
 #endif // OSSPECIFIC_H

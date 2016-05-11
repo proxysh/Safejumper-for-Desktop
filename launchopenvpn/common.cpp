@@ -1,6 +1,9 @@
 #include "common.h"
 //#include <memory>
 #include <sys/unistd.h>
+#ifdef Q_OS_MAC
+#include <unistd.h>
+#endif
 #include <vector>
 #include <string>
 #include <cstdio>

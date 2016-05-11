@@ -23,6 +23,10 @@ Scr_Map::Scr_Map(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::Scr_Map)
     , _moving(false)
+	, _repopulation_inprogress(false)
+	, _UseSrvColl(true)
+	, _IsShowNodes(true)
+	, _Encryption(0)
 {
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
@@ -43,10 +47,7 @@ Scr_Map::Scr_Map(QWidget *parent) :
 	ui->b_Tmp->hide();
 
 	RePopulateLocations();
-
-	for (size_t k = 0; k < Setting::GetAllProt().size(); ++k)
-		ui->dd_Protocol->addItem(Setting::GetAllProt().at(k));
-	ui->dd_Protocol->setItemText(0, PROTOCOL_SELECTION_STR);	// HACK: -2
+	RePopulateProtocols();
 
 //	QPoint p0 = _WndStart = pos();
 //	WndManager::DoShape(this);
@@ -84,18 +85,43 @@ void Scr_Map::Changed_xy()
 */
 }
 
+void Scr_Map::RePopulateProtocols()
+{
+	_repopulation_inprogress = true;
+
+	const std::vector<QString> & v = Setting::GetAllProt();
+	ui->dd_Protocol->clear();
+	ui->dd_Protocol->addItem(PROTOCOL_SELECTION_STR);
+	for (size_t k = 0; k < v.size(); ++k)
+		ui->dd_Protocol->addItem(v.at(k));
+
+	_repopulation_inprogress = false;
+	if (v.size() == 1)
+	{
+		SetProtocol(0);
+		ui->dd_Protocol->setEnabled(false);
+	}
+	else
+	{
+		ui->dd_Protocol->setEnabled(true);
+	}
+}
+
 void Scr_Map::RePopulateLocations()
 {
 	// store previously chosen id
 	int oldN = ui->dd_Location->count();
 	int ixoldsrv = -1;
 	QString oldsrv;
+	bool oldShownodes = _IsShowNodes;
+	bool oldUsesrvcoll = _UseSrvColl;
+	int oldEnc = _Encryption;
 	if (oldN > 1)
 	{
 		ixoldsrv = CurrSrv();
 		if (ixoldsrv > -1)
 		{
-			oldsrv = AuthManager::Instance()->GetSrv(ixoldsrv).name;	//ui->dd_Location->currentText();
+			oldsrv = AuthManager::Instance()->GetSrv(ixoldsrv).name;
 		}
 	// and clear the list
 		ui->dd_Location->setCurrentIndex(0);
@@ -105,35 +131,39 @@ void Scr_Map::RePopulateLocations()
 
 	// populate with the actual servers
 	_IsShowNodes = Setting::Instance()->IsShowNodes();
-	SetRowStyle(_IsShowNodes);
+	_Encryption = Setting::Instance()->Encryption();
+	_UseSrvColl = ((_Encryption == ENCRYPTION_RSA) && _IsShowNodes) || (_Encryption > ENCRYPTION_RSA);
 
-	const std::vector<AServer> & srvs = (
-		_IsShowNodes ?
+	SetRowStyle(_UseSrvColl);
+
+	const std::vector<size_t> & coll = (
+		_UseSrvColl ?
 		AuthManager::Instance()->GetAllServers() :
 		AuthManager::Instance()->GetHubs() );
-	for (size_t k = 0, sz = srvs.size(); k < sz; ++k)
+
+	// populate server ids to show
+	_srvIds.clear();
+	_srvIds.assign(coll.begin(), coll.end());
+
+	// for each server id create a line
+	for (size_t j = 0, sz = _srvIds.size(); j < sz; ++j)
 	{   // add individual srv / hub node item
 		// TODO: -1 format the line
-		int srv = _IsShowNodes ? k : AuthManager::Instance()->ServerIdFromHubId(k);
-		int ping = AuthManager::Instance()->PingFromSrvIx(srv);
-		QString s0 = srvs[k].name;
+		int ix = _srvIds.at(j);
+		AServer srv = AuthManager::Instance()->GetSrv(ix);
+		int ping = AuthManager::Instance()->PingFromSrvIx(ix);
+		QString s0 = srv.name;
 		QString s1;
-		int load = (int)srvs[k].load.toDouble();
+		int load = (int)srv.load.toDouble();
 
 		s1 += QString::number(load) + "%";
 		if (ping > -1)
 			s1 += " / " + QString::number(ping) + "ms";
-		// New Zealand Hub
-//		if (srvs[k].name.length() < 12)
-//			s0 += "\t";
-//		s0 += "\t\t" + s1 ;	// + "\t "
-//		s0 += "\t" + s1;
-//		s0 += "\t\t\t\t";
 		s0 += "\t\t";				// HACK: override width
 		ui->dd_Location->addItem(s0);
-//		ui->dd_Location->addItem("");
 	}
 
+// TODO: -0 for other encryptions does not work
 	// try to reselect the chosen server
 	int toselect = 0;
 	if (oldN > 1)
@@ -141,7 +171,7 @@ void Scr_Map::RePopulateLocations()
 		if (ixoldsrv > -1)
 		{
 			QString newname;
-			if (_IsShowNodes)
+/*			if (_IsShowNodes)
 			{   // hubs -->> all
 				newname = AuthManager::Instance()->GetAllServers().at(ixoldsrv).name;
 				if (newname == oldsrv)
@@ -162,9 +192,67 @@ void Scr_Map::RePopulateLocations()
 				if (newhubix > -1)
 					toselect = newhubix + 1;
 			}
+*/
+			int new_row = -1;
+			for (size_t k = 0; k < _srvIds.size(); ++k)
+			{
+				if (_srvIds.at(k) == ixoldsrv)
+				{	// srv id match: ensure this is the same server after list updated
+					if (oldsrv == AuthManager::Instance()->GetSrv(_srvIds.at(k)).name)
+					{
+						new_row = k;
+						break;
+					}
+				}
+			}
+
+			if (new_row == -1)
+			{	// lookup by name
+				int ixnew = AuthManager::Instance()->SrvIxFromName(oldsrv);
+				if (ixnew > -1)
+				{
+					for (size_t k = 0; k < _srvIds.size(); ++k)
+					{
+						if (_srvIds.at(k) == ixnew)
+						{
+							new_row = k;
+							break;
+						}
+					}
+				}
+			}
+
+			if (new_row == -1)
+			{	// lookup by name
+				if (!_IsShowNodes && oldShownodes)
+				{	// all -->> hubs
+					int newhubix = AuthManager::Instance()->HubIxFromSrvName(oldsrv);
+					if (newhubix > -1)
+					{
+						for (size_t k = 0; k < _srvIds.size(); ++k)
+						{
+							if (_srvIds.at(k) == newhubix)
+							{
+								new_row = k;
+								break;
+							}
+						}
+					}
+				}
+			}
+			if (new_row != -1)
+				toselect = new_row + 1;
 		}
 	}
 	ui->dd_Location->setCurrentIndex(toselect);
+}
+
+int Scr_Map::SrvIxFromLineIx(int row_id)
+{
+	int ixsrv = -1;
+	if (row_id > -1 && row_id < _srvIds.size())
+		ixsrv = _srvIds.at(row_id);
+	return ixsrv;
 }
 
 void Scr_Map::closeEvent(QCloseEvent * event)
@@ -192,10 +280,17 @@ int Scr_Map::CurrSrv()
 	int ix = ui->dd_Location->currentIndex();
 	if(ix > 0)
 	{
+		size_t id = ix -1;
+		if (!_srvIds.empty() && id < _srvIds.size())
+		{
+			srv = _srvIds.at(id);
+		}
+		/*
 		if (_IsShowNodes)
 			srv = ix - 1;   // TODO: -0 inadequate during repopulation during changes of number of servers
 		else
 			srv = AuthManager::Instance()->ServerIdFromHubId(ix - 1);
+		*/
 	}
 	return srv;
 }
@@ -256,6 +351,9 @@ static const char * const gs_stIcon2inact = "QLabel\n{\n	border:0px;\n	color: #f
 static const char * const gs_stIconV = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-v.png);\n}";
 void Scr_Map::Changed_dd_Protocol(int ix)
 {
+	if (_repopulation_inprogress)
+		return;
+
 	if (ix > 0)
 	{
 		ui->dd_Location->setEnabled(true);
@@ -284,10 +382,11 @@ void Scr_Map::Changed_dd_Sever(int ix)
 		ui->L_2->setStyleSheet(gs_stIconV);
 		if (Scr_Connect::IsExists())
 		{
-			if (_IsShowNodes)
-				ixsrv = ix - 1;
-			else
-				ixsrv = AuthManager::Instance()->ServerIdFromHubId(ix - 1);
+//			if (_IsShowNodes)
+//				ixsrv = ix - 1;
+//			else
+//				ixsrv = AuthManager::Instance()->ServerIdFromHubId(ix - 1);
+			ixsrv = CurrSrv();
 		}
 		AuthManager::Instance()->SetNewIp("");
 	}
@@ -303,8 +402,6 @@ void Scr_Map::Changed_dd_Sever(int ix)
 	Setting::Instance()->SaveServer(ixsrv, newsrv);
 
 	DisplayMark(se.name);
-
-
 }
 
 void Scr_Map::DisplayMark(const QString & name)
@@ -319,21 +416,38 @@ void Scr_Map::DisplayMark(const QString & name)
 void Scr_Map::SetServer(int ixsrv)
 {
 	int toselect = 0;
+	const std::vector<size_t> & srvs = AuthManager::Instance()->GetAllServers();
 	if (ixsrv > -1)
 	{
-		if (_IsShowNodes)
-			toselect = ixsrv + 1;
+		if (_Encryption == ENCRYPTION_RSA)
+		{
+			if (_IsShowNodes)
+				toselect = ixsrv + 1;
+			else
+				toselect = AuthManager::Instance()->HubIdFromItsSrvId(ixsrv) + 1;
+		}
 		else
-			toselect = AuthManager::Instance()->HubIdFromItsSrvId(ixsrv) + 1;
+		{
+			if (!srvs.empty())
+			{
+				for (size_t k = 0; k < srvs.size(); ++k)
+				{
+					if (srvs[k] == ixsrv)
+					{
+						toselect = k + 1;
+						break;
+					}
+				}
+			}
+		}
 	}
-	ui->dd_Location->setCurrentIndex(toselect);
+	if (!srvs.empty())
+		ui->dd_Location->setCurrentIndex(toselect);
 }
 
 void Scr_Map::SetProtocol(int ix)
 {
 	ui->dd_Protocol->setCurrentIndex(ix + 1);
-	//qobject_cast<QStandardItemModel *>(ui->dd_Protocol->model())->item(ix + 1)->setCheckState(Qt::Checked);
-	//qobject_cast<QStandardItemModel *>(ui->dd_Protocol->model())->item(ix + 1)->set
 }
 
 int Scr_Map::CurrProto()

@@ -25,9 +25,18 @@
 		<file alias="e-ip-active.png">images/e-ip-active.png</file>
 		<file alias="e-ip-error.png">images/e-ip-error.png</file>
 		<file alias="h-line.png">images/h-line.png</file>
+		
 		<file alias="connect-status-green.png">images/connect-status-green.png</file>
 		<file alias="connect-status-yellow.png">images/connect-status-yellow.png</file>
 		<file alias="connect-status-red.png">images/connect-status-red.png</file>
+		<file alias="connect-status-y-auth.png">images/connect-status-y-auth.png</file>
+		<file alias="connect-status-y-config.png">images/connect-status-y-config.png</file>
+		<file alias="connect-status-y-ip.png">images/connect-status-y-ip.png</file>
+		<file alias="connect-status-y-connect.png">images/connect-status-y-connect.png</file>
+		<file alias="connect-status-y-resolve.png">images/connect-status-y-resolve.png</file>
+		<file alias="connect-status-y-wait.png">images/connect-status-y-wait.png</file>
+		<file alias="connect-status-y-reconn.png">images/connect-status-y-reconn.png</file>
+		
 		<file alias="ballance.png">images/ballance.png</file>
 		<file alias="v-line-short.png">images/v-line-short.png</file>
 		<file alias="v-line-settings.png">images/v-line-settings.png</file>

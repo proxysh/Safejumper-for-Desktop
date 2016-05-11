@@ -34,6 +34,7 @@ QString PathHelper::OpenvpnPathfilename()
 		_openvpn = "c:/Program Files/OpenVPN/bin/openvpn.exe";
 #else	// Q_OS_LINUX
 		_openvpn = "/opt/safejumper/openvpn";
+#if 0		// for ECC
 		QProcess pr;
 		pr.start("which openvpn");
 		pr.waitForFinished(3000);	// 3s
@@ -58,8 +59,13 @@ QString PathHelper::OpenvpnPathfilename()
 			else
 				_openvpn = "/opt/safejumper/openvpn";		// default location of onboard file
 		}
-QString sb("Linux OpenVpn binary is: " + _openvpn);
+QString sb("Linux OpenVpn binary is: " + _openvpn + "\n");
 printf("%s", sb.toStdString().c_str());
+
+
+	_openvpn = "/home/aa/scr/qt/build-safejumper-Desktop_Qt_5_5_0_GCC_64bit-Debug/openvpn";
+#endif	//	0
+
 
 #endif
 #endif

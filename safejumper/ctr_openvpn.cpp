@@ -60,8 +60,16 @@ void Ctr_Openvpn::StartImpl()
 	if (AuthManager::Instance()->IsLoggedin())
 	{
 		SetState(ovsConnecting);
+		int enc = Setting::Encryption();
+		bool obfs =  enc == ENCRYPTION_OBFS_TOR;
 		try
 		{
+			if (obfs)
+			{
+				OsSpecific::Instance()->RunObfs();
+				if (!OsSpecific::Instance()->IsObfsRunning())
+					throw std::runtime_error("Cannot run Obfs proxy");
+			}
 			OsSpecific::Instance()->SetIPv6(!Setting::Instance()->IsDisableIPv6());
 #ifdef Q_OS_WIN
 			OsSpecific::Instance()->EnableTap();
@@ -80,7 +88,7 @@ void Ctr_Openvpn::StartImpl()
 		_LocalAddr = "127.0.0.1";
 		_LocalPort = Setting::Instance()->LocalPort().toInt();
 
-		AuthManager::Instance()->SetNewIp("");
+//		AuthManager::Instance()->SetNewIp("");
 		_tunerr = false;
 		_err = false;
 		_processing = false;
@@ -93,44 +101,93 @@ void Ctr_Openvpn::StartImpl()
 		RemoveSoc();
 #ifndef NO_PARAMFILE
 		QFile ff(PathHelper::Instance()->OpenvpnConfigPfn());
-		if (ff.open(QIODevice::WriteOnly))
-		{
-			ff.write("client\n");
-			ff.write("dev tun\n");
-			ff.write("proto "); ff.write(Setting::Instance()->Protocol().toLatin1()); ff.write("\n");		// "tcp"/"udp"
-			ff.write("remote "); ff.write(Setting::Instance()->Server().toLatin1()); ff.write(" "); ff.write(Setting::Instance()->Port().toLatin1()); ff.write("\n");
-			ff.write("cipher AES-256-CBC\n");
-			ff.write("auth SHA512\n");
-			ff.write("auth-user-pass\n");
-			ff.write("remote-cert-tls server\n");
-			ff.write("resolv-retry infinite\n");
-			ff.write("nobind\n");
-			ff.write("comp-lzo\n");
-			ff.write("verb 3\n");
-			ff.write("reneg-sec 0\n");
-			ff.write("route-method exe\n");
-			ff.write("route-delay 2\n");
-#ifdef Q_OS_WIN
-			if (Setting::Instance()->IsFixDns())
-			{
-				if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS10)
-					ff.write("plugin fix-dns-leak-32.dll\n");
-			}
-#endif
-
-//ff.write("dhcp-option DNS 146.185.134.104\n");
-//ff.write("dhcp-option DNS 146.185.134.104\n");
-
-			ff.flush();
-			ff.close();
-		}
-		else
+		if (!ff.open(QIODevice::WriteOnly))
 		{
 			QString se = "Cannot write config file '" + PathHelper::Instance()->OpenvpnConfigPfn() + "'";
 			log::logt(se);
 			WndManager::Instance()->ErrMsg(se);
 			return;
 		}
+		ff.write("client\n");
+		ff.write("dev tun\n");
+		ff.write("proto "); ff.write(Setting::Instance()->Protocol().toLatin1()); ff.write("\n");		// "tcp"/"udp"
+//ff.write("proto udp\n");
+//ff.write("proto tcp\n");
+		
+		ff.write("remote "); ff.write(Setting::Instance()->Server().toLatin1()); ff.write(" "); ff.write(Setting::Instance()->Port().toLatin1()); ff.write("\n");
+
+//ff.write("remote 176.67.168.144 465\n");	// france 7
+//ff.write("remote 217.18.246.133 465\n");		// levski.proxy.sh
+
+//ff.write("remote 176.9.137.187 465\n");	// germany 9 :ecc
+
+//ff.write("remote 176.67.168.144 995\n");	// ecc+xor
+
+		ff.write("cipher AES-256-CBC\n");
+		ff.write("auth SHA512\n");
+		ff.write("auth-user-pass\n");
+		ff.write("remote-cert-tls server\n");
+		ff.write("resolv-retry infinite\n");
+		ff.write("nobind\n");
+		ff.write("comp-lzo\n");
+		ff.write("verb 3\n");
+		ff.write("reneg-sec 0\n");
+		ff.write("route-method exe\n");
+		ff.write("route-delay 2\n");
+
+		if (enc == ENCRYPTION_ECC || enc == ENCRYPTION_ECCXOR)
+		{
+//			ff.write("tls-cipher ECDHE-ECDSA-AES256-GCM-SHA384\n");
+		ff.write("tls-cipher TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SHA384\n");
+		
+		//ff.write("tls-cipher ECDH\n");
+		//ff.write("tls-cipher !ECDH\n");
+		
+			ff.write("ecdh-curve secp384r1\n");
+		
+			if (ENCRYPTION_ECCXOR == enc)
+				ff.write("scramble obfuscate 0054D65beN6r2kd\n");
+				
+			// TODO: -1 download cert from https://proxy.sh/proxysh-ecc.crt
+			ff.write(
+				"<ca>\n"
+				"-----BEGIN CERTIFICATE-----\n"
+				"MIIB3DCCAWKgAwIBAgIJAMyliDCXM4kcMAoGCCqGSM49BAMCMBMxETAPBgNVBAMT\n"
+				"CHByb3h5LnNoMB4XDTE0MTExMzExNTk1NVoXDTI0MTExMDExNTk1NVowEzERMA8G\n"
+				"A1UEAxMIcHJveHkuc2gwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAATwczmfgxUfobt/\n"
+				"7S+A2P1tYNOYATTpxcIEAtUVCgywp1Fd6tKAttCqvpHz8PDOb4NYS6JONivO5yaT\n"
+				"jfDiTrWRGZeYf2JsNs6byv/A9qxvDCcJ49EotonMJYX4+TQq75ejgYEwfzAdBgNV\n"
+				"HQ4EFgQU6miAiqVUQAYeUP4LnZfKNdfQjUkwQwYDVR0jBDwwOoAU6miAiqVUQAYe\n"
+				"UP4LnZfKNdfQjUmhF6QVMBMxETAPBgNVBAMTCHByb3h5LnNoggkAzKWIMJcziRww\n"
+				"DAYDVR0TBAUwAwEB/zALBgNVHQ8EBAMCAQYwCgYIKoZIzj0EAwIDaAAwZQIwd5vR\n"
+				"8fTrEdXLKZjiXeCjH/vxnnbelGcgpFz/r0cdr8YISa20w2zfGVB1+8XRhaYHAjEA\n"
+				"yZeceiNW01Uj7DnjgWdLJWxcuduP1eTojzcQTGcFRPGd45w6pM1oGvLBhCD+QDzw\n"
+				"-----END CERTIFICATE-----\n"
+				"</ca>\n"
+				);
+		}
+
+#ifdef Q_OS_WIN
+		if (Setting::Instance()->IsFixDns())
+		{
+			if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS10)
+				ff.write("plugin fix-dns-leak-32.dll\n");
+		}
+#endif
+
+//ff.write("dhcp-option DNS 146.185.134.104\n");
+//ff.write("dhcp-option DNS 146.185.134.104\n");
+
+		if (obfs)
+		{
+// TODO: -0 OS
+			ff.write("socks-proxy-retry\n");
+			ff.write("socks-proxy 127.0.0.1 1050\n");
+			ff.write("route "); ff.write(Setting::Instance()->Server().toLatin1()); ff.write(" 255.255.255.255 net_gateway\n");
+		}
+
+		ff.flush();
+		ff.close();
 #endif	// NO_PARAMFILE
 
 		QStringList args;
@@ -163,10 +220,7 @@ void Ctr_Openvpn::StartImpl()
 << "--nobind"
 << "--persist-key"
 << "--persist-tun"
-#endif
 
-			<< "--ca" << PathHelper::Instance()->ProxyshCaCert()	// /tmp/proxysh.crt
-#ifdef NO_PARAMFILE
 << "--verb" << "3"
 << "--comp-lzo"
 << "--route-delay" << "2"
@@ -186,10 +240,11 @@ void Ctr_Openvpn::StartImpl()
 			<< "--down" << PathHelper::Instance()->DownScriptPfn()		// /Applications/Safejumper.app/Contents/Resources/client.down.safejumper.sh
 #endif
 			<< "--up-restart"
-
 		;
 
-
+		// TODO: -1 download cert from proxy.sh
+		if (enc != ENCRYPTION_ECC && enc != ENCRYPTION_ECCXOR)
+			args << "--ca" << PathHelper::Instance()->ProxyshCaCert();	// /tmp/proxysh.crt
 
 		if (Setting::Instance()->IsFixDns() || !Setting::Instance()->Dns1().isEmpty() || !Setting::Instance()->Dns2().isEmpty())
 			OsSpecific::Instance()->FixDnsLeak();
@@ -425,12 +480,14 @@ void Ctr_Openvpn::GotConnected(const QString & s)
 	SetState(ovsConnected);
 	// extract IP
 	//1432176303,CONNECTED,SUCCESS,10.14.0.6,91.219.237.159
+	// 1460435651,CONNECTED,SUCCESS,10.200.1.6,85.236.153.236,465,192.168.58.170,35331	
 	int p = -1;
 	for (int k = 0; k < 4; ++k)
 		p = s.indexOf(',', p + 1);
 	if (p > -1)
 	{
-		QString ip = s.mid(p + 1);
+		int p1 = s.indexOf(',', p + 1);
+		QString ip = p1 > -1 ? s.mid(p + 1, p1 - p - 1) : s.mid(p + 1);
 		AuthManager::Instance()->SetNewIp(ip);
 	}
 
@@ -728,8 +785,8 @@ void Ctr_Openvpn::ProcessStateWord(const QString & word, const QString & s)
 		WndManager::Instance()->HandleState(word);
 	} else { if (word.compare("WAIT", Qt::CaseInsensitive) == 0) {
 		WndManager::Instance()->HandleState(word);
-	} else { if (word.compare("AUTH", Qt::CaseInsensitive) == 0) {
-		WndManager::Instance()->HandleState(word);
+//	} else { if (word.compare("AUTH", Qt::CaseInsensitive) == 0) {
+//		WndManager::Instance()->HandleState(word);
 	} else { if (word.compare("EXITING", Qt::CaseInsensitive) == 0) {
 		if (Setting::Instance()->IsReconnect())
 		{	// initiate autoreconnect
@@ -762,7 +819,7 @@ void Ctr_Openvpn::ProcessStateWord(const QString & word, const QString & s)
 		}
 	} else {
 		WndManager::Instance()->HandleState(word);
-	}}}}}}}}}}}
+	}}}}}}}}}}
 	_prev_st_word = word;
 }
 

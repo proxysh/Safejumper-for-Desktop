@@ -113,25 +113,13 @@ void SjMainWindow::Timer_Constructed()
 
 	Scr_Logs * l = Scr_Logs::Instance();
 
-//	QPoint p0 =
-
-//	QPoint p1 = pos();
-//	if (p0 != p1)
-//	{
-//		log::logt("Non equal! Move back;");
-//		move(p0);
-//	}
-
 	qApp->installEventFilter(this);
-//	QPoint p2 = pos();
-//	if (p0 != p2)
-//		log::logt("Main Window position bug detected");
 
 	if (l->IsExists())		// force construction
 	if (Ctr_Openvpn::Instance()->IsOvRunning())
 		Ctr_Openvpn::Instance()->KillRunningOV();
 
-	AuthManager::Instance()->DetermineOldIp();		// new thread
+	AuthManager::Instance()->DetermineOldIp();
 
 	if (Setting::Instance()->IsCheckForUpdates())
 	{
@@ -619,6 +607,36 @@ void SjMainWindow::DoConnect()
 	Ctr_Openvpn::Instance()->Start();
 }
 
+void SjMainWindow::Finished_ObfsName()
+{
+	QString errmsg;
+	bool ok = AuthManager::Instance()->ProcessXml_ObfsName(errmsg);
+	if (!ok)
+		log::logt(errmsg);
+}
+
+void SjMainWindow::Finished_EccName()
+{
+	QString errmsg;
+	bool ok = AuthManager::Instance()->ProcessXml_EccName(errmsg);
+	if (!ok)
+		log::logt(errmsg);
+	else
+	{
+		int enc = Setting::Encryption();
+		if (ENCRYPTION_ECC == enc || ENCRYPTION_ECCXOR == enc)
+			Setting::Instance()->LoadServer();
+	}
+}
+
+//void SjMainWindow::Finished_EccxorName()
+//{
+//	QString errmsg;
+//	bool ok = AuthManager::Instance()->ProcessXml_EccxorName(errmsg);
+//	if (!ok)
+//		log::logt(errmsg);
+//}
+
 void SjMainWindow::AccTypeFinished()
 {
 	QString errmsg;
@@ -644,15 +662,19 @@ void SjMainWindow::LoginFinished()
 	{
 		SaveCreds();
 
-		{
-			SETTINGS_OBJ;
-			int ix = settings.value("dd_Protocol_ix", -1).toInt();
-			if (ix < 0)
-			{
-log::logt("sleeping 3");
-				QThread::sleep(3);		// if first run: wait for pings  - to get adequate jump
-			}
-		}
+		if (Setting::Encryption() == ENCRYPTION_RSA)
+			Setting::Instance()->LoadServer();
+		
+		// TODO: -0
+//		{
+//			SETTINGS_OBJ;
+//			int ix = settings.value("dd_Protocol_ix", -1).toInt();
+//			if (ix < 0)
+//			{
+//log::logt("sleeping 3");
+//				QThread::sleep(3);		// if first run: wait for pings  - to get adequate jump
+//			}
+//		}
 		WndManager::Instance()->ToPrimary();
 		EnableButtonsOnLogin();
 		ConstructConnecttoMenu();
@@ -691,7 +713,7 @@ void SjMainWindow::ConstructConnecttoMenu()
 		{
 			ClearConnecttoMenu();
 
-			const std::vector<AServer> & hubs = am->GetHubs();
+			const std::vector<size_t> & hubs = am->GetHubs();
 			if (_ct_menu.get() == NULL)		// one time during entire program run
 			{
 				_ct_menu.reset(_TrayMenu->addMenu("Connect to ..."));
@@ -704,7 +726,10 @@ void SjMainWindow::ConstructConnecttoMenu()
 			if (!Setting::Instance()->IsShowNodes())
 			{
 				for (size_t k = 0; k < hubs.size(); ++k)
-					CreateMenuItem(_ct_menu.get(), hubs[k].name, am->ServerIdFromHubId(k));
+				{
+					AServer sr = am->GetSrv(hubs[k]);
+					CreateMenuItem(_ct_menu.get(), sr.name, hubs[k]);//am->ServerIdFromHubId(k));
+				}
 			}
 			else
 			{

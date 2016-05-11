@@ -802,7 +802,7 @@ border-image: url(:/imgs/e-ip-active.png);
     </widget>
     <widget class="QComboBox" name="dd_Encryption">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -823,7 +823,7 @@ border-image: url(:/imgs/e-ip-active.png);
 {
 color: #444444;
 
-border-image: url(:/imgs/dd-encryption.png);
+border-image: url(:/imgs/dd-protocol.png);
 }
 QComboBox QAbstractItemView 
 {
@@ -862,6 +862,9 @@ QComboBox::drop-down {
 	border-image: none;
 }
 </string>
+     </property>
+     <property name="currentText">
+      <string>Encryption</string>
      </property>
      <item>
       <property name="text">
@@ -1094,7 +1097,7 @@ background: transparent;
     <widget class="QListView" name="lv_Encryption">
      <property name="geometry">
       <rect>
-       <x>-10</x>
+       <x>0</x>
        <y>300</y>
        <width>256</width>
        <height>192</height>
@@ -1120,7 +1123,8 @@ background: solid #f7f7f7;
 }
 QListView::item:selected
 {
-border-image: url(:/imgs/dd-encryption-selection.png);
+color: #FFFFFF;
+border-image: url(:/imgs/dd-selectionrow.png);
 }</string>
      </property>
     </widget>

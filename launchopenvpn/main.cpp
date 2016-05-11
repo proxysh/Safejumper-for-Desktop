@@ -1,4 +1,4 @@
-#include <QApplication>
+//#include <QApplication>
 #include <QTimer>
 #include <QFile>
 #include <QFileInfo>
@@ -41,7 +41,9 @@ printf("@@@@@@@@@@@@\n");
 #ifdef Q_OS_MAC
 	pfnOV = fi.canonicalPath() + PathHelper::Instance()->OvRelativePfn();	// "/openvpn/openvpn-2.3.2/openvpn-executable";
 #else
-	pfnOV = PathHelper::Instance()->OpenvpnPathfilename();
+	pfnOV = PathHelper::Instance()->OpenvpnPathfilename() 
+//+ ".sh"
+	;
 #endif		// Q_OS_MAC
 	//QString pfnov = "/Users/aa/src/qt/build-safejumper-Debug/Safejumper.app/Contents/Resources/openvpn/openvpn-2.3.2/openvpn-executable";
 	return 0;

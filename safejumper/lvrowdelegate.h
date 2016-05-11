@@ -1,11 +1,7 @@
 #ifndef LVROWDELEGATE_H
 #define LVROWDELEGATE_H
 
-#include <QObject>
 #include <QStyledItemDelegate>
-//#include <QItemDelegate>
-
-
 
 class LvRowDelegate : public QStyledItemDelegate
 {

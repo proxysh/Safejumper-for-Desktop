@@ -124,6 +124,9 @@ public slots:
 	void Finished_OldIpHttp();
 	void Finished_Dns();
 	void Finished_Updates();
+	void Finished_ObfsName();
+	void Finished_EccName();
+//	void Finished_EccxorName();
 
 	void Soc_Error(QAbstractSocket::SocketError er);
 	void Soc_ReadyRead();

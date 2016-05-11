@@ -23,9 +23,12 @@ public:
 	~Scr_Map();
 
 	int CurrSrv();	  // -1 if not selected, otherwise [0-...] id of server inside auth manager
+	int SrvIxFromLineIx(int row_id);		// [0, size()) , omit first row ' -- select location -- '
+	bool UseSrvColl() { return _UseSrvColl; }
 	int CurrProto();	// -1 if not selected, otherwise [0-...] id of protocol inside Settings
 
 	void RePopulateLocations();		// TODO: -1 methods to update particular row with new ping/load%
+	void RePopulateProtocols();
 	void SetServer(int ixsrv);
 	void SetProtocol(int ix);
 	void StatusConnecting();
@@ -38,13 +41,17 @@ private:
 	Ui::Scr_Map *ui;
 	static std::auto_ptr<Scr_Map> _inst;
 	explicit Scr_Map(QWidget *parent = 0);
-	bool _IsShowNodes;	  // remember for which srv/hub the list was populated; in settings maybe inadequate due to refill during settings change
+	bool _IsShowNodes;		// remember for which srv/hub the list was populated; in settings maybe inadequate due to refill during settings change
+	int _Encryption;				// remember encryption when list was populated
+	bool _UseSrvColl;
+	std::vector<int> _srvIds;
 	void DisplayMark(const QString & name);
 	QPoint _default;
 	void SetRowStyle(bool show_nodes);
 	bool _moving;
 	QPoint _WndStart;
 	QPoint _CursorStart;
+	bool _repopulation_inprogress;
 
 private slots:
 	void ToScr_Connect();

@@ -25,7 +25,7 @@
 #endif
 
 #ifndef uint64_t
-
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

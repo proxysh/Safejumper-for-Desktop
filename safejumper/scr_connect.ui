@@ -1398,6 +1398,32 @@ QPushButton:pressed
      <string/>
     </property>
    </widget>
+   <widget class="QPushButton" name="b_Row_Encryption">
+    <property name="geometry">
+     <rect>
+      <x>215</x>
+      <y>130</y>
+      <width>131</width>
+      <height>43</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton
+{
+	border:0px;
+	border-image: url(:/imgs/cb-empty.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
    <zorder>b_Cancel</zorder>
    <zorder>b_FlagBox</zorder>
    <zorder>b_Connect</zorder>
@@ -1430,6 +1456,7 @@ QPushButton:pressed
    <zorder>b_Row_Ip</zorder>
    <zorder>b_Row_Country</zorder>
    <zorder>b_Row_Protocol</zorder>
+   <zorder>b_Row_Encryption</zorder>
   </widget>
   <widget class="QFrame" name="frameHead">
    <property name="geometry">
@@ -1771,6 +1798,22 @@ QPushButton:pressed
     <hint type="sourcelabel">
      <x>64</x>
      <y>303</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>187</x>
+     <y>168</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>b_Row_Encryption</sender>
+   <signal>clicked()</signal>
+   <receiver>Scr_Connect</receiver>
+   <slot>ToScr_Settings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>280</x>
+     <y>240</y>
     </hint>
     <hint type="destinationlabel">
      <x>187</x>

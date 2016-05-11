@@ -35,6 +35,7 @@ public:
 
 	void SaveProt(int ix);  // -1 for not selected
 	int LoadProt();
+	int CurrProto();			// -1 if none selected
 
 	QString Server();			// "" if none
 	QString Port();				// "" if none
@@ -50,6 +51,7 @@ public:
 
 	static const std::vector<QString> & GetAllProt();
 	static const QString & ProtoStr(int ix);
+	const QString & CurrProtoStr();
 
 	UVec ForwardPorts();		// load from the GUI; parse errors skipped - GUI should handle errors; empty vector if none
 
@@ -59,12 +61,24 @@ public:
 	void SwitchToNextPort();
 	void SwitchToNextNode();
 
+	static int Encryption();
+	
+	static const char * EncText(size_t enc);
+
 private:
 	Setting();
 	static std::auto_ptr<Setting> _inst;
-	static std::vector<QString> _protocols;
+	static std::vector<QString> _protocols[ENCRYPTION_COUNT];
+	static std::vector<int> _ports[ENCRYPTION_COUNT];
 
 	QString _default_dns[2];
+	static void PopulateColls(std::vector<QString> & v_strs, std::vector<int> & v_ports, size_t sz, const char ** protocols, const int * ports);
+
+	QString ProtocolSettingsName();
+	QString ProtocolSettingsStrName();
+	QString EncryptionIx();
+	QString LocationSettingsName();
+	QString LocationSettingsStrName();
 };
 
 #endif // SETTING_H
