@@ -149,7 +149,7 @@
 		<file alias="close-grey.png">icons-tm/close-grey.png</file>
 		<file alias="close-red.png">icons-tm/close-red.png</file>
 		<file alias="connect-grey.png">icons-tm/connect-grey.png</file>
-		<file alias="connect-red.png">icons-tm/connect-red.png</file>
+
 		<file alias="country-grey.png">icons-tm/country-grey.png</file>
 		<file alias="country-red.png">icons-tm/country-red.png</file>
 		<file alias="disconnect-grey.png">icons-tm/disconnect-grey.png</file>
