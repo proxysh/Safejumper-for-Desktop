@@ -327,22 +327,20 @@ void Scr_Map::Clicked_b_Connect()
 
 void Scr_Map::Clicked_b_Tmp()
 {
-	QString s;
-	 int x = ui->e_x->text().toInt();
-	 int y = ui->e_y->text().toInt();
-	 //s.sprintf("%u, %u", _curr.x(), _curr.y());
-	 s.sprintf("%u, %u", x, y);
-	 qDebug() << s;
+//	QString s;
+//	 int x = ui->e_x->text().toInt();
+//	 int y = ui->e_y->text().toInt();
+//	 //s.sprintf("%u, %u", _curr.x(), _curr.y());
+//	 s.sprintf("%u, %u", x, y);
+//	 qDebug() << s;
 }
 
-
-
-// Implement in your widget
-void Scr_Map::mouseMoveEvent(QMouseEvent *event){
-   _curr = event->pos();
-	QString s;
-   s.sprintf("%u, %u", _curr.x(), _curr.y());
-	this->setWindowTitle(s);
+void Scr_Map::mouseMoveEvent(QMouseEvent *event)
+{
+//   _curr = event->pos();
+//	QString s;
+//   s.sprintf("%u, %u", _curr.x(), _curr.y());
+//	this->setWindowTitle(s);
 }
 
 static const char * const gs_stIcon1 = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-1.png);\n}";
