@@ -1328,8 +1328,8 @@ void AuthManager::ProcessOldIp(QString ip)
 {
 	_oldip = ip;
 	delete _th_oldip.release();
-	// do not push value - Scr_Connect was not constructed yet
-	//	Scr_Connect::Instance()->SetOldIp(_oldip);
+	if (Scr_Connect::IsExists())
+		Scr_Connect::Instance()->SetOldIp(_oldip);
 }
 
 void AuthManager::ProcessOldIpHttp()

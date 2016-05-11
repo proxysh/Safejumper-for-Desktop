@@ -865,6 +865,7 @@ void SjMainWindow::Finished_OldIpHttp()
 
 void SjMainWindow::Finished_OldIp(const QString & s)
 {
+	log::logt("Finished_OldIp: " + s);
 	AuthManager::Instance()->ProcessOldIp(s);
 }
 
