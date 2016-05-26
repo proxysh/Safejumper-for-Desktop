@@ -18,8 +18,14 @@ enum OvState
 	ovsTotal
 };
 
-#define G_PortQuestionDelay 60
-#define G_PortIterationDelay 80
+#define G_Delay_PortQuestion 60
+#define G_Delay_PortIteration 80
+
+#define G_Max_Reconnect 20
+
+// only 5 seconds for each TCP connection
+#define G_Delay_OneCheck 30
+#define G_Max_Reconnect 3
 
 class Ctr_Openvpn
 {
@@ -54,6 +60,13 @@ public:
 
 	void Timer_Reconnect();
 	void StartPortLoop(bool port);		// true - cycle ports; false - cycle nodes
+#ifdef MONITOR_TOOL
+	void StopLoop();
+	bool IsErr() { return _err; }
+	QString ErrMsg() { return _err_msg; }
+	bool IsInNextPort() { return _InNextPort; }
+#endif	// MONITOR_TOOL
+
 private:
 	Ctr_Openvpn();
 	static std::auto_ptr<Ctr_Openvpn> _inst;
@@ -78,6 +91,10 @@ private:
 	void GotTunErr(const QString & s);
 	bool _tunerr;
 	bool _err;
+#ifdef MONITOR_TOOL
+	QString _err_msg;
+#endif// MONITOR_TOOL
+
 
 	void ProcessLine(QString s);
 	void ProcessRtWord(const QString & word, const QString & s);
@@ -91,6 +108,12 @@ private:
 
 	void ReconnectTimer();
 	int _reconnect_attempt;
+#ifdef MONITOR_TOOL
+	int _attempt;
+	void ReconnectIfMax();
+	bool _StopLoop;
+	bool _InNextPort;
+#endif	// MONITOR_TOOL
 	bool _PortDlgShown;
 	uint _dtStart;
 	bool _InPortLoop;

@@ -88,7 +88,7 @@ public:
 
 	uint64_t GetRnd64();
 
-	bool ProcessServersXml(QString & out_msg);	// true = ok, empty msg on ok
+	bool ProcessXml_Servers(QString & out_msg);	// true = ok, empty msg on ok
 	bool ProcessXml_ObfsName(QString & out_msg);
 	bool ProcessXml_EccName(QString & out_msg);
 	bool ProcessAccountXml(QString & out_msg);

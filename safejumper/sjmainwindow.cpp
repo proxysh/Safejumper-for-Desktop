@@ -13,6 +13,10 @@
 #include "dlg_error.h"
 #include "dlg_confirmation.h"
 
+#ifdef MONITOR_TOOL
+#include "scr_table.h"
+#endif	// MONITOR_TOOL
+
 #include "authmanager.h"
 #include "wndmanager.h"
 #include "common.h"
@@ -168,6 +172,9 @@ SjMainWindow::~SjMainWindow()
 	Scr_Settings::Cleanup();
 	Setting::Cleanup();
 	WndManager::Cleanup();
+#ifdef MONITOR_TOOL
+	Scr_Table::Cleanup();
+#endif	// MONITOR_TOOL
 
 	delete ui;
 }
@@ -657,7 +664,7 @@ void SjMainWindow::LoginFinished()
 {
 	QString msg;
 
-	bool ok = AuthManager::Instance()->ProcessServersXml(msg);
+	bool ok = AuthManager::Instance()->ProcessXml_Servers(msg);
 	if (ok)
 	{
 		SaveCreds();
@@ -881,6 +888,7 @@ void SjMainWindow::Soc_Error(QAbstractSocket::SocketError er)
 
 void SjMainWindow::Soc_ReadyRead()
 {
+//	log::logt("SjMainWindow::Soc_ReadyRead()");
 	Ctr_Openvpn::Instance()->Soc_ReadyRead();
 }
 

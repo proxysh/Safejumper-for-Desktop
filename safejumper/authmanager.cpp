@@ -966,7 +966,7 @@ bool AuthManager::IsObfs(int id)
 	return b;
 }
 
-bool AuthManager::ProcessServersXml(QString & msg)
+bool AuthManager::ProcessXml_Servers(QString & msg)
 {
 	ClearColls();
 	msg.clear();
@@ -1301,15 +1301,15 @@ void AuthManager::Jump()
 void AuthManager::DetermineOldIp()
 {
 	// start http request to proxy.sh
-//	StartDwnl_OldIp();
+	StartDwnl_OldIp();
 
 	// omit STUN due to it does not always work
-	if (_th_oldip.get() == NULL)
-	{
-		_th_oldip.reset(new Thread_OldIp(SjMainWindow::Instance()));
-		SjMainWindow::Instance()->connect(_th_oldip.get(), &Thread_OldIp::resultReady, SjMainWindow::Instance(), &SjMainWindow::Finished_OldIp);
-		_th_oldip->start();
-	}
+//	if (_th_oldip.get() == NULL)
+//	{
+//		_th_oldip.reset(new Thread_OldIp(SjMainWindow::Instance()));
+//		SjMainWindow::Instance()->connect(_th_oldip.get(), &Thread_OldIp::resultReady, SjMainWindow::Instance(), &SjMainWindow::Finished_OldIp);
+//		_th_oldip->start();
+//	}
 
 }
 

@@ -1100,7 +1100,7 @@ background: transparent;
        <x>0</x>
        <y>300</y>
        <width>256</width>
-       <height>192</height>
+       <height>250</height>
       </rect>
      </property>
      <property name="font">
@@ -1113,6 +1113,7 @@ background: transparent;
       <string notr="true">QListView
 {
 background: solid #f7f7f7;
+height: 300;
 }
 QListView::item 
 {

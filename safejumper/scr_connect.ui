@@ -761,7 +761,7 @@ background: transparent;
    <widget class="QLabel" name="L_LOAD">
     <property name="geometry">
      <rect>
-      <x>96</x>
+      <x>100</x>
       <y>35</y>
       <width>40</width>
       <height>16</height>

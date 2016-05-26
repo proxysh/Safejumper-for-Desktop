@@ -38,6 +38,7 @@ public:
 	int CurrProto();			// -1 if none selected
 
 	QString Server();			// "" if none
+	int ServerID();				// -1 if none selected
 	QString Port();				// "" if none
 	QString LocalPort();
 	QString Protocol();			// "tcp" : "udp"
@@ -50,6 +51,7 @@ public:
 	QString DefaultDns2() { return _default_dns[1]; }
 
 	static const std::vector<QString> & GetAllProt();
+	static const std::vector<int> & GetAllPorts();
 	static const QString & ProtoStr(int ix);
 	const QString & CurrProtoStr();
 
@@ -61,9 +63,18 @@ public:
 	void SwitchToNextPort();
 	void SwitchToNextNode();
 
+#ifdef MONITOR_TOOL
+	void InitLoop();
+	// enumerate all the ports and then switch to next node
+	// return false after one full cycle
+	bool SwitchToNext();
+#endif	// MONITOR_TOOL
+
 	static int Encryption();
 	
 	static const char * EncText(size_t enc);
+
+
 
 private:
 	Setting();
@@ -79,6 +90,11 @@ private:
 	QString EncryptionIx();
 	QString LocationSettingsName();
 	QString LocationSettingsStrName();
+#ifdef MONITOR_TOOL
+	int _ixStartPort;
+	int _idStartNode;
+#endif	// MONITOR_TOOL
+	int DetermineNextPort();
 };
 
 #endif // SETTING_H

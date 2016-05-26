@@ -9,6 +9,12 @@
 #include "scr_map.h"
 #include "scr_logs.h"
 #include "scr_connect.h"
+
+#ifdef MONITOR_TOOL
+#include "scr_table.h"
+#include "setting.h"
+#endif	// MONITOR_TOOL
+
 #include "authmanager.h"
 #include "retina.h"
 #include "dlg_error.h"
@@ -184,6 +190,13 @@ void WndManager::SaveAndHide(QWidget * from)
 	from->hide();
 }
 
+void WndManager::ShowTable()
+{
+#ifdef MONITOR_TOOL
+	Scr_Table::Instance()->show();
+#endif	// MONITOR_TOOL
+}
+
 void WndManager::HideThis(QWidget * scr)
 {
 	SaveAndHide(scr);
@@ -270,10 +283,11 @@ void WndManager::HandleConnecting()
 	SjMainWindow::Instance()->StatusConnecting();
 
 	// if any form visible
+#ifndef MONITOR_TOOL
 	QWidget * w = ScrVisible();
 	if (NULL != w)  // switch to Scr_Connect
 		ToPrimary();
-
+#endif	// MONITOR_TOOL
 	// disable menu buttons
 
 	// change tray icon
@@ -285,6 +299,10 @@ void WndManager::HandleConnected()
 	ClosePortDlg();
 	Scr_Connect::Instance()->StatusConnected();
 	SjMainWindow::Instance()->StatusConnected();
+
+#ifdef MONITOR_TOOL
+	Scr_Table::Instance()->SetStatus(Setting::Encryption(), Setting::Instance()->ServerID(), Setting::Instance()->CurrProto(), snsConnected);
+#endif	// MONITOR_TOOL
 }
 
 void WndManager::HandleDisconnected()
@@ -294,6 +312,17 @@ void WndManager::HandleDisconnected()
 		Scr_Map::Instance()->StatusDisconnected();
 	SjMainWindow::Instance()->StatusDisconnected();
 	// TODO: -0
+
+#ifdef MONITOR_TOOL
+	if (!Ctr_Openvpn::Instance()->IsInNextPort())
+	{
+		if (Ctr_Openvpn::Instance()->IsErr())
+			Scr_Table::Instance()->SetStatus(Setting::Encryption(), Setting::Instance()->ServerID(), Setting::Instance()->CurrProto(), Ctr_Openvpn::Instance()->ErrMsg());
+		else
+			Scr_Table::Instance()->SetStatus(Setting::Encryption(), Setting::Instance()->ServerID(), Setting::Instance()->CurrProto(), snsDown);
+	}
+#endif	// MONITOR_TOOL
+
 }
 
 void WndManager::HandleState(const QString & word)
@@ -303,9 +332,11 @@ void WndManager::HandleState(const QString & word)
 
 void WndManager::ErrMsg(const QString & msg)
 {
+#ifndef MONITOR_TOOL
 	this->ToPrimary();
 	Dlg_Error dlg(msg, "Error", this->ScrVisible());
 	dlg.exec();
+#endif	// MONITOR_TOOL
 }
 
 int WndManager::Confirmation(const QString & msg)

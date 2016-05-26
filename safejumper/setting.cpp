@@ -136,6 +136,20 @@ const std::vector<QString> & Setting::GetAllProt()
 	return _protocols[enc];
 }
 
+const std::vector<int> & Setting::GetAllPorts()
+{
+	const std::vector<QString> & pr = GetAllProt();		// force init
+	if (!pr.empty())
+	{
+		int enc = Encryption();
+		return _ports[enc];
+	}
+	else
+	{
+		return _ports[0];
+	}
+}
+
 std::auto_ptr<Setting> Setting::_inst;
 Setting * Setting::Instance()
 {
@@ -362,6 +376,11 @@ QString Setting::Server()
 	return s;
 }
 
+int Setting::ServerID()
+{
+	return Scr_Map::Instance()->CurrSrv();
+}
+
 QString Setting::Port()
 {
 	int ix = Scr_Map::Instance()->CurrProto();
@@ -375,7 +394,54 @@ QString Setting::Port()
 	return QString::number(p);
 }
 
-void Setting::SwitchToNextPort()
+#ifdef MONITOR_TOOL
+void Setting::InitLoop()
+{
+	_ixStartPort = Scr_Map::Instance()->CurrProto();
+	if (_ixStartPort < 0)
+	{
+		_ixStartPort = 0;
+		Scr_Map::Instance()->SetProtocol(_ixStartPort);
+	}
+
+	_idStartNode = Scr_Map::Instance()->CurrSrv();		// -1 if not selected
+	if (_idStartNode < 0)
+	{
+		const std::vector<size_t> & srvs = AuthManager::Instance()->GetAllServers();
+		if (!srvs.empty())
+		{
+			_idStartNode = srvs.front();
+			Scr_Map::Instance()->SetServer(_idStartNode);
+		}
+	}
+}
+
+bool Setting::SwitchToNext()
+{
+	bool NotAllProcessed = true;
+	int ix = DetermineNextPort();
+	if (ix != _ixStartPort)
+	{
+		Scr_Map::Instance()->SetProtocol(ix);
+	}
+	else
+	{
+		_ixStartPort = 0;
+		Scr_Map::Instance()->SetProtocol(_ixStartPort);
+		Scr_Map::Instance()->SwitchToNextNode();
+
+		int idSrv = Scr_Map::Instance()->CurrSrv();		// -1 if not selected
+		if (_idStartNode == idSrv)
+		{
+			// TODO: -1 change encryption
+			NotAllProcessed = false;
+		}
+	}
+	return NotAllProcessed;
+}
+#endif	// MONITOR_TOOL
+
+int Setting::DetermineNextPort()
 {
 	int ix = Scr_Map::Instance()->CurrProto();
 	++ix;
@@ -385,6 +451,12 @@ void Setting::SwitchToNextPort()
 	std::vector<int> & v_ports = _ports[encryption];
 	if (ix >= (int)v_ports.size())
 		ix = 0;
+	return ix;
+}
+
+void Setting::SwitchToNextPort()
+{
+	int ix = DetermineNextPort();
 	Scr_Map::Instance()->SetProtocol(ix);
 }
 

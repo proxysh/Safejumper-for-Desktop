@@ -23,6 +23,8 @@ macx: {
 	ICON = Safejumper.icns
 }
 
+#	DEFINES += MONITOR_TOOL
+
 win32: {
 	WINSDK_DIR = C:/Program Files/Microsoft SDKs/Windows/v7.1A
 	WIN_PWD = $$replace(PWD, /, \\)
@@ -61,7 +63,8 @@ SOURCES += main.cpp\
     fonthelper.cpp \
     singleapplication.cpp \
     dlg_newnode.cpp \
-    lvrowdelegateencryption.cpp
+    lvrowdelegateencryption.cpp \
+    scr_table.cpp
 
 HEADERS  += sjmainwindow.h \
 	retina.h \
@@ -94,7 +97,8 @@ HEADERS  += sjmainwindow.h \
     update.h \
     singleapplication.h \
     dlg_newnode.h \
-    lvrowdelegateencryption.h
+    lvrowdelegateencryption.h \
+    scr_table.h
 
 FORMS	+= sjmainwindow.ui \
 	scr_connect.ui \
@@ -103,7 +107,8 @@ FORMS	+= sjmainwindow.ui \
 	scr_map.ui \
 	dlg_error.ui \
     dlg_confirmation.ui \
-    dlg_newnode.ui
+    dlg_newnode.ui \
+    scr_table.ui
 
 RESOURCES += \
 	imgs.qrc

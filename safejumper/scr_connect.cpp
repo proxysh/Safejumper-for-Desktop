@@ -273,11 +273,6 @@ void Scr_Connect::StatusConnecting(const QString & word)
 	SetEnabledButtons(false);
 	InitStateWords();
 	
-if (word.compare("WAIT", Qt::CaseInsensitive) == 0)
-{
-	log::logt("WAIT found!");
-}
-	
 	QString s;
 	HmWords::iterator it = _StateWord_Img.find(word);
 	if (it != _StateWord_Img.end())
@@ -312,9 +307,11 @@ void Scr_Connect::Timer_CheckState()
 {
 //	static int gs_count = 0;
 //	++gs_count;
+//	log::logt("in Scr_Connect::Timer_CheckState()");
 	Ctr_Openvpn::Instance()->CheckState();
 //	if (gs_count > 5)
 //		_timer_state->stop();
+//	log::logt("out Scr_Connect::Timer_CheckState()");
 }
 
 void Scr_Connect::SetEnabledButtons(bool enabled)
@@ -401,6 +398,9 @@ void Scr_Connect::Clicked_Connect()
 
 void Scr_Connect::Clicked_Cancel()
 {
+#ifdef MONITOR_TOOL
+	Ctr_Openvpn::Instance()->StopLoop();
+#endif	// MONITOR_TOOL
 	Ctr_Openvpn::Instance()->Stop();
 	SjMainWindow::Instance()->BlockOnDisconnect();
 }

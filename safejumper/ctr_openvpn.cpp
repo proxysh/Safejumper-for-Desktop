@@ -14,6 +14,10 @@
 #include "sjmainwindow.h"
 #include "pathhelper.h"
 
+#ifdef MONITOR_TOOL
+#include "scr_table.h"
+#endif	// MONITOR_TOOL
+
 Ctr_Openvpn::Ctr_Openvpn()
 	: _state(ovsDisconnected)
 	, _pid(0)
@@ -44,7 +48,18 @@ void Ctr_Openvpn::Start()
 	_PortDlgShown = false;
 	_InPortLoop = false;	// TODO: -0
 	_reconnect_attempt = 0;
+#ifdef MONITOR_TOOL
+	_StopLoop = false;
+	_attempt = 0;
+	_InNextPort = false;
+	Setting::Instance()->InitLoop();
+#endif	// MONITOR_TOOL
+
 	StartImpl();
+	log::logt("out Ctr_Openvpn::Start()");
+#ifdef MONITOR_TOOL
+	WndManager::Instance()->ShowTable();
+#endif
 }
 
 void Ctr_Openvpn::StartImpl()
@@ -52,6 +67,11 @@ void Ctr_Openvpn::StartImpl()
 //#ifdef Q_OS_MAC
 //#define NO_PARAMFILE
 //#endif
+
+#ifdef MONITOR_TOOL
+	if (_StopLoop)
+		return;
+#endif	// MONITOR_TOOL
 	{
 		Stop();
 		// TODO: -1 cleanup
@@ -91,6 +111,9 @@ void Ctr_Openvpn::StartImpl()
 //		AuthManager::Instance()->SetNewIp("");
 		_tunerr = false;
 		_err = false;
+#ifdef MONITOR_TOOL
+		_err_msg = "";
+#endif// MONITOR_TOOL
 		_processing = false;
 		if (NULL != _watcher.get())			// OpenVPN log file watcher
 		{
@@ -229,7 +252,11 @@ void Ctr_Openvpn::StartImpl()
 			<< "--management" << _LocalAddr << Setting::Instance()->LocalPort()
 			<< "--management-hold"
 			<< "--management-query-passwords"
+#ifdef MONITOR_TOOL
+			<< "--log-append" << PathHelper::Instance()->OpenvpnLogPfn()			// /tmp/openvpn.log
+#else
 			<< "--log" << PathHelper::Instance()->OpenvpnLogPfn()			// /tmp/openvpn.log
+#endif	// MONITOR_TOOL
 
 //			<< "--script-security" << "3" << "system"
 //			<< "--script-security" << "2" << "execve"		// https://openvpn.net/index.php/open-source/documentation/manuals/69-openvpn-21.html
@@ -308,7 +335,9 @@ void Ctr_Openvpn::StartImpl()
 			}
 //#endif
 
+			log::logt("before attaching to OpenVPN");
 			AttachMgmt();	// TODO: -1 wait for slow starting cases
+			log::logt("after attaching to OpenVPN");
 #else
 			_process.reset(new QProcess());
 			sc->connect(_process.get(), SIGNAL(error(QProcess::ProcessError)), sc, SLOT(ConnectError(QProcess::ProcessError)));
@@ -339,9 +368,29 @@ void Ctr_Openvpn::StartImpl()
 		}
 		else
 			SetState(ovsDisconnected);
+
 	}
+	log::logt("exiting Ctr_Openvpn::StartImpl()");
 #undef NO_PARAMFILE
 }
+
+#ifdef MONITOR_TOOL
+void Ctr_Openvpn::ReconnectIfMax()
+{
+	++_attempt;
+	if (_attempt > G_Max_Reconnect)
+	{
+		_attempt = 0;
+		Scr_Table::Instance()->SetStatus(Setting::Encryption(), Setting::Instance()->ServerID(), Setting::Instance()->CurrProto(), snsTimeout);
+		ToNextPort();			// calls StartImpl inside
+	}
+	else
+	{
+		Scr_Table::Instance()->SetStatus(Setting::Encryption(), Setting::Instance()->ServerID(), Setting::Instance()->CurrProto(), "attempt "+ QString::number(_attempt));
+		StartImpl();		// restart
+	}
+}
+#endif	// MONITOR_TOOL
 
 void Ctr_Openvpn::CheckState()
 {
@@ -379,9 +428,13 @@ void Ctr_Openvpn::CheckState()
 	if (State() == ovsConnecting)
 	{
 		uint d = QDateTime::currentDateTimeUtc().toTime_t() - _dtStart;
+#ifdef MONITOR_TOOL
+		if (d > G_Delay_OneCheck)
+			ReconnectIfMax();
+#else
 		if (!_PortDlgShown && !_InPortLoop)
 		{
-			if (d > G_PortQuestionDelay)
+			if (d > G_Delay_PortQuestion)
 			{
 				_PortDlgShown = true;
 				WndManager::Instance()->ShowPortDlg();
@@ -390,9 +443,10 @@ void Ctr_Openvpn::CheckState()
 
 		if (_InPortLoop)
 		{
-			if (d > G_PortIterationDelay)
+			if (d > G_Delay_PortIteration)
 				ToNextPort();
 		}
+#endif	// MONITOR_TOOL
 	}
 }
 
@@ -456,7 +510,14 @@ log::logt("Set state " + QString::number(st));
 			case ovsConnected:
 			{
 				WndManager::Instance()->HandleConnected();
+#ifndef MONITOR_TOOL
 				OsSpecific::Instance()->SetNetdown(false);
+#endif	// MONITOR_TOOL
+
+#ifdef MONITOR_TOOL
+				// TODO: -2 Verify connection via http
+				ToNextPort();
+#endif	// MONITOR_TOOL
 				break;
 			}
 			case ovsConnecting:
@@ -467,6 +528,9 @@ log::logt("Set state " + QString::number(st));
 			case ovsDisconnected:
 			{
 				WndManager::Instance()->HandleDisconnected();
+#ifdef MONITOR_TOOL
+				ToNextPort();
+#endif	// MONITOR_TOOL
 				break;
 			}
 			default:
@@ -500,6 +564,9 @@ void Ctr_Openvpn::GotTunErr(const QString & s)
 	{
 		_tunerr = true;
 		_err = true;
+#ifdef MONITOR_TOOL
+		_err_msg = "err TUN";
+#endif	// MONITOR_TOOL
 		this->Cancel(s);
 	}
 }
@@ -584,6 +651,14 @@ void Ctr_Openvpn::Stop()
 	SetState(ovsDisconnected);
 }
 
+#ifdef MONITOR_TOOL
+void Ctr_Openvpn::StopLoop()
+{
+	_StopLoop = true;
+	Stop();
+}
+#endif	// MONITOR_TOOL
+
 void Ctr_Openvpn::RemoveProcess()
 {
 	if (_process.get() != NULL)
@@ -648,26 +723,47 @@ void Ctr_Openvpn::InitWatcher()
 	}
 }
 
+
+//void LL()
+//{
+//	static cnt = 0;
+//	log::logt("LL" + QString(++cnt) );
+//}
+
+#define LL(a) log::logt("LL" + QString::number(__LINE__) + " "+  QString(a) )
+
 void Ctr_Openvpn::RemoveSoc()
 {
+	log::logt("in Ctr_Openvpn::RemoveSoc()");
+LL('1');
+	LL('1');LL('1');LL('1');LL('1');LL('1');LL('1');LL('1');LL('1');LL('1');LL('1');LL('1');
 	if (NULL != _soc.get())
 	{
+LL('1');
 		SjMainWindow * sc = SjMainWindow::Instance();
+LL('1');
 		sc->disconnect(_soc.get(), SIGNAL(error(QAbstractSocket::SocketError)), sc, SLOT(Soc_Error(QAbstractSocket::SocketError)));
+LL('1');
 		sc->disconnect(_soc.get(), SIGNAL(readyRead()), sc, SLOT(Soc_ReadyRead()));
+LL('1');
 		_soc->abort();
+LL('1');
 		_soc.release()->deleteLater();
+LL('1');
 	}
+	log::logt("out Ctr_Openvpn::RemoveSoc()");
 }
 
 void Ctr_Openvpn::AttachMgmt()
 {
+	log::logt("in Ctr_Openvpn::AttachMgmt()");
 	RemoveSoc();
 	_soc.reset(new QTcpSocket());
 	SjMainWindow * sc = SjMainWindow::Instance();
 	sc->connect(_soc.get(), SIGNAL(error(QAbstractSocket::SocketError)), sc, SLOT(Soc_Error(QAbstractSocket::SocketError)));
 	sc->connect(_soc.get(), SIGNAL(readyRead()), sc, SLOT(Soc_ReadyRead()));
 	_soc->connectToHost(_LocalAddr, _LocalPort);
+	log::logt("out Ctr_Openvpn::AttachMgmt()");
 }
 
 void Ctr_Openvpn::Soc_Error(QAbstractSocket::SocketError er)
@@ -795,11 +891,15 @@ void Ctr_Openvpn::ProcessStateWord(const QString & word, const QString & s)
 		}
 		else
 		{
-			WndManager::Instance()->HandleDisconnected();
+			//WndManager::Instance()->HandleDisconnected();
+			SetState(ovsDisconnected);
 		}
 	} else { if (word.compare("RECONNECTING", Qt::CaseInsensitive) == 0) {
 		SetState(ovsConnecting);
 		WndManager::Instance()->HandleState(word);
+#ifdef MONITOR_TOOL
+		ReconnectIfMax();
+#endif	// MONITOR_TOOL
 	} else { if (word.compare("AUTH", Qt::CaseInsensitive) == 0) {
 		SetState(ovsConnecting);
 		WndManager::Instance()->HandleState(word);
@@ -845,7 +945,7 @@ void Ctr_Openvpn::ProcessRtWord(const QString & word, const QString & s)
 	// TODO: -1 hash_map
 	// TODO: -2 state machine
 
-	log::logt(s);
+	log::logt("ProcessRtWord(): '"  + s + "'");
 	log::logt("processing RT word '" + word + "'");
 
 	if (word.compare("INFO", Qt::CaseInsensitive) == 0) {
@@ -877,6 +977,9 @@ void Ctr_Openvpn::ProcessRtWord(const QString & word, const QString & s)
 			if (s.indexOf("Verification Failed", p, Qt::CaseInsensitive) > -1)
 			{
 				_err = true;
+#ifdef MONITOR_TOOL
+				_err_msg = "err auth";
+#endif// MONITOR_TOOL
 				// OpenVpn exiting
 				ShowErrMsgAndCleanup(s.mid(p + 1));
 			}
@@ -885,6 +988,9 @@ void Ctr_Openvpn::ProcessRtWord(const QString & word, const QString & s)
 		;
 	} else { if (word.compare("FATAL", Qt::CaseInsensitive) == 0) {
 		_err = true;
+#ifdef MONITOR_TOOL
+		_err_msg = "err fatal";
+#endif	// MONITOR_TOOL
 		int p = s.indexOf(':');
 		QString msg = s.mid(p + 1);
 		this->Cancel(msg);
@@ -1041,7 +1147,7 @@ void Ctr_Openvpn::StartPortLoop(bool port)
 	{
 		_InPortLoop = true;
 //		uint dt = QDateTime::currentDateTimeUtc().toTime_t();
-//		if ((dt - _dtStart) > G_PortQuestionDelay)
+//		if ((dt - _dtStart) > G_Delay_PortQuestion)
 		{
 			_IsPort = port;
 			ToNextPort();
@@ -1052,11 +1158,24 @@ void Ctr_Openvpn::StartPortLoop(bool port)
 void Ctr_Openvpn::ToNextPort()
 {
 	_dtStart = QDateTime::currentDateTimeUtc().toTime_t();		// force start interval - prevent double port change
+#ifdef MONITOR_TOOL
+	if (!_StopLoop && !_InNextPort)
+	{
+		_InNextPort = true;
+		bool InLoop = Setting::Instance()->SwitchToNext();
+		if (InLoop && !_StopLoop)
+			StartImpl();
+		else
+			Stop();		// will reiterate here
+		_InNextPort = false;
+	}
+#else
 	if (_IsPort)
 		Setting::Instance()->SwitchToNextPort();
 	else
 		Setting::Instance()->SwitchToNextNode();
 	StartImpl();
+#endif	// MONITOR_TOOL
 }
 
 void Ctr_Openvpn::ReconnectTimer()
@@ -1069,7 +1188,7 @@ void Ctr_Openvpn::Timer_Reconnect()
 	++_reconnect_attempt;
 	if (IsOvRunning())
 	{
-		if (_reconnect_attempt < 20)
+		if (_reconnect_attempt < G_Max_Reconnect)
 			QTimer::singleShot(200, SjMainWindow::Instance(), SLOT(Timer_Reconnect()));
 		else
 		{
