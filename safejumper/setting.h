@@ -74,8 +74,6 @@ public:
 	
 	static const char * EncText(size_t enc);
 
-
-
 private:
 	Setting();
 	static std::auto_ptr<Setting> _inst;

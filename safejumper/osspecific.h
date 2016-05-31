@@ -56,12 +56,13 @@ public:
 	QString RunFastCmd(const char * cmd, uint16_t ms = 500);			// returns stdout
 	QString RunFastCmd(const QString & cmd, uint16_t ms = 500);
 
-	void RunObfs();
+	void RunObfs(const QString & srv, const QString & port, const QString & local_port);
 	bool IsObfsRunning();
 	
 private:
 	OsSpecific();
 	static std::auto_ptr<OsSpecific> _inst;
+	std::auto_ptr<QProcess> _obfs;
 
 	void SetChmod(const char * sflags, const QString & pfn);		// flags in form 04555 - will by parsed in both 8- and 16-based
 	void SetChown(const QString & pfn);

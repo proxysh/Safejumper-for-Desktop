@@ -631,7 +631,7 @@ void SjMainWindow::Finished_EccName()
 	else
 	{
 		int enc = Setting::Encryption();
-		if (ENCRYPTION_ECC == enc || ENCRYPTION_ECCXOR == enc)
+		if (ENCRYPTION_RSA != enc)
 			Setting::Instance()->LoadServer();
 	}
 }

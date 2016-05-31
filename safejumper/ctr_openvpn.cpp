@@ -86,7 +86,7 @@ void Ctr_Openvpn::StartImpl()
 		{
 			if (obfs)
 			{
-				OsSpecific::Instance()->RunObfs();
+				OsSpecific::Instance()->RunObfs(Setting::Instance()->Server(), Setting::Instance()->Port(), "1050");
 				if (!OsSpecific::Instance()->IsObfsRunning())
 					throw std::runtime_error("Cannot run Obfs proxy");
 			}
@@ -552,7 +552,8 @@ void Ctr_Openvpn::GotConnected(const QString & s)
 	{
 		int p1 = s.indexOf(',', p + 1);
 		QString ip = p1 > -1 ? s.mid(p + 1, p1 - p - 1) : s.mid(p + 1);
-		AuthManager::Instance()->SetNewIp(ip);
+		if (Setting::Encryption() != ENCRYPTION_OBFS_TOR)	// for proxy it shows 127.0.0.1
+			AuthManager::Instance()->SetNewIp(ip);
 	}
 
 	AuthManager::Instance()->ForwardPorts();
@@ -722,13 +723,6 @@ void Ctr_Openvpn::InitWatcher()
 		}
 	}
 }
-
-
-//void LL()
-//{
-//	static cnt = 0;
-//	log::logt("LL" + QString(++cnt) );
-//}
 
 #define LL(a) log::logt("LL" + QString::number(__LINE__) + " "+  QString(a) )
 

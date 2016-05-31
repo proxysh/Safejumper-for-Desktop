@@ -158,6 +158,11 @@ OsSpecific::~OsSpecific()
 #endif
 		_auth = false;
 	}
+	if (_obfs.get())
+	{
+		_obfs->terminate();
+		// TODO: -2 gracefully stop
+	}
 }
 
 bool OsSpecific::IsOwnerRoot(const QString & pfn)
@@ -1059,7 +1064,7 @@ QString OsSpecific::RunFastCmd(const char * cmd, uint16_t ms /* = 500 */)
 	std::auto_ptr<QProcess> pr(new QProcess());
 	pr->start(cmd);
 	if (!pr->waitForFinished(ms))
-	{
+	{	// or if this QProcess is already finished)
 		QString s1(pr->readAllStandardError());
 		log::logt("RunFastCmd(): Error: " + s1);
 		if (QProcess::NotRunning != pr->state())
@@ -1146,43 +1151,74 @@ void OsSpecific::FixDnsLeak()
 #endif
 }
 
-static std::auto_ptr<QProcess> _obfs;
-void OsSpecific::RunObfs()
+void OsSpecific::RunObfs(const QString & srv, const QString & port, const QString & local_port)
 {
 	if (!IsObfsInstalled())
 		InstallObfs();
 
-#ifdef Q_OS_MAC
+	static const QString cmd = 
+#ifndef Q_OS_WIN
+//	"/usr/local/bin/obfsproxy obfs2 socks 127.0.0.1:1050"
+
+	"/usr/local/bin/obfsproxy "
+//	"--log-min-severity debug --no-safe-logging"
+	" --data-dir /tmp "
+	"obfs2 "
+	"--dest "
+//	"185.47.202.158"
+	+ srv +
+//	":888 "
+	":" + port + " "
+	"socks "
+	"127.0.0.1:"
+	+ local_port
+//	"1050"
+#else		// Win
+	""
+#endif
+	;
+	
 	if (!IsObfsRunning())
 	{
 		_obfs.reset(new QProcess());
-		_obfs->start("/usr/local/bin/obfsproxy obfs2 socks 127.0.0.1:1050");
-		QThread::msleep(200);
+		_obfs->start(cmd);
+		QThread::msleep(100);
 	}
-#endif	// 	Q_OS_MAC
-
 }
 
 void OsSpecific::InstallObfs()
 {
-	;
+#ifdef Q_OS_LINUX
+	ExecAsRoot("apt-get", QStringList() << "update");
+	ExecAsRoot("apt-get", QStringList() << "install" << "-y"<<"--force-yes" <<"libdpkg-perl=1.17.5ubuntu5");
+	ExecAsRoot("apt-get", QStringList() << "install" << "-y" << "python2.7" <<"python-pip" << "python-dev" << "build-essential");
+	ExecAsRoot("pip",  QStringList() << "install" << "obfsproxy");
+#else
+#ifdef Q_OS_MAC
+	ExecAsRoot("/usr/bin/easy_install", QStringList() << "pip");
+	ExecAsRoot("/usr/local/bin/pip", QStringList() << "install" << "obfsproxy");
+#endif	// Q_OS_MAC
+#endif	// Q_OS_LINUX
 }
 
 bool OsSpecific::IsObfsInstalled()
 {
-	return true;
+	bool b = true;
+#ifndef Q_OS_WIN
+	QString s = RunFastCmd("which obfsproxy");
+	b = !s.isEmpty();
+#endif
+	return b;
 }
 
 bool OsSpecific::IsObfsRunning()
 {
-	return true;
 	bool b = false;
 //	if (_obfs.get() != NULL)
 	{
-		static const char * q = "ps aux | grep obfs | grep pro";
-		QString s = RunFastCmd(q);
-		if (!s.isEmpty())
-			b = true;
+		QString s1 = RunFastCmd("ps ax");
+		bool b1 = s1.contains("obfsproxy");
+		b |= b1;
 	}
 	return b;
 }
