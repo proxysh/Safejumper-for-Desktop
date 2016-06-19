@@ -58,6 +58,7 @@ public:
 
 	void RunObfs(const QString & srv, const QString & port, const QString & local_port);
 	bool IsObfsRunning();
+	void StopObfs();
 	
 private:
 	OsSpecific();

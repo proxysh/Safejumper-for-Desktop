@@ -1,37 +1,14 @@
 //#include <QCoreApplication>
-#include <QProcess>
 
 #include <iostream>
 #include <cstdio>
+
 #include "common.h"
+#include "runit.h"
 
 template <typename T, size_t N>
 char (&ArraySizeHelper(T (&array)[N]))[N];
 #define arraysize(array) (sizeof(ArraySizeHelper(array)))
-
-void runit(const char * cmd)
-{
-	QProcess p;
-
-	std::cout << "@@ Running cmd '" << cmd << "'" << std::endl;
-	p.start(cmd);
-	if (!p.waitForFinished(500))
-	{
-		QString s1(p.readAllStandardError());
-		std::cout << "@@ error: " << s1.toStdString() << std::endl;
-		if (QProcess::NotRunning != p.state())
-		{
-			p.terminate();
-			p.kill();
-		}
-	}
-	else
-	{
-		QString s0(p.readAllStandardOutput());
-		if (!s0.isEmpty())
-			std::cout << "@@ output: " << s0.toStdString() << std::endl;
-	}
-}
 
 static const char * cmds [] =
 {

@@ -23,6 +23,9 @@ public:
 	QString UpScriptPfn();
 	QString DownScriptPfn();
 	QString LauncherPfn();
+	
+	QString ObfsproxyPfn();
+	QString ObfsInstallerPfn();
 
 	QString NetDownPfn();
 

@@ -283,6 +283,9 @@ void OsSpecific::SetRights()
 	SetChmod("04555", PathHelper::Instance()->LauncherPfn());
 	SetChown(PathHelper::Instance()->LauncherPfn());
 
+	SetChmod("04555", PathHelper::Instance()->ObfsInstallerPfn());
+	SetChown(PathHelper::Instance()->ObfsInstallerPfn());
+
 #endif		// Q_OS_MAC
 
 #ifdef Q_OS_LINUX
@@ -1065,13 +1068,17 @@ QString OsSpecific::RunFastCmd(const char * cmd, uint16_t ms /* = 500 */)
 	pr->start(cmd);
 	if (!pr->waitForFinished(ms))
 	{	// or if this QProcess is already finished)
-		QString s1(pr->readAllStandardError());
-		log::logt("RunFastCmd(): Error: " + s1);
+		if (pr->exitStatus() != QProcess::NormalExit)
+		{
+			QString s1(pr->readAllStandardError());
+			log::logt("RunFastCmd(): Error: not NormalExit " + s1);
+		}
 		if (QProcess::NotRunning != pr->state())
 		{
 			pr->terminate();
 			pr->kill();
 		}
+
 	}
 	QString s0(pr->readAllStandardOutput());
 	pr.release()->deleteLater();
@@ -1151,10 +1158,28 @@ void OsSpecific::FixDnsLeak()
 #endif
 }
 
+void OsSpecific::StopObfs()
+{
+	if (IsObfsRunning())
+	{
+		if (_obfs.get())
+		{
+			_obfs->terminate();
+			_obfs->kill();
+			_obfs.release()->deleteLater();
+		}
+	}
+}
+
 void OsSpecific::RunObfs(const QString & srv, const QString & port, const QString & local_port)
 {
+	log::logt("RunObfs() in");
 	if (!IsObfsInstalled())
+	{
+#ifndef Q_OS_WIN
 		InstallObfs();
+#endif
+	}
 
 	static const QString cmd = 
 #ifndef Q_OS_WIN
@@ -1184,10 +1209,12 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 		_obfs->start(cmd);
 		QThread::msleep(100);
 	}
+	log::logt("RunObfs() out");
 }
 
 void OsSpecific::InstallObfs()
 {
+	log::logt("InstallObfs() in");
 #ifdef Q_OS_LINUX
 	ExecAsRoot("apt-get", QStringList() << "update");
 	ExecAsRoot("apt-get", QStringList() << "install" << "-y"<<"--force-yes" <<"libdpkg-perl=1.17.5ubuntu5");
@@ -1195,18 +1222,45 @@ void OsSpecific::InstallObfs()
 	ExecAsRoot("pip",  QStringList() << "install" << "obfsproxy");
 #else
 #ifdef Q_OS_MAC
-	ExecAsRoot("/usr/bin/easy_install", QStringList() << "pip");
-	ExecAsRoot("/usr/local/bin/pip", QStringList() << "install" << "obfsproxy");
+	ExecAsRoot(PathHelper::Instance()->ObfsInstallerPfn(), QStringList());
+	log::logt("Show notification");
+	int ii = WndManager::Instance()->Confirmation("Installing OBFS proxy");
+//	if (ii != QDialog::Accepted)
+	if (!IsObfsInstalled())
+		throw std::runtime_error("Wait for gcc tools installation finished, please");
+
+//	while (!IsObfsInstalled())
+//	{
+//		QThread::msleep(400);
+//	}
+
+//	ExecAsRoot("/usr/bin/easy_install", QStringList() << "pip");
+//	ExecAsRoot("/usr/local/bin/pip", QStringList() << "install" << "obfsproxy");
 #endif	// Q_OS_MAC
 #endif	// Q_OS_LINUX
+	log::logt("InstallObfs() out");
 }
 
 bool OsSpecific::IsObfsInstalled()
 {
 	bool b = true;
 #ifndef Q_OS_WIN
-	QString s = RunFastCmd("which obfsproxy");
+#ifdef Q_OS_MAC
+	QString s = RunFastCmd("/usr/bin/which obfsproxy", 1000);
+#else
+	QString s = RunFastCmd("which obfsproxy", 1000);
+#endif
 	b = !s.isEmpty();
+
+#ifdef Q_OS_MAC
+	if (!b)
+	{
+		QFile f("/usr/local/bin/obfsproxy");
+		if (f.exists())
+			b = true;
+	}
+#endif
+
 #endif
 	return b;
 }
@@ -1217,7 +1271,7 @@ bool OsSpecific::IsObfsRunning()
 //	if (_obfs.get() != NULL)
 	{
 		QString s1 = RunFastCmd("ps ax");
-		bool b1 = s1.contains("obfsproxy");
+		bool b1 = s1.contains("/obfsproxy");
 		b |= b1;
 	}
 	return b;

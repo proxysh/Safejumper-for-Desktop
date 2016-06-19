@@ -90,6 +90,15 @@ void Ctr_Openvpn::StartImpl()
 				if (!OsSpecific::Instance()->IsObfsRunning())
 					throw std::runtime_error("Cannot run Obfs proxy");
 			}
+		}
+		catch(std::exception & ex)
+		{
+			log::logt(ex.what());
+			WndManager::Instance()->ErrMsg(QString(ex.what()));
+			return;
+		}
+		try
+		{
 			OsSpecific::Instance()->SetIPv6(!Setting::Instance()->IsDisableIPv6());
 #ifdef Q_OS_WIN
 			OsSpecific::Instance()->EnableTap();
@@ -649,6 +658,12 @@ void Ctr_Openvpn::Stop()
 		if (IsOvRunning())
 			log::logt("Stop(): cannot soft stop OpenVPN process");
 	}
+	if (Setting::Encryption() == ENCRYPTION_OBFS_TOR)
+	if (OsSpecific::Instance()->IsObfsRunning())
+	{
+		// TODO: -0 stop
+	}
+
 	SetState(ovsDisconnected);
 }
 

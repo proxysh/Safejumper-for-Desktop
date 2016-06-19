@@ -163,6 +163,27 @@ QString PathHelper::LauncherPfn()
 	return ResourcesPath() + "/launchopenvpn";
 }
 
+QString PathHelper::ObfsInstallerPfn()
+{
+	return ResourcesPath() + "/installobfsproxy";
+}
+
+QString PathHelper::ObfsproxyPfn()
+{
+	static const QString pfn = 
+#ifdef Q_OS_MAC
+	ResourcesPath() + "/obfsproxy"
+#else
+#ifdef Q_OS_LINUX
+	"/usr/local/bin/obfsproxy"
+#else		// Win
+	""
+#endif	// linux
+#endif	// 	Q_OS_MAC
+	;
+	return pfn;
+}
+
 QString PathHelper::LogPfn()
 {
 #ifndef Q_OS_WIN
