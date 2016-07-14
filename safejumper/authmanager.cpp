@@ -147,9 +147,16 @@ AServer AuthManager::GetHub(int idhub)
 
 void AuthManager::SetNewIp(const QString & ip)
 {
-	_newip = ip;
-	if (Scr_Connect::IsExists())
+	static const QString self = "127.0.0.1";
+	if (ip != self)
+		_newip = ip;
+	if (Scr_Connect::IsExists()
+//		&& Setting::Encryption() != ENCRYPTION_OBFS_TOR
+		&& ip != self
+		)
+	{
 		Scr_Connect::Instance()->UpdNewIp(ip);
+	}
 }
 
 const std::vector<size_t> & AuthManager::GetAllServers()

@@ -149,8 +149,12 @@ void Scr_Connect::DwnlStrs()
 
 void Scr_Connect::UpdNewIp(const QString & s)
 {
-	ui->L_NewIp->setText(s);
-	ui->L_NewIp->show();
+	static const QString self = "127.0.0.1";
+	if (s != self)
+	{
+		ui->L_NewIp->setText(s);
+		ui->L_NewIp->show();
+	}
 }
 
 void Scr_Connect::UpdEnc()
