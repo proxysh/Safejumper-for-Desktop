@@ -1185,9 +1185,20 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 #ifndef Q_OS_WIN
 //	"/usr/local/bin/obfsproxy obfs2 socks 127.0.0.1:1050"
 
+#ifndef Q_OS_REDHAT
 	"/usr/local/bin/obfsproxy "
-//	"--log-min-severity debug --no-safe-logging"
-	" --data-dir /tmp "
+#else
+	"/usr/bin/obfsproxy "
+#endif
+#else		// Win
+	"cmd /k c:\\python27\\Scripts\\obfsproxy.exe "
+//	"c:\\python27\\Scripts\\obfsproxy.exe "
+#endif
+//	"--log-min-severity debug --no-safe-logging "
+#ifndef Q_OS_WIN
+	"--data-dir /tmp "
+#else
+#endif
 	"obfs2 "
 	"--dest "
 //	"185.47.202.158"
@@ -1198,9 +1209,6 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 	"127.0.0.1:"
 	+ local_port
 //	"1050"
-#else		// Win
-	""
-#endif
 	;
 	
 	if (!IsObfsRunning())
@@ -1216,9 +1224,18 @@ void OsSpecific::InstallObfs()
 {
 	log::logt("InstallObfs() in");
 #ifdef Q_OS_LINUX
+
+#ifndef Q_OS_REDHAT
+	// debian/ubuntu
 	ExecAsRoot("apt-get", QStringList() << "update");
 	ExecAsRoot("apt-get", QStringList() << "install" << "-y"<<"--force-yes" <<"libdpkg-perl=1.17.5ubuntu5");
 	ExecAsRoot("apt-get", QStringList() << "install" << "-y" << "python2.7" <<"python-pip" << "python-dev" << "build-essential");
+#else
+	// CentOS
+	ExecAsRoot("yum",  QStringList() <<  "-y" << "install" << "python-devel");
+	ExecAsRoot("/usr/bin/curl",  QStringList() <<  "https://bootstrap.pypa.io/get-pip.py" << "-o" << "/tmp/get-pip.py");
+	ExecAsRoot("python",  QStringList() <<  "/tmp/get-pip.py");
+#endif
 	ExecAsRoot("pip",  QStringList() << "install" << "obfsproxy");
 #else
 #ifdef Q_OS_MAC
@@ -1268,12 +1285,18 @@ bool OsSpecific::IsObfsInstalled()
 bool OsSpecific::IsObfsRunning()
 {
 	bool b = false;
-//	if (_obfs.get() != NULL)
+#ifdef Q_OS_WIN
+	if (_obfs.get() != NULL)
+	{
+		b = true;		// TODO: -1 actual check
+	}
+#else
 	{
 		QString s1 = RunFastCmd("ps ax");
 		bool b1 = s1.contains("/obfsproxy");
 		b |= b1;
 	}
+#endif
 	return b;
 }
 

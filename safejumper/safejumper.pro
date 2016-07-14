@@ -24,6 +24,7 @@ macx: {
 }
 
 #	DEFINES += MONITOR_TOOL
+#	DEFINES += Q_OS_REDHAT
 
 win32: {
 	WINSDK_DIR = C:/Program Files/Microsoft SDKs/Windows/v7.1A
