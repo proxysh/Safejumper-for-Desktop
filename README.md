@@ -9,7 +9,7 @@ This code is licensed to GNU-GPL. It means you can take the code and modify it a
 ## PGP Signature
 
 The latest version of Safejumper is available under various binaries whose PGP signature are: 
-https://paste.proxy.sh/?eed1f729c4530b1e#5p6S5EUU7bTE7au15L9hoFM/qqTNcUWiRSRJ1qVaPFM=
+https://paste.proxy.sh/?0810350c1efc8450#rquUscblHvBSexs63r+9ZC6p4agMo1ZtpUvAig28Udk=
 
 ## Bounty
 
