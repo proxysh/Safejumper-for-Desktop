@@ -35,37 +35,6 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QPushButton" name="b_AdvSettings">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>6</y>
-      <width>170</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Helvetica Neue</family>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton
-{
-	border:0px;
-color: #3c3c3c;
-background: transparent;
-border-image: url(:/imgs/b-adv-settings.png);
-}</string>
-    </property>
-    <property name="text">
-     <string>Advanced Settings</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="b_Showlogs">
     <property name="geometry">
      <rect>
@@ -1174,6 +1143,25 @@ color: #3c3c3c;
     </property>
     <property name="checked">
      <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>10</y>
+      <width>171</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string>Advanced Settings</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>
