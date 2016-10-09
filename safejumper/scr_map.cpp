@@ -107,8 +107,15 @@ void Scr_Map::RePopulateProtocols()
 	}
 }
 
-void Scr_Map::RePopulateLocations()
+void Scr_Map::RePopulateLocations(bool random)
 {
+    if (random)
+    {
+        int srv = qrand() % 30 + 1;
+        ui->dd_Location->setCurrentIndex(srv);
+        return;
+    }
+
 	// store previously chosen id
 	int oldN = ui->dd_Location->count();
 	int ixoldsrv = -1;

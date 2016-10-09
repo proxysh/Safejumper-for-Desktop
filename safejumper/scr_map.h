@@ -27,7 +27,7 @@ public:
 	bool UseSrvColl() { return _UseSrvColl; }
 	int CurrProto();	// -1 if not selected, otherwise [0-...] id of protocol inside Settings
 
-	void RePopulateLocations();		// TODO: -1 methods to update particular row with new ping/load%
+    void RePopulateLocations(bool random = false);		// TODO: -1 methods to update particular row with new ping/load%
 	void RePopulateProtocols();
 	void SetServer(int ixsrv);
 	void SetProtocol(int ix);
