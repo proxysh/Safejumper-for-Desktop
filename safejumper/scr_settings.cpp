@@ -487,4 +487,14 @@ void Scr_Settings::Clicked_Cross()
 	SjMainWindow::Instance()->DoClose();
 }
 
-
+void Scr_Settings::on_b_LogoBack_clicked()
+{
+    if (Scr_Map::IsExists())
+    {
+        Scr_Map::Instance()->RePopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
+        Setting::Instance()->LoadProt();
+        Scr_Map::Instance()->RePopulateLocations();
+    }
+    if (Scr_Connect::IsExists())
+        Scr_Connect::Instance()->UpdEnc();
+}

@@ -85,6 +85,8 @@ private slots:
 	void ToScr_Connect();
 	void ToScr_Logs();
 	void Clicked_Update();
+    void on_pushButton_clicked();
+    void on_b_LogoBack_clicked();
 };
 
 #endif // SCR_SETTINGS_H

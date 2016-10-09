@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>550</width>
-    <height>271</height>
+    <height>253</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>551</width>
-     <height>271</height>
+     <height>291</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -196,36 +196,6 @@ border-image: url(:/imgs/logo3.png);
     </property>
     <property name="text">
      <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="L_Bottom">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>250</y>
-      <width>271</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>11</pointsize>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel
-{
-color: #d6d6d6;
-padding: 0;
-margin: 0;
-background: transparent;
-}</string>
-    </property>
-    <property name="text">
-     <string>Settings are saved as you select/edit them</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignHCenter|Qt::AlignTop</set>
     </property>
    </widget>
    <widget class="QGraphicsView" name="vline_1">
