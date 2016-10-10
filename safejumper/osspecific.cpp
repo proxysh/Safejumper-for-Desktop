@@ -1183,10 +1183,8 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 
 	static const QString cmd = 
 #ifndef Q_OS_WIN
-//	"/usr/local/bin/obfsproxy obfs2 socks 127.0.0.1:1050"
-
 #ifndef Q_OS_REDHAT
-	"/usr/local/bin/obfsproxy "
+    "obfsproxy "
 #else
 	"/usr/bin/obfsproxy "
 #endif
