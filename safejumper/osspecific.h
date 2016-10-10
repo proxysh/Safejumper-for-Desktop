@@ -59,7 +59,7 @@ public:
 	void RunObfs(const QString & srv, const QString & port, const QString & local_port);
 	bool IsObfsRunning();
 	void StopObfs();
-	
+    bool IsObfsInstalled();
 private:
 	OsSpecific();
 	static std::auto_ptr<OsSpecific> _inst;
@@ -77,7 +77,6 @@ private:
 	bool _netdown;
 
 	void InstallObfs();
-	bool IsObfsInstalled();
 };
 
 #endif // OSSPECIFIC_H

@@ -290,7 +290,7 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
 	if (_repopulation_inprogress)
 		return;
 
-    if (ix == ENCRYPTION_OBFS_TOR)
+    if (ix == ENCRYPTION_OBFS_TOR && !OsSpecific::Instance()->IsObfsInstalled())
     {
         Dlg_Error dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
         dlg.exec();
