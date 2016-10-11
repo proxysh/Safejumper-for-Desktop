@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
 	g_pTheApp = &a;
 
 	log::logt("Starting Application");
-	SjMainWindow::Instance()->show();
-
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	SjMainWindow::Instance()->show();    
 	int res = a.exec();
 	SjMainWindow::Cleanup();
 	log::logt("Quit Application");

@@ -29,7 +29,8 @@ Scr_Connect::Scr_Connect(QWidget *parent) :
 	ui->L_NewIp->setText("");
 	SetNoSrv();
 	
-
+    setWindowFlags(Qt::Dialog);
+    setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 #ifndef Q_OS_MAC
 	FontHelper::SetFont(this);
 #ifdef Q_OS_WIN
