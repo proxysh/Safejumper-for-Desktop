@@ -41,6 +41,7 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	setWindowFlags(Qt::Dialog);
+    setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	setFixedSize(this->size());
 
 	ui->b_Cancel->hide();
