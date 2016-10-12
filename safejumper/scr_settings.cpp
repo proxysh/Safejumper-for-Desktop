@@ -497,8 +497,3 @@ void Scr_Settings::Clicked_Cross()
 {
 	SjMainWindow::Instance()->DoClose();
 }
-
-void Scr_Settings::on_b_LogoBack_clicked()
-{
-    //TODO
-}
