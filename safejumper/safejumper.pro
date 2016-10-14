@@ -15,7 +15,7 @@ macx: {
 	TARGET = Safejumper
 	QMAKE_INFO_PLIST = ./Info.plist
 	QMAKE_LFLAGS += -F /System/Library/Frameworks/
-	LIBS += -framework Security
+        LIBS += -framework Security
     target.path = /Applications
     resources.path = /Applications/Safejumper.app/Contents/Resources
     resources.files = ./resources/*
