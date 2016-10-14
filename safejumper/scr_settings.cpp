@@ -13,6 +13,7 @@
 #include "log.h"
 #include "lvrowdelegateencryption.h"
 #include "dlg_error.h"
+#include "pathhelper.h"
 
 static bool _repopulation_inprogress = false;
 
@@ -160,7 +161,15 @@ void Scr_Settings::ToScr_Connect()
 
 void Scr_Settings::ToScr_Logs()
 {
-	WndManager::Instance()->ToLogs();
+    auto path = PathHelper::Instance()->OpenvpnLogPfn();
+    QFile f(path);
+    if (f.exists())
+    {
+        QString s;
+        s.append(f.readAll());
+        //log::logt(s);
+    }
+	WndManager::Instance()->ToLogs();    
 }
 
 void Scr_Settings::Clicked_Update()

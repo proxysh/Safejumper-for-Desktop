@@ -101,7 +101,7 @@ void Ctr_Openvpn::StartImpl()
 		{
 			OsSpecific::Instance()->SetIPv6(!Setting::Instance()->IsDisableIPv6());
 #ifdef Q_OS_WIN
-			OsSpecific::Instance()->EnableTap();
+            OsSpecific::Instance()->EnableTap(); // TODO check win10 tap
 #endif
 		}
 		catch(std::exception & ex)
