@@ -30,10 +30,10 @@ Scr_Connect::Scr_Connect(QWidget *parent) :
 	SetNoSrv();
 	
     setWindowFlags(Qt::Dialog);
-    setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 #ifndef Q_OS_MAC
 	FontHelper::SetFont(this);
 #ifdef Q_OS_WIN
+    setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 	ui->L_Until->setFont(FontHelper::pt(7));
 	ui->L_Email->setFont(FontHelper::pt(10));
 #else		// linux

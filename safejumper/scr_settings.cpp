@@ -38,9 +38,10 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 	ui->e_SecondaryDns->setFont(FontHelper::pt(10));
 #endif
 
+#ifdef Q_OS_WIN
     setWindowFlags(Qt::Dialog);
     setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
-
+#endif
 	// fill Encryption drop down
 	_repopulation_inprogress = true;
 	ui->dd_Encryption->clear();

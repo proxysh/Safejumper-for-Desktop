@@ -40,8 +40,10 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 	, _moving(false)
 {
 	ui->setupUi(this);
-	setWindowFlags(Qt::Dialog);
+#ifdef Q_OS_WIN
+    setWindowFlags(Qt::Dialog);
     setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+#endif
 	setFixedSize(this->size());
 
 	ui->b_Cancel->hide();
