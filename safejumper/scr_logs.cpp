@@ -14,6 +14,11 @@ Scr_Logs::Scr_Logs(QWidget *parent) :
 	ui(new Ui::Scr_Logs)
    , _moving(false)
 {
+#ifdef Q_OS_WIN
+    setWindowFlags(Qt::Dialog);
+    setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+#endif
+
 	ui->setupUi(this);
 	this->setFixedSize(this->size());
 #ifndef Q_OS_MAC
