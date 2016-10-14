@@ -71,7 +71,7 @@ private:
 	Ctr_Openvpn();
 	static std::auto_ptr<Ctr_Openvpn> _inst;
 
-	std::auto_ptr<QTemporaryFile> _paramFile;
+    std::auto_ptr<QTemporaryFile> _paramFile;
 	std::auto_ptr<QProcess> _process;
 	void RemoveProcess();
 	int _pid;		// for running process (run safejumper after crash)

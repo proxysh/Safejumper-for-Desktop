@@ -123,16 +123,16 @@ void Ctr_Openvpn::StartImpl()
 #ifdef MONITOR_TOOL
 		_err_msg = "";
 #endif// MONITOR_TOOL
-		_processing = false;
+        _processing = false;
 		if (NULL != _watcher.get())			// OpenVPN log file watcher
 		{
-			_watcher->removePath(PathHelper::Instance()->OpenvpnLogPfn());
+            _watcher->removePath(PathHelper::Instance()->OpenvpnLogPfn());
 			delete _watcher.release();
 		}
 
 		RemoveSoc();
 #ifndef NO_PARAMFILE
-		QFile ff(PathHelper::Instance()->OpenvpnConfigPfn());
+        QFile ff(PathHelper::Instance()->OpenvpnConfigPfn());
 		if (!ff.open(QIODevice::WriteOnly))
 		{
 			QString se = "Cannot write config file '" + PathHelper::Instance()->OpenvpnConfigPfn() + "'";
@@ -300,9 +300,9 @@ void Ctr_Openvpn::StartImpl()
 		try
 		{
 #ifndef Q_OS_WIN
-			_paramFile.reset(new QTemporaryFile());
-			if (!_paramFile->open())
-				throw std::runtime_error("Cannot create tmp file.");
+            _paramFile.reset(new QTemporaryFile());
+            if (!_paramFile->open())
+                throw std::runtime_error("Cannot create tmp file.");
 
 			OsSpecific::Instance()->SetRights();		// lean inside, throw on error
 

@@ -15,6 +15,8 @@
 #include "dlg_error.h"
 #include "pathhelper.h"
 
+#include <cstdio>
+
 static bool _repopulation_inprogress = false;
 
 Scr_Settings::Scr_Settings(QWidget *parent) :
@@ -161,13 +163,14 @@ void Scr_Settings::ToScr_Connect()
 
 void Scr_Settings::ToScr_Logs()
 {
-    auto path = PathHelper::Instance()->OpenvpnLogPfn();
-    QFile f(path);
-    if (f.exists())
+    auto path = PathHelper::Instance()->OpenvpnLogPfn().toStdString().c_str();
+    auto f = fopen("/tmp/safejumper-openvpn.log", "r");
+    if (f)
     {
-        QString s;
-        s.append(f.readAll());
-        //log::logt(s);
+        char buf[4096] = {0};
+        fread(buf, 1, 4095, f);
+        fclose(f);
+        log::logt(buf);
     }
 	WndManager::Instance()->ToLogs();    
 }

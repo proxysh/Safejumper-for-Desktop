@@ -290,10 +290,10 @@ void OsSpecific::SetRights()
 
 #ifdef Q_OS_LINUX
 	SetChown(PathHelper::Instance()->LauncherPfn());
-	SetChmod("04755", PathHelper::Instance()->LauncherPfn());				// odrer is important
+    SetChmod("777", PathHelper::Instance()->LauncherPfn());				// odrer is important
 	
 	SetChown(PathHelper::Instance()->NetDownPfn());
-	SetChmod("04755", PathHelper::Instance()->NetDownPfn());
+    SetChmod("777", PathHelper::Instance()->NetDownPfn());
 #endif
 
 	//ReleaseRights();
