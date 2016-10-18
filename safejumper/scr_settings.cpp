@@ -164,8 +164,12 @@ void Scr_Settings::ToScr_Connect()
 
 void Scr_Settings::ToScr_Logs()
 {
-    auto path = PathHelper::Instance()->OpenvpnLogPfn().toStdString().c_str();
-    auto f = fopen("/tmp/safejumper-openvpn.log", "r");
+#ifndef Q_OS_WIN
+    auto path = "/tmp/safejumper-openvpn.log";
+#else
+    auto path = QDir::tempPath() + "/safejumper-openvpn.log";
+#endif // Q_OS_WIN
+    auto f = fopen(path, "r");
     if (f)
     {
         char buf[4096] = {0};
