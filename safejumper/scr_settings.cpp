@@ -164,19 +164,19 @@ void Scr_Settings::ToScr_Connect()
 
 void Scr_Settings::ToScr_Logs()
 {
-#ifndef Q_OS_WIN
-    auto path = "/tmp/safejumper-openvpn.log";
-#else
-    auto path = QDir::tempPath() + "/safejumper-openvpn.log";
-#endif // Q_OS_WIN
-    auto f = fopen(path, "r");
-    if (f)
+    auto path = PathHelper::Instance()->OpenvpnLogPfn();
+    QFile f(path);
+    if (f.open(QIODevice::ReadOnly))
     {
-        char buf[4096] = {0};
-        fread(buf, 1, 4095, f);
-        fclose(f);
-        log::logt(buf);
+       QTextStream in(&f);
+       while (!in.atEnd())
+       {
+            auto l = in.readLine();
+            log::logt(l);
+       }
+       f.close();
     }
+
 	WndManager::Instance()->ToLogs();    
 }
 
