@@ -23,7 +23,7 @@ namespace std
 }
 
 #else
-#include <hash_map>
+#include <unordered_map>
 #endif
 
 #define ENCRYPTION_RSA 0

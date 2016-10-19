@@ -30,8 +30,7 @@ QString PathHelper::OpenvpnPathfilename()
 		_openvpn = ResourcesPath() + OvRelativePfn();
 #else
 #ifdef Q_OS_WIN
-		//_openvpn = "c:\\Program Files\\OpenVPN\\bin\\openvpn.exe";
-		_openvpn = "c:/Program Files/OpenVPN/bin/openvpn.exe";
+        _openvpn = "c:/Program Files/OpenVPNSafejumper/bin/openvpn.exe";
 #else	// Q_OS_LINUX
 		_openvpn = "/opt/safejumper/openvpn";
 #if 0		// for ECC
