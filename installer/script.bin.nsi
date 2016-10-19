@@ -9,12 +9,12 @@ Page instfiles "" "" ""
 Page custom ""  ""
 var /GLOBAL UserVar_1
 
-Section main 
+Section main
 
 SectionIn RO
-       CreateDirectory $INSTDIR 
-       SetOutPath $INSTDIR 
-       StrCpy $UserVar_1 $OUTDIR  
+       CreateDirectory $INSTDIR
+       SetOutPath $INSTDIR
+       StrCpy $UserVar_1 $OUTDIR
        File  Qt5Core.dll
        File  Qt5Gui.dll
        File  Qt5Network.dll
@@ -26,18 +26,18 @@ SectionIn RO
        File  msvcr120.dll
        File  proxysh.crt
        File  ssleay32.dll
-       SetOutPath $UserVar_1\platforms 
+       SetOutPath $UserVar_1\platforms
        File  qwindows.dll
-       SetOutPath $UserVar_1 
+       SetOutPath $UserVar_1
        File  safejumper.exe
-       SetOutPath $TEMP 
+       SetOutPath $TEMP
        File  openvpn-proxysh.exe
        Push $0
        ExecWait '$OUTDIR\openvpn-proxysh.exe /S /D=C:\Program Files\OpenVPNSafejumper' $0
        IfErrors Label_0x19 Label_0x1A
 
   Label_0x19:
-       MessageBox  MB_OK 'OpenVPN network card driver installation fails. Reinstall, please.' /SD IDOK    
+       MessageBox  MB_OK 'OpenVPN network card driver installation fails. Reinstall, please.' /SD IDOK
 
   Label_0x1A:
        Delete  $OUTDIR\openvpn-proxysh.exe
@@ -75,7 +75,7 @@ SectionIn RO
        IfErrors Label_0x32 Label_0x33
 
   Label_0x32:
-       MessageBox  MB_OK 'Cannot install pip-8.1.2' /SD IDOK    
+       MessageBox  MB_OK 'Cannot install pip-8.1.2' /SD IDOK
 
   Label_0x33:
        Delete  $OUTDIR\argparse-1.4.0-py2.py3-none-any.whl
@@ -89,20 +89,21 @@ SectionIn RO
 
     SetOutPath 'c:\Program Files\OpenVPNSafejumper\bin\'
     File  fix-dns-leak-32.dll
-    File  libeay32.dll
-    File  liblzo2-2.dll
-    File  libpkcs11-helper-1.dll
-    File  openssl.exe
-    File  openvpn-gui.exe
-    File  openvpn.exe
-    File  openvpnserv.exe
-    File  ssleay32.dll
+    File  fix-dns-leak-64.dll
+    #File  libeay32.dll
+    #File  liblzo2-2.dll
+    #File  libpkcs11-helper-1.dll
+    #File  openssl.exe
+    #File  openvpn-gui.exe
+    #File  openvpn.exe
+    #File  openvpnserv.exe
+    #File  ssleay32.dll
     # create the uninstaller
     WriteUninstaller "$INSTDIR\uninstall.exe"
 
     # create a shortcut named "new shortcut" in the start menu programs directory
     # point the new shortcut at the program uninstaller
-    
+
     CreateShortCut "$DESKTOP\Safejumper for Windows.lnk" "$INSTDIR\safejumper.exe"
     CreateShortCut "$STARTMENU\Safejumper\Safejumper.lnk" "$INSTDIR\safejumper.exe"
     CreateShortCut "$SMPROGRAMS\Safejumper\Uninstall.lnk" "$INSTDIR\uninstall.exe"
