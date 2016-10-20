@@ -19,6 +19,7 @@
 #ifdef Q_OS_MAC
 #include <Security/Authorization.h>
 #include <Security/AuthorizationTags.h>
+#include <stdio.h>
 #endif
 
 #include <QtCore/qshareddata.h>
@@ -508,6 +509,10 @@ static const char * gs_icon = ":/icons/icon-tray.png";
 static const char * gs_icon_cross = ":/icons/icon-tray-cross.png";
 static const char * gs_icon_cycle = ":/icons/icon-tray-cycle.png";
 
+static const char * gs_icon_white = ":/icons/icon-tray-white.png";
+static const char * gs_icon_cross_white = ":/icons/icon-tray-cross-white.png";
+static const char * gs_icon_cycle_white = ":/icons/icon-tray-cycle-white.png";
+
 static const char * gs_icon_light = ":/icons/icon-tray-hover.png";
 static const char * gs_icon_cross_light = ":/icons/icon-tray-hover-cross.png";
 static const char * gs_icon_cycle_light = ":/icons/icon-tray-hover-cycle.png";
@@ -520,7 +525,7 @@ const char * OsSpecific::IconDisconnected()
 {
 	return
 #ifdef Q_OS_MAC
-	gs_icon_cross
+    isDark() ? gs_icon_cross_white : gs_icon_cross
 #else
 	gs_icon_cross_color
 #endif
@@ -531,18 +536,33 @@ const char * OsSpecific::IconConnecting()
 {
 	return
 #ifdef Q_OS_MAC
-	gs_icon_cycle
+    isDark() ? gs_icon_cycle_white : gs_icon_cycle
 #else
 	gs_icon_cycle_color
 #endif
 	;
 }
 
+#ifdef Q_OS_MAC
+bool OsSpecific::isDark()
+{
+    FILE* f = popen("defaults read -g AppleInterfaceStyle", "r");
+    char  buf[5] = {0};
+    fread(buf, 4, 1, f);
+    fclose(f);
+    bool dark = false;
+    if (!strcmp(buf, "Dark"))
+        dark = true;
+
+    return dark;
+}
+#endif
+
 const char * OsSpecific::IconConnected()
 {
 	return
 #ifdef Q_OS_MAC
-	gs_icon
+    isDark() ? gs_icon_white : gs_icon
 #else
 	gs_icon_color
 #endif

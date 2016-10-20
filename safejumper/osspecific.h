@@ -60,6 +60,10 @@ public:
 	bool IsObfsRunning();
 	void StopObfs();
     bool IsObfsInstalled();
+
+#ifdef Q_OS_MAC
+    bool isDark();
+#endif
 private:
 	OsSpecific();
 	static std::auto_ptr<OsSpecific> _inst;
