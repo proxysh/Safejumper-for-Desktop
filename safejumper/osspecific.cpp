@@ -550,10 +550,8 @@ bool OsSpecific::isDark()
     char  buf[5] = {0};
     fread(buf, 4, 1, f);
     fclose(f);
-    bool dark = false;
-    if (!strcmp(buf, "Dark"))
-        dark = true;
-
+    static bool dark = !strcmp(buf, "Dark");
+    log::logt(QString("Current theme ") + buf);
     return dark;
 }
 #endif
