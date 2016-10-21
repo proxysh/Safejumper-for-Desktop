@@ -369,7 +369,6 @@ void SjMainWindow::UpdIcon(OvState st)
 		case ovsConnected: ic = OsSpecific::Instance()->IconConnected(); break;
 		default: break;
 	}
-    log::logt(QString("set ICON ") + ic);
 	QIcon icon(ic);
 	_TrayIcon->setIcon(icon);
 }

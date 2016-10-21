@@ -270,23 +270,24 @@ void OsSpecific::SetRights()
 	// will ask for elevated rights inside
 #ifdef Q_OS_MAC
 
-	SetChmod("0744", PathHelper::Instance()->UpScriptPfn());
+    SetChmod("0744", PathHelper::Instance()->UpScriptPfn());
 	SetChown(PathHelper::Instance()->UpScriptPfn());
-	SetChmod("0744", PathHelper::Instance()->DownScriptPfn());
+    SetChmod("0744", PathHelper::Instance()->DownScriptPfn());
 	SetChown(PathHelper::Instance()->DownScriptPfn());
 
-	SetChmod("0755", PathHelper::Instance()->OpenvpnPathfilename());
+    SetChmod("0755", PathHelper::Instance()->OpenvpnPathfilename());
 	SetChown(PathHelper::Instance()->OpenvpnPathfilename());
 
-	SetChmod("04555", PathHelper::Instance()->NetDownPfn());
+    SetChmod("04555", PathHelper::Instance()->NetDownPfn());
 	SetChown(PathHelper::Instance()->NetDownPfn());
 
-	SetChmod("04555", PathHelper::Instance()->LauncherPfn());
+    SetChmod("04555", PathHelper::Instance()->LauncherPfn());
 	SetChown(PathHelper::Instance()->LauncherPfn());
 
-	SetChmod("04555", PathHelper::Instance()->ObfsInstallerPfn());
+    SetChmod("04555", PathHelper::Instance()->ObfsInstallerPfn());
 	SetChown(PathHelper::Instance()->ObfsInstallerPfn());
 
+    SetChmod("777", PathHelper::Instance()->OpenvpnLogPfn());
 #endif		// Q_OS_MAC
 
 #ifdef Q_OS_LINUX
