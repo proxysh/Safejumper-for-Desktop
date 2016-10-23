@@ -270,23 +270,25 @@ void OsSpecific::SetRights()
 	// will ask for elevated rights inside
 #ifdef Q_OS_MAC
 
-	SetChmod("0744", PathHelper::Instance()->UpScriptPfn());
+    SetChmod("0744", PathHelper::Instance()->UpScriptPfn());
 	SetChown(PathHelper::Instance()->UpScriptPfn());
-	SetChmod("0744", PathHelper::Instance()->DownScriptPfn());
+    SetChmod("0744", PathHelper::Instance()->DownScriptPfn());
 	SetChown(PathHelper::Instance()->DownScriptPfn());
 
-	SetChmod("0755", PathHelper::Instance()->OpenvpnPathfilename());
+    SetChmod("0755", PathHelper::Instance()->OpenvpnPathfilename());
 	SetChown(PathHelper::Instance()->OpenvpnPathfilename());
 
-	SetChmod("04555", PathHelper::Instance()->NetDownPfn());
+    SetChmod("04555", PathHelper::Instance()->NetDownPfn());
 	SetChown(PathHelper::Instance()->NetDownPfn());
 
-	SetChmod("04555", PathHelper::Instance()->LauncherPfn());
+    SetChmod("04555", PathHelper::Instance()->LauncherPfn());
 	SetChown(PathHelper::Instance()->LauncherPfn());
 
-	SetChmod("04555", PathHelper::Instance()->ObfsInstallerPfn());
+    SetChmod("04555", PathHelper::Instance()->ObfsInstallerPfn());
 	SetChown(PathHelper::Instance()->ObfsInstallerPfn());
 
+    system("touch /tmp/safejumper-openvpn.log");
+    SetChmod("777", PathHelper::Instance()->OpenvpnLogPfn());
 #endif		// Q_OS_MAC
 
 #ifdef Q_OS_LINUX
@@ -1232,6 +1234,7 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 		_obfs.reset(new QProcess());
 		_obfs->start(cmd);
 		QThread::msleep(100);
+        log::logt(QString("if (!IsObfsRunning()) ") + cmd);
 	}
 	log::logt("RunObfs() out");
 }
@@ -1258,17 +1261,14 @@ void OsSpecific::InstallObfs()
 	ExecAsRoot(PathHelper::Instance()->ObfsInstallerPfn(), QStringList());
 	log::logt("Show notification");
 	int ii = WndManager::Instance()->Confirmation("Installing OBFS proxy");
-//	if (ii != QDialog::Accepted)
-	if (!IsObfsInstalled())
-		throw std::runtime_error("Wait for gcc tools installation finished, please");
+    ExecAsRoot("/usr/bin/easy_install", QStringList() << "pip");
+    ExecAsRoot("/usr/local/bin/pip", QStringList() << "install" << "obfsproxy");
 
-//	while (!IsObfsInstalled())
-//	{
-//		QThread::msleep(400);
-//	}
 
-//	ExecAsRoot("/usr/bin/easy_install", QStringList() << "pip");
-//	ExecAsRoot("/usr/local/bin/pip", QStringList() << "install" << "obfsproxy");
+    while (!IsObfsInstalled())
+    {
+        QThread::msleep(400);
+    }
 #endif	// Q_OS_MAC
 #endif	// Q_OS_LINUX
 	log::logt("InstallObfs() out");
@@ -1278,10 +1278,8 @@ bool OsSpecific::IsObfsInstalled()
 {
 	bool b = true;
 #ifndef Q_OS_WIN
-#ifdef Q_OS_MAC
-	QString s = RunFastCmd("/usr/bin/which obfsproxy", 1000);
-#else
 	QString s = RunFastCmd("which obfsproxy", 1000);
+    log::logt("WHICH OBFS " + s);
 #endif
 	b = !s.isEmpty();
 
@@ -1294,7 +1292,7 @@ bool OsSpecific::IsObfsInstalled()
 	}
 #endif
 
-#endif
+    log::logt(QString("IsObfsInstalled ") + (b ? "TRUE" : "FALSE"));
 	return b;
 }
 
