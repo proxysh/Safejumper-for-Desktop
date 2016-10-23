@@ -164,14 +164,14 @@ void Scr_Settings::ToScr_Connect()
 
 void Scr_Settings::ToScr_Logs()
 {
-    auto path = PathHelper::Instance()->OpenvpnLogPfn();
+    QString path = PathHelper::Instance()->OpenvpnLogPfn();
     QFile f(path);
     if (f.open(QIODevice::ReadOnly))
     {
        QTextStream in(&f);
        while (!in.atEnd())
        {
-            auto l = in.readLine();
+            QString l = in.readLine();
             log::logt(l);
        }
        f.close();

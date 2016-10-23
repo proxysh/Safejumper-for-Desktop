@@ -1214,7 +1214,7 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 #ifndef Q_OS_WIN
 	"--data-dir /tmp "
 #else
-#endif
+#endif-
 	"obfs2 "
 	"--dest "
 //	"185.47.202.158"
@@ -1244,8 +1244,8 @@ void OsSpecific::InstallObfs()
 #ifndef Q_OS_REDHAT
 	// debian/ubuntu
 	ExecAsRoot("apt-get", QStringList() << "update");
-	ExecAsRoot("apt-get", QStringList() << "install" << "-y"<<"--force-yes" <<"libdpkg-perl=1.17.5ubuntu5");
-	ExecAsRoot("apt-get", QStringList() << "install" << "-y" << "python2.7" <<"python-pip" << "python-dev" << "build-essential");
+    ExecAsRoot("wget",  QStringList() <<  "https://bootstrap.pypa.io/get-pip.py" << "-O" << "/tmp/get-pip.py");
+    ExecAsRoot("python",  QStringList() <<  "/tmp/get-pip.py");
 #else
 	// CentOS
 	ExecAsRoot("yum",  QStringList() <<  "-y" << "install" << "python-devel");
