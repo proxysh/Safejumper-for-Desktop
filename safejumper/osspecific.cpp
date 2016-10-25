@@ -1228,6 +1228,8 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 	+ local_port
 //	"1050"
 	;
+
+    log::logt("SRV = " + srv);
 	
 	if (!IsObfsRunning())
 	{
