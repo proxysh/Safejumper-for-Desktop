@@ -1247,6 +1247,7 @@ void OsSpecific::InstallObfs()
 #ifndef Q_OS_REDHAT
 	// debian/ubuntu
 	ExecAsRoot("apt-get", QStringList() << "update");
+    ExecAsRoot("apt-get",  QStringList() << "-y" << "install" << "python-dev");
     ExecAsRoot("wget",  QStringList() <<  "https://bootstrap.pypa.io/get-pip.py" << "-O" << "/tmp/get-pip.py");
     ExecAsRoot("python",  QStringList() <<  "/tmp/get-pip.py");
 #else
