@@ -145,7 +145,7 @@ void Ctr_Openvpn::StartImpl()
 		ff.write("proto "); ff.write(Setting::Instance()->Protocol().toLatin1()); ff.write("\n");		// "tcp"/"udp"
 //ff.write("proto udp\n");
 //ff.write("proto tcp\n");
-		
+
 		ff.write("remote "); ff.write(Setting::Instance()->Server().toLatin1()); ff.write(" "); ff.write(Setting::Instance()->Port().toLatin1()); ff.write("\n");
 
 //ff.write("remote 176.67.168.144 465\n");	// france 7
@@ -171,15 +171,15 @@ void Ctr_Openvpn::StartImpl()
 		{
 //			ff.write("tls-cipher ECDHE-ECDSA-AES256-GCM-SHA384\n");
 		ff.write("tls-cipher TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SHA384\n");
-		
+
 		//ff.write("tls-cipher ECDH\n");
 		//ff.write("tls-cipher !ECDH\n");
-		
+
 			ff.write("ecdh-curve secp384r1\n");
-		
+
 			if (ENCRYPTION_ECCXOR == enc)
 				ff.write("scramble obfuscate 0054D65beN6r2kd\n");
-				
+
 			// TODO: -1 download cert from https://proxy.sh/proxysh-ecc.crt
 			ff.write(
 				"<ca>\n"
@@ -280,7 +280,7 @@ void Ctr_Openvpn::StartImpl()
 
 		// TODO: -1 download cert from proxy.sh
 		if (enc != ENCRYPTION_ECC && enc != ENCRYPTION_ECCXOR)
-			args << "--ca" << PathHelper::Instance()->ProxyshCaCert();	// /tmp/proxysh.crt
+			args << "--ca" << "\"" << PathHelper::Instance()->ProxyshCaCert() << "\"";	// /tmp/proxysh.crt
 
 		if (Setting::Instance()->IsFixDns() || !Setting::Instance()->Dns1().isEmpty() || !Setting::Instance()->Dns2().isEmpty())
 			OsSpecific::Instance()->FixDnsLeak();
@@ -553,7 +553,7 @@ void Ctr_Openvpn::GotConnected(const QString & s)
 	SetState(ovsConnected);
 	// extract IP
 	//1432176303,CONNECTED,SUCCESS,10.14.0.6,91.219.237.159
-	// 1460435651,CONNECTED,SUCCESS,10.200.1.6,85.236.153.236,465,192.168.58.170,35331	
+	// 1460435651,CONNECTED,SUCCESS,10.200.1.6,85.236.153.236,465,192.168.58.170,35331
 	int p = -1;
 	for (int k = 0; k < 4; ++k)
 		p = s.indexOf(',', p + 1);
