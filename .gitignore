@@ -1,0 +1,8 @@
+*.o
+moc_*.cpp
+moc_*.h
+ui_*.h
+*.app
+*.pro.user
+Makefile
+
