@@ -27,154 +27,97 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <widget class="QFrame" name="frame">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>45</y>
-     <width>315</width>
-     <height>130</height>
-    </rect>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>5</number>
    </property>
-   <property name="styleSheet">
-    <string notr="true">QFrame
-{
-	background-color: #FFFFFF;
-	border: 0;
-}</string>
+   <property name="topMargin">
+    <number>5</number>
    </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
+   <property name="rightMargin">
+    <number>5</number>
    </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
+   <property name="bottomMargin">
+    <number>5</number>
    </property>
-   <widget class="QLabel" name="line_1">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>315</width>
-      <height>2</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel
-{
-	border:0px;
-	border-image: url(:/imgs/h-line-mb.png);
-}</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QFrame" name="frame_2">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>65</y>
-      <width>315</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QFrame
-{
-	background-color: #fbfbfb;
-	border: 0;
-}</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-    <widget class="QLabel" name="line_2">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>315</width>
-       <height>3</height>
-      </rect>
+   <item row="0" column="0">
+    <widget class="QLabel" name="L_Caption">
+     <property name="font">
+      <font>
+       <family>Helvetica Neue</family>
+       <pointsize>18</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
       <string notr="true">QLabel
 {
-	border:0px;
-	border-image: url(:/imgs/h-line.png);
+color: #ca1726;
 }</string>
      </property>
      <property name="text">
-      <string/>
+      <string>Error</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QPushButton" name="b_Close">
-     <property name="geometry">
-      <rect>
-       <x>40</x>
-       <y>13</y>
-       <width>110</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Helvetica Neue</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+   </item>
+   <item row="1" column="0">
+    <widget class="QFrame" name="frame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton
+      <string notr="true">QFrame
 {
-	border:0px;
-	color: #ffffff;
-	border-image: url(:/imgs/b-close-norm.png);
-}
-QPushButton:hover:!pressed
-{
-	border-image: url(:/imgs/b-close-hover.png);
-}
-QPushButton:pressed
-{
-	border-image: url(:/imgs/b-close-pressed.png);
+	background-color: #FFFFFF;
+	border: 0;
 }</string>
      </property>
-     <property name="text">
-      <string/>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-    </widget>
-    <widget class="QPushButton" name="b_Support">
-     <property name="geometry">
-      <rect>
-       <x>165</x>
-       <y>13</y>
-       <width>110</width>
-       <height>41</height>
-      </rect>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
      </property>
-     <property name="font">
-      <font>
-       <family>Helvetica Neue</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="b_Support">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <family>Helvetica Neue</family>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton
 {
 	border:0px;
 	color: #ffffff;
@@ -188,66 +131,79 @@ QPushButton:pressed
 {
 	border-image: url(:/imgs/b-support-pressed.png);
 }</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QLabel" name="L_Text">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>5</y>
-      <width>301</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Helvetica Neue</family>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="scaledContents">
-     <bool>true</bool>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QLabel" name="L_Caption">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>301</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Helvetica Neue</family>
-     <pointsize>18</pointsize>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QLabel
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="b_Close">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <family>Helvetica Neue</family>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton
 {
-color: #ca1726;
+	border:0px;
+	color: #ffffff;
+	border-image: url(:/imgs/b-close-norm.png);
+}
+QPushButton:hover:!pressed
+{
+	border-image: url(:/imgs/b-close-hover.png);
+}
+QPushButton:pressed
+{
+	border-image: url(:/imgs/b-close-pressed.png);
 }</string>
-   </property>
-   <property name="text">
-    <string>Error</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="L_Text">
+        <property name="font">
+         <font>
+          <family>Helvetica Neue</family>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="scaledContents">
+         <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections>
