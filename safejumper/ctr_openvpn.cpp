@@ -233,7 +233,7 @@ void Ctr_Openvpn::StartImpl()
 #endif
 
 #ifndef Q_OS_WIN
-			<< "--daemon"	// does not work at windows
+      << "--daemon"	// does not work at windows
 #endif
 
 #ifdef NO_PARAMFILE
@@ -280,7 +280,7 @@ void Ctr_Openvpn::StartImpl()
 
 		// TODO: -1 download cert from proxy.sh
 		if (enc != ENCRYPTION_ECC && enc != ENCRYPTION_ECCXOR)
-			args << "--ca" << "\"" << PathHelper::Instance()->ProxyshCaCert() << "\"";	// /tmp/proxysh.crt
+      args << "--ca" << PathHelper::Instance()->ProxyshCaCert();	// /tmp/proxysh.crt
 
 		if (Setting::Instance()->IsFixDns() || !Setting::Instance()->Dns1().isEmpty() || !Setting::Instance()->Dns2().isEmpty())
 			OsSpecific::Instance()->FixDnsLeak();
@@ -355,7 +355,7 @@ void Ctr_Openvpn::StartImpl()
 			sc->connect(_process.get(), SIGNAL(finished(int, QProcess::ExitStatus)), sc, SLOT(ConnectFinished(int, QProcess::ExitStatus)));
 			sc->connect(_process.get(), SIGNAL(readyReadStandardError()), sc, SLOT(ConnectStderr()));
 			sc->connect(_process.get(), SIGNAL(readyReadStandardOutput()), sc, SLOT(ConnectStdout()));
-			_process->start(prog, args);
+      _process->start(prog, args);
 			_process->waitForStarted(2000);
 			log::logt("Process ID is: " + QString::number(_process->processId()));
 #endif

@@ -1281,10 +1281,10 @@ bool OsSpecific::IsObfsInstalled()
 {
 	bool b = true;
 #ifndef Q_OS_WIN
-	QString s = RunFastCmd("which obfsproxy", 1000);
-    log::logt("WHICH OBFS " + s);
+  QString s = RunFastCmd("which obfsproxy", 1000);
+  log::logt("WHICH OBFS " + s);
+  b = !s.isEmpty();
 #endif
-	b = !s.isEmpty();
 
 #ifdef Q_OS_MAC
 	if (!b)

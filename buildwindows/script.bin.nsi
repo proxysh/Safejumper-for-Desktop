@@ -1,5 +1,5 @@
 !include "MUI2.nsh"
-icon "5.ico"
+icon "safejumper.ico"
 Name Safejumper
 OutFile Safejumper_install.exe ; NsiDecompiler: generated value!
 InstallColors 00FF00 000000
@@ -22,18 +22,17 @@ SectionIn RO
        File  Qt5Widgets.dll
        File  Qt5Xml.dll
        File  libeay32.dll
-       File  msvcp120.dll
-       File  msvcr120.dll
+       File  vcredist_x86.exe
        File  proxysh.crt
        File  ssleay32.dll
-       SetOutPath $UserVar_1\platforms
-       File  qwindows.dll
-       SetOutPath $UserVar_1
+	   SetOutPath $INSTDIR\platforms
+       File  platforms\qwindows.dll
+	   SetOutPath $INSTDIR
        File  safejumper.exe
        SetOutPath $TEMP
        File  openvpn-proxysh.exe
        Push $0
-       ExecWait '$OUTDIR\openvpn-proxysh.exe /S /D=C:\Program Files\OpenVPNSafejumper' $0
+       ExecWait '$OUTDIR\openvpn-proxysh.exe /S /D=C:\Program Files\OpenVPN' $0
        IfErrors Label_0x19 Label_0x1A
 
   Label_0x19:
@@ -51,7 +50,7 @@ SectionIn RO
 
   Label_0x20:
        Delete  $OUTDIR\python-2.7.11.msi
-       File  pip-8.1.2-py2.py3-none-any.whl
+       File  wheel-pip\pip-8.1.2-py2.py3-none-any.whl
        Push $0
        ExecWait 'c:\python27\python.exe -m pip install $OUTDIR\pip-8.1.2-py2.py3-none-any.whl' $0
        IfErrors Label_0x25 Label_0x26
@@ -62,14 +61,14 @@ SectionIn RO
   Label_0x26:
        Delete  $OUTDIR\pip-8.1.2-py2.py3-none-any.whl
 
-       File  argparse-1.4.0-py2.py3-none-any.whl
-       File  obfsproxy-0.2.13-py2-none-any.whl
-       File  pycrypto-2.6.1-cp27-cp27m-win32.whl
-       File  pyptlib-0.0.6-py2-none-any.whl
-       File  PyYAML-3.11-cp27-cp27m-win32.whl
-       File  setuptools-23.1.0-py2.py3-none-any.whl
-       File  Twisted-16.2.0-cp27-cp27m-win32.whl
-       File  zope.interface-4.2.0-cp27-cp27m-win32.whl
+       File  wheel\argparse-1.4.0-py2.py3-none-any.whl
+       File  wheel\obfsproxy-0.2.13-py2-none-any.whl
+       File  wheel\pycrypto-2.6.1-cp27-cp27m-win32.whl
+       File  wheel\pyptlib-0.0.6-py2-none-any.whl
+       File  wheel\PyYAML-3.11-cp27-cp27m-win32.whl
+       File  wheel\setuptools-23.1.0-py2.py3-none-any.whl
+       File  wheel\Twisted-16.2.0-cp27-cp27m-win32.whl
+       File  wheel\zope.interface-4.2.0-cp27-cp27m-win32.whl
        Push $0
        ExecWait 'c:\python27\python.exe -m pip install $OUTDIR\argparse-1.4.0-py2.py3-none-any.whl $OUTDIR\obfsproxy-0.2.13-py2-none-any.whl $OUTDIR\pycrypto-2.6.1-cp27-cp27m-win32.whl $OUTDIR\pyptlib-0.0.6-py2-none-any.whl $OUTDIR\PyYAML-3.11-cp27-cp27m-win32.whl $OUTDIR\setuptools-23.1.0-py2.py3-none-any.whl $OUTDIR\Twisted-16.2.0-cp27-cp27m-win32.whl $OUTDIR\zope.interface-4.2.0-cp27-cp27m-win32.whl' $0
        IfErrors Label_0x32 Label_0x33
@@ -87,7 +86,7 @@ SectionIn RO
        Delete  $OUTDIR\Twisted-16.2.0-cp27-cp27m-win32.whl
        Delete  $OUTDIR\zope.interface-4.2.0-cp27-cp27m-win32.whl
 
-    SetOutPath 'c:\Program Files\OpenVPNSafejumper\bin\'
+    SetOutPath 'c:\Program Files\OpenVPN\bin\'
     File  fix-dns-leak-32.dll
     File  fix-dns-leak-64.dll
     #File  libeay32.dll
@@ -118,7 +117,7 @@ Section "uninstall"
    Delete  $STARTMENU\Safejumper\Uninstall.lnk
    RMDir /r $INSTDIR\*.*
    RMDir $INSTDIR
-   ExecWait 'C:\Program Files\OpenVPNSafejumper\Uninstall.exe /S'  $0
+   ExecWait 'C:\Program Files\OpenVPN\Uninstall.exe /S'  $0
 
 # uninstaller section end
 SectionEnd
