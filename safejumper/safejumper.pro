@@ -28,12 +28,14 @@ macx: {
 #	DEFINES += Q_OS_REDHAT
 
 win32: {
-	WINSDK_DIR = C:/Program Files/Microsoft SDKs/Windows/v7.1A
+  WINSDK_DIR = C:/Program Files/Microsoft SDKs/Windows/v7.1
 	WIN_PWD = $$replace(PWD, /, \\)
 	OUT_PWD_WIN = $$replace(OUT_PWD, /, \\)
-	QMAKE_POST_LINK = "$$WINSDK_DIR/bin/mt.exe -manifest $$quote($$WIN_PWD\\$$basename(TARGET).manifest) -outputresource:$$quote($$OUT_PWD_WIN\\release\\safejumper.exe;1)"
+  QMAKE_POST_LINK = "fixbinary.bat $$quote($$OUT_PWD_WIN\\safejumper.exe) $$quote($$WIN_PWD\\$$basename(TARGET).manifest)"
 	RC_FILE = safejumper.rc
         LIBS += -lws2_32 -lIphlpapi
+  DESTDIR = ../buildwindows/
+  MOC_DIR = ../.obj/
 }
 
 SOURCES += main.cpp\
