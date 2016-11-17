@@ -7,14 +7,12 @@ InstallDir 'C:\Program Files\Safejumper'
 Page directory "" "" ""
 Page instfiles "" "" ""
 Page custom ""  ""
-var /GLOBAL UserVar_1
 
 Section main
 
 SectionIn RO
        CreateDirectory $INSTDIR
        SetOutPath $INSTDIR
-       StrCpy $UserVar_1 $OUTDIR
        File  Qt5Core.dll
        File  Qt5Gui.dll
        File  Qt5Network.dll
@@ -71,10 +69,17 @@ SectionIn RO
        File  wheel\zope.interface-4.2.0-cp27-cp27m-win32.whl
        Push $0
        ExecWait 'c:\python27\python.exe -m pip install $OUTDIR\argparse-1.4.0-py2.py3-none-any.whl $OUTDIR\obfsproxy-0.2.13-py2-none-any.whl $OUTDIR\pycrypto-2.6.1-cp27-cp27m-win32.whl $OUTDIR\pyptlib-0.0.6-py2-none-any.whl $OUTDIR\PyYAML-3.11-cp27-cp27m-win32.whl $OUTDIR\setuptools-23.1.0-py2.py3-none-any.whl $OUTDIR\Twisted-16.2.0-cp27-cp27m-win32.whl $OUTDIR\zope.interface-4.2.0-cp27-cp27m-win32.whl' $0
-       IfErrors Label_0x32 Label_0x33
+       IfErrors Label_0x29 Label_0x30
 
-  Label_0x32:
+  Label_0x29:
        MessageBox  MB_OK 'Cannot install pip-8.1.2' /SD IDOK
+
+  Label_0x30:
+        ExecWait $INSTDIR\vcredist_x86.exe
+		IfErrors Label_0x31 Label_0x33
+		
+  Label_0x31:
+        MessageBox  MB_OK 'Cannot install Visual C++ redistributable' /SD IDOK
 
   Label_0x33:
        Delete  $OUTDIR\argparse-1.4.0-py2.py3-none-any.whl
