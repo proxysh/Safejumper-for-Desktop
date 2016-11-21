@@ -5,4 +5,12 @@ ui_*.h
 *.app
 *.pro.user
 Makefile
+.DS_Store
+.qmake.stash
+safejumper.dmg
+Safejumper.app
+qrc_*.cpp
+launchopenvpn
+netdown
+uic_wrapper.sh
 
