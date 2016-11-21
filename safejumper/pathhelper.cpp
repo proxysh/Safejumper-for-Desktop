@@ -1,12 +1,12 @@
 #include "pathhelper.h"
 
 #include <QDir>
-#include <QApplication>
+#include <QCoreApplication>
 #include <QProcess>
 
 //#include "log.h"	// TODO: -0 remove
 
-extern QApplication * g_pTheApp;
+extern QCoreApplication * g_pTheApp;
 
 std::auto_ptr<PathHelper> PathHelper::_inst;
 PathHelper * PathHelper::Instance()
@@ -91,7 +91,7 @@ QString PathHelper::ResourcesPath()
 	d.cd("Resources");
 	s = d.canonicalPath();
 #else
-	s = QApplication::applicationDirPath();
+    s = QCoreApplication::applicationDirPath();
 #endif
 	return s;
 }
@@ -164,14 +164,14 @@ QString PathHelper::LauncherPfn()
 
 QString PathHelper::ObfsInstallerPfn()
 {
-	return ResourcesPath() + "/installobfsproxy";
+    return ResourcesPath() + "/installobfsproxy.sh";
 }
 
 QString PathHelper::ObfsproxyPfn()
 {
 	static const QString pfn = 
 #ifdef Q_OS_MAC
-	ResourcesPath() + "/obfsproxy"
+    ResourcesPath() + "/env/bin/obfsproxy"
 #else
 #ifdef Q_OS_LINUX
 	"/usr/local/bin/obfsproxy"

@@ -312,8 +312,16 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
 
     if (ix == ENCRYPTION_OBFS_TOR && !OsSpecific::Instance()->IsObfsInstalled())
     {
+#ifdef Q_OS_MAC
+        // Try to install first, then check if it's not installed again.
+        OsSpecific::Instance()->InstallObfs();
+        if (!OsSpecific::Instance()->IsObfsInstalled()) {
+#endif
         Dlg_Error dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
         dlg.exec();
+#ifdef Q_OS_MAC
+        }
+#endif
     }
 
 	SETTINGS_OBJ;

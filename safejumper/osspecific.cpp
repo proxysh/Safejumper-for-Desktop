@@ -284,9 +284,6 @@ void OsSpecific::SetRights()
     SetChmod("04555", PathHelper::Instance()->LauncherPfn());
 	SetChown(PathHelper::Instance()->LauncherPfn());
 
-    SetChmod("04555", PathHelper::Instance()->ObfsInstallerPfn());
-	SetChown(PathHelper::Instance()->ObfsInstallerPfn());
-
     system("touch /tmp/safejumper-openvpn.log");
     SetChmod("777", PathHelper::Instance()->OpenvpnLogPfn());
 #endif		// Q_OS_MAC
@@ -1204,7 +1201,7 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 	static const QString cmd = 
 #ifndef Q_OS_WIN
 #ifndef Q_OS_REDHAT
-    "/usr/local/bin/obfsproxy "
+    PathHelper::Instance()->ObfsproxyPfn() + " "
 #else
 	"/usr/bin/obfsproxy "
 #endif
@@ -1214,17 +1211,17 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 #endif
 //	"--log-min-severity debug --no-safe-logging "
 #ifndef Q_OS_WIN
-	"--data-dir /tmp "
+    "--data-dir /tmp "
 #else
-#endif-
-	"obfs2 "
-	"--dest "
+#endif
+    "obfs2 "
+    "--dest "
 //	"185.47.202.158"
 	+ srv +
 //	":888 "
 	":" + port + " "
-	"socks "
-	"127.0.0.1:"
+    "socks "
+    "127.0.0.1:"
 	+ local_port
 //	"1050"
 	;
@@ -1234,6 +1231,7 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 	if (!IsObfsRunning())
 	{
 		_obfs.reset(new QProcess());
+        log::logt("Executing obfsproxy with command " + cmd);
 		_obfs->start(cmd);
 		QThread::msleep(100);
         log::logt(QString("if (!IsObfsRunning()) ") + cmd);
@@ -1261,12 +1259,11 @@ void OsSpecific::InstallObfs()
 	ExecAsRoot("pip",  QStringList() << "install" << "obfsproxy");
 #else
 #ifdef Q_OS_MAC
-	ExecAsRoot(PathHelper::Instance()->ObfsInstallerPfn(), QStringList());
 	log::logt("Show notification");
 	int ii = WndManager::Instance()->Confirmation("Installing OBFS proxy");
     ExecAsRoot("/usr/bin/easy_install", QStringList() << "pip");
-    ExecAsRoot("/usr/local/bin/pip", QStringList() << "install" << "obfsproxy");
-
+    ExecAsRoot("/usr/local/bin/pip", QStringList() << "install" << "virtualenv");
+    ExecAsRoot(PathHelper::Instance()->ObfsInstallerPfn(), QStringList());
 
     while (!IsObfsInstalled())
     {
@@ -1280,23 +1277,18 @@ void OsSpecific::InstallObfs()
 bool OsSpecific::IsObfsInstalled()
 {
 	bool b = true;
-#ifndef Q_OS_WIN
-  QString s = RunFastCmd("which obfsproxy", 1000);
-  log::logt("WHICH OBFS " + s);
-  b = !s.isEmpty();
-#endif
-
 #ifdef Q_OS_MAC
-	if (!b)
-	{
-		QFile f("/usr/local/bin/obfsproxy");
-		if (f.exists())
-			b = true;
-	}
+    QFile f(PathHelper::Instance()->ResourcesPath() + "/env/bin/obfsproxy");
+    b = f.exists();
+#else
+#ifndef Q_OS_WIN
+    QString s = RunFastCmd("which obfsproxy", 1000);
+    b = !s.isEmpty();
+    log::logt("WHICH OBFS " + s + b);
 #endif
-
+#endif
     log::logt(QString("IsObfsInstalled ") + (b ? "TRUE" : "FALSE"));
-	return b;
+    return b;
 }
 
 bool OsSpecific::IsObfsRunning()
@@ -1310,9 +1302,9 @@ bool OsSpecific::IsObfsRunning()
 #else
 	{
 		QString s1 = RunFastCmd("ps ax");
-		bool b1 = s1.contains("/obfsproxy");
-		b |= b1;
-	}
+        b = s1.contains("/obfsproxy");
+        log::logt("IsObfsRunning result: " + b);
+    }
 #endif
 	return b;
 }

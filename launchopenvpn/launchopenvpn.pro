@@ -7,12 +7,9 @@
 QT       += core
 QT       -= gui
 
-# QApplication is widget
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
 TARGET = launchopenvpn
 #CONFIG   += console
-#CONFIG   -= app_bundle
+CONFIG   -= app_bundle
 
 TEMPLATE = app
 
@@ -25,5 +22,3 @@ SOURCES += main.cpp \
 HEADERS  += \
 	../safejumper/pathhelper.h \
     common.h
-
-#FORMS    +=

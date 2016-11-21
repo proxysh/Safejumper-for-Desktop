@@ -61,6 +61,8 @@ public:
 	void StopObfs();
     bool IsObfsInstalled();
 
+    void InstallObfs();
+
 #ifdef Q_OS_MAC
     bool isDark();
 #endif
@@ -80,7 +82,6 @@ private:
 	QStringList FormatArgs(const QString & adr);
 	bool _netdown;
 
-	void InstallObfs();
 };
 
 #endif // OSSPECIFIC_H

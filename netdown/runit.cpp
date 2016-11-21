@@ -4,7 +4,7 @@
 
 #include <QProcess>
 
-void runit(const char * cmd, unsigned int ms_delay = 500)
+void runit(const char * cmd, unsigned int ms_delay)
 {
 	QProcess p;
 
