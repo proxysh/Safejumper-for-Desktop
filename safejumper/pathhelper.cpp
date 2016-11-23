@@ -75,7 +75,7 @@ printf("%s", sb.toStdString().c_str());
 QString PathHelper::OvRelativePfn()
 {
 #ifdef Q_OS_MAC
-	return "/openvpn/openvpn-2.3.2/openvpn-executable";
+    return "/openvpn/openvpn-2.3.13/openvpn-executable";
 #endif
 #ifdef Q_OS_WIN
 	return "/openvpn-proxysh.exe";
