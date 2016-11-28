@@ -1,7 +1,7 @@
 all : install release
 
 install:
-	macdeployqt Safejumper.app -verbose=1
+	macdeployqt Safejumper.app -verbose=1 
 	install safejumper.icns Safejumper.app/Contents/Resources/
 	/usr/libexec/PlistBuddy -c "Set :CFBundleIconFile safejumper.icns" Safejumper.app/Contents/Info.plist
 	sh package.sh 
