@@ -25,3 +25,4 @@ This software has been developed by the following persons or entities:
 * The Proxy.sh Team, in particular Paul, Pauline, Boian, Vicki and Lou.
 * Three Monkeys International Inc. (consultancy, outsourcing).
 * Andrei Anufriev <andrey144@gmail.com>
+* Jeremy Whiting <jeremypwhiting@gmail.com>
