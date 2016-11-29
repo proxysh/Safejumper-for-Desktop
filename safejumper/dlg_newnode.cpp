@@ -4,33 +4,33 @@
 #include "fonthelper.h"
 
 Dlg_newnode::Dlg_newnode(const QString & msg, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::Dlg_newnode)
+    QDialog(parent),
+    ui(new Ui::Dlg_newnode)
 {
-	ui->setupUi(this);
+    ui->setupUi(this);
 #ifndef Q_OS_MAC
-	FontHelper::SetFont(this);
+    FontHelper::SetFont(this);
 #endif
-	this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
-	WndManager::DoShape(this);
-	
-	this->setAttribute(Qt::WA_MacNoShadow, false);
-	ui->L_Text->setText(msg);
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    WndManager::DoShape(this);
+
+    this->setAttribute(Qt::WA_MacNoShadow, false);
+    ui->L_Text->setText(msg);
 }
 
 Dlg_newnode::~Dlg_newnode()
 {
-	delete ui;
+    delete ui;
 }
 
 void Dlg_newnode::_ac_Cancel()
 {
-	_port = false;
-	this->accept();
+    _port = false;
+    this->accept();
 }
 
 void Dlg_newnode::_ac_Confirm()
 {
-	_port = true;
-	this->accept();
+    _port = true;
+    this->accept();
 }

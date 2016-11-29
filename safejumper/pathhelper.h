@@ -8,38 +8,44 @@
 class PathHelper
 {
 public:
-	static bool IsExists() { return (_inst.get() != NULL); }
-	static PathHelper * Instance();
-	static void Cleanup() { if (_inst.get() != NULL) delete _inst.release();}
-	~PathHelper();
+    static bool IsExists()
+    {
+        return (_inst.get() != NULL);
+    }
+    static PathHelper * Instance();
+    static void Cleanup()
+    {
+        if (_inst.get() != NULL) delete _inst.release();
+    }
+    ~PathHelper();
 
-	QString OpenvpnPathfilename();
-	QString OvRelativePfn();		//"/openvpn/openvpn-2.3.2/openvpn-executable";
+    QString OpenvpnPathfilename();
+    QString OvRelativePfn();		//"/openvpn/openvpn-2.3.2/openvpn-executable";
 
-	QString OpenvpnWorkdir();
-	QString OpenvpnLogPfn();
-	QString OpenvpnConfigPfn();
-	QString ProxyshCaCert();
-	QString UpScriptPfn();
-	QString DownScriptPfn();
-	QString LauncherPfn();
-	
-	QString ObfsproxyPfn();
-	QString ObfsInstallerPfn();
+    QString OpenvpnWorkdir();
+    QString OpenvpnLogPfn();
+    QString OpenvpnConfigPfn();
+    QString ProxyshCaCert();
+    QString UpScriptPfn();
+    QString DownScriptPfn();
+    QString LauncherPfn();
 
-	QString NetDownPfn();
+    QString ObfsproxyPfn();
+    QString ObfsInstallerPfn();
 
-	QString ResourcesPath();			// Resources
-	QString ContentPath();
+    QString NetDownPfn();
 
-	QString LogPfn();		// "/tmp/Safejumper-debug.log"
+    QString ResourcesPath();			// Resources
+    QString ContentPath();
+
+    QString LogPfn();		// "/tmp/Safejumper-debug.log"
 
 private:
-	PathHelper();
-	static std::auto_ptr<PathHelper> _inst;
-	QString ScriptPath();
-	
-	QString _openvpn;
+    PathHelper();
+    static std::auto_ptr<PathHelper> _inst;
+    QString ScriptPath();
+
+    QString _openvpn;
 };
 
 #endif // PATHHELPER_H

@@ -3,25 +3,26 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class Dlg_Error;
 }
 
 class Dlg_Error : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit Dlg_Error(const QString & msg, const QString & caption, QWidget *parent = 0);
-	~Dlg_Error();
+    explicit Dlg_Error(const QString & msg, const QString & caption, QWidget *parent = 0);
+    ~Dlg_Error();
 private slots:
-	void _ac_Close();
-	void _ac_Support();
+    void _ac_Close();
+    void _ac_Support();
 private:
-	Ui::Dlg_Error *ui;
-	void DoClose();
+    Ui::Dlg_Error *ui;
+    void DoClose();
 protected:
-	void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event);
 };
 
 #endif // DLG_ERROR_H

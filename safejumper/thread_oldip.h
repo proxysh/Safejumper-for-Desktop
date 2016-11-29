@@ -5,9 +5,9 @@
 
 class Thread_OldIp : public QThread
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	Thread_OldIp(QObject *parent = 0) : QThread(parent) {}
+    Thread_OldIp(QObject *parent = 0) : QThread(parent) {}
     void run() Q_DECL_OVERRIDE;
 
 signals:

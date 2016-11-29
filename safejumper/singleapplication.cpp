@@ -6,11 +6,12 @@
 #include <cstdlib>
 
 #ifdef Q_OS_UNIX
-    #include <signal.h>
-    #include <unistd.h>
+#include <signal.h>
+#include <unistd.h>
 #endif
 
-class SingleApplicationPrivate {
+class SingleApplicationPrivate
+{
 public:
     SingleApplicationPrivate(SingleApplication *q_ptr) : q_ptr(q_ptr) { }
 
@@ -64,8 +65,8 @@ public:
 };
 
 #ifdef Q_OS_UNIX
-    QList<QSharedMemory*> SingleApplicationPrivate::sharedMem;
-    QMutex SingleApplicationPrivate::sharedMemMutex;
+QList<QSharedMemory*> SingleApplicationPrivate::sharedMem;
+QMutex SingleApplicationPrivate::sharedMemMutex;
 #endif
 
 /**
@@ -84,8 +85,7 @@ SingleApplication::SingleApplication(int &argc, char *argv[])
     d_ptr->memory = new QSharedMemory(serverName);
 
     // Create a shared memory block with a minimum size of 1 byte
-    if( d_ptr->memory->create(1, QSharedMemory::ReadOnly) )
-    {
+    if( d_ptr->memory->create(1, QSharedMemory::ReadOnly) ) {
 #ifdef Q_OS_UNIX
         // Handle any further termination signals to ensure the
         // QSharedMemory block is deleted even if the process crashes
@@ -102,8 +102,7 @@ SingleApplication::SingleApplication(int &argc, char *argv[])
 
         // Even though a shared memory block exists, the original application might have crashed
         // So only after a successful connection is the second instance terminated
-        if( d_ptr->socket->waitForConnected(100) )
-        {
+        if( d_ptr->socket->waitForConnected(100) ) {
             ::exit(EXIT_SUCCESS); // Terminate the program using STDLib's exit function
         } else {
             delete d_ptr->memory;

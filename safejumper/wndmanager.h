@@ -14,58 +14,61 @@
 class WndManager
 {
 public:
-	static WndManager * Instance();
-	~WndManager();
-	static void Cleanup() { if (_inst.get() != NULL) delete _inst.release();}
+    static WndManager * Instance();
+    ~WndManager();
+    static void Cleanup()
+    {
+        if (_inst.get() != NULL) delete _inst.release();
+    }
 
-	QWidget * Primary();
-	void ToPrimary();
-	void ToSettings();
-	void ToLogs();
-	void ToMap();
+    QWidget * Primary();
+    void ToPrimary();
+    void ToSettings();
+    void ToLogs();
+    void ToMap();
 
-	void CloseAll();
-	void HideThis(QWidget * scr);
+    void CloseAll();
+    void HideThis(QWidget * scr);
 
-	void trans(const QPoint & p, QWidget * to);
-	QPoint CurrPos();
-	void SavePos();
-	QWidget * ScrVisible();	 // NULL if no visible
+    void trans(const QPoint & p, QWidget * to);
+    QPoint CurrPos();
+    void SavePos();
+    QWidget * ScrVisible();	 // NULL if no visible
 
-	static void DoShape(QWidget * d);
-	void HandleConnecting();
-	void HandleConnected();
-	void HandleDisconnected();
+    static void DoShape(QWidget * d);
+    void HandleConnecting();
+    void HandleConnected();
+    void HandleDisconnected();
 
-	void HandleState(const QString & word);		// just output it into header for debug purpose
+    void HandleState(const QString & word);		// just output it into header for debug purpose
 
-	void ErrMsg(const QString & msg);
-	void ToFront(QWidget * w);
-	void ToFront();
+    void ErrMsg(const QString & msg);
+    void ToFront(QWidget * w);
+    void ToFront();
 
-	int Confirmation(const QString & msg);		// switch to primary, return dialog code: QDialog::Accepted or another
+    int Confirmation(const QString & msg);		// switch to primary, return dialog code: QDialog::Accepted or another
 
-	void ShowPortDlg();
-	void ClosePortDlg();
-	bool IsCyclePort();		// true - if cycle ports; false - cycle nodes
+    void ShowPortDlg();
+    void ClosePortDlg();
+    bool IsCyclePort();		// true - if cycle ports; false - cycle nodes
 
-	void ShowTable();
+    void ShowTable();
 private:
-	WndManager();
-	static std::auto_ptr<WndManager> _inst;
-	void trans(QWidget * from, QWidget * to);
+    WndManager();
+    static std::auto_ptr<WndManager> _inst;
+    void trans(QWidget * from, QWidget * to);
 
-	void SaveCoords(QWidget * from);
-	int _x;
-	int _y;
-	void ApplyCoords(QWidget * to);
+    void SaveCoords(QWidget * from);
+    int _x;
+    int _y;
+    void ApplyCoords(QWidget * to);
 
-	void ToLogin();
-	void ToConnect();
+    void ToLogin();
+    void ToConnect();
 
-	void SaveAndHide(QWidget * from);
-	void DoTrans(QWidget * to);
-	Dlg_newnode * _DlgPort;
+    void SaveAndHide(QWidget * from);
+    void DoTrans(QWidget * to);
+    Dlg_newnode * _DlgPort;
 };
 
 #endif // WNDMANAGER_H

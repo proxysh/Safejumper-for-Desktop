@@ -13,45 +13,45 @@
 #include "flag.h"
 #include "fonthelper.h"
 
- Scr_Connect::HmWords Scr_Connect::_StateWord_Img;
+Scr_Connect::HmWords Scr_Connect::_StateWord_Img;
 
 Scr_Connect::Scr_Connect(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::Scr_Connect)
-  , _moving(false)
+    QDialog(parent),
+    ui(new Ui::Scr_Connect)
+    , _moving(false)
 {
-	ui->setupUi(this);
-	this->setFixedSize(this->size());
+    ui->setupUi(this);
+    this->setFixedSize(this->size());
 
-	ui->L_Country->setText("");
-	ui->L_Percent->setText("0%");
-	ui->L_OldIp->setText("");
-	ui->L_NewIp->setText("");
-	SetNoSrv();
-	
+    ui->L_Country->setText("");
+    ui->L_Percent->setText("0%");
+    ui->L_OldIp->setText("");
+    ui->L_NewIp->setText("");
+    SetNoSrv();
+
     setWindowFlags(Qt::Dialog);
 #ifndef Q_OS_MAC
-	FontHelper::SetFont(this);
+    FontHelper::SetFont(this);
 #ifdef Q_OS_WIN
     setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
-	ui->L_Until->setFont(FontHelper::pt(7));
-	ui->L_Email->setFont(FontHelper::pt(10));
+    ui->L_Until->setFont(FontHelper::pt(7));
+    ui->L_Email->setFont(FontHelper::pt(10));
 #else		// linux
-	ui->L_Until->setFont(FontHelper::pt(7));
-	ui->L_Package->setFont(FontHelper::pt(10));
+    ui->L_Until->setFont(FontHelper::pt(7));
+    ui->L_Package->setFont(FontHelper::pt(10));
 #endif
-	QPoint p1 = ui->L_LOAD->pos();
-	p1.setX(p1.x() + 10);
-	ui->L_LOAD->move(p1);
+    QPoint p1 = ui->L_LOAD->pos();
+    p1.setX(p1.x() + 10);
+    ui->L_LOAD->move(p1);
 #endif
 
-	StatusDisconnected();
+    StatusDisconnected();
 
-	ui->b_Cancel->hide();
+    ui->b_Cancel->hide();
 
-	ui->L_Until->setText("active until\n-");
-	ui->L_Amount->setText("-");
-	ui->L_OldIp->setText("");
+    ui->L_Until->setText("active until\n-");
+    ui->L_Amount->setText("-");
+    ui->L_OldIp->setText("");
 
 //	QPoint p0 = _WndStart = pos();
 //	WndManager::DoShape(this);
@@ -61,86 +61,80 @@ Scr_Connect::Scr_Connect(QWidget *parent) :
 //		log::logt("Non equal! Move back;");
 //		move(p0);
 //	}
-	qApp->installEventFilter(this);
+    qApp->installEventFilter(this);
 }
 
 bool Scr_Connect::eventFilter(QObject *obj, QEvent *event)
 {
-	switch (event->type())
-	{
-		case QEvent::MouseMove:
-		{
-			if (_moving)
-			{
-				QPoint d = QCursor::pos() - _CursorStart;
-				if (d.x() != 0 || d.y() != 0)
-				{
-					QPoint NewAbs = _WndStart + d;
-					this->move(NewAbs);
-				}
-			}
-			return false;
-		}
-		case QEvent::MouseButtonRelease:
-		{
-			_moving = false;
+    switch (event->type()) {
+    case QEvent::MouseMove: {
+        if (_moving) {
+            QPoint d = QCursor::pos() - _CursorStart;
+            if (d.x() != 0 || d.y() != 0) {
+                QPoint NewAbs = _WndStart + d;
+                this->move(NewAbs);
+            }
+        }
+        return false;
+    }
+    case QEvent::MouseButtonRelease: {
+        _moving = false;
 //			_WndStart = pos();
-			return false;
-		}
-		default:
-			return QDialog::eventFilter(obj, event);
-	}
+        return false;
+    }
+    default:
+        return QDialog::eventFilter(obj, event);
+    }
 }
 
 void Scr_Connect::Init()
 {
-	// Setting::Instance()->LoadServer();
-	Setting::Instance()->LoadProt();
+    // Setting::Instance()->LoadServer();
+    Setting::Instance()->LoadProt();
 
-	// TODO: -1  get actual data
-	ui->L_Until->setText("active until\n-");
-	ui->L_Amount->setText("-");
-	SetOldIp(AuthManager::Instance()->OldIp());
-	UpdEnc();
-	UpdProtocol();
+    // TODO: -1  get actual data
+    ui->L_Until->setText("active until\n-");
+    ui->L_Amount->setText("-");
+    SetOldIp(AuthManager::Instance()->OldIp());
+    UpdEnc();
+    UpdProtocol();
 }
 
 void Scr_Connect::SetNoSrv()
 {
-	ui->L_Percent->hide();
-	ui->L_Percent->setText("0%");
-	ui->L_LOAD->hide();
-	ui->b_Flag->hide();
-	ui->L_NewIp->hide();
-	ui->L_Country->setText("No location specified.");
+    ui->L_Percent->hide();
+    ui->L_Percent->setText("0%");
+    ui->L_LOAD->hide();
+    ui->b_Flag->hide();
+    ui->L_NewIp->hide();
+    ui->L_Country->setText("No location specified.");
 }
 
 void Scr_Connect::SetServer(int srv)
 {
-	if (srv < 0)		// none
-	{
-		SetNoSrv();
-	}
-	else
-	{
-		const AServer & se = AuthManager::Instance()->GetSrv(srv);
-		ui->L_Country->setText(se.name);
-		ui->b_Flag->show();	ui->b_FlagBox->show();
+    if (srv < 0) {	// none
+        SetNoSrv();
+    } else {
+        const AServer & se = AuthManager::Instance()->GetSrv(srv);
+        ui->L_Country->setText(se.name);
+        ui->b_Flag->show();
+        ui->b_FlagBox->show();
 
-		QString nip = AuthManager::Instance()->NewIp();
-		if (nip.isEmpty())
-			nip = se.address;
-		ui->L_NewIp->setText(nip);
-		ui->L_NewIp->show();
+        QString nip = AuthManager::Instance()->NewIp();
+        if (nip.isEmpty())
+            nip = se.address;
+        ui->L_NewIp->setText(nip);
+        ui->L_NewIp->show();
 
-		double d = se.load.toDouble();
-		int i = se.load.toInt();
-		if (i == 0 && se.load != "0")
-			i = (int)d;
-		ui->L_Percent->setText(QString::number(i) + "%");
-		ui->L_Percent->show();  ui->L_LOAD->show();
-		SetFlag(srv);
-	}
+        double d = se.load.toDouble();
+        int i = se.load.toInt();
+        if (i == 0 && se.load != "0")
+            i = (int)d;
+        ui->L_Percent->setText(QString::number(i) + "%");
+        ui->L_Percent->show();
+        ui->L_LOAD->show();
+        SetFlag(srv);
+    }
 }
 
 void Scr_Connect::DwnlStrs()
@@ -150,96 +144,94 @@ void Scr_Connect::DwnlStrs()
 
 void Scr_Connect::UpdNewIp(const QString & s)
 {
-	static const QString self = "127.0.0.1";
-	if (s != self)
-	{
-		ui->L_NewIp->setText(s);
-		ui->L_NewIp->show();
-	}
+    static const QString self = "127.0.0.1";
+    if (s != self) {
+        ui->L_NewIp->setText(s);
+        ui->L_NewIp->show();
+    }
 }
 
 void Scr_Connect::UpdEnc()
 {
-	int enc = Setting::Encryption();
-	ui->L_Encryption->setText(Setting::EncText(enc));
+    int enc = Setting::Encryption();
+    ui->L_Encryption->setText(Setting::EncText(enc));
 }
 
 void Scr_Connect::SetOldIp(const QString & s)
 {
-	ui->L_OldIp->setText(s);
-	ui->L_OldIp->show();
+    ui->L_OldIp->setText(s);
+    ui->L_OldIp->show();
 }
 
 void Scr_Connect::SetAccName(const QString & s)
 {
-	if (ui->L_Login->text().isEmpty() || ui->L_Login->text() == "--")
-		ui->L_Login->setText(s);
-	ui->L_Login->show();
+    if (ui->L_Login->text().isEmpty() || ui->L_Login->text() == "--")
+        ui->L_Login->setText(s);
+    ui->L_Login->show();
 }
 
 void Scr_Connect::SetEmail(const QString & s)
 {
-	ui->L_Email->setText(s);
-	ui->L_Email->show();
+    ui->L_Email->setText(s);
+    ui->L_Email->show();
 }
 
 void Scr_Connect::SetAmount(const QString & s)
 {
-	ui->L_Amount->setText(s);
-	ui->L_Amount->show();
+    ui->L_Amount->setText(s);
+    ui->L_Amount->show();
 }
 
 void Scr_Connect::SetUntil(const QString & date)
 {
-	ui->L_Until->setText("active until\n" + date);
-	ui->L_Until->show();
+    ui->L_Until->setText("active until\n" + date);
+    ui->L_Until->show();
 }
 
 void Scr_Connect::SetFlag(int srv)
 {
-	QString n = AuthManager::Instance()->GetSrv(srv).name;
-	QString fl = flag::IconFromSrvName(n);
-	ui->b_Flag->setStyleSheet("QPushButton\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/flags/" + fl + ".png);\n}");
+    QString n = AuthManager::Instance()->GetSrv(srv).name;
+    QString fl = flag::IconFromSrvName(n);
+    ui->b_Flag->setStyleSheet("QPushButton\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/flags/" + fl + ".png);\n}");
 }
 
 void Scr_Connect::SetProtocol(int ix)
 {
-	if (ix < 0)
-		ui->L_Protocol->setText("Not selected");
-	else
-		ui->L_Protocol->setText(Setting::Instance()->ProtoStr(ix));
+    if (ix < 0)
+        ui->L_Protocol->setText("Not selected");
+    else
+        ui->L_Protocol->setText(Setting::Instance()->ProtoStr(ix));
 }
 
 void Scr_Connect::UpdProtocol()
 {
-	SetProtocol(Setting::Instance()->CurrProto());
+    SetProtocol(Setting::Instance()->CurrProto());
 }
 
 Scr_Connect::~Scr_Connect()
 {
-	{
-		if (this->isVisible())
-		{
-			WndManager::Instance()->HideThis(this);
-			WndManager::Instance()->SavePos();
-		}
-	}
-	delete ui;
+    {
+        if (this->isVisible()) {
+            WndManager::Instance()->HideThis(this);
+            WndManager::Instance()->SavePos();
+        }
+    }
+    delete ui;
 }
 
 void Scr_Connect::closeEvent(QCloseEvent * event)
 {
-	event->ignore();
-	WndManager::Instance()->HideThis(this);
+    event->ignore();
+    WndManager::Instance()->HideThis(this);
 }
 
 void Scr_Connect::StartTimer()
 {
-	if (NULL != _timer_state.get())
-		_timer_state->stop();
-	_timer_state.reset(new QTimer(this));
-	connect(_timer_state.get(), SIGNAL(timeout()), this, SLOT(Timer_CheckState()));
-	_timer_state->start(1200);
+    if (NULL != _timer_state.get())
+        _timer_state->stop();
+    _timer_state.reset(new QTimer(this));
+    connect(_timer_state.get(), SIGNAL(timeout()), this, SLOT(Timer_CheckState()));
+    _timer_state->start(1200);
 }
 
 static const char * gs_ConnGreen = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-green.png);\n}";
@@ -250,62 +242,57 @@ static const char * gs_Conn_Connecting_Template_end =  ".png);\n}";
 
 void Scr_Connect::InitStateWords()
 {
-	if (_StateWord_Img.empty())
-	{
-		_StateWord_Img.insert(std::make_pair("AUTH", "auth"));
-		_StateWord_Img.insert(std::make_pair("GET_CONFIG", "config"));
-		_StateWord_Img.insert(std::make_pair("ASSIGN_IP", "ip"));
-		_StateWord_Img.insert(std::make_pair("TCP_CONNECT", "connect"));
-		_StateWord_Img.insert(std::make_pair("RESOLVE", "resolve"));
-		
-		// CONNECTING - default - must be absent in this collection
-		
-		_StateWord_Img.insert(std::make_pair("WAIT", "wait"));
-		_StateWord_Img.insert(std::make_pair("RECONNECTING", "reconn"));
-	}
+    if (_StateWord_Img.empty()) {
+        _StateWord_Img.insert(std::make_pair("AUTH", "auth"));
+        _StateWord_Img.insert(std::make_pair("GET_CONFIG", "config"));
+        _StateWord_Img.insert(std::make_pair("ASSIGN_IP", "ip"));
+        _StateWord_Img.insert(std::make_pair("TCP_CONNECT", "connect"));
+        _StateWord_Img.insert(std::make_pair("RESOLVE", "resolve"));
+
+        // CONNECTING - default - must be absent in this collection
+
+        _StateWord_Img.insert(std::make_pair("WAIT", "wait"));
+        _StateWord_Img.insert(std::make_pair("RECONNECTING", "reconn"));
+    }
 }
 
 void Scr_Connect::StatusConnecting()
 {
-	ui->L_ConnectStatus->setStyleSheet(gs_Conn_Connecting);
-	SetEnabledButtons(false);
+    ui->L_ConnectStatus->setStyleSheet(gs_Conn_Connecting);
+    SetEnabledButtons(false);
 }
 
 void Scr_Connect::StatusConnecting(const QString & word)
 {
 //	ModifyWndTitle(word);
 //	this->StatusConnecting();
-	SetEnabledButtons(false);
-	InitStateWords();
-	
-	QString s;
-	HmWords::iterator it = _StateWord_Img.find(word);
-	if (it != _StateWord_Img.end())
-	{
-		s = gs_Conn_Connecting_Template_start;
-		s += it->second;
-		s += gs_Conn_Connecting_Template_end;
-	}
-	else
-	{
-		s = gs_Conn_Connecting;
-		if (word.compare("WAIT", Qt::CaseInsensitive) == 0)
-		{
-			log::logt("Cannot find WAIT in the collection! Do actions manualy!");
-			s = gs_Conn_Connecting_Template_start;
-			s += "wait";
-			s += gs_Conn_Connecting_Template_end;
-		}
-	}
-	ui->L_ConnectStatus->setStyleSheet(s);
+    SetEnabledButtons(false);
+    InitStateWords();
+
+    QString s;
+    HmWords::iterator it = _StateWord_Img.find(word);
+    if (it != _StateWord_Img.end()) {
+        s = gs_Conn_Connecting_Template_start;
+        s += it->second;
+        s += gs_Conn_Connecting_Template_end;
+    } else {
+        s = gs_Conn_Connecting;
+        if (word.compare("WAIT", Qt::CaseInsensitive) == 0) {
+            log::logt("Cannot find WAIT in the collection! Do actions manualy!");
+            s = gs_Conn_Connecting_Template_start;
+            s += "wait";
+            s += gs_Conn_Connecting_Template_end;
+        }
+    }
+    ui->L_ConnectStatus->setStyleSheet(s);
 }
 
 void Scr_Connect::ModifyWndTitle(const QString & word)
 {
-	QString s = "Safejumper";
+    QString s = "Safejumper";
 //	if (!word.isEmpty())
 //		s += " " + word;
-	this->setWindowTitle(s);
+    this->setWindowTitle(s);
 }
 
 void Scr_Connect::Timer_CheckState()
@@ -313,7 +300,7 @@ void Scr_Connect::Timer_CheckState()
 //	static int gs_count = 0;
 //	++gs_count;
 //	log::logt("in Scr_Connect::Timer_CheckState()");
-	Ctr_Openvpn::Instance()->CheckState();
+    Ctr_Openvpn::Instance()->CheckState();
 //	if (gs_count > 5)
 //		_timer_state->stop();
 //	log::logt("out Scr_Connect::Timer_CheckState()");
@@ -321,167 +308,161 @@ void Scr_Connect::Timer_CheckState()
 
 void Scr_Connect::SetEnabledButtons(bool enabled)
 {
-	if (enabled)
-	{
-		ui->b_Connect->show();
-		ui->b_Cancel->hide();
-	}
-	else
-	{
-		ui->b_Connect->hide();
-		ui->b_Cancel->show();
-	}
+    if (enabled) {
+        ui->b_Connect->show();
+        ui->b_Cancel->hide();
+    } else {
+        ui->b_Connect->hide();
+        ui->b_Cancel->show();
+    }
 
-	ui->b_Flag->setEnabled(enabled);
-	ui->b_FlagBox->setEnabled(enabled);
-	ui->b_Row_Country->setEnabled(enabled);
-	ui->b_Row_Ip->setEnabled(enabled);
-	ui->b_Row_Protocol->setEnabled(enabled);
+    ui->b_Flag->setEnabled(enabled);
+    ui->b_FlagBox->setEnabled(enabled);
+    ui->b_Row_Country->setEnabled(enabled);
+    ui->b_Row_Ip->setEnabled(enabled);
+    ui->b_Row_Protocol->setEnabled(enabled);
 }
 
 void Scr_Connect::StatusConnected()
 {
-	ui->L_ConnectStatus->setStyleSheet(gs_ConnGreen);
-	SetEnabledButtons(true);
-	ui->b_Connect->hide();
-	ui->b_Cancel->show();
-	ModifyWndTitle("");
+    ui->L_ConnectStatus->setStyleSheet(gs_ConnGreen);
+    SetEnabledButtons(true);
+    ui->b_Connect->hide();
+    ui->b_Cancel->show();
+    ModifyWndTitle("");
 }
 
 void Scr_Connect::StatusDisconnected()
 {
-	ui->L_ConnectStatus->setStyleSheet(gs_ConnRed);
-	SetEnabledButtons(true);
-	if (NULL != _timer_state.get())
-	{
-		_timer_state->stop();
-		delete _timer_state.release();
-	}
-	ModifyWndTitle("");
+    ui->L_ConnectStatus->setStyleSheet(gs_ConnRed);
+    SetEnabledButtons(true);
+    if (NULL != _timer_state.get()) {
+        _timer_state->stop();
+        delete _timer_state.release();
+    }
+    ModifyWndTitle("");
 }
 
 std::auto_ptr<Scr_Connect> Scr_Connect::_inst;
 Scr_Connect * Scr_Connect::Instance()
 {
-	if (!_inst.get())
-	{
-		_inst.reset(new Scr_Connect());
-		_inst->Init();
-	}
-	return _inst.get();
+    if (!_inst.get()) {
+        _inst.reset(new Scr_Connect());
+        _inst->Init();
+    }
+    return _inst.get();
 }
 
 void Scr_Connect::ToScr_Settings()
 {
-	WndManager::Instance()->ToSettings();
+    WndManager::Instance()->ToSettings();
 }
 
 void Scr_Connect::ToScr_Primary()
 {
-	WndManager::Instance()->ToPrimary();
+    WndManager::Instance()->ToPrimary();
 }
 
 void Scr_Connect::ToScr_Login()
 {
-	WndManager::Instance()->ToPrimary();
+    WndManager::Instance()->ToPrimary();
 }
 
 void Scr_Connect::ToScr_Map()
 {
-	WndManager::Instance()->ToMap();
+    WndManager::Instance()->ToMap();
 }
 
 void Scr_Connect::ShowPackageUrl()
 {
-	OpenUrl_Panel();
+    OpenUrl_Panel();
 }
 
 void Scr_Connect::Clicked_Connect()
 {
-	Ctr_Openvpn::Instance()->Start();		// handle visuals inside
+    Ctr_Openvpn::Instance()->Start();		// handle visuals inside
 }
 
 void Scr_Connect::Clicked_Cancel()
 {
 #ifdef MONITOR_TOOL
-	Ctr_Openvpn::Instance()->StopLoop();
+    Ctr_Openvpn::Instance()->StopLoop();
 #endif	// MONITOR_TOOL
-	Ctr_Openvpn::Instance()->Stop();
-	SjMainWindow::Instance()->BlockOnDisconnect();
+    Ctr_Openvpn::Instance()->Stop();
+    SjMainWindow::Instance()->BlockOnDisconnect();
 }
 
 void Scr_Connect::Clicked_Jump()
 {
-	AuthManager::Instance()->Jump();
+    AuthManager::Instance()->Jump();
 }
 
 void Scr_Connect::Clicked_Min()
 {
-	WndManager::Instance()->HideThis(this);
+    WndManager::Instance()->HideThis(this);
 }
 
 void Scr_Connect::Clicked_Cross()
 {
-	SjMainWindow::Instance()->DoClose();
+    SjMainWindow::Instance()->DoClose();
 }
 
 void Scr_Connect::ConnectError(QProcess::ProcessError error)
 {
-	log::logt("Scr_Connect::ConnectError(): error = " + QString::number(error));
-	WndManager::Instance()->HandleDisconnected();
+    log::logt("Scr_Connect::ConnectError(): error = " + QString::number(error));
+    WndManager::Instance()->HandleDisconnected();
 }
 
 void Scr_Connect::ConnectStarted()
 {
-	log::logt("Scr_Connect::ConnectStarted()");
+    log::logt("Scr_Connect::ConnectStarted()");
 }
 
 void Scr_Connect::LogfileChanged(const QString & pfn)
 {
-	Ctr_Openvpn::Instance()->LogfileChanged(pfn);
+    Ctr_Openvpn::Instance()->LogfileChanged(pfn);
 }
 
 void Scr_Connect::ConnectStateChanged(QProcess::ProcessState newState)
 {
-	log::logt("Scr_Connect::ConnectStateChanged(): newState = " + QString::number(newState));
-	Ctr_Openvpn::Instance()->StateChanged(newState);
+    log::logt("Scr_Connect::ConnectStateChanged(): newState = " + QString::number(newState));
+    Ctr_Openvpn::Instance()->StateChanged(newState);
 }
 
 void Scr_Connect::ConnectFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	log::logt("Scr_Connect::ConnectFinished(): exitCode = " + QString::number(exitCode) + " exitStatus = " +  QString::number(exitStatus));
-	Ctr_Openvpn::Instance()->Finished(exitCode, exitStatus);
+    log::logt("Scr_Connect::ConnectFinished(): exitCode = " + QString::number(exitCode) + " exitStatus = " +  QString::number(exitStatus));
+    Ctr_Openvpn::Instance()->Finished(exitCode, exitStatus);
 }
 
 void Scr_Connect::ConnectStderr()
 {
-	Ctr_Openvpn::Instance()->ReadStderr();
+    Ctr_Openvpn::Instance()->ReadStderr();
 }
 
 void Scr_Connect::ConnectStdout()
 {
-	Ctr_Openvpn::Instance()->ReadStdout();
+    Ctr_Openvpn::Instance()->ReadStdout();
 }
 
 void Scr_Connect::Pressed_Head()
 {
-	_WndStart = this->pos();
-	_CursorStart = QCursor::pos();
-	_moving = true;
+    _WndStart = this->pos();
+    _CursorStart = QCursor::pos();
+    _moving = true;
 }
 
 void Scr_Connect::keyPressEvent(QKeyEvent * e)
 {
-	if(e->key() != Qt::Key_Escape)
-		QDialog::keyPressEvent(e);
+    if(e->key() != Qt::Key_Escape)
+        QDialog::keyPressEvent(e);
 }
 
 void Scr_Connect::PortDlgAction(int action)
 {
-	if (QDialog::Accepted == action)
-	{
-		Ctr_Openvpn::Instance()->StartPortLoop(WndManager::Instance()->IsCyclePort());
-	}
+    if (QDialog::Accepted == action) {
+        Ctr_Openvpn::Instance()->StartPortLoop(WndManager::Instance()->IsCyclePort());
+    }
 }
 
 

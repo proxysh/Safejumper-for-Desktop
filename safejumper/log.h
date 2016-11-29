@@ -6,7 +6,7 @@
 class log
 {
 public:
-	static void logt(const QString & s);
+    static void logt(const QString & s);
 };
 
 #endif // LOG_H

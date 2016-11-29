@@ -16,19 +16,19 @@ class SingleApplicationPrivate;
  */
 class SingleApplication : public QAPPLICATION_CLASS
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  explicit SingleApplication(int&, char *[]);
-  ~SingleApplication();
+    explicit SingleApplication(int&, char *[]);
+    ~SingleApplication();
 
 signals:
-  void showUp();
+    void showUp();
 
 private slots:
-  void slotConnectionEstablished();
+    void slotConnectionEstablished();
 
 private:
-  SingleApplicationPrivate *d_ptr;
+    SingleApplicationPrivate *d_ptr;
 };
 
 #endif // SINGLE_APPLICATION_H

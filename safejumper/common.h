@@ -19,7 +19,7 @@
 
 namespace std
 {
- using namespace __gnu_cxx;
+using namespace __gnu_cxx;
 }
 
 #else
@@ -53,11 +53,10 @@ bool OpenUrl_Update();
 
 void SaveCb(const char * name, bool val);
 
-struct AServer
-{
-	QString address;	// IP or DNs
-	QString name;		// "Chile Hub" - Hub at the end indicates hub
-	QString load;			// double
+struct AServer {
+    QString address;    // IP or DNs
+    QString name;       // "Chile Hub" - Hub at the end indicates hub
+    QString load;       // double
 };
 
 #ifdef std::unordered_map

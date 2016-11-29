@@ -6,7 +6,8 @@
 #include <QDialog>
 #include <QCloseEvent>
 
-namespace Ui {
+namespace Ui
+{
 class Scr_Map;
 }
 
@@ -14,64 +15,73 @@ class Scr_Map;
 
 class Scr_Map : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	static Scr_Map * Instance();
-	static bool IsExists() { return (_inst.get() != NULL); }
-	static void Cleanup() { if (_inst.get() != NULL) delete _inst.release();}
-	~Scr_Map();
+    static Scr_Map * Instance();
+    static bool IsExists()
+    {
+        return (_inst.get() != NULL);
+    }
+    static void Cleanup()
+    {
+        if (_inst.get() != NULL) delete _inst.release();
+    }
+    ~Scr_Map();
 
-	int CurrSrv();	  // -1 if not selected, otherwise [0-...] id of server inside auth manager
-	int SrvIxFromLineIx(int row_id);		// [0, size()) , omit first row ' -- select location -- '
-	bool UseSrvColl() { return _UseSrvColl; }
-	int CurrProto();	// -1 if not selected, otherwise [0-...] id of protocol inside Settings
+    int CurrSrv();	  // -1 if not selected, otherwise [0-...] id of server inside auth manager
+    int SrvIxFromLineIx(int row_id);		// [0, size()) , omit first row ' -- select location -- '
+    bool UseSrvColl()
+    {
+        return _UseSrvColl;
+    }
+    int CurrProto();	// -1 if not selected, otherwise [0-...] id of protocol inside Settings
 
     void RePopulateLocations(bool random = false);		// TODO: -1 methods to update particular row with new ping/load%
-	void RePopulateProtocols();
-	void SetServer(int ixsrv);
-	void SetProtocol(int ix);
-	void StatusConnecting();
-	void StatusConnected();
-	void StatusDisconnected();
+    void RePopulateProtocols();
+    void SetServer(int ixsrv);
+    void SetProtocol(int ix);
+    void StatusConnecting();
+    void StatusConnected();
+    void StatusDisconnected();
 
-	void SwitchToNextNode();
+    void SwitchToNextNode();
 
 private:
-	Ui::Scr_Map *ui;
-	static std::auto_ptr<Scr_Map> _inst;
-	explicit Scr_Map(QWidget *parent = 0);
-	bool _IsShowNodes;		// remember for which srv/hub the list was populated; in settings maybe inadequate due to refill during settings change
-	int _Encryption;				// remember encryption when list was populated
-	bool _UseSrvColl;
-	std::vector<int> _srvIds;
-	void DisplayMark(const QString & name);
-	QPoint _default;
-	void SetRowStyle(bool show_nodes);
-	bool _moving;
-	QPoint _WndStart;
-	QPoint _CursorStart;
-	bool _repopulation_inprogress;
+    Ui::Scr_Map *ui;
+    static std::auto_ptr<Scr_Map> _inst;
+    explicit Scr_Map(QWidget *parent = 0);
+    bool _IsShowNodes;		// remember for which srv/hub the list was populated; in settings maybe inadequate due to refill during settings change
+    int _Encryption;				// remember encryption when list was populated
+    bool _UseSrvColl;
+    std::vector<int> _srvIds;
+    void DisplayMark(const QString & name);
+    QPoint _default;
+    void SetRowStyle(bool show_nodes);
+    bool _moving;
+    QPoint _WndStart;
+    QPoint _CursorStart;
+    bool _repopulation_inprogress;
 
 private slots:
-	void ToScr_Connect();
-	void ToScr_Settings();
-	void Changed_dd_Protocol(int ix);
-	void Changed_dd_Sever(int ix);
-	void Clicked_b_Connect();
+    void ToScr_Connect();
+    void ToScr_Settings();
+    void Changed_dd_Protocol(int ix);
+    void Changed_dd_Sever(int ix);
+    void Clicked_b_Connect();
 
-	void Clicked_b_Tmp();
-	void Changed_xy();
+    void Clicked_b_Tmp();
+    void Changed_xy();
 public slots:
-	void Pressed_Head();
-	void Clicked_Min();
-	void Clicked_Cross();
+    void Pressed_Head();
+    void Clicked_Min();
+    void Clicked_Cross();
 protected:
-	virtual void closeEvent(QCloseEvent * event);
-	virtual void keyPressEvent(QKeyEvent * event);
-	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual bool eventFilter(QObject *obj, QEvent *event);
-	QPoint _curr;
+    virtual void closeEvent(QCloseEvent * event);
+    virtual void keyPressEvent(QKeyEvent * event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual bool eventFilter(QObject *obj, QEvent *event);
+    QPoint _curr;
 
 };
 

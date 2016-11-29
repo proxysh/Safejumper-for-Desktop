@@ -5,11 +5,11 @@
 
 class LvRowDelegateProtocol : public QStyledItemDelegate
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit LvRowDelegateProtocol(QObject *parent = 0) : QStyledItemDelegate(parent) {}
+    explicit LvRowDelegateProtocol(QObject *parent = 0) : QStyledItemDelegate(parent) {}
 
-	void paint(QPainter *painter,
+    void paint(QPainter *painter,
                const QStyleOptionViewItem &option,
                const QModelIndex &index) const Q_DECL_OVERRIDE;
 };

@@ -6,17 +6,17 @@
 // handles dynamic menu mouse click and redirects to controller with id of hub/srv
 class AcConnectto : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit AcConnectto(size_t srvid, QObject *parent = 0);
-	~AcConnectto();
+    explicit AcConnectto(size_t srvid, QObject *parent = 0);
+    ~AcConnectto();
 
 private:
-	size_t _srvid;
+    size_t _srvid;
 signals:
 
 public slots:
-	void ac_ConnectTo();
+    void ac_ConnectTo();
 };
 
 #endif // ACCONNECTTO_H

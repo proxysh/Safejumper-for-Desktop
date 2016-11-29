@@ -6,10 +6,10 @@
 
 bool IsRetina()
 {
-	bool b = false;
+    bool b = false;
 #if defined(Q_OS_MAC)
-	if (g_pTheApp->devicePixelRatio() >= 2)
-		b = true;
+    if (g_pTheApp->devicePixelRatio() >= 2)
+        b = true;
 #endif
-	return b;
+    return b;
 }

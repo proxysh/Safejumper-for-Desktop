@@ -12,28 +12,28 @@
 // will be queued in the main loop and just chain rquests for port forwarding
 class PortForwarder : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit PortForwarder(const UVec & ports, QNetworkAccessManager & nam, const QString & login, const QString & psw, QObject *parent = 0);
-	~PortForwarder();
+    explicit PortForwarder(const UVec & ports, QNetworkAccessManager & nam, const QString & login, const QString & psw, QObject *parent = 0);
+    ~PortForwarder();
 
-	void StartFirst();
+    void StartFirst();
 signals:
 
 public slots:
-	void FinishedFirstPage();
-	void Finished_SetPort();
+    void FinishedFirstPage();
+    void Finished_SetPort();
 private:
-	UVec _ports;
-	const QString & _login;
-	const QString & _psw;
-	QNetworkAccessManager & _nam;
+    UVec _ports;
+    const QString & _login;
+    const QString & _psw;
+    QNetworkAccessManager & _nam;
 
-	std::auto_ptr<QNetworkReply> _reply;
-	IIMap _to_set;	// <port slot IX in the API (1-based), port>
-	IIMap::iterator _it_curr;
+    std::auto_ptr<QNetworkReply> _reply;
+    IIMap _to_set;	// <port slot IX in the API (1-based), port>
+    IIMap::iterator _it_curr;
 
-	void SetPort();
+    void SetPort();
 };
 
 #endif // PORTFORWARDER_H

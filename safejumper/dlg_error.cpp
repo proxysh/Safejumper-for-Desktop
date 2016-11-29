@@ -9,44 +9,44 @@
 #include "fonthelper.h"
 
 Dlg_Error::Dlg_Error(const QString & msg, const QString & caption, QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::Dlg_Error)
+    QDialog(parent),
+    ui(new Ui::Dlg_Error)
 {
-	ui->setupUi(this);
+    ui->setupUi(this);
 #ifndef Q_OS_MAC
-	FontHelper::SetFont(this);
+    FontHelper::SetFont(this);
 #endif
-	WndManager::DoShape(this);
-	this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    WndManager::DoShape(this);
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
 
-	this->setAttribute(Qt::WA_MacNoShadow, false);
-	ui->L_Caption->setText(caption);
-	ui->L_Text->setText(msg);
+    this->setAttribute(Qt::WA_MacNoShadow, false);
+    ui->L_Caption->setText(caption);
+    ui->L_Text->setText(msg);
 }
 
 Dlg_Error::~Dlg_Error()
 {
-	delete ui;
+    delete ui;
 }
 
 void Dlg_Error::resizeEvent(QResizeEvent * )
 {
-	// on resize: it harms shape
-	//WndManager::DoShape(this);
+    // on resize: it harms shape
+    //WndManager::DoShape(this);
 }
 
 void Dlg_Error::_ac_Close()
 {
-	DoClose();
+    DoClose();
 }
 
 void Dlg_Error::_ac_Support()
 {
-	OpenUrl_Support();
-	DoClose();
+    OpenUrl_Support();
+    DoClose();
 }
 
 void Dlg_Error::DoClose()
 {
-	this->accept();
+    this->accept();
 }

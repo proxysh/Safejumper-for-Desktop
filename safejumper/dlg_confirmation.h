@@ -3,22 +3,23 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class Dlg_confirmation;
 }
 
 class Dlg_confirmation : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit Dlg_confirmation(const QString & msg, QWidget *parent = 0);
-	~Dlg_confirmation();
+    explicit Dlg_confirmation(const QString & msg, QWidget *parent = 0);
+    ~Dlg_confirmation();
 private slots:
-	void _ac_Cancel();
-	void _ac_Confirm();
+    void _ac_Cancel();
+    void _ac_Confirm();
 private:
-	Ui::Dlg_confirmation *ui;
+    Ui::Dlg_confirmation *ui;
 };
 
 #endif // DLG_CONFIRMATION_H

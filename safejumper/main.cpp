@@ -17,34 +17,30 @@
 #include "scr_connect.h"
 #include "log.h"
 
-QApplication * g_pTheApp;
+THE_APP_CLASS * g_pTheApp;
 int main(int argc, char *argv[])
 {
 #ifdef WIN32
-	WORD ver = MAKEWORD(2, 2);
-	WSADATA wsa;
-	int r0 = WSAStartup(ver, &wsa);
-	if (r0 != 0)
-	{
-		fprintf(stderr, "Cannot init winsock lib");
-		return 2;
-	}
+    WORD ver = MAKEWORD(2, 2);
+    WSADATA wsa;
+    int r0 = WSAStartup(ver, &wsa);
+    if (r0 != 0) {
+        fprintf(stderr, "Cannot init winsock lib");
+        return 2;
+    }
 #endif
 
-	THE_APP_CLASS::setSetuidAllowed(true);
-#ifndef Q_OS_OSX
-	QApplication::setApplicationName("Safejumper");
-	QApplication::setOrganizationName("proxysh");
-#endif
-	THE_APP_CLASS a(argc, argv);
-//	QApplication a(argc, argv);
-	g_pTheApp = &a;
+    THE_APP_CLASS::setSetuidAllowed(true);
+    QApplication::setApplicationName("Safejumper");
+    QApplication::setOrganizationName("proxysh");
+    g_pTheApp = new THE_APP_CLASS(argc, argv);
 
-	log::logt("Starting Application");
+    log::logt("Starting Application");
     //QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-	SjMainWindow::Instance()->show();    
-	int res = a.exec();
-	SjMainWindow::Cleanup();
-	log::logt("Quit Application");
-	return res;
+    SjMainWindow::Instance()->show();
+    int res = g_pTheApp->exec();
+    SjMainWindow::Cleanup();
+    log::logt("Quit Application");
+    delete g_pTheApp;
+    return res;
 }

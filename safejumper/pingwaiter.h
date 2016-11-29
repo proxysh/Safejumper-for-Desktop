@@ -6,20 +6,20 @@
 
 class PingWaiter : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit PingWaiter(size_t idWaiter, QObject *parent = 0);
-	~PingWaiter();
+    explicit PingWaiter(size_t idWaiter, QObject *parent = 0);
+    ~PingWaiter();
 
 private:
-	size_t _idWaiter;
+    size_t _idWaiter;
 
 signals:
 
 public slots:
-	void PingFinished(int exitCode, QProcess::ExitStatus exitStatus);
-	void PingError(QProcess::ProcessError);
-	void Timer_Terminate();
+    void PingFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void PingError(QProcess::ProcessError);
+    void Timer_Terminate();
 };
 
 #endif // PINGWAITER_H

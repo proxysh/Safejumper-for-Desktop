@@ -28,7 +28,9 @@
 #ifdef WIN32
 #pragma pack(push,1)
 #endif
-typedef struct { unsigned int id[4]; } __attribute__((packed)) stun_trans_id;
+typedef struct {
+    unsigned int id[4];
+} __attribute__((packed)) stun_trans_id;
 #ifdef WIN32
 #pragma pack(pop)
 #endif
@@ -37,10 +39,10 @@ typedef struct { unsigned int id[4]; } __attribute__((packed)) stun_trans_id;
 #pragma pack(push,1)
 #endif
 struct stun_header {
-	unsigned short msgtype;
-	unsigned short msglen;
-	stun_trans_id  id;
-	unsigned char  ies[0];
+    unsigned short msgtype;
+    unsigned short msglen;
+    stun_trans_id  id;
+    unsigned char  ies[0];
 } __attribute__((packed));
 #ifdef WIN32
 #pragma pack(pop)
@@ -51,9 +53,9 @@ struct stun_header {
 #pragma pack(push,1)
 #endif
 struct stun_attr {
-	unsigned short attr;
-	unsigned short len;
-	unsigned char  value[0];
+    unsigned short attr;
+    unsigned short len;
+    unsigned char  value[0];
 } __attribute__((packed));
 #ifdef WIN32
 #pragma pack(pop)
@@ -66,10 +68,10 @@ struct stun_attr {
 #pragma pack(push,1)
 #endif
 struct stun_addr {
-	unsigned char  unused;
-	unsigned char  family;
-	unsigned short port;
-	unsigned int   addr;
+    unsigned char  unused;
+    unsigned char  family;
+    unsigned short port;
+    unsigned int   addr;
 } __attribute__((packed));
 #ifdef WIN32
 #pragma pack(pop)
@@ -85,7 +87,7 @@ struct stun_addr {
  * a session key for subsequent requests.
  * 'SEC' functionality is not supported here.
  */
- 
+
 #define STUN_BINDREQ	0x0001
 #define STUN_BINDRESP	0x0101
 #define STUN_BINDERR	0x0111
