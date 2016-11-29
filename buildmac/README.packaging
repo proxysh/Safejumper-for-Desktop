@@ -1,28 +1,16 @@
-This directory contains files required to build the Mac OSX installer for STA SDK.
+This directory contains files required to build the Mac OSX installer for Safejumper
 
 - Directory contents:
-  - Makefile: Make file which automates the installer creation on Mac
-  - README: The readme file shipped with the SDK
   - README.packaging: this file
-  - images: Folder containing the VM settings and virtualbox disk images of the SDK
-  - images/sdk.img: SDK image
-  - images/swap.img: SDK swap image
-  - images/sdk.vbox.template: Template for SDK VirtualBox VM config file
-  - eclipse: Customized Eclipse for the SDK (Mac OSX bundle)
-  - WebSamples: Web app sample shipped with SDK
-  - license.txt: SDK license
-  - dsstore: .DS_Store file which will be placed inside Smart_TV_Alliance_SDK_Mac_$version.0.img disk image which defines the icon placement and the background image
-  - pkg-dmg: Mozilla disk image creation script suite
-  - make-diskimage: Mozilla disk image creation script suite (simplified)
-  - sta.icns: The icon used in the SDK app bundle
-  - sta-sdk-background: Background image for the disk image
-  - sta-sdk.applescript.in: Apple script which defines the runtime of the SDK. (this compiles in to a distributable application bundle)
-  - update-config.sh: Configure .in files with proper values
-  - virtualbox: Virtualbox 4.1 distribution for mac
+  - scripts/: Various scripts used to build app or dmg.
+  - scripts/pkg-dmg: Mozilla disk image creation script suite
+  - safejumper.icns: The icon used in the SDK app bundle
 
 - Installer creation:
   - To create the installer XCode has to be installed in Applications folder and XCode command-line tools also needs to be installed
-  - run make to compile and create "Smart TV Alliance SDK.app" script bundle
-  - run make install to create the Smart_TV_Alliance_SDK_Mac_$version.0.dmg SDK distribution for mac
-  - Mount the resulting Smart_TV_Alliance_SDK_Mac_$version.0.dmg and arrange the icons if they are miss arranged, if everything looks ok, unmount and run "make release"
-  - The resulting Smart_TV_Alliance_SDK_Mac_$version.0.dmg is a read only image ready to ship.
+  - Build both netdown and launchopenvpn. Copy their binaries into Resources folder.
+  - In Resources folder run installobfsproxy.sh to install/update obfsproxy in env folder.
+  - qmake ../safejumper
+  - make
+  - scripts/finishmacbuild.sh
+  - The resulting safejumper.dmg is a read only image ready to ship.

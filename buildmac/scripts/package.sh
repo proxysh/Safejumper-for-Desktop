@@ -2,7 +2,7 @@
 
 VERSION=$1
 
-./pkg-dmg \
+scripts/pkg-dmg \
     --verbosity 2 \
     --volname "safejumper" \
     --source Safejumper.app \
