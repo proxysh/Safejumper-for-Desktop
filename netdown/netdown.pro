@@ -10,6 +10,7 @@ QT       -= gui
 TARGET = netdown
 CONFIG   += console
 CONFIG   -= app_bundle
+CONFIG   += static
 
 TEMPLATE = app
 
