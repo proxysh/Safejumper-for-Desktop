@@ -22,10 +22,6 @@ tell application "Finder"
             else if the name of i ends with ".app" then
                 set the position of i to {215, 225}
             end if
-
-            -- Change the 7 to change the color: 0 is no label, then red,
-            -- orange, yellow, green, blue, purple, or gray.
-            set the label index of i to 7
         end repeat
         update without registering applications
         delay 4
