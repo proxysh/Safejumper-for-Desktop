@@ -5,6 +5,13 @@
 #include <QString>
 #include <QSettings>
 #include <QApplication>
+#ifndef Q_OS_OSX
+#include "singleapplication.h"
+#define THE_APP_CLASS SingleApplication
+#else
+#define THE_APP_CLASS QApplication
+#endif
+
 #include <QNetworkRequest>
 
 #include "stringize.hpp"
@@ -34,7 +41,7 @@ using namespace __gnu_cxx;
 
 #define PORT_FORWARD_MAX 5
 
-extern QApplication * g_pTheApp;
+extern THE_APP_CLASS * g_pTheApp;
 
 bool IsValidIp(const QString & ip);
 bool IsValidPort(const QString & s);
