@@ -75,7 +75,7 @@ SectionIn RO
        MessageBox  MB_OK 'Cannot install pip-8.1.2' /SD IDOK
 
   Label_0x30:
-        ExecWait $INSTDIR\vcredist_x86.exe
+        ExecWait '$INSTDIR\vcredist_x86.exe /install /passive /norestart'
 		IfErrors Label_0x31 Label_0x33
 		
   Label_0x31:
@@ -92,8 +92,8 @@ SectionIn RO
        Delete  $OUTDIR\zope.interface-4.2.0-cp27-cp27m-win32.whl
 
     SetOutPath 'c:\Program Files\OpenVPN\bin\'
-    File  fix-dns-leak-32.dll
-    File  fix-dns-leak-64.dll
+    #File  fix-dns-leak-32.dll // No longer needed with openvpn 2.3.9+
+    #File  fix-dns-leak-64.dll // No longer needed with openvpn 2.3.9+
     #File  libeay32.dll
     #File  liblzo2-2.dll
     #File  libpkcs11-helper-1.dll

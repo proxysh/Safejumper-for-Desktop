@@ -196,7 +196,7 @@ void Ctr_Openvpn::StartImpl()
 #ifdef Q_OS_WIN
         if (Setting::Instance()->IsFixDns()) {
             if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS10)
-                ff.write("plugin fix-dns-leak-32.dll\n");
+                ff.write("block-outside-dns\n");
         }
 #endif
 
