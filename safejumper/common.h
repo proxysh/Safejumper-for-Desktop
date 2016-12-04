@@ -6,8 +6,8 @@
 #include <QSettings>
 #include <QApplication>
 #ifndef Q_OS_OSX
-#include "singleapplication.h"
-#define THE_APP_CLASS SingleApplication
+#include "qtsingleapplication.h"
+#define THE_APP_CLASS QtSingleApplication
 #else
 #define THE_APP_CLASS QApplication
 #endif
