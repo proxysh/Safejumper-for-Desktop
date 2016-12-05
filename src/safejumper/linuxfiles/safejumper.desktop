@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Safejumper
+Comment=VPN connection to proxy.sh service
+Exec=/opt/safejumper/safejumper.sh
+Terminal=false
+Icon=safejumper
+Categories=Qt;Network;
+StartupNotify=true
