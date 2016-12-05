@@ -10,7 +10,5 @@ Makefile
 safejumper.dmg
 Safejumper.app
 qrc_*.cpp
-launchopenvpn
-netdown
 uic_wrapper.sh
 
