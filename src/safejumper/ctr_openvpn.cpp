@@ -312,6 +312,9 @@ void Ctr_Openvpn::StartImpl()
 //#endif
             log::logt("######  before exec ####");
 
+#ifdef Q_OS_LINUX
+	    OsSpecific::Instance()->ExecAsRoot(PathHelper::Instance()->LauncherPfn(), arg3);
+#else
 //#ifdef Q_OS_MAC
 //          OsSpecific::Instance()->ExecAsRoot(prog, args);     // force password dialog; without launcher
 //#else
@@ -332,6 +335,7 @@ void Ctr_Openvpn::StartImpl()
                 }
                 throw std::runtime_error(ts);
             }
+#endif
 //#endif
 
             log::logt("before attaching to OpenVPN");
