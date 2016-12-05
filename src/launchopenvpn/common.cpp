@@ -1,5 +1,4 @@
 #include "common.h"
-//#include <memory>
 #include <sys/unistd.h>
 #ifdef Q_OS_MAC
 #include <unistd.h>
@@ -7,8 +6,9 @@
 #include <vector>
 #include <string>
 #include <cstdio>
-#include <QVector>
+
 #include <QString>
+#include <QVector>
 
 int exec_fork(const QString & pfnOV, const QStringList & args)
 {
@@ -18,15 +18,6 @@ int exec_fork(const QString & pfnOV, const QStringList & args)
     if ((processId = fork()) == 0) {
         // child: start OpenVPN here
         printf("@@@ CHILD launcher  pid = %d\n", processId);
-
-        //char app[] = "/bin/echo";
-        //char * const argv[] = { app, "success", NULL };
-
-        //char app[] = "/usr/bin/whoami";
-        //char * const argv[] = { app, NULL };
-
-//		char app[] = "/Users/aa/src/qt/build-safejumper-Debug/Safejumper.app/Contents/Resources/openvpn/openvpn-2.3.2/openvpn-executable";
-//			char * const argv[] = { app, "success", NULL };
 
         std::string bufapp = pfnOV.toStdString();
         const char * app = bufapp.c_str();
@@ -44,15 +35,12 @@ int exec_fork(const QString & pfnOV, const QStringList & args)
             argvbuf.push_back(p1);
         }
         argvbuf.push_back(NULL);
-//char * const argv[] = (char * const [])&argvbuf[0];
         printf("@@ cmd = %s\n", app);
-//printf("@@ args = %s\n", );
         printf("@@ before execv()\n");
-//		if (execv(bufapp.c_str(), argvbuf) < 0)
 
         char * const * argv = &argvbuf[0];
-        if (execv(app, argv) < 0)								// never return on success
-            //if (execv(app, &argvbuf[0]) < 0)				// never return on success
+        if (execv(app, argv) < 0)                               // never return on success
+            //if (execv(app, &argvbuf[0]) < 0)              // never return on success
         {
             printf("@@  execv() < 0\n");
             perror("execv error");
@@ -60,7 +48,7 @@ int exec_fork(const QString & pfnOV, const QStringList & args)
         }
         printf("@@ after execv()\n");
 
-    } else {	// fork()
+    } else {    // fork()
         // parent launcher
         printf("@@@ parent launcher  pid = %d\n", processId);
         if (processId < 0) {
