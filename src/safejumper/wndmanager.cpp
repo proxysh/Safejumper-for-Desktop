@@ -321,7 +321,7 @@ void WndManager::ErrMsg(const QString & msg)
 
 int WndManager::Confirmation(const QString & msg)
 {
-    Dlg_confirmation dlg(msg, Primary());
+    ConfirmationDialog dlg(msg, Primary());
     return dlg.exec();
 }
 

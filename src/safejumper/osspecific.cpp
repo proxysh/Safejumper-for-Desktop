@@ -111,23 +111,23 @@ void OsSpecific::SetOwnerRoot(const QString & pfn)
             log::logt(s);	//throw std::runtime_error("cannot set 04555!");
         }
         /*
-        		int r2 = chown(pfn.toLatin1(), 0, 500);
-        		if (r2 != 0)
-        		{
-        			QString s("cannot ch own 0 0! err code = ");
-        			s += QString::number(errno);
-        			log::logt(s);	//throw std::runtime_error("cannot ch own 0 0!");
-        		}
+                int r2 = chown(pfn.toLatin1(), 0, 500);
+                if (r2 != 0)
+                {
+                    QString s("cannot ch own 0 0! err code = ");
+                    s += QString::number(errno);
+                    log::logt(s);	//throw std::runtime_error("cannot ch own 0 0!");
+                }
         */
         /*	{
-        			log::logt(pfn);
+                    log::logt(pfn);
 
-        		QStringList args2;
-        		args2
-        				//<< "ls"
-        			  << "-l" << "/tmp";
-        		ExecAsRoot("ls", args2);
-        	}
+                QStringList args2;
+                args2
+                        //<< "ls"
+                      << "-l" << "/tmp";
+                ExecAsRoot("ls", args2);
+            }
         */
         try {
             QStringList args;
@@ -325,13 +325,13 @@ void OsSpecific::SetChmod(const char * sflags, const QString & pfn)
     QFileInfo fi(pfn);
     fi.refresh();
     if (!fi.exists())
-    	throw std::runtime_error(("Cannot chmod. File does not exist " + pfn).toStdString());
+        throw std::runtime_error(("Cannot chmod. File does not exist " + pfn).toStdString());
     QFile::Permissions old = fi.permissions();
     if (!fi.permission((QFile::Permissions)flags))
     {
-    	AuthorizationRef & a = GetAuth();
-    	if (!QFile::setPermissions(pfn, (QFile::Permissions)flags))
-    		throw std::runtime_error(("Cannot chmod " + QString::number(flags, 16) + " on file " + pfn).toStdString());
+        AuthorizationRef & a = GetAuth();
+        if (!QFile::setPermissions(pfn, (QFile::Permissions)flags))
+            throw std::runtime_error(("Cannot chmod " + QString::number(flags, 16) + " on file " + pfn).toStdString());
     }
     */
 }
@@ -363,14 +363,14 @@ void OsSpecific::SetChown(const QString & pfn)
         }
 #endif
         /*
-        		int r1 = chown(pfn.toStdString().c_str(), 0, 0);
-        		if (r1 != 0)
-        		{	// https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man2/chown.2.html
-        			// errno.h
-        			// EPERM		1		// Operation not permitted
-        			// The effective user ID does not match the owner of the file and the calling process does not have appropriate (i.e., root) privileges.
-        			throw std::runtime_error(("Cannot chown (err code: " + QString::number(errno) + ") on the file " + pfn).toStdString());
-        		}
+                int r1 = chown(pfn.toStdString().c_str(), 0, 0);
+                if (r1 != 0)
+                {	// https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man2/chown.2.html
+                    // errno.h
+                    // EPERM		1		// Operation not permitted
+                    // The effective user ID does not match the owner of the file and the calling process does not have appropriate (i.e., root) privileges.
+                    throw std::runtime_error(("Cannot chown (err code: " + QString::number(errno) + ") on the file " + pfn).toStdString());
+                }
         */
     }
 }
@@ -472,55 +472,42 @@ int OsSpecific::Ping(const QString & adr)
     return n;
 }
 
+const QString gs_icon = ":/icons/icon-tray.png";
+const QString gs_icon_cross = ":/icons/icon-tray-cross.png";
+const QString gs_icon_cycle = ":/icons/icon-tray-cycle.png";
 
-static const bool gs_isMac =
-#ifdef Q_OS_MAC
-    true
-#else
-    false
-#endif
-    ;
+const QString gs_icon_white = ":/icons/icon-tray-white.png";
+const QString gs_icon_cross_white = ":/icons/icon-tray-cross-white.png";
+const QString gs_icon_cycle_white = ":/icons/icon-tray-cycle-white.png";
 
-static const char * gs_icon = ":/icons/icon-tray.png";
-static const char * gs_icon_cross = ":/icons/icon-tray-cross.png";
-static const char * gs_icon_cycle = ":/icons/icon-tray-cycle.png";
+const QString gs_icon_light = ":/icons/icon-tray-hover.png";
+const QString gs_icon_cross_light = ":/icons/icon-tray-hover-cross.png";
+const QString gs_icon_cycle_light = ":/icons/icon-tray-hover-cycle.png";
 
-static const char * gs_icon_white = ":/icons/icon-tray-white.png";
-static const char * gs_icon_cross_white = ":/icons/icon-tray-cross-white.png";
-static const char * gs_icon_cycle_white = ":/icons/icon-tray-cycle-white.png";
+const QString gs_icon_color = ":/icons/icon-tray-color.png";
+const QString gs_icon_cross_color = ":/icons/icon-tray-color-cross.png";
+const QString gs_icon_cycle_color = ":/icons/icon-tray-color-cycle.png";
 
-static const char * gs_icon_light = ":/icons/icon-tray-hover.png";
-static const char * gs_icon_cross_light = ":/icons/icon-tray-hover-cross.png";
-static const char * gs_icon_cycle_light = ":/icons/icon-tray-hover-cycle.png";
-
-static const char * gs_icon_color = ":/icons/icon-tray-color.png";
-static const char * gs_icon_cross_color = ":/icons/icon-tray-color-cross.png";
-static const char * gs_icon_cycle_color = ":/icons/icon-tray-color-cycle.png";
-
-const char * OsSpecific::IconDisconnected()
+const QString OsSpecific::IconDisconnected() const
 {
-    return
 #ifdef Q_OS_MAC
-        isDark() ? gs_icon_cross_white : gs_icon_cross
+    return isDark() ? gs_icon_cross_white : gs_icon_cross;
 #else
-        gs_icon_cross_color
+    return gs_icon_cross_color;
 #endif
-        ;
 }
 
-const char * OsSpecific::IconConnecting()
+const QString OsSpecific::IconConnecting() const
 {
-    return
 #ifdef Q_OS_MAC
-        isDark() ? gs_icon_cycle_white : gs_icon_cycle
+    return isDark() ? gs_icon_cycle_white : gs_icon_cycle;
 #else
-        gs_icon_cycle_color
+    return gs_icon_cycle_color;
 #endif
-        ;
 }
 
 #ifdef Q_OS_MAC
-bool OsSpecific::isDark()
+bool OsSpecific::isDark() const
 {
     FILE* f = popen("defaults read -g AppleInterfaceStyle", "r");
     char  buf[5] = {0};
@@ -532,60 +519,50 @@ bool OsSpecific::isDark()
 }
 #endif
 
-const char * OsSpecific::IconConnected()
+const QString OsSpecific::IconConnected() const
 {
-    return
 #ifdef Q_OS_MAC
-        isDark() ? gs_icon_white : gs_icon
+    return isDark() ? gs_icon_white : gs_icon;
 #else
-        gs_icon_color
+    return gs_icon_color;
 #endif
-        ;
 }
 
 
-const char * OsSpecific::IconDisconnected_Selected()
+const QString OsSpecific::IconDisconnected_Selected() const
 {
-    return
 #ifdef Q_OS_MAC
-        gs_icon_cross_light
+    return gs_icon_cross_light;
 #else
-        gs_icon_cross_color
+    return gs_icon_cross_color;
 #endif
-        ;
 }
 
-const char * OsSpecific::IconConnecting_Selected()
+const QString OsSpecific::IconConnecting_Selected() const
 {
-    return
 #ifdef Q_OS_MAC
-        gs_icon_cycle_light
+    return gs_icon_cycle_light;
 #else
-        gs_icon_cycle_color
+    return gs_icon_cycle_color;
 #endif
-        ;
 }
 
-const char * OsSpecific::IconConnected_Selected()
+const QString OsSpecific::IconConnected_Selected() const
 {
-    return
 #ifdef Q_OS_MAC
-        gs_icon_light
+    return gs_icon_light;
 #else
-        gs_icon_color
+    return gs_icon_color;
 #endif
-        ;
 }
 
 const char * OsSpecific::IsRunningCmd()
 {
-    return
 #ifdef Q_OS_MAC
-        "ps -xa | grep open | grep execut | grep Safeju"
+    return "ps -xa | grep open | grep execut | grep Safeju";
 #else
-        "ps -xa | grep open | grep vpn | grep safej"
+    return "ps -xa | grep open | grep vpn | grep safej";
 #endif
-        ;
 }
 
 #ifdef Q_OS_WIN
@@ -642,13 +619,13 @@ void OsSpecific::SetIPv6(bool enable)
                 throw std::runtime_error(("IPv6 disabling failure code: " + QString::number(lRes)).toStdString().c_str());
         }
         /*
-        		static const char * en = "netsh interface ipv6 set teredo client";
-        		static const char * dis = "netsh interface ipv6 set teredo disabled";
-        		const char * s = enable ? en : dis;
-        		int res = QProcess::execute(s);
-        		log::logt("IPv6 change state command return code: " + QString::number(res));
-        		if (res != 0)
-        			throw std::runtime_error(("IPv6 change state failed with return code: " + QString::number(res)).toStdString().c_str());
+                static const char * en = "netsh interface ipv6 set teredo client";
+                static const char * dis = "netsh interface ipv6 set teredo disabled";
+                const char * s = enable ? en : dis;
+                int res = QProcess::execute(s);
+                log::logt("IPv6 change state command return code: " + QString::number(res));
+                if (res != 0)
+                    throw std::runtime_error(("IPv6 change state failed with return code: " + QString::number(res)).toStdString().c_str());
         */
 #else
 #ifdef Q_OS_OSX
@@ -720,24 +697,24 @@ bool OsSpecific::IPv6()
         }
     }
     /*	static const char * s0 = "netsh interface ipv6 show teredo";
-    	QProcess p;
-    	p.start(s0);
-    	if (p.waitForFinished(3000))	// 3s
-    	{	// finished
-    		QString ts(p.readAllStandardOutput());
-    		int state = ts.indexOf("State");
-    		if (state > -1)
-    		{
-    			if (ts.indexOf("offline", state) > -1)
-    				on = false;
-    		}
-    	}
-    	else
-    	{	// timeout
-    		if (QProcess::NotRunning != p.state() )
-    			p.terminate();
-    		throw std::runtime_error("Failed to execute process to get IPv6 state");
-    	}
+        QProcess p;
+        p.start(s0);
+        if (p.waitForFinished(3000))	// 3s
+        {	// finished
+            QString ts(p.readAllStandardOutput());
+            int state = ts.indexOf("State");
+            if (state > -1)
+            {
+                if (ts.indexOf("offline", state) > -1)
+                    on = false;
+            }
+        }
+        else
+        {	// timeout
+            if (QProcess::NotRunning != p.state() )
+                p.terminate();
+            throw std::runtime_error("Failed to execute process to get IPv6 state");
+        }
     */
 #else
 #ifdef Q_OS_OSX

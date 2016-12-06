@@ -10,7 +10,7 @@
 #include "scr_logs.h"
 #include "scr_map.h"
 #include "dlg_error.h"
-#include "dlg_confirmation.h"
+#include "confirmationdialog.h"
 
 #ifdef MONITOR_TOOL
 #include "scr_table.h"
@@ -337,7 +337,7 @@ void SjMainWindow::updateStateIcon()
 
 void SjMainWindow::updateStateIcon(OvState st)
 {
-    const char * ic;
+    QString ic;
     switch (st) {
     case ovsDisconnected:
         ic = OsSpecific::Instance()->IconDisconnected();
@@ -687,7 +687,7 @@ void SjMainWindow::ConstructConnecttoMenu()
                                 CreateMenuItem(m, se.name, idsrv);
                             }
                         }
-                        QAction * ma = _ct_menu->addMenu(m);
+                        _ct_menu->addMenu(m);
                     } else {	// just a server without hub
                         int idsrv = L0[k].second;
                         AServer se = am->GetSrv(idsrv);

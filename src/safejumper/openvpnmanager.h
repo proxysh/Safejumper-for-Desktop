@@ -7,7 +7,7 @@
 #include <QFileSystemWatcher>
 #include <QTemporaryFile>
 
-#include "dlg_confirmation.h"
+#include "confirmationdialog.h"
 
 enum OvState {
     ovsDisconnected = 0,

@@ -46,13 +46,13 @@ public:
 
     void EnableTap();	// for Windows enumerate interfaces and for all TAP force call Enable
 
-    const char * IconDisconnected();
-    const char * IconConnecting();
-    const char * IconConnected();
+    const QString IconDisconnected() const;
+    const QString IconConnecting() const;
+    const QString IconConnected() const;
 
-    const char * IconDisconnected_Selected();
-    const char * IconConnecting_Selected();
-    const char * IconConnected_Selected();
+    const QString IconDisconnected_Selected() const;
+    const QString IconConnecting_Selected() const;
+    const QString IconConnected_Selected() const;
 
     const char * IsRunningCmd();
 
@@ -76,7 +76,7 @@ public:
     void InstallObfs();
 
 #ifdef Q_OS_MAC
-    bool isDark();
+    bool isDark() const;
 #endif
 private:
     OsSpecific();

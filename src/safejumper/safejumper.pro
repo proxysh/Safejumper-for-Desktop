@@ -70,7 +70,6 @@ SOURCES += main.cpp\
         thread_oldip.cpp \
         ministun.c \
         pingwaiter.cpp \
-        dlg_confirmation.cpp \
         pathhelper.cpp \
         thread_forwardports.cpp \
         portforwarder.cpp \
@@ -81,7 +80,8 @@ SOURCES += main.cpp\
         dlg_newnode.cpp \
         lvrowdelegateencryption.cpp \
         scr_table.cpp \
-    openvpnmanager.cpp
+    openvpnmanager.cpp \
+    confirmationdialog.cpp
 
 HEADERS  += sjmainwindow.h \
         retina.h \
@@ -101,7 +101,6 @@ HEADERS  += sjmainwindow.h \
         thread_oldip.h \
         ministun.h \
         pingwaiter.h \
-        dlg_confirmation.h \
         pathhelper.h \
         thread_forwardports.h \
         portforwarder.h \
@@ -114,7 +113,8 @@ HEADERS  += sjmainwindow.h \
         dlg_newnode.h \
         lvrowdelegateencryption.h \
         scr_table.h \
-    openvpnmanager.h
+    openvpnmanager.h \
+    confirmationdialog.h
 
 FORMS	+= sjmainwindow.ui \
         scr_connect.ui \
@@ -122,9 +122,9 @@ FORMS	+= sjmainwindow.ui \
         scr_logs.ui \
         scr_map.ui \
         dlg_error.ui \
-        dlg_confirmation.ui \
         dlg_newnode.ui \
-        scr_table.ui
+        scr_table.ui \
+    confirmationdialog.ui
 
 RESOURCES += \
         imgs.qrc

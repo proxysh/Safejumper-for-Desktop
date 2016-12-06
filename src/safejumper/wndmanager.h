@@ -5,7 +5,7 @@
 #include <QDialog>
 #include <memory>
 
-#include "dlg_confirmation.h"
+#include "confirmationdialog.h"
 #include "dlg_newnode.h"
 
 //  WndManager::Instance()->ToPrimary(this);
