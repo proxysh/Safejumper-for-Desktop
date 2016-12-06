@@ -189,7 +189,8 @@ void WndManager::HideThis(QWidget * scr)
 
 void WndManager::SaveCoords(QWidget * from)
 {
-    if (!from) return;
+    if (!from)
+        return;
     if (!from->isVisible())
         return;
     int tw = from->width();
@@ -216,7 +217,7 @@ void WndManager::DoShape(QWidget * d)
 
 void WndManager::SavePos()
 {
-    SETTINGS_OBJ;
+    QSettings settings;
     settings.setValue("pos", this->CurrPos());
 }
 

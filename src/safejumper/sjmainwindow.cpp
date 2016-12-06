@@ -1,7 +1,6 @@
 #include "sjmainwindow.h"
 
-#include <QSizePolicy>
-#include <QMessageBox>
+#include <QMenu>
 #include <QFontDatabase>
 
 #include "ui_sjmainwindow.h"
@@ -37,7 +36,6 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
     , _fixed(false)
     , _activatedcount(0)
     , _wifi_processing(false)
-    , _moving(false)
 {
     ui->setupUi(this);
 #ifdef Q_OS_WIN
@@ -46,14 +44,12 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 #endif
     setFixedSize(this->size());
 
-    ui->b_Cancel->hide();
+    ui->cancelButton->hide();
 
 #ifndef Q_OS_MAC
     FontHelper::SetFont(this);
     ui->eLogin->setFont(FontHelper::pt(14));
     ui->ePsw->setFont(FontHelper::pt(14));
-
-    ui->menuBar->setVisible(false);
 #endif
 
     ui->eLogin->setAttribute(Qt::WA_MacShowFocusRect, 0);
@@ -64,18 +60,16 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
     CreateTrayIcon();
     _TrayIcon->show();
 
-    connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(ac_StdQuit()));
-
     {
-        SETTINGS_OBJ;
+        QSettings settings;
         if (settings.contains("pos")) {
             QPoint p = settings.value("pos").toPoint();
             WndManager::Instance()->trans(p, this);
         }
 //		_WndStart = pos();
-        ui->cb_Rememberme->setChecked(settings.value("cb_Rememberme", true).toBool());
+        ui->rememberMeButton->setChecked(settings.value("cb_Rememberme", true).toBool());
 
-        if (ui->cb_Rememberme->isChecked()) {
+        if (ui->rememberMeButton->isChecked()) {
             if (settings.contains("eLogin"))
                 ui->eLogin->setText(settings.value("eLogin", "").toString());
             if (settings.contains("ePsw"))
@@ -110,6 +104,12 @@ void SjMainWindow::EnableButtonsOnLogin()
     _ac_SwitchCountry->setEnabled(true);	//_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-red.png"));
 }
 
+void SjMainWindow::on_rememberMeButton_toggled()
+{
+    QSettings settings;
+    settings.setValue("cb_Rememberme", ui->rememberMeButton->isChecked());
+}
+
 void SjMainWindow::Timer_Constructed()
 {
 #ifndef Q_OS_OSX
@@ -117,8 +117,6 @@ void SjMainWindow::Timer_Constructed()
 #endif
 
     Scr_Logs * l = Scr_Logs::Instance();
-
-    qApp->installEventFilter(this);
 
     if (l->IsExists())		// force construction
         if (OpenvpnManager::Instance()->IsOvRunning())
@@ -149,7 +147,7 @@ SjMainWindow::~SjMainWindow()
     if (this->isVisible())
         WndManager::Instance()->HideThis(this);
     WndManager::Instance()->SavePos();
-    SaveRememberme();
+    on_rememberMeButton_toggled(); // Save remember me setting
     SaveCreds();
 
     ClearConnecttoMenu();
@@ -175,16 +173,10 @@ SjMainWindow::~SjMainWindow()
     delete ui;
 }
 
-void SjMainWindow::SaveRememberme()
-{
-    SETTINGS_OBJ;
-    settings.setValue("cb_Rememberme", ui->cb_Rememberme->isChecked());
-}
-
 void SjMainWindow::SaveCreds()
 {
-    SETTINGS_OBJ;
-    if (ui->cb_Rememberme->isChecked()) {
+    QSettings settings;
+    if (ui->rememberMeButton->isChecked()) {
         settings.setValue("eLogin", ui->eLogin->text());
         settings.setValue("ePsw", ui->ePsw->text());	// TODO: -0
     }
@@ -310,19 +302,14 @@ void SjMainWindow::Icon_Activated(QSystemTrayIcon::ActivationReason )
         connect(g_pTheApp, SIGNAL(focusChanged(QWidget*, QWidget*)), this, SLOT(AppFocusChanged(QWidget*, QWidget*)));
         if (NULL == _timer_icon.get()) {
             _timer_icon.reset(new QTimer(this));
-            connect(_timer_icon.get(), SIGNAL(timeout()), this, SLOT(Timer_FixIcon()));
+            connect(_timer_icon.get(), SIGNAL(timeout()), this, SLOT(updateStateIcon()));
             _timer_icon->start(210);
         }
-        UpdIcon();
+        updateStateIcon();
     } else {
         DisconnectIconWatcher();
-        UpdIcon();
+        updateStateIcon();
     }
-}
-
-void SjMainWindow::Timer_FixIcon()
-{
-    UpdIcon();
 }
 
 void SjMainWindow::DisconnectIconWatcher()
@@ -337,18 +324,18 @@ void SjMainWindow::DisconnectIconWatcher()
 void SjMainWindow::AppFocusChanged(QWidget*, QWidget*)
 {
     DisconnectIconWatcher();
-    UpdIcon();
+    updateStateIcon();
 }
 
-void SjMainWindow::UpdIcon()
+void SjMainWindow::updateStateIcon()
 {
     OvState st = ovsDisconnected;
     if (OpenvpnManager::IsExists())
         st = OpenvpnManager::Instance()->State();
-    UpdIcon(st);
+    updateStateIcon(st);
 }
 
-void SjMainWindow::UpdIcon(OvState st)
+void SjMainWindow::updateStateIcon(OvState st)
 {
     const char * ic;
     switch (st) {
@@ -373,7 +360,7 @@ void SjMainWindow::FixIcon()
     if (!_fixed) {
         _fixed = true;
         DisconnectIconWatcher();
-        UpdIcon();
+        updateStateIcon();
     }
 }
 
@@ -480,12 +467,6 @@ void SjMainWindow::ac_Close()
     DoClose();
 }
 
-void SjMainWindow::ac_StdQuit()
-{
-    FixIcon();
-    DoClose();
-}
-
 void SjMainWindow::ac_Logout()
 {
     FixIcon();
@@ -533,37 +514,14 @@ void SjMainWindow::ToScr_Primary()
     WndManager::Instance()->ToPrimary();
 }
 
-void SjMainWindow::ToScr_Login()
-{
-    this->show();
-}
-
-void SjMainWindow::Clicked_b_Cancel()
+void SjMainWindow::on_cancelButton_clicked()
 {
     DoCancelLogin();
 }
 
-void SjMainWindow::Clicked_Min()
-{
-    WndManager::Instance()->HideThis(this);
-}
-
-void SjMainWindow::Clicked_Cross()
-{
-    DoClose();
-}
-
-void SjMainWindow::ToScr_Connect()
+void SjMainWindow::on_loginButton_clicked()
 {
     DoLogin();
-}
-
-void SjMainWindow::Pressed_Head()
-{
-    _WndStart = this->pos();
-    _CursorStart = QCursor::pos();
-    log::logt(QString().sprintf("_WndStart =  (%d,%d), _CursorStart = (%d,%d)", _WndStart.x(), _WndStart.y(), _CursorStart.x(), _CursorStart.y()));
-    _moving = true;
 }
 
 void SjMainWindow::DoCancelLogin()
@@ -577,24 +535,19 @@ void SjMainWindow::DoLogin()
     if (!AuthManager::Instance()->IsLoggedin()) {
         if (!ui->eLogin->text().isEmpty()) {
             _CancelLogin = false;
-            DoEnable(false);
+            enableButtons(false);
             AuthManager::Instance()->DoLogin(ui->eLogin->text(), ui->ePsw->text());
         }
     }
 }
 
-void SjMainWindow::DoEnable(bool enabled)
+void SjMainWindow::enableButtons(bool enabled)
 {
-    if (enabled) {
-        ui->b_Login->show();
-        ui->b_Cancel->hide();
-    } else {
-        ui->b_Cancel->show();
-        ui->b_Login->hide();
-    }
+    ui->loginButton->setVisible(enabled);
+    ui->cancelButton->setVisible(!enabled);
     ui->eLogin->setEnabled(enabled);
     ui->ePsw->setEnabled(enabled);
-    ui->b_options->setEnabled(enabled);
+    ui->optionsButton->setEnabled(enabled);
 }
 
 void SjMainWindow::DoConnect()
@@ -682,7 +635,7 @@ void SjMainWindow::LoginFinished()
             dlg.exec();
         }
     }
-    DoEnable(true);
+    enableButtons(true);
     _ConnectAfterLogin = false;
 }
 
@@ -766,25 +719,20 @@ void SjMainWindow::ClearConnecttoMenu()
             _ct_menu->clear();			// delete actions
 }
 
-void SjMainWindow::ToScr_Options()
+void SjMainWindow::on_optionsButton_clicked()
 {
     WndManager::Instance()->ToSettings();
-}
-
-void SjMainWindow::cbRememberMe_Togg()
-{
-    SaveRememberme();
 }
 
 void SjMainWindow::StatusConnecting()
 {
     DisableMenuItems(true);
-    UpdIcon(ovsConnecting);
+    updateStateIcon(ovsConnecting);
 }
 
 void SjMainWindow::StatusConnected()
 {
-    UpdIcon(ovsConnected);
+    updateStateIcon(ovsConnected);
     _ac_Jump->setEnabled(true);			//_ac_Jump->setIcon(QIcon(":/icons-tm/jump-red.png"));
     _ac_SwitchCountry->setEnabled(true);	//_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-red.png"));
 }
@@ -792,7 +740,7 @@ void SjMainWindow::StatusConnected()
 void SjMainWindow::StatusDisconnected()
 {
     DisableMenuItems(false);
-    UpdIcon(ovsDisconnected);
+    updateStateIcon(ovsDisconnected);
 }
 
 static void s_set_enabled(QAction * ac, bool enabled, const char * icon_word)
@@ -941,31 +889,3 @@ void SjMainWindow::BlockOnDisconnect()
         OsSpecific::Instance()->NetDown();
     }
 }
-
-bool SjMainWindow::eventFilter(QObject *obj, QEvent *event)
-{
-    switch (event->type()) {
-    case QEvent::MouseMove: {
-        if (_moving) {
-            QPoint p =	QCursor::pos();
-            QPoint d = p - _CursorStart;
-            if (d.x() != 0 || d.y() != 0) {
-//					static bool first_time = true;
-                QPoint NewAbs = _WndStart + d;
-//log::logt(QString().sprintf("Moving to NewAbs = (%d,%d) d = (%d,%d), p = (%d,%d), _WndStart = (%d,%d), _CursorStart = (%d,%d)", NewAbs.x(), NewAbs.y(), d.x(), d.y(), p.x(), p.y(), _WndStart.x(), _WndStart.y(), _CursorStart.x(), _CursorStart.y()));
-                this->move(NewAbs);
-            }
-        }
-        return false;
-    }
-    case QEvent::MouseButtonRelease: {
-        _moving = false;
-//			_WndStart = pos();
-        return false;
-    }
-    default:
-        return QMainWindow::eventFilter(obj, event);
-    }
-}
-
-

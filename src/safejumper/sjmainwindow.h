@@ -43,6 +43,56 @@ public:
     void StopWifiWatcher();
     void BlockOnDisconnect();
 
+public slots:
+    void AppFocusChanged(QWidget*, QWidget*);
+    void LoginFinished();
+    void AccTypeFinished();
+    void ExpireFinished();
+    void Finished_OldIp(const QString & s);
+    void Finished_OldIpHttp();
+    void Finished_Dns();
+    void Finished_Updates();
+    void Finished_ObfsName();
+    void Finished_EccName();
+//	void Finished_EccxorName();
+
+    void Soc_Error(QAbstractSocket::SocketError er);
+    void Soc_ReadyRead();
+
+    // connect or login Src depending on auth status
+    void ToScr_Primary();
+
+    void ac_Connect();
+    void ac_ConnectTo();
+    void ac_Disconnect();
+    void ac_Status();
+    void ac_Jump();
+    void ac_SwitchCountry();
+    void ac_Settings();
+    void ac_Logs();
+    void ac_WebManag();
+    void ac_Support();
+    void ac_Bug();
+    void ac_Earn();
+    void ac_About();
+    void ac_Logout();
+    void ac_Close();
+
+protected:
+    virtual void closeEvent(QCloseEvent * event);
+
+private slots:
+    void on_rememberMeButton_toggled();
+    void on_optionsButton_clicked();
+    void on_loginButton_clicked();
+    void on_cancelButton_clicked();
+
+    void updateStateIcon();
+    void Icon_Activated(QSystemTrayIcon::ActivationReason reason);
+    void Timer_Constructed();
+    void Timer_Reconnect();
+    void Timer_WifiWatcher();
+
 private:
     Ui::SjMainWindow *ui;
     explicit SjMainWindow(QWidget *parent = 0);
@@ -80,13 +130,11 @@ private:
     void DoConnect();
     bool _ConnectAfterLogin;
     void SaveCreds();
-    void SaveRememberme();
-    void DoEnable(bool enabled);
+    void enableButtons(bool enabled);
 
     void FixIcon();
     bool _fixed;
-    void UpdIcon();
-    void UpdIcon(OvState st);
+    void updateStateIcon(OvState st);
     unsigned int _activatedcount;
     std::auto_ptr<QTimer> _timer_icon;
     void DisconnectIconWatcher();
@@ -102,67 +150,6 @@ private:
 
     void DisableButtonsOnLogout();
     void EnableButtonsOnLogin();
-
-    bool _moving;
-    QPoint _WndStart;
-    QPoint _CursorStart;
-
-private slots:
-    void cbRememberMe_Togg();
-    void Clicked_b_Cancel();
-    void Clicked_Min();
-    void Clicked_Cross();
-    void Icon_Activated(QSystemTrayIcon::ActivationReason reason);
-    void Timer_FixIcon();
-    void Timer_Constructed();
-    void Timer_Reconnect();
-    void Timer_WifiWatcher();
-    void Pressed_Head();
-
-public slots:
-    void AppFocusChanged(QWidget*, QWidget*);
-    void LoginFinished();
-    void AccTypeFinished();
-    void ExpireFinished();
-    void Finished_OldIp(const QString & s);
-    void Finished_OldIpHttp();
-    void Finished_Dns();
-    void Finished_Updates();
-    void Finished_ObfsName();
-    void Finished_EccName();
-//	void Finished_EccxorName();
-
-    void Soc_Error(QAbstractSocket::SocketError er);
-    void Soc_ReadyRead();
-
-    // connect or login Src depending on auth status
-    void ToScr_Primary();
-    void ToScr_Login();
-    void ToScr_Connect();
-    void ToScr_Options();
-
-    void ac_Connect();
-    void ac_ConnectTo();
-    void ac_Disconnect();
-    void ac_Status();
-    void ac_Jump();
-    void ac_SwitchCountry();
-    void ac_Settings();
-    void ac_Logs();
-    void ac_WebManag();
-    void ac_Support();
-    void ac_Bug();
-    void ac_Earn();
-    void ac_About();
-    void ac_Logout();
-    void ac_Close();
-
-    void ac_StdQuit();
-
-protected:
-    virtual void closeEvent(QCloseEvent * event);
-    virtual void resizeEvent(QResizeEvent *) {}
-    virtual bool eventFilter(QObject *obj, QEvent *event);
 };
 
 #endif // SJMAINWINDOW_H

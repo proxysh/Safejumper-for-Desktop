@@ -331,7 +331,7 @@ margin: 0;
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QPushButton" name="b_Login">
+    <widget class="QPushButton" name="loginButton">
      <property name="geometry">
       <rect>
        <x>42</x>
@@ -506,7 +506,7 @@ border-image: url(:/imgs/e-active.png);
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="cb_Rememberme">
+    <widget class="QPushButton" name="rememberMeButton">
      <property name="geometry">
       <rect>
        <x>234</x>
@@ -544,7 +544,7 @@ QPushButton:checked
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="b_options">
+    <widget class="QPushButton" name="optionsButton">
      <property name="geometry">
       <rect>
        <x>269</x>
@@ -631,7 +631,7 @@ QPushButton:checked
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="b_Cancel">
+    <widget class="QPushButton" name="cancelButton">
      <property name="geometry">
       <rect>
        <x>42</x>
@@ -672,176 +672,18 @@ QPushButton:pressed
       <string/>
      </property>
     </widget>
-    <zorder>b_Cancel</zorder>
-    <zorder>b_Login</zorder>
+    <zorder>cancelButton</zorder>
+    <zorder>loginButton</zorder>
     <zorder>eLogin</zorder>
     <zorder>ePsw</zorder>
     <zorder>lLoginDude</zorder>
     <zorder>lPswLock</zorder>
-    <zorder>cb_Rememberme</zorder>
-    <zorder>b_options</zorder>
+    <zorder>rememberMeButton</zorder>
+    <zorder>optionsButton</zorder>
     <zorder>line_2</zorder>
     <zorder>line_1</zorder>
     <zorder>line_3</zorder>
    </widget>
-   <widget class="QFrame" name="frameHead">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>500</y>
-      <width>375</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QFrame
-{
-	background-color: #ffffff;
-	border: 0;
-}</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-    <widget class="QLabel" name="line_4">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>21</y>
-       <width>375</width>
-       <height>2</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel
-{
-	border:0px;
-	border-image: url(:/imgs/h-line-mb.png);
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="b_Cross">
-     <property name="geometry">
-      <rect>
-       <x>355</x>
-       <y>6</y>
-       <width>10</width>
-       <height>10</height>
-      </rect>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-	border:0px;
-	border-image: url(:/imgs/b-cross.png);
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="L_Caption">
-     <property name="geometry">
-      <rect>
-       <x>140</x>
-       <y>3</y>
-       <width>100</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Helvetica Neue</family>
-       <pointsize>14</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Safejumper</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="b_Minimize">
-     <property name="geometry">
-      <rect>
-       <x>340</x>
-       <y>6</y>
-       <width>10</width>
-       <height>10</height>
-      </rect>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-	border:0px;
-	border-image: url(:/imgs/b-min.png);
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="b_Head">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>375</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton
-{
-	border:0px;
-	border-image: url(:/imgs/cb-empty.png);
-}</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <zorder>L_Caption</zorder>
-    <zorder>b_Head</zorder>
-    <zorder>b_Cross</zorder>
-    <zorder>line_4</zorder>
-    <zorder>b_Minimize</zorder>
-   </widget>
-  </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>375</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuExit">
-    <property name="title">
-     <string>Exit</string>
-    </property>
-    <addaction name="actionExit"/>
-   </widget>
-   <addaction name="menuExit"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -851,118 +693,5 @@ QPushButton:pressed
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections>
-  <connection>
-   <sender>b_Login</sender>
-   <signal>clicked()</signal>
-   <receiver>SjMainWindow</receiver>
-   <slot>ToScr_Connect()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>261</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>138</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_options</sender>
-   <signal>clicked()</signal>
-   <receiver>SjMainWindow</receiver>
-   <slot>ToScr_Options()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>302</x>
-     <y>272</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>138</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cb_Rememberme</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SjMainWindow</receiver>
-   <slot>cbRememberMe_Togg()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>283</x>
-     <y>250</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>138</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Minimize</sender>
-   <signal>clicked()</signal>
-   <receiver>SjMainWindow</receiver>
-   <slot>Clicked_Min()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>344</x>
-     <y>32</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>138</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Head</sender>
-   <signal>pressed()</signal>
-   <receiver>SjMainWindow</receiver>
-   <slot>Pressed_Head()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>187</x>
-     <y>32</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Cross</sender>
-   <signal>clicked()</signal>
-   <receiver>SjMainWindow</receiver>
-   <slot>Clicked_Cross()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>359</x>
-     <y>32</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Cancel</sender>
-   <signal>clicked()</signal>
-   <receiver>SjMainWindow</receiver>
-   <slot>Clicked_b_Cancel()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>280</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

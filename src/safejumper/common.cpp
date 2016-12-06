@@ -74,18 +74,9 @@ bool IsValidPort(const QString & s)
     return ok;
 }
 
-static QString m_sSettingsFile;
-const QString & GetSettingsFn()
-{
-    if (m_sSettingsFile.isEmpty())
-        m_sSettingsFile = //QApplication::applicationDirPath().left(1) +
-            ":/Safejumper-settings.ini";
-    return m_sSettingsFile;
-}
-
 void SaveCb(const char * name, bool val)
 {
-    SETTINGS_OBJ;
+    QSettings settings;
     settings.setValue(name, val);
 }
 

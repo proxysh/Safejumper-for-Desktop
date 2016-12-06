@@ -58,7 +58,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
     qApp->installEventFilter(this);
 
     {
-        SETTINGS_OBJ;
+        QSettings settings;
         ui->cb_AutoConnect->setChecked(settings.value("cb_AutoConnect", false).toBool());
         ui->cb_BlockOnDisconnect->setChecked(settings.value("cb_BlockOnDisconnect", false).toBool());
         ui->cb_DisableIpv6->setChecked(settings.value("cb_DisableIpv6", true).toBool());
@@ -114,7 +114,7 @@ void Scr_Settings::closeEvent(QCloseEvent * event)
 Scr_Settings::~Scr_Settings()
 {
     {
-        SETTINGS_OBJ;
+        QSettings settings;
         if (this->isVisible())
             WndManager::Instance()->HideThis(this);
 
@@ -314,7 +314,7 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
 #endif
     }
 
-    SETTINGS_OBJ;
+    QSettings settings;
     settings.setValue("dd_Encryption", ix);
 
     if (Scr_Map::IsExists()) {
@@ -337,7 +337,7 @@ static const char * gs_sNormStyle =
 void Scr_Settings::Validate_e_Dns()
 {
     if (Vlidate_e_ip(ui->e_PrimaryDns)) {
-        SETTINGS_OBJ;
+        QSettings settings;
         SaveDns(ui->e_PrimaryDns, "e_PrimaryDns", settings);
     }
 
@@ -346,7 +346,7 @@ void Scr_Settings::Validate_e_Dns()
 void Scr_Settings::Validate_e_SecondaryDns()
 {
     if (Vlidate_e_ip(ui->e_SecondaryDns)) {
-        SETTINGS_OBJ;
+        QSettings settings;
         SaveDns(ui->e_SecondaryDns, "e_SecondaryDns", settings);
     }
 }

@@ -245,7 +245,7 @@ void Setting::SaveProt(int ix)
 {
     if (_loading_protocol)
         return;
-    SETTINGS_OBJ;
+    QSettings settings;
     settings.setValue(ProtocolSettingsName(), ix);
     QString s;
     if (ix > -1 && ix < (int)GetAllProt().size())
@@ -256,7 +256,7 @@ void Setting::SaveProt(int ix)
 int Setting::LoadProt()
 {
     _loading_protocol = true;
-    SETTINGS_OBJ;
+    QSettings settings;
     int ix = settings.value(ProtocolSettingsName(), -1).toInt();
     if (ix > -1) {
         if (ix >= (int)GetAllProt().size())
@@ -300,7 +300,7 @@ int Setting::CurrProto()
 
 void Setting::SaveServer(int ixsrv, const QString & newsrv)
 {
-    SETTINGS_OBJ;
+    QSettings settings;
     settings.setValue(LocationSettingsName(), ixsrv);
     settings.setValue(LocationSettingsStrName(), newsrv);
 }
@@ -310,7 +310,7 @@ void Setting::LoadServer()
     if (AuthManager::Instance()->GetAllServers().empty())
         return;		// cannot select in empty list
 
-    SETTINGS_OBJ;
+    QSettings settings;
     int savedsrv = settings.value(LocationSettingsName(), -1).toInt();
     QString savedname = settings.value(LocationSettingsStrName(), "undefined").toString();
 
@@ -470,7 +470,7 @@ static const char * gs_undefined = "undefined";
 bool Setting::IsCheckForUpdates()
 {
     bool is = true;
-    SETTINGS_OBJ;
+    QSettings settings;
     QString saved = settings.value(gs_upd_name, gs_undefined).toString();
     if (saved != gs_undefined) {
         uint curr = QDateTime::currentDateTimeUtc().toTime_t();
@@ -488,7 +488,7 @@ bool Setting::IsCheckForUpdates()
 
 void Setting::UpdateMsgShown()
 {
-    SETTINGS_OBJ;
+    QSettings settings;
     uint t = QDateTime::currentDateTimeUtc().toTime_t();
     settings.setValue(gs_upd_name, QString::number(t));
 }

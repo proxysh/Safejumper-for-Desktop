@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
 
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setSetuidAllowed(true);
+    QApplication::setOrganizationName("proxy.sh");
     QApplication::setApplicationName("Safejumper");
-    QApplication::setOrganizationName("proxysh");
     g_pTheApp = new THE_APP_CLASS(argc, argv);
 
     log::logt("Starting Application");
