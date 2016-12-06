@@ -1,25 +1,26 @@
 #include "runit.h"
 
-#include <iostream>
-
 #include <QProcess>
+#include <QString>
 
-void runit(const char * cmd, unsigned int ms_delay)
+#include <QDebug>
+
+void runit(const QString &command, unsigned int ms_delay)
 {
-    QProcess p;
+    QProcess process;
 
-    std::cout << "@@ Running cmd '" << cmd << "'" << std::endl;
-    p.start(cmd);
-    if (!p.waitForFinished(ms_delay)) {
-        QString s1(p.readAllStandardError());
-        std::cout << "@@ error: " << s1.toStdString() << std::endl;
-        if (QProcess::NotRunning != p.state()) {
-            p.terminate();
-            p.kill();
+    qDebug() << "@@ Running cmd '" << command;
+    process.start(command);
+    if (!process.waitForFinished(ms_delay)) {
+        QString errors(process.readAllStandardError());
+        qDebug() << "@@ error: " << errors;
+        if (process.state() != QProcess::NotRunning) {
+            process.terminate();
+            process.kill();
         }
     } else {
-        QString s0(p.readAllStandardOutput());
-        if (!s0.isEmpty())
-            std::cout << "@@ output: " << s0.toStdString() << std::endl;
+        QString output(process.readAllStandardOutput());
+        if (!output.isEmpty())
+            qDebug() << "@@ output: " << output;
     }
 }

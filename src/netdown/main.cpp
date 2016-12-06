@@ -1,16 +1,12 @@
-//#include <QCoreApplication>
-
-#include <iostream>
-#include <cstdio>
 
 #include "common.h"
 #include "runit.h"
 
-template <typename T, size_t N>
-char (&ArraySizeHelper(T (&array)[N]))[N];
-#define arraysize(array) (sizeof(ArraySizeHelper(array)))
+#include <QStringList>
 
-static const char * cmds [] = {
+#include <QDebug>
+
+const QStringList commands = {
 #ifdef Q_OS_MAC
     "/sbin/ifconfig en0 down",
     "/sbin/ifconfig en1 down",
@@ -23,16 +19,10 @@ static const char * cmds [] = {
 
 int main(int argc, char *argv[])
 {
-    printf("@@@ 01\n");
     become_root();
-    printf("@@@ 02\n");
 
-    for (int k = 0; k < arraysize(cmds); ++k)
-        runit(cmds[k]);
+    for (int k = 0; k < commands.size(); ++k)
+        runit(commands[k]);
 
-    printf("@@@ 05\n");
     return 0;
-
-//	QCoreApplication a(argc, argv);
-//	return a.exec();
 }
