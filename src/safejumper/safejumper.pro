@@ -53,7 +53,6 @@ linux: {
 
 SOURCES += main.cpp\
         sjmainwindow.cpp \
-        retina.cpp \
         scr_connect.cpp \
         scr_settings.cpp \
         common.cpp \
@@ -84,7 +83,6 @@ SOURCES += main.cpp\
     confirmationdialog.cpp
 
 HEADERS  += sjmainwindow.h \
-        retina.h \
         scr_connect.h \
         scr_settings.h \
         common.h \
