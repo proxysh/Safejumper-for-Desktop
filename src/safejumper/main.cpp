@@ -30,13 +30,13 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    THE_APP_CLASS::setSetuidAllowed(true);
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setSetuidAllowed(true);
     QApplication::setApplicationName("Safejumper");
     QApplication::setOrganizationName("proxysh");
     g_pTheApp = new THE_APP_CLASS(argc, argv);
 
     log::logt("Starting Application");
-    //QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     SjMainWindow::Instance()->show();
     int res = g_pTheApp->exec();
     SjMainWindow::Cleanup();
