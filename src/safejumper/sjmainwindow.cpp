@@ -23,7 +23,7 @@
 #include "version.h"
 #include "setting.h"
 
-#include "ctr_openvpn.h"
+#include "openvpnmanager.h"
 
 #include "osspecific.h"
 #include "log.h"
@@ -121,8 +121,8 @@ void SjMainWindow::Timer_Constructed()
     qApp->installEventFilter(this);
 
     if (l->IsExists())		// force construction
-        if (Ctr_Openvpn::Instance()->IsOvRunning())
-            Ctr_Openvpn::Instance()->KillRunningOV();
+        if (OpenvpnManager::Instance()->IsOvRunning())
+            OpenvpnManager::Instance()->KillRunningOV();
 
     AuthManager::Instance()->DetermineOldIp();
 
@@ -160,7 +160,7 @@ SjMainWindow::~SjMainWindow()
     }
 
     AuthManager::Cleanup();
-    Ctr_Openvpn::Cleanup();
+    OpenvpnManager::Cleanup();
     OsSpecific::Cleanup();
     Scr_Connect::Cleanup();
     Scr_Logs::Cleanup();
@@ -343,8 +343,8 @@ void SjMainWindow::AppFocusChanged(QWidget*, QWidget*)
 void SjMainWindow::UpdIcon()
 {
     OvState st = ovsDisconnected;
-    if (Ctr_Openvpn::IsExists())
-        st = Ctr_Openvpn::Instance()->State();
+    if (OpenvpnManager::IsExists())
+        st = OpenvpnManager::Instance()->State();
     UpdIcon(st);
 }
 
@@ -406,7 +406,7 @@ void SjMainWindow::ac_ConnectTo()
 void SjMainWindow::ac_Disconnect()
 {
     FixIcon();
-    Ctr_Openvpn::Instance()->Stop();
+    OpenvpnManager::Instance()->Stop();
 }
 
 void SjMainWindow::ac_Status()
@@ -489,8 +489,8 @@ void SjMainWindow::ac_StdQuit()
 void SjMainWindow::ac_Logout()
 {
     FixIcon();
-    if (Ctr_Openvpn::IsExists())
-        Ctr_Openvpn::Instance()->Stop();
+    if (OpenvpnManager::IsExists())
+        OpenvpnManager::Instance()->Stop();
     if (AuthManager::IsExists())
         AuthManager::Instance()->DoLogout();
     WndManager::Instance()->ToPrimary();
@@ -517,8 +517,8 @@ void SjMainWindow::DoClose()
     int res = WndManager::Instance()->Confirmation("Would you like to shut Safejumper down?");
     if (res == QDialog::Accepted) {
         WndManager::Instance()->CloseAll();
-        if (Ctr_Openvpn::IsExists())
-            Ctr_Openvpn::Instance()->Stop();
+        if (OpenvpnManager::IsExists())
+            OpenvpnManager::Instance()->Stop();
         g_pTheApp->quit();
     }
 }
@@ -599,7 +599,7 @@ void SjMainWindow::DoEnable(bool enabled)
 
 void SjMainWindow::DoConnect()
 {
-    Ctr_Openvpn::Instance()->Start();
+    OpenvpnManager::Instance()->Start();
 }
 
 void SjMainWindow::Finished_ObfsName()
@@ -850,18 +850,18 @@ void SjMainWindow::Finished_Dns()
 
 void SjMainWindow::Soc_Error(QAbstractSocket::SocketError er)
 {
-    Ctr_Openvpn::Instance()->Soc_Error(er);
+    OpenvpnManager::Instance()->Soc_Error(er);
 }
 
 void SjMainWindow::Soc_ReadyRead()
 {
 //	log::logt("SjMainWindow::Soc_ReadyRead()");
-    Ctr_Openvpn::Instance()->Soc_ReadyRead();
+    OpenvpnManager::Instance()->Soc_ReadyRead();
 }
 
 void SjMainWindow::Timer_Reconnect()
 {
-    Ctr_Openvpn::Instance()->Timer_Reconnect();
+    OpenvpnManager::Instance()->Timer_Reconnect();
 }
 
 void SjMainWindow::StartWifiWatcher()
@@ -892,10 +892,10 @@ void SjMainWindow::Timer_WifiWatcher()
         if (!AuthManager::IsExists()) {
             stopped = true;
         } else {
-            if (!Ctr_Openvpn::IsExists()) {
+            if (!OpenvpnManager::IsExists()) {
                 stopped = true;
             } else {
-                if (ovsDisconnected == Ctr_Openvpn::Instance()->State())
+                if (ovsDisconnected == OpenvpnManager::Instance()->State())
                     stopped = true;
             }
         }
@@ -926,10 +926,10 @@ void SjMainWindow::BlockOnDisconnect()
             if (!AuthManager::Instance()->IsLoggedin()) {
                 doblock = true;
             } else {
-                if (!Ctr_Openvpn::IsExists()) {
+                if (!OpenvpnManager::IsExists()) {
                     doblock = true;
                 } else {
-                    if (Ctr_Openvpn::Instance()->State() == ovsDisconnected)
+                    if (OpenvpnManager::Instance()->State() == ovsDisconnected)
                         doblock = true;
                     // otherwise unblocked and should be unblocked
                 }

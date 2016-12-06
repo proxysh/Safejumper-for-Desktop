@@ -63,7 +63,6 @@ SOURCES += main.cpp\
         wndmanager.cpp \
         dlg_error.cpp \
         setting.cpp \
-        ctr_openvpn.cpp \
         osspecific.cpp \
         log.cpp \
         flag.cpp \
@@ -81,7 +80,8 @@ SOURCES += main.cpp\
         fonthelper.cpp \
         dlg_newnode.cpp \
         lvrowdelegateencryption.cpp \
-        scr_table.cpp
+        scr_table.cpp \
+    openvpnmanager.cpp
 
 HEADERS  += sjmainwindow.h \
         retina.h \
@@ -94,7 +94,6 @@ HEADERS  += sjmainwindow.h \
         wndmanager.h \
         dlg_error.h \
         setting.h \
-        ctr_openvpn.h \
         osspecific.h \
         log.h \
         flag.h \
@@ -114,7 +113,8 @@ HEADERS  += sjmainwindow.h \
         update.h \
         dlg_newnode.h \
         lvrowdelegateencryption.h \
-        scr_table.h
+        scr_table.h \
+    openvpnmanager.h
 
 FORMS	+= sjmainwindow.ui \
         scr_connect.ui \

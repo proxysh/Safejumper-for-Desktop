@@ -1,5 +1,5 @@
 #include "acconnectto.h"
-#include "ctr_openvpn.h"
+#include "openvpnmanager.h"
 
 AcConnectto::AcConnectto(size_t srvid, QObject *parent)
     : QObject(parent)
@@ -11,5 +11,5 @@ AcConnectto::~AcConnectto()
 
 void AcConnectto::ac_ConnectTo()
 {
-    Ctr_Openvpn::Instance()->Start(_srvid);
+    OpenvpnManager::Instance()->Start(_srvid);
 }

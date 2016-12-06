@@ -9,7 +9,7 @@
 
 #include "pingwaiter.h"
 #include "setting.h"
-#include "ctr_openvpn.h"
+#include "openvpnmanager.h"
 #include "scr_map.h"
 #include "sjmainwindow.h"
 #include "osspecific.h"
@@ -50,10 +50,10 @@ AuthManager::~AuthManager()
             _timers.at(k)->stop();
             delete _timers.at(k);
         }
-        /*		if (_workers.at(k) != NULL && _waiters.at(k) != NULL)
-        		{
-        			SjMainWindow * m = SjMainWindow::Instance();
-        		}*/
+        /*              if (_workers.at(k) != NULL && _waiters.at(k) != NULL)
+                        {
+                                SjMainWindow * m = SjMainWindow::Instance();
+                        }*/
         if (_workers.at(k) != NULL) {
             if (_workers.at(k)->state() != QProcess::NotRunning)
                 _workers.at(k)->terminate();
@@ -75,7 +75,7 @@ AuthManager::~AuthManager()
     }
 
     // TODO: -0 terminate Network Manager
-//	_nam
+//      _nam
 }
 
 bool AuthManager::IsLoggedin()
@@ -90,7 +90,7 @@ void AuthManager::DoLogin(const QString & name, const QString & password)
     _acnpsw = password;
 
     _vpnlogin.clear();
-    _vpnpsw.clear();			// TODO: -2 secure clear
+    _vpnpsw.clear();                    // TODO: -2 secure clear
     _logged = false;
     _CancelLogin = false;
     log::logt("Starting login with name '" + QUrl::toPercentEncoding(name, "", "") + "'");
@@ -116,7 +116,7 @@ void AuthManager::DoLogout()
     _vpnlogin.clear();
     _vpnpsw.clear();
     _aclogin.clear();
-    _acnpsw.clear();		// TODO: -2 secure clear
+    _acnpsw.clear();            // TODO: -2 secure clear
 }
 
 AServer AuthManager::GetSrv(int id)
@@ -144,7 +144,7 @@ void AuthManager::SetNewIp(const QString & ip)
     if (ip != self)
         _newip = ip;
     if (Scr_Connect::IsExists()
-//		&& Setting::Encryption() != ENCRYPTION_OBFS_TOR
+//              && Setting::Encryption() != ENCRYPTION_OBFS_TOR
             && ip != self
        ) {
         Scr_Connect::Instance()->UpdNewIp(ip);
@@ -166,10 +166,10 @@ const std::vector<size_t> & AuthManager::GetHubs()
         for (size_t k = 0; k < _servers.size(); ++k) {
             if (_servers[k].name.contains("Hub", Qt::CaseInsensitive)) {
                 _hubs.push_back(_servers[k]);
-                _HubToServer.push_back(k);			// the same as _hub_ids[0]
+                _HubToServer.push_back(k);                      // the same as _hub_ids[0]
                 _hub_ids[0].push_back(k);
                 _SrvidToHubId.insert(IIMap::value_type(k, _hubs.size() - 1));
-                std::string cleared = flag::ClearName(_servers[k].name).toStdString();		// QString cleared = flag::ClearName(_servers[k].name);
+                std::string cleared = flag::ClearName(_servers[k].name).toStdString();          // QString cleared = flag::ClearName(_servers[k].name);
                 _HubClearedId.insert(std::make_pair(cleared, _hubs.size() - 1));
             }
         }
@@ -182,7 +182,7 @@ int AuthManager::HubidForServerNode(size_t srv)
 {
     int hub = -1;
     AServer & rs = _servers.at(srv);
-    std::string cleared = flag::ClearName(rs.name).toStdString();	// QString cleared = flag::ClearName(rs.name);
+    std::string cleared = flag::ClearName(rs.name).toStdString();       // QString cleared = flag::ClearName(rs.name);
     std::map<std::string, size_t>::iterator it = _HubClearedId.find(cleared);
     if (it != _HubClearedId.end())
         hub = (int)(*it).second;
@@ -202,7 +202,7 @@ void AuthManager::PrepareLevels()
         const std::vector<size_t> & h = GetHubs();
         std::set<int> hub_srvids;
         for (size_t k =0; k < h.size(); ++k) {
-            int srv = h.at(k);	//ServerIdFromHubId(k);
+            int srv = h.at(k);  //ServerIdFromHubId(k);
             hub_srvids.insert(srv);
             std::vector<int> v;
             v.push_back(srv);
@@ -214,8 +214,8 @@ void AuthManager::PrepareLevels()
             int srv = sr.at(k);
             std::set<int>::iterator it = hub_srvids.find(srv);
             if (it != hub_srvids.end()) {
-                _level0.push_back(std::make_pair(true, HubIdFromItsSrvId(*it)));	// aready at lvl 1
-            } else {	// just server: lvl0 or lvl1
+                _level0.push_back(std::make_pair(true, HubIdFromItsSrvId(*it)));        // aready at lvl 1
+            } else {    // just server: lvl0 or lvl1
                 int chub = HubidForServerNode(k);
                 if (chub > -1) {
                     std::map<int, std::vector<int> >::iterator it2 = _level1.find(chub);
@@ -250,7 +250,7 @@ int AuthManager::HubIxFromSrvName(const QString & srv)
 {
     int ix = -1;
     if (!srv.isEmpty()) {
-        //int ixsrv = SrvIxFromName(srv);	 // hint
+        //int ixsrv = SrvIxFromName(srv);        // hint
         int ixSpace = -1;
         for (int k = srv.length() - 1; k > 0; --k) {
             if (srv[k] == ' ') {
@@ -260,7 +260,7 @@ int AuthManager::HubIxFromSrvName(const QString & srv)
         }
         QString base = (ixSpace > -1 ? srv.left(ixSpace) : srv);
         QString s3 = base + " Hub";
-        int ix2 = SrvIxFromName(s3);	// try 'Canada' + ' Hub'
+        int ix2 = SrvIxFromName(s3);    // try 'Canada' + ' Hub'
         if (ix2 > -1)   // convert id into hub id
             ix = HubIdFromItsSrvId(ix2);
     }
@@ -342,22 +342,22 @@ void AuthManager::StartDwnl_EccName()
 
 //void AuthManager::StartDwnl_EccxorName()
 //{
-//	ClearReply();
-//	// https://api.proxy.sh/safejumper/get_ecc/name
-//	_reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
-//		QUrl("https://api.proxy.sh/safejumper/get_ecc/name"))));
-//	SjMainWindow * sj = SjMainWindow::Instance();
-//	sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_EccxorName()));
+//      ClearReply();
+//      // https://api.proxy.sh/safejumper/get_ecc/name
+//      _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+//              QUrl("https://api.proxy.sh/safejumper/get_ecc/name"))));
+//      SjMainWindow * sj = SjMainWindow::Instance();
+//      sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_EccxorName()));
 //}
 
 //void AuthManager::StartDwnl_ObfsAddr()
 //{
-//	ClearReply();
-//	// https://api.proxy.sh/safejumper/get_obfs/name
-//	_reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
-//		QUrl("https://api.proxy.sh/safejumper/get_obfs/name"))));
-//	SjMainWindow * sj = SjMainWindow::Instance();
-//	sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(AccTypeFinishedZZ()));
+//      ClearReply();
+//      // https://api.proxy.sh/safejumper/get_obfs/name
+//      _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+//              QUrl("https://api.proxy.sh/safejumper/get_obfs/name"))));
+//      SjMainWindow * sj = SjMainWindow::Instance();
+//      sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(AccTypeFinishedZZ()));
 //}
 
 void AuthManager::StartDwnl_AccType()
@@ -386,7 +386,7 @@ void AuthManager::StartDwnl_Until()
 
 void AuthManager::StartDwnl_Updates()
 {
-    QString us(SJ_UPDATE_ULR);
+    QString us(SJ_UPDATE_URL);
     if (!us.isEmpty()) {
         SjMainWindow * sj = SjMainWindow::Instance();
         _reply_update.reset(AuthManager::Instance()->_nam.get(BuildRequest(QUrl(us))));
@@ -410,8 +410,8 @@ void AuthManager::StartDwnl_Dns()
     // https://api.proxy.sh/safejumper/get_dns
     //<?xml version="1.0"?>
     //<root>
-    //	<dns>146.185.134.104</dns>
-    //	<dns>192.241.172.159</dns>
+    //  <dns>146.185.134.104</dns>
+    //  <dns>192.241.172.159</dns>
     //</root>
     _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
                      QUrl("https://api.proxy.sh/safejumper/get_dns"))));
@@ -542,8 +542,8 @@ void AuthManager::ProcessDnsXml()
 
             // <?xml version="1.0"?>
             // <root>
-            //	<dns>146.185.134.104</dns>
-            //	<dns>192.241.172.159</dns>
+            //  <dns>146.185.134.104</dns>
+            //  <dns>192.241.172.159</dns>
             // </root>
             QDomDocument doc;
             QString msg;
@@ -567,7 +567,7 @@ void AuthManager::ProcessDnsXml()
         }
     }
 
-    ClearReply();		// TODO: -2 further processing here
+    ClearReply();               // TODO: -2 further processing here
 }
 
 void AuthManager::ProcessUpdatesXml()
@@ -584,7 +584,7 @@ void AuthManager::ProcessUpdatesXml()
           "<stable>3.0</stable>"
           "<build>24</build>"
           "<files>"
-        	"<file url=\"/safejumper.exe\"/>"
+                "<file url=\"/safejumper.exe\"/>"
           "</files>"
           "<date>2015-08-05</date>"
         "</version>";
@@ -620,7 +620,7 @@ void AuthManager::ProcessUpdatesXml()
                                 int co = WndManager::Instance()->Confirmation("New version " + ss + " available. Update?");
                                 Setting::Instance()->UpdateMsgShown();
                                 if (QDialog::Accepted == co)
-                                    OpenUrl_Update();		// TODO: -2 auto update self
+                                    OpenUrl_Update();           // TODO: -2 auto update self
                             }
                         }
                     }
@@ -663,10 +663,10 @@ bool AuthManager::ProcessXml_ObfsName(QString & out_msg)
         /*
         <?xml version="1.0"?>
         <root>
-        	<0>U.S. California 3</0>
-        	<1>U.S. Georgia 1</1>
+                <0>U.S. California 3</0>
+                <1>U.S. Georgia 1</1>
 
-        	<130>Boost - Singapore - SoftLayer</130>
+                <130>Boost - Singapore - SoftLayer</130>
         </root>
         */
         QDomDocument doc;
@@ -717,7 +717,7 @@ bool AuthManager::ProcessXml_ObfsName(QString & out_msg)
     }
 
     // do not get obfs addresses: proceed
-    //	StartDwnl_AccType();
+    //  StartDwnl_AccType();
     StartDwnl_EccName();
 
     // force update of locations: if needed, previously empy
@@ -791,10 +791,10 @@ bool AuthManager::ProcessXml_Names(std::vector<QString> & v, QString & out_msg)
         /*
         <?xml version="1.0"?>
         <root>
-        	<0>U.S. California 3</0>
-        	<1>U.S. Georgia 1</1>
+                <0>U.S. California 3</0>
+                <1>U.S. Georgia 1</1>
 
-        	<130>Boost - Singapore - SoftLayer</130>
+                <130>Boost - Singapore - SoftLayer</130>
         </root>
         */
 
@@ -837,7 +837,7 @@ void AuthManager::MatchObfsServers(const std::vector<QString> & names, std::vect
     }
 
     std::vector<size_t> paid;
-    for (size_t k = 0, sz = names.size(); k < sz; ++k) {	// for each obfs server name
+    for (size_t k = 0, sz = names.size(); k < sz; ++k) {        // for each obfs server name
         HMSI::iterator it = name_id.find(names.at(k));
         if (it != name_id.end())
             paid.push_back((*it).second);
@@ -849,9 +849,9 @@ void AuthManager::MatchObfsServers(const std::vector<QString> & names, std::vect
 bool AuthManager::IsObfs(int id)
 {
     bool b = false;
-//	std::set<int>::iterator it = _obfs_enabled_srvs.find(id);
-//	if (it != _obfs_enabled_srvs.end())
-//		b = true;
+//      std::set<int>::iterator it = _obfs_enabled_srvs.find(id);
+//      if (it != _obfs_enabled_srvs.end())
+//              b = true;
     if (id > -1)
         b = std::binary_search(_srv_ids[ENCRYPTION_OBFS_TOR].begin(), _srv_ids[ENCRYPTION_OBFS_TOR].end(), id);
 
@@ -938,7 +938,7 @@ bool AuthManager::ProcessXml_Servers(QString & msg)
             log::logt("Cannot parse hubs");
 
         StartDwnl_ObfsName();
-//		StartDwnl_AccType();
+//              StartDwnl_AccType();
     }
 
     if (!err)
@@ -989,7 +989,7 @@ void AuthManager::StartWorker(size_t id)
             if (_workers.at(id)->state() != QProcess::NotRunning)
                 _workers.at(id)->terminate();
         }
-        std::auto_ptr<QProcess> raii(_workers.at(id));		// force delete if any
+        std::auto_ptr<QProcess> raii(_workers.at(id));          // force delete if any
         _workers.at(id) = new QProcess(m);
         m->connect(_workers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)), _waiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
         m->connect(_workers.at(id), SIGNAL(error(QProcess::ProcessError)), _waiters.at(id), SLOT(PingError(QProcess::ProcessError)));
@@ -1000,7 +1000,7 @@ void AuthManager::StartWorker(size_t id)
     } else {
         if (!_pings_loaded) {
             _pings_loaded = true;
-            Scr_Map::Instance()->RePopulateLocations();		// load pings
+            Scr_Map::Instance()->RePopulateLocations();         // load pings
         }
     }
 }
@@ -1009,7 +1009,7 @@ void AuthManager::PingComplete(size_t idWaiter)
 {
     _timers.at(idWaiter)->stop();
     int p = OsSpecific::Instance()->ExtractPing(*_workers.at(idWaiter));
-//	log::logt(_servers.at(_inprogress.at(idWaiter)).address + " Got ping " + QString::number(p));
+//      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " Got ping " + QString::number(p));
     _pings.at(_inprogress.at(idWaiter)) = p;
     StartWorker(idWaiter);
 }
@@ -1018,7 +1018,7 @@ void AuthManager::PingErr(size_t idWaiter)
 {
     _timers.at(idWaiter)->stop();
     int p = OsSpecific::Instance()->ExtractPing(*_workers.at(idWaiter));
-//	log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process error, extracted ping: " + QString::number(p));
+//      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process error, extracted ping: " + QString::number(p));
     _pings.at(_inprogress.at(idWaiter)) = p;
     StartWorker(idWaiter);
 }
@@ -1027,7 +1027,7 @@ void AuthManager::PingTerminate(size_t idWaiter)
 {
     _workers.at(idWaiter)->terminate();
     int p = OsSpecific::Instance()->ExtractPing(*_workers.at(idWaiter));
-//	log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process terminated, extracted ping: " + QString::number(p));
+//      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process terminated, extracted ping: " + QString::number(p));
     _pings.at(_inprogress.at(idWaiter)) = p;
     StartWorker(idWaiter);
 }
@@ -1069,7 +1069,7 @@ int AuthManager::SrvToJump()
     int srv = -1;
     if (!_servers.empty()) {
         int prev = Scr_Map::Instance()->CurrSrv();
-        std::vector<size_t> toping;	// ix inside _servers
+        std::vector<size_t> toping;     // ix inside _servers
         if (Setting::Instance()->IsShowNodes()) {
             // jump to server
             for (size_t k = 0; k < _servers.size(); ++k) {
@@ -1092,7 +1092,7 @@ int AuthManager::SrvToJump()
             }
         }
 
-        std::vector<int> pings = GetPings(toping);	// from cache; do not wait for pings; return vec of the same size
+        std::vector<int> pings = GetPings(toping);      // from cache; do not wait for pings; return vec of the same size
 
         IUVec ping_ix;
         for (size_t k = 0; k < toping.size(); ++k) {
@@ -1102,7 +1102,7 @@ int AuthManager::SrvToJump()
 
         if (!ping_ix.empty()) {
             std::sort(ping_ix.begin(), ping_ix.end(), PCmp);
-            int num = Setting::Instance()->IsShowNodes() ? 20 : 6;	// pick this many from the top
+            int num = Setting::Instance()->IsShowNodes() ? 20 : 6;      // pick this many from the top
             if (num >= ping_ix.size())
                 num = ping_ix.size();
             int offset = rand() % num;
@@ -1134,11 +1134,11 @@ int AuthManager::SrvToJump()
 void AuthManager::Jump()
 {
     // TODO: -2 update lists
-    int srv = SrvToJump();		// except current srv/hub
+    int srv = SrvToJump();              // except current srv/hub
     if (srv > -1) {
-// TODO: -0		SetNewIp("");
+// TODO: -0             SetNewIp("");
         Scr_Map::Instance()->SetServer(srv);
-        Ctr_Openvpn::Instance()->Start();		// contains stop
+        OpenvpnManager::Instance()->Start();               // contains stop
     }
 }
 
@@ -1148,12 +1148,12 @@ void AuthManager::DetermineOldIp()
     StartDwnl_OldIp();
 
     // omit STUN due to it does not always work
-//	if (_th_oldip.get() == NULL)
-//	{
-//		_th_oldip.reset(new Thread_OldIp(SjMainWindow::Instance()));
-//		SjMainWindow::Instance()->connect(_th_oldip.get(), &Thread_OldIp::resultReady, SjMainWindow::Instance(), &SjMainWindow::Finished_OldIp);
-//		_th_oldip->start();
-//	}
+//      if (_th_oldip.get() == NULL)
+//      {
+//              _th_oldip.reset(new Thread_OldIp(SjMainWindow::Instance()));
+//              SjMainWindow::Instance()->connect(_th_oldip.get(), &Thread_OldIp::resultReady, SjMainWindow::Instance(), &SjMainWindow::Finished_OldIp);
+//              _th_oldip->start();
+//      }
 
 }
 

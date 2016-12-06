@@ -8,7 +8,7 @@
 #include "common.h"
 #include "wndmanager.h"
 #include "setting.h"
-#include "ctr_openvpn.h"
+#include "openvpnmanager.h"
 #include "log.h"
 #include "flag.h"
 #include "fonthelper.h"
@@ -300,7 +300,7 @@ void Scr_Connect::Timer_CheckState()
 //	static int gs_count = 0;
 //	++gs_count;
 //	log::logt("in Scr_Connect::Timer_CheckState()");
-    Ctr_Openvpn::Instance()->CheckState();
+    OpenvpnManager::Instance()->CheckState();
 //	if (gs_count > 5)
 //		_timer_state->stop();
 //	log::logt("out Scr_Connect::Timer_CheckState()");
@@ -380,7 +380,7 @@ void Scr_Connect::ShowPackageUrl()
 
 void Scr_Connect::Clicked_Connect()
 {
-    Ctr_Openvpn::Instance()->Start();		// handle visuals inside
+    OpenvpnManager::Instance()->Start();		// handle visuals inside
 }
 
 void Scr_Connect::Clicked_Cancel()
@@ -388,7 +388,7 @@ void Scr_Connect::Clicked_Cancel()
 #ifdef MONITOR_TOOL
     Ctr_Openvpn::Instance()->StopLoop();
 #endif	// MONITOR_TOOL
-    Ctr_Openvpn::Instance()->Stop();
+    OpenvpnManager::Instance()->Stop();
     SjMainWindow::Instance()->BlockOnDisconnect();
 }
 
@@ -420,29 +420,29 @@ void Scr_Connect::ConnectStarted()
 
 void Scr_Connect::LogfileChanged(const QString & pfn)
 {
-    Ctr_Openvpn::Instance()->LogfileChanged(pfn);
+    OpenvpnManager::Instance()->LogfileChanged(pfn);
 }
 
 void Scr_Connect::ConnectStateChanged(QProcess::ProcessState newState)
 {
     log::logt("Scr_Connect::ConnectStateChanged(): newState = " + QString::number(newState));
-    Ctr_Openvpn::Instance()->StateChanged(newState);
+    OpenvpnManager::Instance()->StateChanged(newState);
 }
 
 void Scr_Connect::ConnectFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     log::logt("Scr_Connect::ConnectFinished(): exitCode = " + QString::number(exitCode) + " exitStatus = " +  QString::number(exitStatus));
-    Ctr_Openvpn::Instance()->Finished(exitCode, exitStatus);
+    OpenvpnManager::Instance()->Finished(exitCode, exitStatus);
 }
 
 void Scr_Connect::ConnectStderr()
 {
-    Ctr_Openvpn::Instance()->ReadStderr();
+    OpenvpnManager::Instance()->ReadStderr();
 }
 
 void Scr_Connect::ConnectStdout()
 {
-    Ctr_Openvpn::Instance()->ReadStdout();
+    OpenvpnManager::Instance()->ReadStdout();
 }
 
 void Scr_Connect::Pressed_Head()
@@ -461,7 +461,7 @@ void Scr_Connect::keyPressEvent(QKeyEvent * e)
 void Scr_Connect::PortDlgAction(int action)
 {
     if (QDialog::Accepted == action) {
-        Ctr_Openvpn::Instance()->StartPortLoop(WndManager::Instance()->IsCyclePort());
+        OpenvpnManager::Instance()->StartPortLoop(WndManager::Instance()->IsCyclePort());
     }
 }
 

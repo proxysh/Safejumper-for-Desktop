@@ -1,5 +1,5 @@
-#ifndef CRT_OPENVPN_H
-#define CRT_OPENVPN_H
+#ifndef OPENVPN_MANAGER_H
+#define OPENVPN_MANAGER_H
 
 #include <memory>
 #include <QProcess>
@@ -13,24 +13,21 @@ enum OvState {
     ovsDisconnected = 0,
     ovsConnecting,
     ovsConnected,
-
     ovsTotal
 };
 
 #define G_Delay_PortQuestion 60
 #define G_Delay_PortIteration 80
 
-#define G_Max_Reconnect 20
-
 // only 5 seconds for each TCP connection
 #define G_Delay_OneCheck 30
 #define G_Max_Reconnect 3
 
-class Ctr_Openvpn
+class OpenvpnManager
 {
 public:
-    ~Ctr_Openvpn();
-    static Ctr_Openvpn * Instance();
+    ~OpenvpnManager();
+    static OpenvpnManager * Instance();
     static void Cleanup()
     {
         if (_inst.get() != NULL) delete _inst.release();
@@ -40,7 +37,6 @@ public:
         return (_inst.get() != NULL);
     }
 
-    void Jump();
     void Start();
     void Start(size_t srv);
     void Cancel(const QString & msg);
@@ -85,8 +81,8 @@ public:
 #endif	// MONITOR_TOOL
 
 private:
-    Ctr_Openvpn();
-    static std::auto_ptr<Ctr_Openvpn> _inst;
+    OpenvpnManager();
+    static std::auto_ptr<OpenvpnManager> _inst;
 
     std::auto_ptr<QTemporaryFile> _paramFile;
     std::auto_ptr<QProcess> _process;
@@ -134,9 +130,9 @@ private:
     bool _PortDlgShown;
     uint _dtStart;
     bool _InPortLoop;
-    void StartImpl();
+    void launchOpenvpn();
     void ToNextPort();
     bool _IsPort;
 };
 
-#endif // CRT_OPENVPN_H
+#endif // OPENVPNMANAGER_H

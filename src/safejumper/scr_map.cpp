@@ -11,7 +11,7 @@
 #include "wndmanager.h"
 #include "authmanager.h"
 #include "scr_connect.h"
-#include "ctr_openvpn.h"
+#include "openvpnmanager.h"
 #include "log.h"
 #include "flag.h"
 #include "lvrowdelegate.h"
@@ -311,7 +311,7 @@ void Scr_Map::ToScr_Settings()
 
 void Scr_Map::Clicked_b_Connect()
 {
-    Ctr_Openvpn::Instance()->Start();
+    OpenvpnManager::Instance()->Start();
 }
 
 void Scr_Map::Clicked_b_Tmp()

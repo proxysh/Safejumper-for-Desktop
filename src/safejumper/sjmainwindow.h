@@ -10,7 +10,7 @@
 #include <QAbstractSocket>
 
 #include "acconnectto.h"
-#include "ctr_openvpn.h"
+#include "openvpnmanager.h"
 
 namespace Ui
 {
