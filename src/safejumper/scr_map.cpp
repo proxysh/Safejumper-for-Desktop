@@ -40,8 +40,8 @@ Scr_Map::Scr_Map(QWidget *parent) :
 #endif
     _default = ui->L_Mark->pos();
     /*
-    	ui->b_Tmp->move(0,0);
-    	ui->b_Tmp->resize(ui->L_Map->width(), ui->L_Map->height());
+        ui->b_Tmp->move(0,0);
+        ui->b_Tmp->resize(ui->L_Map->width(), ui->L_Map->height());
     */
     ui->e_x->hide();
     ui->e_y->hide();
@@ -80,9 +80,9 @@ void Scr_Map::SetRowStyle(bool show_nodes)
 void Scr_Map::Changed_xy()
 {
     /*
-    	int x = ui->e_x->text().toInt();
-    	int y = ui->e_y->text().toInt();
-    	ui->L_Mark->move(x, y);
+        int x = ui->e_x->text().toInt();
+        int y = ui->e_y->text().toInt();
+        ui->L_Mark->move(x, y);
     */
 }
 
@@ -172,26 +172,26 @@ void Scr_Map::RePopulateLocations(bool random)
         if (ixoldsrv > -1) {
             QString newname;
             /*			if (_IsShowNodes)
-            			{   // hubs -->> all
-            				newname = AuthManager::Instance()->GetAllServers().at(ixoldsrv).name;
-            				if (newname == oldsrv)
-            					toselect = ixoldsrv + 1;	// hub item in the same location
-            				else
-            				{
-            					int hubnewix = AuthManager::Instance()->SrvIxFromName(oldsrv);
-            					if (hubnewix > -1)
-            						toselect = hubnewix + 1;
-            					else
-            						// does not exist anymore
-            						;   // TODO: -2 closest
-            				}
-            			}
-            			else
-            			{   // all -->> hubs
-            				int newhubix = AuthManager::Instance()->HubIxFromSrvName(oldsrv);
-            				if (newhubix > -1)
-            					toselect = newhubix + 1;
-            			}
+                        {   // hubs -->> all
+                            newname = AuthManager::Instance()->GetAllServers().at(ixoldsrv).name;
+                            if (newname == oldsrv)
+                                toselect = ixoldsrv + 1;	// hub item in the same location
+                            else
+                            {
+                                int hubnewix = AuthManager::Instance()->SrvIxFromName(oldsrv);
+                                if (hubnewix > -1)
+                                    toselect = hubnewix + 1;
+                                else
+                                    // does not exist anymore
+                                    ;   // TODO: -2 closest
+                            }
+                        }
+                        else
+                        {   // all -->> hubs
+                            int newhubix = AuthManager::Instance()->HubIxFromSrvName(oldsrv);
+                            if (newhubix > -1)
+                                toselect = newhubix + 1;
+                        }
             */
             int new_row = -1;
             for (size_t k = 0; k < _srvIds.size(); ++k) {
@@ -277,9 +277,9 @@ int Scr_Map::CurrSrv()
         }
         /*
         if (_IsShowNodes)
-        	srv = ix - 1;   // TODO: -0 inadequate during repopulation during changes of number of servers
+            srv = ix - 1;   // TODO: -0 inadequate during repopulation during changes of number of servers
         else
-        	srv = AuthManager::Instance()->ServerIdFromHubId(ix - 1);
+            srv = AuthManager::Instance()->ServerIdFromHubId(ix - 1);
         */
     }
     return srv;
@@ -311,7 +311,7 @@ void Scr_Map::ToScr_Settings()
 
 void Scr_Map::Clicked_b_Connect()
 {
-    OpenvpnManager::Instance()->Start();
+    OpenvpnManager::Instance()->start();
 }
 
 void Scr_Map::Clicked_b_Tmp()

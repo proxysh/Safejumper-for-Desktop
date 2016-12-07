@@ -48,7 +48,6 @@ public:
     void StatusConnecting(const QString & word);
     void StatusConnected();
     void StatusDisconnected();
-    void StartTimer();
 
 public slots:
     void ConnectError(QProcess::ProcessError error);
@@ -57,8 +56,6 @@ public slots:
     void ConnectFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void ConnectStderr();
     void ConnectStdout();
-
-    void LogfileChanged(const QString & pfn);
 
     void PortDlgAction(int action);
 private:
@@ -72,8 +69,6 @@ private:
     void UpdProtocol();
     void SetEnabledButtons(bool enabled);
     void ModifyWndTitle(const QString & word);
-
-    std::auto_ptr<QTimer> _timer_state;		// check Ovpn state;
 
     bool _moving;
     void DwnlStrs();
@@ -100,7 +95,6 @@ private slots:
 
     void Pressed_Head();
 
-    void Timer_CheckState();
 protected:
     virtual void closeEvent(QCloseEvent * event);
     virtual void keyPressEvent(QKeyEvent * event);

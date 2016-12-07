@@ -4,7 +4,6 @@
 #include <QFontDatabase>
 
 #include "ui_sjmainwindow.h"
-#include "retina.h"
 #include "scr_connect.h"
 #include "scr_settings.h"
 #include "scr_logs.h"
@@ -119,8 +118,8 @@ void SjMainWindow::Timer_Constructed()
     Scr_Logs * l = Scr_Logs::Instance();
 
     if (l->IsExists())		// force construction
-        if (OpenvpnManager::Instance()->IsOvRunning())
-            OpenvpnManager::Instance()->KillRunningOV();
+        if (OpenvpnManager::Instance()->openvpnRunning())
+            OpenvpnManager::Instance()->killRunningOpenvpn();
 
     AuthManager::Instance()->DetermineOldIp();
 
@@ -158,7 +157,7 @@ SjMainWindow::~SjMainWindow()
     }
 
     AuthManager::Cleanup();
-    OpenvpnManager::Cleanup();
+    OpenvpnManager::cleanup();
     OsSpecific::Cleanup();
     Scr_Connect::Cleanup();
     Scr_Logs::Cleanup();
@@ -329,23 +328,23 @@ void SjMainWindow::AppFocusChanged(QWidget*, QWidget*)
 
 void SjMainWindow::updateStateIcon()
 {
-    OvState st = ovsDisconnected;
-    if (OpenvpnManager::IsExists())
-        st = OpenvpnManager::Instance()->State();
+    OpenvpnManager::OvState st = OpenvpnManager::ovsDisconnected;
+    if (OpenvpnManager::exists())
+        st = OpenvpnManager::Instance()->state();
     updateStateIcon(st);
 }
 
-void SjMainWindow::updateStateIcon(OvState st)
+void SjMainWindow::updateStateIcon(OpenvpnManager::OvState st)
 {
     QString ic;
     switch (st) {
-    case ovsDisconnected:
+    case OpenvpnManager::ovsDisconnected:
         ic = OsSpecific::Instance()->IconDisconnected();
         break;
-    case ovsConnecting:
+    case OpenvpnManager::ovsConnecting:
         ic = OsSpecific::Instance()->IconConnecting();
         break;
-    case ovsConnected:
+    case OpenvpnManager::ovsConnected:
         ic = OsSpecific::Instance()->IconConnected();
         break;
     default:
@@ -393,7 +392,7 @@ void SjMainWindow::ac_ConnectTo()
 void SjMainWindow::ac_Disconnect()
 {
     FixIcon();
-    OpenvpnManager::Instance()->Stop();
+    OpenvpnManager::Instance()->stop();
 }
 
 void SjMainWindow::ac_Status()
@@ -470,8 +469,8 @@ void SjMainWindow::ac_Close()
 void SjMainWindow::ac_Logout()
 {
     FixIcon();
-    if (OpenvpnManager::IsExists())
-        OpenvpnManager::Instance()->Stop();
+    if (OpenvpnManager::exists())
+        OpenvpnManager::Instance()->stop();
     if (AuthManager::IsExists())
         AuthManager::Instance()->DoLogout();
     WndManager::Instance()->ToPrimary();
@@ -498,8 +497,8 @@ void SjMainWindow::DoClose()
     int res = WndManager::Instance()->Confirmation("Would you like to shut Safejumper down?");
     if (res == QDialog::Accepted) {
         WndManager::Instance()->CloseAll();
-        if (OpenvpnManager::IsExists())
-            OpenvpnManager::Instance()->Stop();
+        if (OpenvpnManager::exists())
+            OpenvpnManager::Instance()->stop();
         g_pTheApp->quit();
     }
 }
@@ -552,7 +551,7 @@ void SjMainWindow::enableButtons(bool enabled)
 
 void SjMainWindow::DoConnect()
 {
-    OpenvpnManager::Instance()->Start();
+    OpenvpnManager::Instance()->start();
 }
 
 void SjMainWindow::Finished_ObfsName()
@@ -727,12 +726,12 @@ void SjMainWindow::on_optionsButton_clicked()
 void SjMainWindow::StatusConnecting()
 {
     DisableMenuItems(true);
-    updateStateIcon(ovsConnecting);
+    updateStateIcon(OpenvpnManager::ovsConnecting);
 }
 
 void SjMainWindow::StatusConnected()
 {
-    updateStateIcon(ovsConnected);
+    updateStateIcon(OpenvpnManager::ovsConnected);
     _ac_Jump->setEnabled(true);			//_ac_Jump->setIcon(QIcon(":/icons-tm/jump-red.png"));
     _ac_SwitchCountry->setEnabled(true);	//_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-red.png"));
 }
@@ -740,7 +739,7 @@ void SjMainWindow::StatusConnected()
 void SjMainWindow::StatusDisconnected()
 {
     DisableMenuItems(false);
-    updateStateIcon(ovsDisconnected);
+    updateStateIcon(OpenvpnManager::ovsDisconnected);
 }
 
 static void s_set_enabled(QAction * ac, bool enabled, const char * icon_word)
@@ -796,22 +795,6 @@ void SjMainWindow::Finished_Dns()
     AuthManager::Instance()->ProcessDnsXml();
 }
 
-void SjMainWindow::Soc_Error(QAbstractSocket::SocketError er)
-{
-    OpenvpnManager::Instance()->Soc_Error(er);
-}
-
-void SjMainWindow::Soc_ReadyRead()
-{
-//	log::logt("SjMainWindow::Soc_ReadyRead()");
-    OpenvpnManager::Instance()->Soc_ReadyRead();
-}
-
-void SjMainWindow::Timer_Reconnect()
-{
-    OpenvpnManager::Instance()->Timer_Reconnect();
-}
-
 void SjMainWindow::StartWifiWatcher()
 {
     if (NULL == _timer_wifi.get()) {
@@ -840,10 +823,10 @@ void SjMainWindow::Timer_WifiWatcher()
         if (!AuthManager::IsExists()) {
             stopped = true;
         } else {
-            if (!OpenvpnManager::IsExists()) {
+            if (!OpenvpnManager::exists()) {
                 stopped = true;
             } else {
-                if (ovsDisconnected == OpenvpnManager::Instance()->State())
+                if (OpenvpnManager::Instance()->state() == OpenvpnManager::ovsDisconnected)
                     stopped = true;
             }
         }
@@ -874,10 +857,10 @@ void SjMainWindow::BlockOnDisconnect()
             if (!AuthManager::Instance()->IsLoggedin()) {
                 doblock = true;
             } else {
-                if (!OpenvpnManager::IsExists()) {
+                if (!OpenvpnManager::exists()) {
                     doblock = true;
                 } else {
-                    if (OpenvpnManager::Instance()->State() == ovsDisconnected)
+                    if (OpenvpnManager::Instance()->state() == OpenvpnManager::ovsDisconnected)
                         doblock = true;
                     // otherwise unblocked and should be unblocked
                 }

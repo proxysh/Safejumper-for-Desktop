@@ -11,5 +11,5 @@ AcConnectto::~AcConnectto()
 
 void AcConnectto::ac_ConnectTo()
 {
-    OpenvpnManager::Instance()->Start(_srvid);
+    OpenvpnManager::Instance()->startWithServer(_srvid);
 }

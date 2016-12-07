@@ -16,7 +16,6 @@
 #endif	// MONITOR_TOOL
 
 #include "authmanager.h"
-#include "retina.h"
 #include "dlg_error.h"
 #include "log.h"
 

@@ -225,15 +225,6 @@ void Scr_Connect::closeEvent(QCloseEvent * event)
     WndManager::Instance()->HideThis(this);
 }
 
-void Scr_Connect::StartTimer()
-{
-    if (NULL != _timer_state.get())
-        _timer_state->stop();
-    _timer_state.reset(new QTimer(this));
-    connect(_timer_state.get(), SIGNAL(timeout()), this, SLOT(Timer_CheckState()));
-    _timer_state->start(1200);
-}
-
 static const char * gs_ConnGreen = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-green.png);\n}";
 static const char * gs_ConnRed = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-red.png);\n}";
 static const char * gs_Conn_Connecting = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-yellow.png);\n}";
@@ -295,17 +286,6 @@ void Scr_Connect::ModifyWndTitle(const QString & word)
     this->setWindowTitle(s);
 }
 
-void Scr_Connect::Timer_CheckState()
-{
-//	static int gs_count = 0;
-//	++gs_count;
-//	log::logt("in Scr_Connect::Timer_CheckState()");
-    OpenvpnManager::Instance()->CheckState();
-//	if (gs_count > 5)
-//		_timer_state->stop();
-//	log::logt("out Scr_Connect::Timer_CheckState()");
-}
-
 void Scr_Connect::SetEnabledButtons(bool enabled)
 {
     if (enabled) {
@@ -336,10 +316,6 @@ void Scr_Connect::StatusDisconnected()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_ConnRed);
     SetEnabledButtons(true);
-    if (NULL != _timer_state.get()) {
-        _timer_state->stop();
-        delete _timer_state.release();
-    }
     ModifyWndTitle("");
 }
 
@@ -380,7 +356,7 @@ void Scr_Connect::ShowPackageUrl()
 
 void Scr_Connect::Clicked_Connect()
 {
-    OpenvpnManager::Instance()->Start();		// handle visuals inside
+    OpenvpnManager::Instance()->start();		// handle visuals inside
 }
 
 void Scr_Connect::Clicked_Cancel()
@@ -388,7 +364,7 @@ void Scr_Connect::Clicked_Cancel()
 #ifdef MONITOR_TOOL
     Ctr_Openvpn::Instance()->StopLoop();
 #endif	// MONITOR_TOOL
-    OpenvpnManager::Instance()->Stop();
+    OpenvpnManager::Instance()->stop();
     SjMainWindow::Instance()->BlockOnDisconnect();
 }
 
@@ -418,31 +394,26 @@ void Scr_Connect::ConnectStarted()
     log::logt("Scr_Connect::ConnectStarted()");
 }
 
-void Scr_Connect::LogfileChanged(const QString & pfn)
-{
-    OpenvpnManager::Instance()->LogfileChanged(pfn);
-}
-
 void Scr_Connect::ConnectStateChanged(QProcess::ProcessState newState)
 {
     log::logt("Scr_Connect::ConnectStateChanged(): newState = " + QString::number(newState));
-    OpenvpnManager::Instance()->StateChanged(newState);
+    OpenvpnManager::Instance()->processStateChanged(newState);
 }
 
 void Scr_Connect::ConnectFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     log::logt("Scr_Connect::ConnectFinished(): exitCode = " + QString::number(exitCode) + " exitStatus = " +  QString::number(exitStatus));
-    OpenvpnManager::Instance()->Finished(exitCode, exitStatus);
+    OpenvpnManager::Instance()->processFinished(exitCode, exitStatus);
 }
 
 void Scr_Connect::ConnectStderr()
 {
-    OpenvpnManager::Instance()->ReadStderr();
+    OpenvpnManager::Instance()->logStderr();
 }
 
 void Scr_Connect::ConnectStdout()
 {
-    OpenvpnManager::Instance()->ReadStdout();
+    OpenvpnManager::Instance()->logStdout();
 }
 
 void Scr_Connect::Pressed_Head()
@@ -461,7 +432,7 @@ void Scr_Connect::keyPressEvent(QKeyEvent * e)
 void Scr_Connect::PortDlgAction(int action)
 {
     if (QDialog::Accepted == action) {
-        OpenvpnManager::Instance()->StartPortLoop(WndManager::Instance()->IsCyclePort());
+        OpenvpnManager::Instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
     }
 }
 

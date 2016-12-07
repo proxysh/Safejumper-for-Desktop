@@ -19,13 +19,31 @@
 #endif  // MONITOR_TOOL
 
 OpenvpnManager::OpenvpnManager()
-    : _state(ovsDisconnected)
-    , _pid(0)
+    : _state(ovsDisconnected),
+      _pid(0),
+      mSocket(0),
+      mStateTimer(NULL)
 {}
 
 OpenvpnManager::~OpenvpnManager()
 {
 
+}
+
+void OpenvpnManager::cleanup()
+{
+    if (_inst.get() != NULL)
+        delete _inst.release();
+}
+
+bool OpenvpnManager::exists()
+{
+    return (_inst.get() != NULL);
+}
+
+OpenvpnManager::OvState OpenvpnManager::state()
+{
+    return _state;
 }
 
 std::auto_ptr<OpenvpnManager> OpenvpnManager::_inst;
@@ -36,13 +54,13 @@ OpenvpnManager * OpenvpnManager::Instance()
     return _inst.get();
 }
 
-void OpenvpnManager::Start(size_t srv)
+void OpenvpnManager::startWithServer(size_t srv)
 {
     Scr_Map::Instance()->SetServer(srv);
-    Start();
+    start();
 }
 
-void OpenvpnManager::Start()
+void OpenvpnManager::start()
 {
     WndManager::Instance()->ClosePortDlg();
     _PortDlgShown = false;
@@ -69,12 +87,12 @@ void OpenvpnManager::launchOpenvpn()
         return;
 #endif  // MONITOR_TOOL
     {
-        Stop();
+        stop();
         // TODO: -1 cleanup
     }
 
     if (AuthManager::Instance()->IsLoggedin()) {
-        SetState(ovsConnecting);
+        setState(ovsConnecting);
         int enc = Setting::Encryption();
         bool obfs = enc == ENCRYPTION_OBFS_TOR;
         try {
@@ -116,7 +134,7 @@ void OpenvpnManager::launchOpenvpn()
             delete _watcher.release();
         }
 
-        RemoveSoc();
+        disconnectFromOpenvpnSocket();
 #ifndef NO_PARAMFILE
         QFile ff(PathHelper::Instance()->OpenvpnConfigPfn());
         if (!ff.open(QIODevice::WriteOnly)) {
@@ -201,7 +219,7 @@ void OpenvpnManager::launchOpenvpn()
 
         if (obfs) {
 // TODO: -0 OS
-            ff.write("socks-proxy-retry\n");
+            ff.write("connect-retry-max 1\n");
             ff.write("socks-proxy 127.0.0.1 1050\n");
             ff.write("route ");
             ff.write(Setting::Instance()->Server().toLatin1());
@@ -280,7 +298,6 @@ void OpenvpnManager::launchOpenvpn()
         if (!Setting::Instance()->Dns2().isEmpty())
             args << "--dhcp-option" << "DNS" << Setting::Instance()->Dns2();
 
-        Scr_Connect * sc = Scr_Connect::Instance();
         QString prog = PathHelper::Instance()->OpenvpnPathfilename();
         log::logt("Prog is: " + prog);
         QString params = args.join(' ');
@@ -335,9 +352,11 @@ void OpenvpnManager::launchOpenvpn()
 //#endif
 
             log::logt("before attaching to OpenVPN");
-            AttachMgmt();   // TODO: -1 wait for slow starting cases
+            connectToOpenvpnSocket();   // TODO: -1 wait for slow starting cases
+            setupFileWatcher();
             log::logt("after attaching to OpenVPN");
 #else
+            Scr_Connect * sc = Scr_Connect::Instance();
             _process.reset(new QProcess());
             sc->connect(_process.get(), SIGNAL(error(QProcess::ProcessError)), sc, SLOT(ConnectError(QProcess::ProcessError)));
             sc->connect(_process.get(), SIGNAL(started()), sc, SLOT(ConnectStarted()));
@@ -360,9 +379,9 @@ void OpenvpnManager::launchOpenvpn()
 
         if (ok) {
             _dtStart = QDateTime::currentDateTimeUtc().toTime_t();
-            Scr_Connect::Instance()->StartTimer();
+            startTimer();
         } else
-            SetState(ovsDisconnected);
+            setState(ovsDisconnected);
 
     }
     log::logt("exiting Ctr_Openvpn::StartImpl()");
@@ -384,32 +403,40 @@ void Ctr_Openvpn::ReconnectIfMax()
 }
 #endif  // MONITOR_TOOL
 
-void OpenvpnManager::CheckState()
+void OpenvpnManager::startTimer()
 {
-    if (IsOvRunning()) {
-        if (NULL != _soc.get()) {
-            if (_soc->isOpen() && _soc->isValid()) {
-                if (_soc->state() == QAbstractSocket::ConnectedState) {
-                    _soc->write("state\n");
-                    _soc->flush();
+    if (mStateTimer != NULL)
+        mStateTimer->stop();
+    delete mStateTimer;
+    mStateTimer = new QTimer(this);
+    connect(mStateTimer, SIGNAL(timeout()), this, SLOT(checkState()));
+    mStateTimer->start(1200);
+}
+
+void OpenvpnManager::checkState()
+{
+    if (openvpnRunning()) {
+        if (mSocket.get() == NULL) {
+            connectToOpenvpnSocket();
+        } else {
+            if (mSocket->isOpen() && mSocket->isValid()) {
+                if (mSocket->state() == QAbstractSocket::ConnectedState) {
+                    mSocket->write("state\n");
+                    mSocket->flush();
                 }
             }
-        } else {
-            // first time
-            InitWatcher();
-            AttachMgmt();
         }
     } else {
-        if (State() == ovsConnected) {
+        if (state() == ovsConnected) {
             // handle crush
             if (Setting::Instance()->IsReconnect())
-                Start();
+                start();
             else
-                SetState(ovsDisconnected);
+                setState(ovsDisconnected);
         }
     }
 
-    if (State() == ovsConnecting) {
+    if (state() == ovsConnecting) {
         uint d = QDateTime::currentDateTimeUtc().toTime_t() - _dtStart;
 #ifdef MONITOR_TOOL
         if (d > G_Delay_OneCheck)
@@ -424,13 +451,13 @@ void OpenvpnManager::CheckState()
 
         if (_InPortLoop) {
             if (d > G_Delay_PortIteration)
-                ToNextPort();
+                tryNextPort();
         }
 #endif  // MONITOR_TOOL
     }
 }
 
-void OpenvpnManager::LogfileChanged(const QString & pfn)
+void OpenvpnManager::openvpnLogfileChanged(const QString & pfn)
 {
     if (_processing || _err)
         return;
@@ -452,13 +479,13 @@ void OpenvpnManager::LogfileChanged(const QString & pfn)
             QString s1(ba);
             QStringList sl = s1.split('\n', QString::SkipEmptyParts);
             for (int k = 0; k < sl.size(); ++k)
-                ProcessOvLogLine(sl[k]);
+                parseOpenvpnLogLine(sl[k]);
         }
     }
     _processing = false;
 }
 
-void OpenvpnManager::ProcessOvLogLine(const QString & s)
+void OpenvpnManager::parseOpenvpnLogLine(const QString & s)
 {
     // TODO: -2 state machine
     if (s.contains("MANAGEMENT: CMD 'state'", Qt::CaseInsensitive)) {
@@ -466,20 +493,20 @@ void OpenvpnManager::ProcessOvLogLine(const QString & s)
     } else {
         log::logt("OpenVPNlogfile: " + s);
         if (s.contains("TCPv4_CLIENT link remote:", Qt::CaseInsensitive)) {
-            ExtractNewIp(s);
+            parseNewIp(s);
         } else {
             if (s.contains("Initialization Sequence Completed:", Qt::CaseInsensitive)) {
-                GotConnected(s);
+                gotConnected(s);
             } else {
                 if (s.contains("Opening utun (connect(AF_SYS_CONTROL)): Operation not permitted", Qt::CaseInsensitive)) {
-                    GotTunErr(s);
+                    gotTunErr(s);
                 }
             }
         }
     }
 }
 
-void OpenvpnManager::SetState(OvState st)
+void OpenvpnManager::setState(OvState st)
 {
     if (st != _state) {
         _state = st;
@@ -502,6 +529,11 @@ void OpenvpnManager::SetState(OvState st)
             break;
         }
         case ovsDisconnected: {
+            if (mStateTimer != NULL) {
+                mStateTimer->stop();
+                delete mStateTimer;
+                mStateTimer = NULL;
+            }
             WndManager::Instance()->HandleDisconnected();
 #ifdef MONITOR_TOOL
             ToNextPort();
@@ -514,9 +546,9 @@ void OpenvpnManager::SetState(OvState st)
     }
 }
 
-void OpenvpnManager::GotConnected(const QString & s)
+void OpenvpnManager::gotConnected(const QString & s)
 {
-    SetState(ovsConnected);
+    setState(ovsConnected);
     // extract IP
     //1432176303,CONNECTED,SUCCESS,10.14.0.6,91.219.237.159
     // 1460435651,CONNECTED,SUCCESS,10.200.1.6,85.236.153.236,465,192.168.58.170,35331
@@ -533,7 +565,7 @@ void OpenvpnManager::GotConnected(const QString & s)
     AuthManager::Instance()->ForwardPorts();
 }
 
-void OpenvpnManager::GotTunErr(const QString & s)
+void OpenvpnManager::gotTunErr(const QString & s)
 {
     if (!_tunerr && !_err) {
         _tunerr = true;
@@ -541,11 +573,11 @@ void OpenvpnManager::GotTunErr(const QString & s)
 #ifdef MONITOR_TOOL
         _err_msg = "err TUN";
 #endif  // MONITOR_TOOL
-        this->Cancel(s);
+        cancel(s);
     }
 }
 
-void OpenvpnManager::ExtractNewIp(const QString & s)
+void OpenvpnManager::parseNewIp(const QString & s)
 {
     // Tue May 1 03:50:58 2015 TCPv4_CLIENT link remote: [AF_INET]50.31.252.10:443
     int p0 = s.indexOf("TCPv4_CLIENT link remote");
@@ -568,9 +600,9 @@ void OpenvpnManager::ExtractNewIp(const QString & s)
     }
 }
 
-void OpenvpnManager::Cancel(const QString & msg)
+void OpenvpnManager::cancel(const QString & msg)
 {
-    Stop();
+    stop();
     SjMainWindow::Instance()->BlockOnDisconnect();
     WndManager::Instance()->ErrMsg(msg);
 }
@@ -583,34 +615,34 @@ void Ctr_Openvpn::Cancel()
     SetState(ovsDisconnected);
 }
 */
-void OpenvpnManager::Stop()
+void OpenvpnManager::stop()
 {
-    if (IsOvRunning()) {
-        if (NULL != _soc.get()) {
-            if (_soc->isOpen() && _soc->isValid()) {
-                if (_soc->state() != QAbstractSocket::ConnectedState) {
+    if (openvpnRunning()) {
+        if (mSocket.get() != NULL) {
+            if (mSocket->isOpen() && mSocket->isValid()) {
+                if (mSocket->state() != QAbstractSocket::ConnectedState) {
                     log::logt("Cannot send signal SIGTERM due to disconnected socket");
                 } else {
                     log::logt("signal SIGTERM");
                     //_soc->write("echo all\n");
                     //_soc->flush();
 
-                    _soc->write("signal SIGTERM\nexit\n");
-                    _soc->flush();
-                    _soc->close();
+                    mSocket->write("signal SIGTERM\nexit\n");
+                    mSocket->flush();
+                    mSocket->close();
                 }
             }
-            QObject * to = _soc.release();
+            QTcpSocket * to = mSocket.release();
             to->deleteLater();
 
-            for (int cn = 0; cn < 8 && IsOvRunning(); ++cn)
+            for (int cn = 0; cn < 8 && openvpnRunning(); ++cn)
                 QThread::msleep(100);       // just sleep now; without this delay it fails to jump
         }
 
         QThread::msleep(200);
-        RemoveProcess();
+        removeProcess();
 
-        if (IsOvRunning())
+        if (openvpnRunning())
             log::logt("Stop(): cannot soft stop OpenVPN process");
     }
     if (Setting::Encryption() == ENCRYPTION_OBFS_TOR)
@@ -618,7 +650,7 @@ void OpenvpnManager::Stop()
             // TODO: -0 stop
         }
 
-    SetState(ovsDisconnected);
+    setState(ovsDisconnected);
 }
 
 #ifdef MONITOR_TOOL
@@ -629,7 +661,7 @@ void Ctr_Openvpn::StopLoop()
 }
 #endif  // MONITOR_TOOL
 
-void OpenvpnManager::RemoveProcess()
+void OpenvpnManager::removeProcess()
 {
     if (_process.get() != NULL) {
         QProcess * t = _process.release();
@@ -637,23 +669,23 @@ void OpenvpnManager::RemoveProcess()
     }
 }
 
-void OpenvpnManager::ReadStderr()
+void OpenvpnManager::logStderr()
 {
     log::logt("ReadStderr(): " + _process->readAllStandardError());
 }
 
-void OpenvpnManager::ReadStdout()
+void OpenvpnManager::logStdout()
 {
     log::logt("ReadStdout(): " + _process->readAllStandardOutput());
 }
 
-void OpenvpnManager::StateChanged(QProcess::ProcessState st)
+void OpenvpnManager::processStateChanged(QProcess::ProcessState st)
 {
     // TODO: handle open vpn  process startup
-    InitWatcher();
+    setupFileWatcher();
 }
 
-void OpenvpnManager::Finished(int exitCode, QProcess::ExitStatus exitStatus)
+void OpenvpnManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     // OpenVpn crushed or just spawn a child and exit during startup
     if (exitCode != 0) { // TODO: -1 handle open vpn process startup
@@ -662,87 +694,82 @@ void OpenvpnManager::Finished(int exitCode, QProcess::ExitStatus exitStatus)
 
 // TODO: -0 delete or not? it spawns child and exits
 //      RemoveProcess();
-        if (!IsOvRunning())
-            SetState(ovsDisconnected);
+        if (!openvpnRunning())
+            setState(ovsDisconnected);
     } else {
-        InitWatcher();
-        AttachMgmt();
+        setupFileWatcher();
+        connectToOpenvpnSocket();
     }
 }
 
-void OpenvpnManager::InitWatcher()
+void OpenvpnManager::setupFileWatcher()
 {
     if (_watcher.get() == NULL) {
         QFile f(PathHelper::Instance()->OpenvpnLogPfn());
         if (f.exists()) {
             _lastpos = 0;       // OpenVpn will truncate
 
-            Scr_Connect * sc = Scr_Connect::Instance();
             _watcher.reset(new QFileSystemWatcher());
             _watcher->addPath(PathHelper::Instance()->OpenvpnLogPfn());
 
             log::logt("Monitoring " + PathHelper::Instance()->OpenvpnLogPfn());
-            sc->connect(_watcher.get(), SIGNAL(fileChanged(const QString &)), sc, SLOT(LogfileChanged(const QString &)));
+            connect(_watcher.get(), SIGNAL(fileChanged(const QString &)),
+                    this, SLOT(openvpnLogfileChanged(const QString &)));
         }
     }
 }
 
-#define LL(a) log::logt("LL" + QString::number(__LINE__) + " "+  QString(a) )
-
-void OpenvpnManager::RemoveSoc()
+void OpenvpnManager::disconnectFromOpenvpnSocket()
 {
-    log::logt("in Ctr_Openvpn::RemoveSoc()");
+    log::logt("disconnecting from openvpn management socket");
 
 
-    if (NULL != _soc.get()) {
+    if (mSocket.get() != NULL) {
+        disconnect(mSocket.get(), SIGNAL(error(QAbstractSocket::SocketError)),
+                   this, SLOT(socketError(QAbstractSocket::SocketError)));
+        disconnect(mSocket.get(), SIGNAL(readyRead()),
+                   this, SLOT(socketReadyRead()));
 
-        SjMainWindow * sc = SjMainWindow::Instance();
-
-        sc->disconnect(_soc.get(), SIGNAL(error(QAbstractSocket::SocketError)), sc, SLOT(Soc_Error(QAbstractSocket::SocketError)));
-
-        sc->disconnect(_soc.get(), SIGNAL(readyRead()), sc, SLOT(Soc_ReadyRead()));
-
-        _soc->abort();
-
-        _soc.release()->deleteLater();
-
+        mSocket->abort();
+        mSocket.release()->deleteLater();
     }
-    log::logt("out Ctr_Openvpn::RemoveSoc()");
+    log::logt("done disconnecting from openvpn management socket");
 }
 
-void OpenvpnManager::AttachMgmt()
+void OpenvpnManager::connectToOpenvpnSocket()
 {
-    log::logt("in Ctr_Openvpn::AttachMgmt()");
-    RemoveSoc();
-    _soc.reset(new QTcpSocket());
-    SjMainWindow * sc = SjMainWindow::Instance();
-    sc->connect(_soc.get(), SIGNAL(error(QAbstractSocket::SocketError)), sc, SLOT(Soc_Error(QAbstractSocket::SocketError)));
-    sc->connect(_soc.get(), SIGNAL(readyRead()), sc, SLOT(Soc_ReadyRead()));
-    _soc->connectToHost(_LocalAddr, _LocalPort);
-    log::logt("out Ctr_Openvpn::AttachMgmt()");
+    log::logt("connecting to openvpn management socket");
+    disconnectFromOpenvpnSocket();
+    mSocket.reset(new QTcpSocket());
+    connect(mSocket.get(), SIGNAL(error(QAbstractSocket::SocketError)),
+            this, SLOT(socketError(QAbstractSocket::SocketError)));
+    connect(mSocket.get(), SIGNAL(readyRead()),
+            this, SLOT(socketReadyRead()));
+    mSocket->connectToHost(_LocalAddr, _LocalPort);
+    log::logt("done connecting to openvpn management socket");
 }
 
-void OpenvpnManager::Soc_Error(QAbstractSocket::SocketError er)
+void OpenvpnManager::socketError(QAbstractSocket::SocketError error)
 {
-    log::logt("Error connecting to OpenVPN management socket");
-    if (NULL != _soc.get())
-        _soc.release()->deleteLater();
+    log::logt("Error connecting to OpenVPN management socket" + QString::number(error));
+    if (NULL != mSocket.get())
+        mSocket.release()->deleteLater();
 }
 
-void OpenvpnManager::Soc_ReadyRead()
+void OpenvpnManager::socketReadyRead()
 {
 //  log::logt("Soc_ReadyRead()");
-    if (!_soc->canReadLine())
+    if (!mSocket->canReadLine())
         return;
-    QString s = _soc->readAll();
-    _soc->flush();
+    QString s = mSocket->readAll();
+    mSocket->flush();
 
     QStringList sl = s.split('\n', QString::SkipEmptyParts);
     for (int k = 0; k < sl.size(); ++k)
-        ProcessLine(sl[k].trimmed());
+        parseSocketLine(sl[k].trimmed());
 }
 
-void OpenvpnManager::ProcessLine(QString s)
+void OpenvpnManager::parseSocketLine(QString s)
 {
     // TODO: -1 hash_map
     // TODO: -2 state machine
@@ -752,7 +779,7 @@ void OpenvpnManager::ProcessLine(QString s)
         int p = s.indexOf(':');
         if (p > -1) {
             QString word = s.mid(1, p - 1);
-            ProcessRtWord(word, s);
+            parseSocketQueryWord(word, s);
         } else {
             // without :
             // just ignore
@@ -780,11 +807,11 @@ void OpenvpnManager::ProcessLine(QString s)
                     }
                 }
                 if (!err)
-                    ProcessStateWord(word, s);
+                    parseSocketStateWord(word, s);
             } else {
                 // TODO: -2
                 word = s;
-                ProcessPlainWord(word, s);
+                parseSocketPlainWord(word, s);
             }
         } else {
             int p = s.indexOf(':');
@@ -794,12 +821,12 @@ void OpenvpnManager::ProcessLine(QString s)
             } else {
                 word = s;
             }
-            ProcessPlainWord(word, s);
+            parseSocketPlainWord(word, s);
         }
     }
 }
 
-void OpenvpnManager::ProcessStateWord(const QString & word, const QString & s)
+void OpenvpnManager::parseSocketStateWord(const QString & word, const QString & s)
 {
     // TODO: -1 hash_map
     // TODO: -2 state machine
@@ -812,73 +839,55 @@ void OpenvpnManager::ProcessStateWord(const QString & word, const QString & s)
     }
     if (word.compare("CONNECTED", Qt::CaseInsensitive) == 0) {
         if (isnew)
-            GotConnected(s);
+            gotConnected(s);
         else {
 //          log::logt("isnew = false; word = " + word + " _prev_st_word = " + _prev_st_word);
         }
-    } else {
-        if (word.compare("CONNECTING", Qt::CaseInsensitive) == 0) {
-            SetState(ovsConnecting);
-            WndManager::Instance()->HandleState(word);
-        } else {
-            if (word.compare("WAIT", Qt::CaseInsensitive) == 0) {
-                WndManager::Instance()->HandleState(word);
+    } else if (word.compare("CONNECTING", Qt::CaseInsensitive) == 0) {
+        setState(ovsConnecting);
+        WndManager::Instance()->HandleState(word);
+    } else if (word.compare("WAIT", Qt::CaseInsensitive) == 0) {
+        WndManager::Instance()->HandleState(word);
 //  } else { if (word.compare("AUTH", Qt::CaseInsensitive) == 0) {
 //      WndManager::Instance()->HandleState(word);
-            } else {
-                if (word.compare("EXITING", Qt::CaseInsensitive) == 0) {
-                    if (Setting::Instance()->IsReconnect()) {
-                        // initiate autoreconnect
-                        ReconnectTimer();
-                        WndManager::Instance()->HandleConnecting();
-                    } else {
-                        //WndManager::Instance()->HandleDisconnected();
-                        SetState(ovsDisconnected);
-                    }
-                } else {
-                    if (word.compare("RECONNECTING", Qt::CaseInsensitive) == 0) {
-                        SetState(ovsConnecting);
-                        WndManager::Instance()->HandleState(word);
-#ifdef MONITOR_TOOL
-                        ReconnectIfMax();
-#endif  // MONITOR_TOOL
-                    } else {
-                        if (word.compare("AUTH", Qt::CaseInsensitive) == 0) {
-                            SetState(ovsConnecting);
-                            WndManager::Instance()->HandleState(word);
-                        } else {
-                            if (word.compare("GET_CONFIG", Qt::CaseInsensitive) == 0) {
-                                WndManager::Instance()->HandleState(word);
-                            } else {
-                                if (word.compare("ASSIGN_IP", Qt::CaseInsensitive) == 0) {
-                                    SetState(ovsConnecting);
-                                    WndManager::Instance()->HandleState(word);
-                                } else {
-                                    if (word.compare("TCP_CONNECT'", Qt::CaseInsensitive) == 0) {
-                                        WndManager::Instance()->HandleState(word);
-                                    } else {
-                                        if (word.compare("RESOLVE", Qt::CaseInsensitive) == 0) {
-                                            WndManager::Instance()->HandleState(word);
-                                            if (OsSpecific::Instance()->IsNetdown()) {
-                                                Stop();
-                                                WndManager::Instance()->ErrMsg("Turn Internet connection on manually, please");
-                                            }
-                                        } else {
-                                            WndManager::Instance()->HandleState(word);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    } else if (word.compare("EXITING", Qt::CaseInsensitive) == 0) {
+        if (Setting::Instance()->IsReconnect()) {
+            // initiate autoreconnect
+            startReconnectTimer();
+            WndManager::Instance()->HandleConnecting();
+        } else {
+            //WndManager::Instance()->HandleDisconnected();
+            setState(ovsDisconnected);
         }
+    } else if (word.compare("RECONNECTING", Qt::CaseInsensitive) == 0) {
+        setState(ovsConnecting);
+        WndManager::Instance()->HandleState(word);
+#ifdef MONITOR_TOOL
+        ReconnectIfMax();
+#endif  // MONITOR_TOOL
+    } else if (word.compare("AUTH", Qt::CaseInsensitive) == 0) {
+        setState(ovsConnecting);
+        WndManager::Instance()->HandleState(word);
+    } else if (word.compare("GET_CONFIG", Qt::CaseInsensitive) == 0) {
+        WndManager::Instance()->HandleState(word);
+    } else if (word.compare("ASSIGN_IP", Qt::CaseInsensitive) == 0) {
+        setState(ovsConnecting);
+        WndManager::Instance()->HandleState(word);
+    } else if (word.compare("TCP_CONNECT'", Qt::CaseInsensitive) == 0) {
+        WndManager::Instance()->HandleState(word);
+    } else if (word.compare("RESOLVE", Qt::CaseInsensitive) == 0) {
+        WndManager::Instance()->HandleState(word);
+        if (OsSpecific::Instance()->IsNetdown()) {
+            stop();
+            WndManager::Instance()->ErrMsg("Turn Internet connection on manually, please");
+        }
+    } else {
+        WndManager::Instance()->HandleState(word);
     }
     _prev_st_word = word;
 }
 
-void OpenvpnManager::ProcessPlainWord(const QString & word, const QString & s)
+void OpenvpnManager::parseSocketPlainWord(const QString & word, const QString & s)
 {
     // TODO: -1 hash_map
     // TODO: -2 state machine
@@ -898,7 +907,7 @@ void OpenvpnManager::ProcessPlainWord(const QString & word, const QString & s)
     }
 }
 
-void OpenvpnManager::ProcessRtWord(const QString & word, const QString & s)
+void OpenvpnManager::parseSocketQueryWord(const QString & word, const QString & s)
 {
     // TODO: -1 hash_map
     // TODO: -2 state machine
@@ -909,64 +918,58 @@ void OpenvpnManager::ProcessRtWord(const QString & word, const QString & s)
     if (word.compare("INFO", Qt::CaseInsensitive) == 0) {
         // INFO:
         // just ignore
-    } else {
-        if (word.compare("HOLD", Qt::CaseInsensitive) == 0) {
-            if (s.indexOf("hold release") > -1) {
-                log::logt("hold off");
-                _soc->write("hold off\n");
-                log::logt("hold release");
-                _soc->write("hold release\n");
-                _soc->flush();
-            }
+    } else if (word.compare("HOLD", Qt::CaseInsensitive) == 0) {
+        if (s.indexOf("hold release") > -1) {
+            log::logt("hold off");
+            mSocket->write("hold off\n");
+            log::logt("hold release");
+            mSocket->write("hold release\n");
+            mSocket->flush();
+        }
+    } else if (word.compare("PASSWORD", Qt::CaseInsensitive) == 0) {
+        if (s.indexOf("Need 'Auth' username/password") > -1) {
+            log::logt("sending vpn login+password");
+            QString u1 = "username \"Auth\" \"" + EscapePsw(AuthManager::Instance()->VpnName()) + "\"\n";
+            QString p1 = "password \"Auth\" \"" + EscapePsw(AuthManager::Instance()->VpnPsw()) + "\"\n";
+            mSocket->write(u1.toLatin1());
+            mSocket->write(p1.toLatin1());
+            mSocket->flush();
         } else {
-            if (word.compare("PASSWORD", Qt::CaseInsensitive) == 0) {
-                if (s.indexOf("Need 'Auth' username/password") > -1) {
-                    log::logt("sending vpn login+password");
-                    QString u1 = "username \"Auth\" \"" + EscapePsw(AuthManager::Instance()->VpnName()) + "\"\n";
-                    QString p1 = "password \"Auth\" \"" + EscapePsw(AuthManager::Instance()->VpnPsw()) + "\"\n";
-                    _soc->write(u1.toLatin1());
-                    _soc->write(p1.toLatin1());
-                    _soc->flush();
-                } else {
-                    int p = s.indexOf(':');
-                    if (s.indexOf("Verification Failed", p, Qt::CaseInsensitive) > -1) {
-                        _err = true;
+            int p = s.indexOf(':');
+            if (s.indexOf("Verification Failed", p, Qt::CaseInsensitive) > -1) {
+                _err = true;
 #ifdef MONITOR_TOOL
-                        _err_msg = "err auth";
+                _err_msg = "err auth";
 #endif// MONITOR_TOOL
-                        // OpenVpn exiting
-                        ShowErrMsgAndCleanup(s.mid(p + 1));
-                    }
-                }
-            } else {
-                if (word.compare("SUCCES", Qt::CaseInsensitive) == 0) {
-                    ;
-                } else {
-                    if (word.compare("FATAL", Qt::CaseInsensitive) == 0) {
-                        _err = true;
-#ifdef MONITOR_TOOL
-                        _err_msg = "err fatal";
-#endif  // MONITOR_TOOL
-                        int p = s.indexOf(':');
-                        QString msg = s.mid(p + 1);
-                        this->Cancel(msg);
-                    }
-                }
+                // OpenVpn exiting
+                showErrorMessageCleanup(s.mid(p + 1));
             }
+        }
+    } else if (word.compare("SUCCES", Qt::CaseInsensitive) == 0) {
+        ;
+    } else {
+        if (word.compare("FATAL", Qt::CaseInsensitive) == 0) {
+            _err = true;
+#ifdef MONITOR_TOOL
+            _err_msg = "err fatal";
+#endif  // MONITOR_TOOL
+            int p = s.indexOf(':');
+            QString msg = s.mid(p + 1);
+            cancel(msg);
         }
     }
 }
 
-void OpenvpnManager::ShowErrMsgAndCleanup(QString msg)
+void OpenvpnManager::showErrorMessageCleanup(QString msg)
 {
-    RemoveSoc();
-    RemoveProcess();
+    disconnectFromOpenvpnSocket();
+    removeProcess();
 
-    SetState(ovsDisconnected);
+    setState(ovsDisconnected);
     WndManager::Instance()->ErrMsg(msg);
 }
 
-bool OpenvpnManager::IsOvRunning()
+bool OpenvpnManager::openvpnRunning()
 {
     bool is = false;
 
@@ -979,8 +982,8 @@ bool OpenvpnManager::IsOvRunning()
     }
 
     if (!is)
-        if (NULL != _soc.get()) {
-            if (_soc->isOpen()) {
+        if (NULL != mSocket.get()) {
+            if (mSocket->isOpen()) {
                 is = true;
             }
         }
@@ -1056,18 +1059,18 @@ bool OpenvpnManager::IsOvRunning()
     return is;
 }
 
-void OpenvpnManager::KillRunningOV()
+void OpenvpnManager::killRunningOpenvpn()
 {
     log::logt(QString("KillRunningOV() enter"));
-    if (IsOvRunning()) {
-        AttachMgmt();
-        if (_soc.get())
-            for (int count = 0; count < 8 && !_soc->isOpen() && !_soc->isValid(); ++count)
+    if (openvpnRunning()) {
+        connectToOpenvpnSocket();
+        if (mSocket.get())
+            for (int count = 0; count < 8 && !mSocket->isOpen() && !mSocket->isValid(); ++count)
                 QThread::msleep(100);       // HACK: -0 just timeout instead of waiting for connection;
 
-        Stop();     // soft stop
+        stop();     // soft stop
 
-        if (IsOvRunning()) {
+        if (openvpnRunning()) {
             // TODO: -0 kill -9 prog
 
             if (_pid > 0) {
@@ -1085,20 +1088,20 @@ void OpenvpnManager::KillRunningOV()
     log::logt(QString("KillRunningOV() exit"));
 }
 
-void OpenvpnManager::StartPortLoop(bool port)
+void OpenvpnManager::startPortLoop(bool port)
 {
-    if (State() != ovsConnected) {      // if not connected already during this call
+    if (state() != ovsConnected) {      // if not connected already during this call
         _InPortLoop = true;
 //      uint dt = QDateTime::currentDateTimeUtc().toTime_t();
 //      if ((dt - _dtStart) > G_Delay_PortQuestion)
         {
             _IsPort = port;
-            ToNextPort();
+            tryNextPort();
         }
     }
 }
 
-void OpenvpnManager::ToNextPort()
+void OpenvpnManager::tryNextPort()
 {
     _dtStart = QDateTime::currentDateTimeUtc().toTime_t();      // force start interval - prevent double port change
 #ifdef MONITOR_TOOL
@@ -1120,19 +1123,19 @@ void OpenvpnManager::ToNextPort()
 #endif  // MONITOR_TOOL
 }
 
-void OpenvpnManager::ReconnectTimer()
+void OpenvpnManager::startReconnectTimer()
 {
-    QTimer::singleShot(1000, SjMainWindow::Instance(), SLOT(Timer_Reconnect()));
+    QTimer::singleShot(1000, this, SLOT(reconnectTimeout()));
 }
 
-void OpenvpnManager::Timer_Reconnect()
+void OpenvpnManager::reconnectTimeout()
 {
     ++_reconnect_attempt;
-    if (IsOvRunning()) {
+    if (openvpnRunning()) {
         if (_reconnect_attempt < G_Max_Reconnect)
-            QTimer::singleShot(200, SjMainWindow::Instance(), SLOT(Timer_Reconnect()));
+            QTimer::singleShot(200, this, SLOT(reconnectTimeout()));
         else {
-            Stop();
+            stop();
             launchOpenvpn();    // force stop then start
         }
     } else {

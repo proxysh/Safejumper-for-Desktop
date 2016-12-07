@@ -56,9 +56,6 @@ public slots:
     void Finished_EccName();
 //	void Finished_EccxorName();
 
-    void Soc_Error(QAbstractSocket::SocketError er);
-    void Soc_ReadyRead();
-
     // connect or login Src depending on auth status
     void ToScr_Primary();
 
@@ -90,7 +87,6 @@ private slots:
     void updateStateIcon();
     void Icon_Activated(QSystemTrayIcon::ActivationReason reason);
     void Timer_Constructed();
-    void Timer_Reconnect();
     void Timer_WifiWatcher();
 
 private:
@@ -134,7 +130,7 @@ private:
 
     void FixIcon();
     bool _fixed;
-    void updateStateIcon(OvState st);
+    void updateStateIcon(OpenvpnManager::OvState st);
     unsigned int _activatedcount;
     std::auto_ptr<QTimer> _timer_icon;
     void DisconnectIconWatcher();

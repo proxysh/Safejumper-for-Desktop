@@ -2,19 +2,11 @@
 #define OPENVPN_MANAGER_H
 
 #include <memory>
+#include <QObject>
 #include <QProcess>
 #include <QTcpSocket>
 #include <QFileSystemWatcher>
 #include <QTemporaryFile>
-
-#include "confirmationdialog.h"
-
-enum OvState {
-    ovsDisconnected = 0,
-    ovsConnecting,
-    ovsConnected,
-    ovsTotal
-};
 
 #define G_Delay_PortQuestion 60
 #define G_Delay_PortIteration 80
@@ -23,47 +15,40 @@ enum OvState {
 #define G_Delay_OneCheck 30
 #define G_Max_Reconnect 3
 
-class OpenvpnManager
+class QTimer;
+
+class OpenvpnManager: public QObject
 {
+    Q_OBJECT
 public:
+    enum OvState {
+        ovsDisconnected = 0,
+        ovsConnecting,
+        ovsConnected,
+        ovsTotal
+    };
+
     ~OpenvpnManager();
     static OpenvpnManager * Instance();
-    static void Cleanup()
-    {
-        if (_inst.get() != NULL) delete _inst.release();
-    }
-    static bool IsExists()
-    {
-        return (_inst.get() != NULL);
-    }
+    static void cleanup();
+    static bool exists();
 
-    void Start();
-    void Start(size_t srv);
-    void Cancel(const QString & msg);
-    void Stop();			// normal stop of executed via this process
+    void start();
+    void startWithServer(size_t srv);
+    void cancel(const QString & msg);
+    void stop();			// normal stop of executed via this process
+    void killRunningOpenvpn();		// kill process executed previously: connect to it first, if fails: kill -9
 
-    bool IsOvRunning();
+    bool openvpnRunning();
 
-    void ReadStderr();
-    void ReadStdout();
-    void StateChanged(QProcess::ProcessState st);
-    void Finished(int exitCode, QProcess::ExitStatus exitStatus);
+    void logStderr();
+    void logStdout();
+    void processStateChanged(QProcess::ProcessState st);
+    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
-    void Soc_Error(QAbstractSocket::SocketError er);
-    void Soc_ReadyRead();
+    OvState state();
 
-    void LogfileChanged(const QString & pfn);		// OpenVpn log file
-    void CheckState();		// timer calls it
-
-    OvState State()
-    {
-        return _state;
-    }
-
-    void KillRunningOV();		// kill process executed previously: connect to it first, if fails: kill -9
-
-    void Timer_Reconnect();
-    void StartPortLoop(bool port);		// true - cycle ports; false - cycle nodes
+    void startPortLoop(bool port);		// true - cycle ports; false - cycle nodes
 #ifdef MONITOR_TOOL
     void StopLoop();
     bool IsErr()
@@ -80,46 +65,59 @@ public:
     }
 #endif	// MONITOR_TOOL
 
+private slots:
+    void socketError(QAbstractSocket::SocketError error);
+    void socketReadyRead();
+    void reconnectTimeout();
+    void openvpnLogfileChanged(const QString & pfn);		// OpenVpn log file
+    void checkState();		// timer calls it
+
 private:
     OpenvpnManager();
+    void connectToOpenvpnSocket();	// attach to OpenVPN management socket
+    void disconnectFromOpenvpnSocket();
+    void removeProcess();
+    void setupFileWatcher();
+    void parseOpenvpnLogLine(const QString & s);
+    void parseNewIp(const QString & s);
+    void gotConnected(const QString & s);
+    void gotTunErr(const QString & s);
+    void showErrorMessageCleanup(QString msg);
+    void launchOpenvpn();
+    void tryNextPort();
+
+    void parseSocketLine(QString s);
+    void parseSocketQueryWord(const QString & word, const QString & s);
+    void parseSocketPlainWord(const QString & word, const QString & s);
+    void parseSocketStateWord(const QString & word, const QString & s);
+
+    void startTimer();
+    void startReconnectTimer();
+
+    void setState(OvState st);
+
     static std::auto_ptr<OpenvpnManager> _inst;
 
+    std::auto_ptr<QFileSystemWatcher> _watcher;	// OpenVpn log file
     std::auto_ptr<QTemporaryFile> _paramFile;
     std::auto_ptr<QProcess> _process;
-    void RemoveProcess();
+    OvState _state;
+    QTimer *mStateTimer;
     int _pid;		// for running process (run safejumper after crash)
-    void AttachMgmt();	// attach to OpenVPN management socket
-    std::auto_ptr<QTcpSocket> _soc;
-    void RemoveSoc();
+    std::auto_ptr<QTcpSocket> mSocket;
     QString _LocalAddr;	// remember at moment of OpenVPN launch - do not depend on user changes
     quint16 _LocalPort;
 
-    std::auto_ptr<QFileSystemWatcher> _watcher;	// OpenVpn log file
     qint64 _lastpos;
-    void InitWatcher();
     bool _processing;
-    void ProcessOvLogLine(const QString & s);
-    void ExtractNewIp(const QString & s);
-    void GotConnected(const QString & s);
-    void GotTunErr(const QString & s);
     bool _tunerr;
     bool _err;
 #ifdef MONITOR_TOOL
     QString _err_msg;
 #endif// MONITOR_TOOL
 
-
-    void ProcessLine(QString s);
-    void ProcessRtWord(const QString & word, const QString & s);
-    void ProcessPlainWord(const QString & word, const QString & s);
-    void ProcessStateWord(const QString & word, const QString & s);
     QString _prev_st_word;
-    void ShowErrMsgAndCleanup(QString msg);
 
-    OvState _state;
-    void SetState(OvState st);
-
-    void ReconnectTimer();
     int _reconnect_attempt;
 #ifdef MONITOR_TOOL
     int _attempt;
@@ -130,8 +128,6 @@ private:
     bool _PortDlgShown;
     uint _dtStart;
     bool _InPortLoop;
-    void launchOpenvpn();
-    void ToNextPort();
     bool _IsPort;
 };
 

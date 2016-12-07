@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT	   += network xml core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT	   += network xml core gui widgets
 
 TARGET = safejumper
 TEMPLATE = app
@@ -23,9 +21,6 @@ macx: {
     INSTALLS = target resources
         ICON = Safejumper.icns
 }
-
-#	DEFINES += MONITOR_TOOL
-#	DEFINES += Q_OS_REDHAT
 
 win32: {
   WINSDK_DIR = C:/Program Files/Microsoft SDKs/Windows/v7.1

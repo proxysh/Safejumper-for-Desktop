@@ -1138,7 +1138,7 @@ void AuthManager::Jump()
     if (srv > -1) {
 // TODO: -0             SetNewIp("");
         Scr_Map::Instance()->SetServer(srv);
-        OpenvpnManager::Instance()->Start();               // contains stop
+        OpenvpnManager::Instance()->start();               // contains stop
     }
 }
 
