@@ -4,7 +4,7 @@ install safejumper.icns safejumper/Safejumper.app/Contents/Resources/
 cp -R Resources/* safejumper/Safejumper.app/Contents/Resources/
 /usr/libexec/PlistBuddy -c "Set :CFBundleIconFile safejumper.icns" safejumper/Safejumper.app/Contents/Info.plist
 # macdeployqt Safejumper.app -verbose=1 
-macdeployqt safejumper/Safejumper.app -verbose=1 -codesign="Developer ID Application: Three Monkeys International Inc."
+macdeployqt safejumper/Safejumper.app -verbose=1 -codesign="Developer ID Application: Three Monkeys International Inc." $1
 codesign -f -o library -s "Developer ID Application: Three Monkeys International Inc." safejumper/Safejumper.app
 sh scripts/package.sh 
 hdiutil mount safejumper.dmg

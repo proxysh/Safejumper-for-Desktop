@@ -74,7 +74,6 @@ void OpenvpnManager::start()
 #endif  // MONITOR_TOOL
 
     launchOpenvpn();
-    log::logt("out Ctr_Openvpn::Start()");
 #ifdef MONITOR_TOOL
     WndManager::Instance()->ShowTable();
 #endif
@@ -384,12 +383,12 @@ void OpenvpnManager::launchOpenvpn()
             setState(ovsDisconnected);
 
     }
-    log::logt("exiting Ctr_Openvpn::StartImpl()");
+    log::logt("launchopenvpn done");
 #undef NO_PARAMFILE
 }
 
 #ifdef MONITOR_TOOL
-void Ctr_Openvpn::ReconnectIfMax()
+void OpenvpnManager::ReconnectIfMax()
 {
     ++_attempt;
     if (_attempt > G_Max_Reconnect) {
@@ -607,14 +606,6 @@ void OpenvpnManager::cancel(const QString & msg)
     WndManager::Instance()->ErrMsg(msg);
 }
 
-/*
-void Ctr_Openvpn::Cancel()
-{
-    if (IsOvRunning())
-        Stop();
-    SetState(ovsDisconnected);
-}
-*/
 void OpenvpnManager::stop()
 {
     if (openvpnRunning()) {
@@ -632,8 +623,7 @@ void OpenvpnManager::stop()
                     mSocket->close();
                 }
             }
-            QTcpSocket * to = mSocket.release();
-            to->deleteLater();
+            disconnectFromOpenvpnSocket();
 
             for (int cn = 0; cn < 8 && openvpnRunning(); ++cn)
                 QThread::msleep(100);       // just sleep now; without this delay it fails to jump
@@ -645,6 +635,11 @@ void OpenvpnManager::stop()
         if (openvpnRunning())
             log::logt("Stop(): cannot soft stop OpenVPN process");
     }
+
+    // This could be the case if openvpn stopped but the socket is still open
+    if (mSocket.get() != NULL)
+        disconnectFromOpenvpnSocket();
+
     if (OsSpecific::Instance()->IsObfsRunning()) {
         OsSpecific::Instance()->StopObfs();
     }
@@ -653,7 +648,7 @@ void OpenvpnManager::stop()
 }
 
 #ifdef MONITOR_TOOL
-void Ctr_Openvpn::StopLoop()
+void OpenvpnManager::StopLoop()
 {
     _StopLoop = true;
     Stop();
@@ -721,7 +716,6 @@ void OpenvpnManager::setupFileWatcher()
 void OpenvpnManager::disconnectFromOpenvpnSocket()
 {
     log::logt("disconnecting from openvpn management socket");
-
 
     if (mSocket.get() != NULL) {
         disconnect(mSocket.get(), SIGNAL(error(QAbstractSocket::SocketError)),
@@ -904,6 +898,7 @@ void OpenvpnManager::parseSocketPlainWord(const QString & word, const QString & 
             ;
         } else {
             if (word.compare("ERROR", Qt::CaseInsensitive) == 0 || word.compare("FATAL", Qt::CaseInsensitive) == 0) {
+                disconnectFromOpenvpnSocket();
                 SjMainWindow::Instance()->BlockOnDisconnect();
                 WndManager::Instance()->ErrMsg(s);
             }
