@@ -5,7 +5,7 @@ VERSION=$1
 scripts/pkg-dmg \
     --verbosity 2 \
     --volname "safejumper" \
-    --source Safejumper.app \
+    --source safejumper/Safejumper.app \
     --sourcefile \
     --format UDRW \
     --target safejumper.dmg \

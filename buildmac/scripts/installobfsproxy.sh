@@ -1,5 +1,6 @@
 #!/bin/bash
-sudo pip install virtualenv
+sudo -H pip install virtualenv
 virtualenv --always-copy env
+virtualenv --relocatable env
 source env/bin/activate
 pip install obfsproxy

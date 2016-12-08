@@ -645,10 +645,9 @@ void OpenvpnManager::stop()
         if (openvpnRunning())
             log::logt("Stop(): cannot soft stop OpenVPN process");
     }
-    if (Setting::Encryption() == ENCRYPTION_OBFS_TOR)
-        if (OsSpecific::Instance()->IsObfsRunning()) {
-            // TODO: -0 stop
-        }
+    if (OsSpecific::Instance()->IsObfsRunning()) {
+        OsSpecific::Instance()->StopObfs();
+    }
 
     setState(ovsDisconnected);
 }
@@ -751,6 +750,11 @@ void OpenvpnManager::connectToOpenvpnSocket()
 
 void OpenvpnManager::socketError(QAbstractSocket::SocketError error)
 {
+    if (error == QAbstractSocket::RemoteHostClosedError) {
+        disconnectFromOpenvpnSocket();
+        return;
+    }
+
     log::logt("Error connecting to OpenVPN management socket" + QString::number(error));
     if (NULL != mSocket.get())
         mSocket.release()->deleteLater();
