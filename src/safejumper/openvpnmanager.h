@@ -105,8 +105,6 @@ private:
     QTimer *mStateTimer;
     int _pid;		// for running process (run safejumper after crash)
     std::auto_ptr<QTcpSocket> mSocket;
-    QString _LocalAddr;	// remember at moment of OpenVPN launch - do not depend on user changes
-    quint16 _LocalPort;
 
     qint64 _lastpos;
     bool _processing;

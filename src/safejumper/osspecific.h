@@ -54,7 +54,7 @@ public:
     const QString IconConnecting_Selected() const;
     const QString IconConnected_Selected() const;
 
-    const char * IsRunningCmd();
+    const char * isOpenvpnRunningCommand();
 
     bool IsNetdown()
     {
@@ -68,8 +68,8 @@ public:
     QString RunFastCmd(const char * cmd, uint16_t ms = 500);			// returns stdout
     QString RunFastCmd(const QString & cmd, uint16_t ms = 500);
 
-    void RunObfs(const QString & srv, const QString & port, const QString & local_port);
-    bool IsObfsRunning();
+    void runObfsproxy(const QString & srv, const QString & port, const QString & local_port);
+    bool obfsproxyRunning();
     void StopObfs();
     bool IsObfsInstalled();
 

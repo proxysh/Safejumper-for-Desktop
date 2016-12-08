@@ -18,6 +18,8 @@
 #include "scr_table.h"
 #endif  // MONITOR_TOOL
 
+const QString kLocalAddress = "127.0.0.1";
+
 OpenvpnManager::OpenvpnManager()
     : _state(ovsDisconnected),
       _pid(0),
@@ -94,16 +96,15 @@ void OpenvpnManager::launchOpenvpn()
         setState(ovsConnecting);
         int enc = Setting::Encryption();
         bool obfs = enc == ENCRYPTION_OBFS_TOR;
-        try {
-            if (obfs) {
-                OsSpecific::Instance()->RunObfs(Setting::Instance()->Server(), Setting::Instance()->Port(), "1050");
-                if (!OsSpecific::Instance()->IsObfsRunning())
-                    throw std::runtime_error("Cannot run Obfs proxy");
+        if (obfs) {
+            OsSpecific::Instance()->runObfsproxy(Setting::Instance()->Server(),
+                                                 Setting::Instance()->Port(),
+                                                 "1050");
+            if (!OsSpecific::Instance()->obfsproxyRunning()) {
+                log::logt("Cannot run Obfsproxy");
+                WndManager::Instance()->ErrMsg("Cannot run Obfsproxy");
+                return;
             }
-        } catch(std::exception & ex) {
-            log::logt(ex.what());
-            WndManager::Instance()->ErrMsg(QString(ex.what()));
-            return;
         }
         try {
             OsSpecific::Instance()->SetIPv6(!Setting::Instance()->IsDisableIPv6());
@@ -118,9 +119,6 @@ void OpenvpnManager::launchOpenvpn()
             }
         }
 
-        _LocalAddr = "127.0.0.1";
-        _LocalPort = Setting::Instance()->LocalPort().toInt();
-
 //      AuthManager::Instance()->SetNewIp("");
         _tunerr = false;
         _err = false;
@@ -128,16 +126,11 @@ void OpenvpnManager::launchOpenvpn()
         _err_msg = "";
 #endif// MONITOR_TOOL
         _processing = false;
-        if (NULL != _watcher.get()) {       // OpenVPN log file watcher
-            _watcher->removePath(PathHelper::Instance()->OpenvpnLogPfn());
-            delete _watcher.release();
-        }
 
-        disconnectFromOpenvpnSocket();
 #ifndef NO_PARAMFILE
-        QFile ff(PathHelper::Instance()->OpenvpnConfigPfn());
+        QFile ff(PathHelper::Instance()->openvpnConfigFilename());
         if (!ff.open(QIODevice::WriteOnly)) {
-            QString se = "Cannot write config file '" + PathHelper::Instance()->OpenvpnConfigPfn() + "'";
+            QString se = "Cannot write config file '" + PathHelper::Instance()->openvpnConfigFilename() + "'";
             log::logt(se);
             WndManager::Instance()->ErrMsg(se);
             return;
@@ -218,7 +211,6 @@ void OpenvpnManager::launchOpenvpn()
 
         if (obfs) {
 // TODO: -0 OS
-            ff.write("connect-retry-max 1\n");
             ff.write("socks-proxy 127.0.0.1 1050\n");
             ff.write("route ");
             ff.write(Setting::Instance()->Server().toLatin1());
@@ -233,7 +225,7 @@ void OpenvpnManager::launchOpenvpn()
         args
 //          << "--auth-nocache"
 #ifndef NO_PARAMFILE
-                << "--config" << PathHelper::Instance()->OpenvpnConfigPfn() // /tmp/proxysh.ovpn
+                << "--config" << PathHelper::Instance()->openvpnConfigFilename() // /tmp/proxysh.ovpn
 #endif
 #ifdef NO_PARAMFILE
                 << "--client"
@@ -265,13 +257,13 @@ void OpenvpnManager::launchOpenvpn()
                 << "--route-delay" << "2"
                 << "--allow-pull-fqdn"
 #endif
-                << "--management" << _LocalAddr << Setting::Instance()->LocalPort()
+                << "--management" << kLocalAddress << Setting::Instance()->LocalPort()
                 << "--management-hold"
                 << "--management-query-passwords"
 #ifdef MONITOR_TOOL
                 << "--log-append" << PathHelper::Instance()->OpenvpnLogPfn()            // /tmp/openvpn.log
 #else
-                << "--log" << PathHelper::Instance()->OpenvpnLogPfn()           // /tmp/openvpn.log
+                << "--log" << PathHelper::Instance()->openvpnLogFilename()           // /tmp/openvpn.log
 #endif  // MONITOR_TOOL
 
 //          << "--script-security" << "3" << "system"
@@ -279,15 +271,15 @@ void OpenvpnManager::launchOpenvpn()
                 << "--script-security" << "3"
 
 #ifndef Q_OS_WIN            // TODO: -0 DNS on linux
-                << "--up" << PathHelper::Instance()->UpScriptPfn()              // /Applications/Safejumper.app/Contents/Resources/client.up.safejumper.sh
-                << "--down" << PathHelper::Instance()->DownScriptPfn()      // /Applications/Safejumper.app/Contents/Resources/client.down.safejumper.sh
+                << "--up" << PathHelper::Instance()->upScriptFilename()              // /Applications/Safejumper.app/Contents/Resources/client.up.safejumper.sh
+                << "--down" << PathHelper::Instance()->downScriptFilename()      // /Applications/Safejumper.app/Contents/Resources/client.down.safejumper.sh
 #endif
                 << "--up-restart"
                 ;
 
         // TODO: -1 download cert from proxy.sh
         if (enc != ENCRYPTION_ECC && enc != ENCRYPTION_ECCXOR)
-            args << "--ca" << PathHelper::Instance()->ProxyshCaCert();    // /tmp/proxysh.crt
+            args << "--ca" << PathHelper::Instance()->proxyshCaCertFilename();    // /tmp/proxysh.crt
 
         if (Setting::Instance()->IsFixDns() || !Setting::Instance()->Dns1().isEmpty() || !Setting::Instance()->Dns2().isEmpty())
             OsSpecific::Instance()->FixDnsLeak();
@@ -297,7 +289,7 @@ void OpenvpnManager::launchOpenvpn()
         if (!Setting::Instance()->Dns2().isEmpty())
             args << "--dhcp-option" << "DNS" << Setting::Instance()->Dns2();
 
-        QString prog = PathHelper::Instance()->OpenvpnPathfilename();
+        QString prog = PathHelper::Instance()->openvpnFilename();
         log::logt("Prog is: " + prog);
         QString params = args.join(' ');
         log::logt("Args are:" + params);
@@ -330,7 +322,7 @@ void OpenvpnManager::launchOpenvpn()
 //#ifdef Q_OS_MAC
 //          OsSpecific::Instance()->ExecAsRoot(prog, args);     // force password dialog; without launcher
 //#else
-            int r3 = QProcess::execute(PathHelper::Instance()->LauncherPfn(), arg3);    // 30ms block internally
+            int r3 = QProcess::execute(PathHelper::Instance()->launchopenvpnFilename(), arg3);    // 30ms block internally
             log::logt("QProcess::execute() returns " + QString::number(r3));
             log::logt("###############");
             if (r3 != 0) {
@@ -461,7 +453,7 @@ void OpenvpnManager::openvpnLogfileChanged(const QString & pfn)
     if (_processing || _err)
         return;
     _processing = true;
-    if (pfn == PathHelper::Instance()->OpenvpnLogPfn()) {
+    if (pfn == PathHelper::Instance()->openvpnLogFilename()) {
         QFile f(pfn);
         QByteArray ba;
         if (f.open(QIODevice::ReadOnly)) {      // TODO: -2 ensure non-blocking
@@ -640,8 +632,13 @@ void OpenvpnManager::stop()
     if (mSocket.get() != NULL)
         disconnectFromOpenvpnSocket();
 
-    if (OsSpecific::Instance()->IsObfsRunning()) {
+    if (OsSpecific::Instance()->obfsproxyRunning()) {
         OsSpecific::Instance()->StopObfs();
+    }
+
+    if (_watcher.get() != NULL) {       // OpenVPN log file watcher
+        _watcher->removePath(PathHelper::Instance()->openvpnLogFilename());
+        delete _watcher.release();
     }
 
     setState(ovsDisconnected);
@@ -699,14 +696,14 @@ void OpenvpnManager::processFinished(int exitCode, QProcess::ExitStatus exitStat
 void OpenvpnManager::setupFileWatcher()
 {
     if (_watcher.get() == NULL) {
-        QFile f(PathHelper::Instance()->OpenvpnLogPfn());
+        QFile f(PathHelper::Instance()->openvpnLogFilename());
         if (f.exists()) {
             _lastpos = 0;       // OpenVpn will truncate
 
             _watcher.reset(new QFileSystemWatcher());
-            _watcher->addPath(PathHelper::Instance()->OpenvpnLogPfn());
+            _watcher->addPath(PathHelper::Instance()->openvpnLogFilename());
 
-            log::logt("Monitoring " + PathHelper::Instance()->OpenvpnLogPfn());
+            log::logt("Monitoring " + PathHelper::Instance()->openvpnLogFilename());
             connect(_watcher.get(), SIGNAL(fileChanged(const QString &)),
                     this, SLOT(openvpnLogfileChanged(const QString &)));
         }
@@ -738,7 +735,7 @@ void OpenvpnManager::connectToOpenvpnSocket()
             this, SLOT(socketError(QAbstractSocket::SocketError)));
     connect(mSocket.get(), SIGNAL(readyRead()),
             this, SLOT(socketReadyRead()));
-    mSocket->connectToHost(_LocalAddr, _LocalPort);
+    mSocket->connectToHost(kLocalAddress, Setting::Instance()->LocalPort().toInt());
     log::logt("done connecting to openvpn management socket");
 }
 
@@ -880,6 +877,7 @@ void OpenvpnManager::parseSocketStateWord(const QString & word, const QString & 
             WndManager::Instance()->ErrMsg("Turn Internet connection on manually, please");
         }
     } else {
+        log::logt("Got unknown state word " + word);
         WndManager::Instance()->HandleState(word);
     }
     _prev_st_word = word;
@@ -970,22 +968,14 @@ void OpenvpnManager::showErrorMessageCleanup(QString msg)
 
 bool OpenvpnManager::openvpnRunning()
 {
-    bool is = false;
+    bool running = false;
 
-    if (NULL != _process.get()) {
-        if (QProcess::Running == _process->state() || QProcess::Starting == _process->state()) {
-            is = true;
-        } else {
-            //is = true;        // HACK: -0 locate OpenVpn child process
-        }
-    }
+    running = _process.get() != NULL &&
+            (_process->state() == QProcess::Running ||
+             _process->state() == QProcess::Starting);
 
-    if (!is)
-        if (NULL != mSocket.get()) {
-            if (mSocket->isOpen()) {
-                is = true;
-            }
-        }
+    if (!running)
+        running = mSocket.get() != NULL && mSocket->isOpen();
 
 //  if (!is)        // lookup child
     {
@@ -1012,18 +1002,17 @@ bool OpenvpnManager::openvpnRunning()
         QTemporaryFile outf(QDir::tempPath() + "/safejumper-tmp-XXXXXX.out");
         if (file.open())
             if (outf.open()) {
-                QString script = QString(OsSpecific::Instance()->IsRunningCmd()) + " > " + outf.fileName();
+                QString script = QString(OsSpecific::Instance()->isOpenvpnRunningCommand()) + " > " + outf.fileName();
                 file.write(script.toLatin1());
                 file.flush();
-
 
                 int re = QProcess::execute("/bin/bash", QStringList() << file.fileName());
                 switch (re) {
                 case -2:
-                    log::logt("IsOvRunning(): -2 the process cannot be started");
+                    log::logt("openvpnRunning(): -2 the process cannot be started");
                     break;
                 case -1:
-                    log::logt("IsOvRunning(): -1 the process crashes");
+                    log::logt("openvpnRunning(): -1 the process crashed");
                     break;
                 case 0: {
                     QByteArray ba = outf.readAll();
@@ -1035,17 +1024,17 @@ bool OpenvpnManager::openvpnRunning()
                     _pid = s4.toInt(&converted);
                     if (converted) {
                         if (_pid > 0) {
-                            is = true;
+                            running = true;
                             //                              AttachMgmt();
                         }
                     }
                     break;
                 }
                 case 1:
-                    is = false;     // no lines
+                    running = false;     // no lines
                     break;
                 case 2:
-                    is = false;     // grep failure
+                    running = false;     // grep failure
                     break;
                 default:
                     log::logt("IsOvRunning(): ps-grep return code = " + QString::number(re));
@@ -1055,7 +1044,7 @@ bool OpenvpnManager::openvpnRunning()
 #endif  // else WIN32
     }
 //log::logt(QString("IsOvRunning() returns ") + QString(is ? "true": "false") );
-    return is;
+    return running;
 }
 
 void OpenvpnManager::killRunningOpenvpn()

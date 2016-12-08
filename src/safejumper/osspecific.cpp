@@ -258,30 +258,30 @@ void OsSpecific::SetRights()
     // will ask for elevated rights inside
 #ifdef Q_OS_MAC
 
-    SetChmod("0744", PathHelper::Instance()->UpScriptPfn());
-    SetChown(PathHelper::Instance()->UpScriptPfn());
-    SetChmod("0744", PathHelper::Instance()->DownScriptPfn());
-    SetChown(PathHelper::Instance()->DownScriptPfn());
+    SetChmod("0744", PathHelper::Instance()->upScriptFilename());
+    SetChown(PathHelper::Instance()->upScriptFilename());
+    SetChmod("0744", PathHelper::Instance()->downScriptFilename());
+    SetChown(PathHelper::Instance()->downScriptFilename());
 
-    SetChmod("0755", PathHelper::Instance()->OpenvpnPathfilename());
-    SetChown(PathHelper::Instance()->OpenvpnPathfilename());
+    SetChmod("0755", PathHelper::Instance()->openvpnFilename());
+    SetChown(PathHelper::Instance()->openvpnFilename());
 
-    SetChmod("04555", PathHelper::Instance()->NetDownPfn());
-    SetChown(PathHelper::Instance()->NetDownPfn());
+    SetChmod("04555", PathHelper::Instance()->netDownFilename());
+    SetChown(PathHelper::Instance()->netDownFilename());
 
-    SetChmod("04555", PathHelper::Instance()->LauncherPfn());
-    SetChown(PathHelper::Instance()->LauncherPfn());
+    SetChmod("04555", PathHelper::Instance()->launchopenvpnFilename());
+    SetChown(PathHelper::Instance()->launchopenvpnFilename());
 
-    system("touch /tmp/safejumper-openvpn.log");
-    SetChmod("777", PathHelper::Instance()->OpenvpnLogPfn());
+    system(QString("touch %1").arg(PathHelper::Instance()->openvpnLogFilename()).toStdString().c_str());
+    SetChmod("777", PathHelper::Instance()->openvpnLogFilename());
 #endif		// Q_OS_MAC
 
 #ifdef Q_OS_LINUX
-    SetChown(PathHelper::Instance()->LauncherPfn());
-    SetChmod("777", PathHelper::Instance()->LauncherPfn());				// odrer is important
+    SetChown(PathHelper::Instance()->launchopenvpnFilename());
+    SetChmod("777", PathHelper::Instance()->launchopenvpnFilename());				// odrer is important
 
-    SetChown(PathHelper::Instance()->NetDownPfn());
-    SetChmod("777", PathHelper::Instance()->NetDownPfn());
+    SetChown(PathHelper::Instance()->netDownFilename());
+    SetChmod("777", PathHelper::Instance()->netDownFilename());
 #endif
 
     //ReleaseRights();
@@ -300,7 +300,8 @@ void OsSpecific::SetChmod(const char * sflags, const QString & pfn)
     //unsigned flags16 = qs.toInt(&ok, 16);
     //if (!ok) throw std::runtime_error((QString("Internal error: Cannot atoi ") + sflags).toStdString());
     unsigned flags8 = qs.toInt(&ok, 8);
-    if (!ok) throw std::runtime_error((QString("Internal error: Cannot atoi ") + sflags).toStdString());
+    if (!ok)
+        throw std::runtime_error((QString("Internal error: Cannot atoi ") + sflags).toStdString());
 
     if ((st.st_mode & flags8) != flags8) {
         QStringList args1;
@@ -556,7 +557,7 @@ const QString OsSpecific::IconConnected_Selected() const
 #endif
 }
 
-const char * OsSpecific::IsRunningCmd()
+const char *OsSpecific::isOpenvpnRunningCommand()
 {
 #ifdef Q_OS_MAC
     return "ps -xa | grep open | grep execut | grep Safeju";
@@ -929,7 +930,7 @@ void OsSpecific::NetDown()
 #ifndef Q_OS_WIN
         SetRights();
         log::logt("NetDown()");
-        QString ss = RunFastCmd(PathHelper::Instance()->NetDownPfn());
+        QString ss = RunFastCmd(PathHelper::Instance()->netDownFilename());
         _netdown = true;
         if (!ss.isEmpty())
             log::logt(ss);
@@ -1078,7 +1079,7 @@ void OsSpecific::FixDnsLeak()
 
 void OsSpecific::StopObfs()
 {
-    if (IsObfsRunning()) {
+    if (obfsproxyRunning()) {
         if (_obfs.get()) {
             _obfs->terminate();
             _obfs->kill();
@@ -1087,7 +1088,7 @@ void OsSpecific::StopObfs()
     }
 }
 
-void OsSpecific::RunObfs(const QString & srv, const QString & port, const QString & local_port)
+void OsSpecific::runObfsproxy(const QString & srv, const QString & port, const QString & local_port)
 {
     log::logt("RunObfs() in");
     if (!IsObfsInstalled()) {
@@ -1099,7 +1100,7 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
     static const QString cmd =
 #ifndef Q_OS_WIN
 #ifndef Q_OS_REDHAT
-        PathHelper::Instance()->ObfsproxyPfn() + " "
+        PathHelper::Instance()->obfsproxyFilename() + " "
 #else
         "/usr/bin/obfsproxy "
 #endif
@@ -1126,7 +1127,7 @@ void OsSpecific::RunObfs(const QString & srv, const QString & port, const QStrin
 
     log::logt("SRV = " + srv);
 
-    if (!IsObfsRunning()) {
+    if (!obfsproxyRunning()) {
         _obfs.reset(new QProcess());
         log::logt("Executing obfsproxy with command " + cmd);
         _obfs->start(cmd);
@@ -1160,7 +1161,7 @@ void OsSpecific::InstallObfs()
     int ii = WndManager::Instance()->Confirmation("Installing OBFS proxy");
     ExecAsRoot("/usr/bin/easy_install", QStringList() << "pip");
     ExecAsRoot("/usr/local/bin/pip", QStringList() << "install" << "virtualenv");
-    ExecAsRoot(PathHelper::Instance()->ObfsInstallerPfn(), QStringList());
+    ExecAsRoot(PathHelper::Instance()->installObfsproxyFilename(), QStringList());
 
     while (!IsObfsInstalled()) {
         QThread::msleep(400);
@@ -1174,7 +1175,7 @@ bool OsSpecific::IsObfsInstalled()
 {
     bool b = true;
 #ifdef Q_OS_MAC
-    QFile f(PathHelper::Instance()->ResourcesPath() + "/env/bin/obfsproxy");
+    QFile f(PathHelper::Instance()->resourcesPath() + "/env/bin/obfsproxy");
     b = f.exists();
 #else
 #ifndef Q_OS_WIN
@@ -1187,7 +1188,7 @@ bool OsSpecific::IsObfsInstalled()
     return b;
 }
 
-bool OsSpecific::IsObfsRunning()
+bool OsSpecific::obfsproxyRunning()
 {
     bool b = false;
 #ifdef Q_OS_WIN

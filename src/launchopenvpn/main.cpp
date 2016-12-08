@@ -9,31 +9,25 @@
 int parseArguments(const char * thisprog, const char * filename, QString & openVPNPath, QStringList & args)
 {
     printf("@@----- 01\n");
-    openVPNPath.clear();
+    openVPNPath = PathHelper::Instance()->openvpnFilename();
+
     args.clear();
 
-    QFile pa(filename);
-    if (!pa.exists())
+    QFile argumentsFile(filename);
+    if (!argumentsFile.exists())
         return 101;
     printf("@@----- 02\n");
-    if (!pa.open(QIODevice::ReadOnly))
+    if (!argumentsFile.open(QIODevice::ReadOnly))
         return 102;
     printf("@@----- 03\n");
-    QByteArray ba = pa.readAll();
-    if (ba.isEmpty())
+    QByteArray data = argumentsFile.readAll();
+    if (data.isEmpty())
         return 103;
-    QString params(ba);
+    QString params(data);
     printf("@@----- 04\n");
     args = params.split(' ', QString::SkipEmptyParts);
     printf("@@@@@@@@@@@@\n");
 
-    QFileInfo fi(thisprog);
-#ifdef Q_OS_MAC
-    openVPNPath = fi.canonicalPath() + PathHelper::Instance()->OvRelativePfn();   // "/openvpn/openvpn-2.3.2/openvpn-executable";
-#else
-    openVPNPath = PathHelper::Instance()->OpenvpnPathfilename()
-            ;
-#endif      // Q_OS_MAC
     return 0;
 }
 

@@ -163,7 +163,7 @@ void Scr_Settings::ToScr_Connect()
 
 void Scr_Settings::ToScr_Logs()
 {
-    QString path = PathHelper::Instance()->OpenvpnLogPfn();
+    QString path = PathHelper::Instance()->openvpnLogFilename();
     QFile f(path);
     if (f.open(QIODevice::ReadOnly)) {
         QTextStream in(&f);

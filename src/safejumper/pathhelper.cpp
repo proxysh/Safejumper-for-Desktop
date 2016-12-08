@@ -4,8 +4,6 @@
 #include <QCoreApplication>
 #include <QProcess>
 
-//#include "log.h"	// TODO: -0 remove
-
 extern QCoreApplication * g_pTheApp;
 
 std::auto_ptr<PathHelper> PathHelper::_inst;
@@ -16,101 +14,56 @@ PathHelper * PathHelper::Instance()
     return _inst.get();
 }
 
+bool PathHelper::exists()
+{
+    return (_inst.get() != NULL);
+}
+
+void PathHelper::cleanup()
+{
+    if (_inst.get() != NULL)
+        delete _inst.release();
+}
+
 PathHelper::PathHelper()
 {}
 
 PathHelper::~PathHelper()
 {}
 
-QString PathHelper::OpenvpnPathfilename()
+QString PathHelper::openvpnFilename()
 {
-    if (_openvpn.isEmpty()) {
 #ifdef Q_OS_MAC
-        _openvpn = ResourcesPath() + OvRelativePfn();
+    return resourcesPath() + openvpnRelativeFilename();
 #else
 #ifdef Q_OS_WIN
-        _openvpn = "c:/Program Files/OpenVPN/bin/openvpn.exe";
+    return "c:/Program Files/OpenVPN/bin/openvpn.exe";
 #else	// Q_OS_LINUX
-        _openvpn = "/opt/safejumper/openvpn";
-#if 0		// for ECC
-        QProcess pr;
-        pr.start("which openvpn");
-        pr.waitForFinished(3000);	// 3s
-        bool ok = true;
-        if (pr.state() != QProcess::NotRunning) {
-            pr.terminate();
-            ok = false;
-        }
-        if (pr.exitStatus() != QProcess::NormalExit)
-            ok = false;
-        if (pr.exitCode() != 0)
-            ok = false;
-        QString stdout = pr.readAllStandardOutput();
-        QString stderr = pr.readAllStandardError();
-        if (!stderr.isEmpty())
-            ok = false;
-        if (ok) {
-            if (!stdout.trimmed().isEmpty())
-                _openvpn = stdout.trimmed();
-            else
-                _openvpn = "/opt/safejumper/openvpn";		// default location of onboard file
-        }
-        QString sb("Linux OpenVpn binary is: " + _openvpn + "\n");
-        printf("%s", sb.toStdString().c_str());
-
-
-        _openvpn = "/home/aa/scr/qt/build-safejumper-Desktop_Qt_5_5_0_GCC_64bit-Debug/openvpn";
-#endif	//	0
-
-
+    return "/opt/safejumper/openvpn";
 #endif
 #endif
-    }
-    return _openvpn;
 }
 
-QString PathHelper::OvRelativePfn()
+QString PathHelper::openvpnRelativeFilename()
 {
 #ifdef Q_OS_MAC
     return "/openvpn/openvpn-2.3.13/openvpn-executable";
 #endif
-#ifdef Q_OS_WIN
-    return "/openvpn-proxysh.exe";
-#endif
 }
 
-QString PathHelper::ResourcesPath()
+QString PathHelper::resourcesPath()
 {
-    QString s = ".";
 #ifdef Q_OS_MAC
     QDir d(g_pTheApp->applicationDirPath());
     d.cdUp();
     d.cd("Resources");
-    s = d.canonicalPath();
+    return d.canonicalPath();
 #else
-    s = QCoreApplication::applicationDirPath();
+    return QCoreApplication::applicationDirPath();
 #endif
-    return s;
 }
 
-QString PathHelper::ContentPath()
-{
-    QString s = ".";
-#ifdef Q_OS_MAC
-    QDir d(g_pTheApp->applicationDirPath());
-    d.cdUp();
-    s = d.canonicalPath();
-#endif
-    return s;
-}
-
-QString PathHelper::OpenvpnWorkdir()
-{
-    // TODO: -1
-    return "/tmp";
-}
-
-QString PathHelper::OpenvpnLogPfn()
+QString PathHelper::openvpnLogFilename()
 {
 #ifndef Q_OS_WIN
     return "/tmp/safejumper-openvpn.log";
@@ -119,7 +72,7 @@ QString PathHelper::OpenvpnLogPfn()
 #endif // Q_OS_WIN
 }
 
-QString PathHelper::OpenvpnConfigPfn()
+QString PathHelper::openvpnConfigFilename()
 {
 #ifndef Q_OS_WIN
     return "/tmp/safejumper-openvpn.ovpn";
@@ -128,59 +81,50 @@ QString PathHelper::OpenvpnConfigPfn()
 #endif // Q_OS_WIN
 }
 
-QString PathHelper::ProxyshCaCert()
+QString PathHelper::proxyshCaCertFilename()
 {
-    return ResourcesPath() + "/proxysh.crt";
+    return resourcesPath() + "/proxysh.crt";
 }
 
-QString PathHelper::UpScriptPfn()
+QString PathHelper::upScriptFilename()
 {
-    return ResourcesPath() + "/client.up.safejumper.sh";
+    return resourcesPath() + "/client.up.safejumper.sh";
 }
 
-QString PathHelper::DownScriptPfn()
+QString PathHelper::downScriptFilename()
 {
-    return ResourcesPath() + "/client.down.safejumper.sh";
+    return resourcesPath() + "/client.down.safejumper.sh";
 }
 
-QString PathHelper::NetDownPfn()
+QString PathHelper::netDownFilename()
 {
-    //return ResourcesPath() + "/net.down.sh";
-    return ResourcesPath() + "/netdown";
+    return resourcesPath() + "/netdown";
 }
 
-QString PathHelper::ScriptPath()
+QString PathHelper::launchopenvpnFilename()
 {
-    return ResourcesPath();
+    return resourcesPath() + "/launchopenvpn";
 }
 
-QString PathHelper::LauncherPfn()
+QString PathHelper::obfsproxyFilename()
 {
-    return ResourcesPath() + "/launchopenvpn";
-}
-
-QString PathHelper::ObfsInstallerPfn()
-{
-    return ResourcesPath() + "/installobfsproxy.sh";
-}
-
-QString PathHelper::ObfsproxyPfn()
-{
-    static const QString pfn =
 #ifdef Q_OS_MAC
-        ResourcesPath() + "/env/bin/obfsproxy"
+    return resourcesPath() + "/env/bin/obfsproxy";
 #else
 #ifdef Q_OS_LINUX
-        "/usr/local/bin/obfsproxy"
+    return "/usr/local/bin/obfsproxy"
 #else		// Win
-        ""
+    return ""
 #endif	// linux
 #endif	// 	Q_OS_MAC
-        ;
-    return pfn;
 }
 
-QString PathHelper::LogPfn()
+QString PathHelper::installObfsproxyFilename()
+{
+    return resourcesPath() + "/installobfsproxy.sh";
+}
+
+QString PathHelper::safejumperLogFilename()
 {
 #ifndef Q_OS_WIN
     return "/tmp/safejumper-debug.log";
