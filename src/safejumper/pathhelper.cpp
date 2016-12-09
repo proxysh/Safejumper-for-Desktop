@@ -112,9 +112,9 @@ QString PathHelper::obfsproxyFilename()
     return resourcesPath() + "/env/bin/obfsproxy";
 #else
 #ifdef Q_OS_LINUX
-    return "/usr/local/bin/obfsproxy"
+    return "/usr/local/bin/obfsproxy";
 #else		// Win
-    return ""
+    return "";
 #endif	// linux
 #endif	// 	Q_OS_MAC
 }
