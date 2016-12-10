@@ -6,7 +6,17 @@
 TEMPLATE = subdirs
 
 SUBDIRS = \
-	launchopenvpn \
-	netdown \
 	safejumper
+
+macx: {
+SUBDIRS += \
+    launchopenvpn \
+    netdown
+}
+
+linux: {
+SUBDIRS += \
+    launchopenvpn \
+    netdown
+}
 
