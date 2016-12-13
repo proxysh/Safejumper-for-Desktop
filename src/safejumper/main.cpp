@@ -30,10 +30,8 @@ int main(int argc, char *argv[])
     }
 #endif
 
-#ifndef Q_OS_LINUX // Only use this on platforms where we ship with Qt 5.7.1 (windows and OSX)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
-    QApplication::setSetuidAllowed(true);
+    QCoreApplication::setSetuidAllowed(true);
     QApplication::setOrganizationName("proxy.sh");
     QApplication::setApplicationName("Safejumper");
     g_pTheApp = new THE_APP_CLASS(argc, argv);

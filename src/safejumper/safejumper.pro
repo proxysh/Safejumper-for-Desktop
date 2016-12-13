@@ -53,6 +53,7 @@ linux: {
         qtlockedfile.cpp \
         qtsingleapplication.cpp \
 
+    CONFIG += static
 }
 
 SOURCES += \

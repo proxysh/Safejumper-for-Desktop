@@ -1,0 +1,25 @@
+To build Safejumper on linux you'll need the following:
+
+Qt 5.7.0 or newer built with -static option. Use the configureqt.sh script if wanted.
+Git clone of safejumper sources.
+
+After building Qt make sure it's qmake is in your path and do the following:
+
+cd buildlinux
+qmake ../src
+make
+cp safejumper/safejumper linuxfiles
+cp launchopenvpn/launchopenvpn linuxfiles
+cp netdown/netdown linuxfiles
+
+Then the content of linuxfiles mostly goes into /opt/safejumper/.
+
+To package debian/ubuntu do the following:
+
+tar -zcpvf ../../safejumper_<version>_orig.tar.gz linuxfiles
+cd ../../
+tar -zxpvf safejumper_<version>_orig.tar.gz
+cp -r Safejumper-Desktop/buildlinux/debian linuxfiles/
+cd linuxfiles
+dpkg-buildpackage -b -uc -us
+
