@@ -66,6 +66,7 @@ public:
 #endif	// MONITOR_TOOL
 
 private slots:
+    void socketConnected();
     void socketError(QAbstractSocket::SocketError error);
     void socketReadyRead();
     void reconnectTimeout();
@@ -84,6 +85,8 @@ private:
     void gotTunErr(const QString & s);
     void showErrorMessageCleanup(QString msg);
     void launchOpenvpn();
+    bool writeConfigFile(); // Write openvpn options to ovpn file
+    QStringList getOpenvpnArgs(); // Arguments to pass to openvpn
     void tryNextPort();
 
     void parseSocketLine(QString s);

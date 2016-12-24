@@ -29,7 +29,12 @@ AuthManager * AuthManager::Instance()
     return _inst.get();
 }
 
-void AuthManager::Cleanup()
+bool AuthManager::exists()
+{
+    return (_inst.get() != NULL);
+}
+
+void AuthManager::cleanup()
 {
     if (_inst.get() != NULL)
         delete _inst.release();
@@ -78,13 +83,13 @@ AuthManager::~AuthManager()
 //      _nam
 }
 
-bool AuthManager::IsLoggedin()
+bool AuthManager::loggedIn()
 {
     // TODO: -0 not implemented
     return _logged;
 }
 
-void AuthManager::DoLogin(const QString & name, const QString & password)
+void AuthManager::login(const QString & name, const QString & password)
 {
     _aclogin = name;
     _acnpsw = password;
@@ -95,13 +100,12 @@ void AuthManager::DoLogin(const QString & name, const QString & password)
     _CancelLogin = false;
     log::logt("Starting login with name '" + QUrl::toPercentEncoding(name, "", "") + "'");
 
-    SjMainWindow * sj = SjMainWindow::Instance();
     _reply.reset(_nam.get(BuildRequest(QUrl("https://proxy.sh/access.php?u=" + QUrl::toPercentEncoding(name, "", "") + "&p=" + QUrl::toPercentEncoding(password, "", "")))));
-    sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(LoginFinished()));
+    connect(_reply.get(), SIGNAL(finished()), this, SLOT(loginFinished()));
 
 }
 
-void AuthManager::CancelLogin()
+void AuthManager::cancel()
 {
     _CancelLogin = true;
     if(NULL != _reply.get()) {
@@ -109,9 +113,9 @@ void AuthManager::CancelLogin()
     }
 }
 
-void AuthManager::DoLogout()
+void AuthManager::logout()
 {
-    CancelLogin();
+    cancel();
     _logged = false;
     _vpnlogin.clear();
     _vpnpsw.clear();
@@ -833,14 +837,14 @@ void AuthManager::MatchObfsServers(const std::vector<QString> & names, std::vect
                 log::logt("Duplicate server found: " + dub);
             }
         }
-        name_id.insert(HMSI::value_type(_servers.at(j).name, j));
+        name_id.insert(_servers.at(j).name, j);
     }
 
     std::vector<size_t> paid;
     for (size_t k = 0, sz = names.size(); k < sz; ++k) {        // for each obfs server name
         HMSI::iterator it = name_id.find(names.at(k));
         if (it != name_id.end())
-            paid.push_back((*it).second);
+            paid.push_back(it.value());
     }
     std::sort(paid.begin(), paid.end());
     found.swap(paid);
@@ -868,88 +872,91 @@ bool AuthManager::ProcessXml_Servers(QString & msg)
     if (_reply->error() != QNetworkReply::NoError) {
         err = true;
         msg = _reply->errorString();
+        _logged = false;
+        return false;
     } else {
         QByteArray ba = _reply->readAll();
         if (ba.isEmpty()) {
             err = true;
             msg = "Cannot log in with this name and password pair. Server response is empty.";
+            _logged = false;
+            return false;
         }
 
-        if (!err) {
-            // parse XML response
-            QDomDocument doc;
-            QString login, psw;
-            if (!doc.setContent(QString(ba), &msg)) {
-                err = true;
-                msg = "Error parsing server XML response\n" + msg;
+        // parse XML response
+        QDomDocument doc;
+        QString login, psw;
+        if (!doc.setContent(QString(ba), &msg)) {
+            err = true;
+            msg = "Error parsing server XML response\n" + msg;
+            _logged = false;
+            return false;
+        } else {
+            QDomNodeList nlLogin = doc.elementsByTagName("username");
+            if (nlLogin.size() > 0) {
+                QDomNode n = nlLogin.item(0);
+                login = n.toElement().text();
             } else {
-                QDomNodeList nlLogin = doc.elementsByTagName("username");
-                if (nlLogin.size() > 0) {
-                    QDomNode n = nlLogin.item(0);
-                    login = n.toElement().text();
-                } else {
-                    err = true;
-                    msg = "Missing credentials";
-                }
-            }
-            if (!err) {
-                QDomNodeList nl = doc.elementsByTagName("password");
-                if (nl.size() > 0) {
-                    QDomNode n = nl.item(0);
-                    psw = n.toElement().text();
-                } else {
-                    err = true;
-                    msg = "Missing credentials password";
-                }
-            }
-            if (!err) {
-                QDomNodeList nl = doc.elementsByTagName("server");
-                if (nl.size() > 0) {
-                    for (int k = 0; k < nl.size(); ++k) {
-                        QDomNode se = nl.item(k);
-                        QDomElement adr = se.firstChildElement("address");
-                        QDomElement loc = se.firstChildElement("location");
-                        QDomElement load = se.firstChildElement("server_load");
-                        if (adr.isNull() || loc.isNull() || load.isNull())
-                            continue;
-                        AServer s2;
-                        s2.address = adr.text();
-                        s2.name = loc.text();
-                        s2.load = load.text();
-                        _servers.push_back(s2);
-                        _srv_ids[0].push_back(_servers.size() - 1);
-                    }
-                    _vpnlogin = login;
-                    _vpnpsw = psw;
-                    _logged = true;
-                } else {
-                    err = true;
-                    msg = "Incorrect login, password pair";
-                }
+                err = true;
+                msg = "Missing credentials";
+                _logged = false;
+                return false;
             }
         }
+        QDomNodeList nl = doc.elementsByTagName("password");
+        if (nl.size() > 0) {
+            QDomNode n = nl.item(0);
+            psw = n.toElement().text();
+        } else {
+            err = true;
+            msg = "Missing credentials password";
+            _logged = false;
+            return false;
+        }
+        nl = doc.elementsByTagName("server");
+        if (nl.size() > 0) {
+            for (int k = 0; k < nl.size(); ++k) {
+                QDomNode se = nl.item(k);
+                QDomElement adr = se.firstChildElement("address");
+                QDomElement loc = se.firstChildElement("location");
+                QDomElement load = se.firstChildElement("server_load");
+                if (adr.isNull() || loc.isNull() || load.isNull())
+                    continue;
+                AServer s2;
+                s2.address = adr.text();
+                s2.name = loc.text();
+                s2.load = load.text();
+                _servers.push_back(s2);
+                _srv_ids[0].push_back(_servers.size() - 1);
+            }
+            _vpnlogin = login;
+            _vpnpsw = psw;
+            _logged = true;
+        } else {
+            err = true;
+            msg = "Incorrect credentials. Make sure to use your VPN credentials and not your email.";
+            _logged = false;
+            return false;
+        }
     }
-    _logged = !err;
 
-    if (!err) {
-        // force hubs
-        const std::vector<size_t> & hr = AuthManager::GetHubs();
-        if (hr.empty())
-            log::logt("Cannot parse hubs");
+    // force hubs
+    const std::vector<size_t> & hr = AuthManager::GetHubs();
+    if (hr.empty())
+        log::logt("Cannot parse hubs");
 
-        StartDwnl_ObfsName();
-//              StartDwnl_AccType();
-    }
+    StartDwnl_ObfsName();
+//  StartDwnl_AccType();
 
-    if (!err)
-        PingAll();
+    PingAll();
 
     return !err;
 }
 
 void AuthManager::PingAll()
 {
-    if (_pings.empty()) _pings.assign(_servers.size(), -1);
+    if (_pings.empty())
+        _pings.assign(_servers.size(), -1);
     if (_pings.size() < _servers.size()) {
         for (size_t k = 0, n = _servers.size() - _pings.size(); k < n; ++k)
             _pings.push_back(-1);
@@ -984,8 +991,10 @@ void AuthManager::StartWorker(size_t id)
         SjMainWindow * m = SjMainWindow::Instance();
 
         if (_workers.at(id) !=NULL) {
-            m->disconnect(_workers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)), _waiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
-            m->disconnect(_workers.at(id), SIGNAL(error(QProcess::ProcessError)), _waiters.at(id), SLOT(PingError(QProcess::ProcessError)));
+            m->disconnect(_workers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)),
+                          _waiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
+            m->disconnect(_workers.at(id), SIGNAL(error(QProcess::ProcessError)),
+                          _waiters.at(id), SLOT(PingError(QProcess::ProcessError)));
             if (_workers.at(id)->state() != QProcess::NotRunning)
                 _workers.at(id)->terminate();
         }
@@ -1131,7 +1140,7 @@ int AuthManager::SrvToJump()
     return srv;
 }
 
-void AuthManager::Jump()
+void AuthManager::jump()
 {
     // TODO: -2 update lists
     int srv = SrvToJump();              // except current srv/hub
@@ -1236,6 +1245,16 @@ void AuthManager::ForwardPorts()
             ;
         }
     }
+}
+
+void AuthManager::loginFinished()
+{
+    QString message;
+    bool ok = ProcessXml_Servers(message);
+    if (ok)
+        emit loginCompleted();
+    else
+        emit loginError(message);
 }
 
 

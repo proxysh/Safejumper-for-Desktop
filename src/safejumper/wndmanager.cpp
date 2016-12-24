@@ -34,7 +34,7 @@ WndManager::~WndManager()
 
 void WndManager::ToPrimary()
 {
-    if (AuthManager::Instance()->IsLoggedin())
+    if (AuthManager::Instance()->loggedIn())
         ToConnect();
     else
         ToLogin();
@@ -42,7 +42,7 @@ void WndManager::ToPrimary()
 
 QWidget * WndManager::Primary()
 {
-    if (AuthManager::Instance()->IsLoggedin())
+    if (AuthManager::Instance()->loggedIn())
         return Scr_Connect::Instance();
     else
         return SjMainWindow::Instance();
@@ -81,7 +81,7 @@ void WndManager::ToLogs()
 
 void WndManager::ToMap()
 {
-    if (AuthManager::Instance()->IsLoggedin())
+    if (AuthManager::Instance()->loggedIn())
         trans(ScrVisible(), Scr_Map::Instance());
     else
         ToLogin();

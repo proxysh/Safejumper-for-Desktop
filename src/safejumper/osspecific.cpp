@@ -1199,7 +1199,8 @@ bool OsSpecific::obfsproxyRunning()
     {
         QString s1 = RunFastCmd("ps ax");
         b = s1.contains("/obfsproxy");
-        log::logt("IsObfsRunning result: " + b);
+        QString result = b ? "true" : "false";
+        log::logt("IsObfsRunning result: " + result);
     }
 #endif
     return b;

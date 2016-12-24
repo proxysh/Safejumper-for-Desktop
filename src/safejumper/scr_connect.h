@@ -76,7 +76,7 @@ private:
     QPoint _CursorStart;
 
     static void InitStateWords();
-    typedef THE_HM<QString, const char *> HmWords;
+    typedef QHash<QString, const char *> HmWords;
     static HmWords _StateWord_Img;
 
 private slots:

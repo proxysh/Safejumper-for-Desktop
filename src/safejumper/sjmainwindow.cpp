@@ -87,6 +87,9 @@ SjMainWindow::SjMainWindow(QWidget *parent) :
 //	WndManager::DoShape(this);
 
     QTimer::singleShot(210, this, SLOT(Timer_Constructed()));
+
+    connect(AuthManager::Instance(), SIGNAL(loginCompleted()), this, SLOT(loggedIn()));
+    connect(AuthManager::Instance(), SIGNAL(loginError(QString)), this, SLOT(loginError(QString)));
 }
 
 void SjMainWindow::DisableButtonsOnLogout()
@@ -156,7 +159,7 @@ SjMainWindow::~SjMainWindow()
         }
     }
 
-    AuthManager::Cleanup();
+    AuthManager::cleanup();
     OpenvpnManager::cleanup();
     OsSpecific::Cleanup();
     Scr_Connect::Cleanup();
@@ -366,7 +369,7 @@ void SjMainWindow::FixIcon()
 void SjMainWindow::ac_Connect()
 {
     FixIcon();
-    if (!AuthManager::Instance()->IsLoggedin()) {
+    if (!AuthManager::Instance()->loggedIn()) {
         _ConnectAfterLogin = true;
         DoLogin();
     } else {
@@ -405,7 +408,7 @@ void SjMainWindow::ac_Jump()
 {
     FixIcon();
     WndManager::Instance()->ToPrimary();
-    AuthManager::Instance()->Jump();
+    AuthManager::Instance()->jump();
 }
 
 void SjMainWindow::ac_SwitchCountry()
@@ -471,8 +474,8 @@ void SjMainWindow::ac_Logout()
     FixIcon();
     if (OpenvpnManager::exists())
         OpenvpnManager::Instance()->stop();
-    if (AuthManager::IsExists())
-        AuthManager::Instance()->DoLogout();
+    if (AuthManager::exists())
+        AuthManager::Instance()->logout();
     WndManager::Instance()->ToPrimary();
     ClearConnecttoMenu();
     _ct_menu->setEnabled(false);
@@ -526,16 +529,16 @@ void SjMainWindow::on_loginButton_clicked()
 void SjMainWindow::DoCancelLogin()
 {
     _CancelLogin = true;
-    AuthManager::Instance()->CancelLogin();
+    AuthManager::Instance()->cancel();
 }
 
 void SjMainWindow::DoLogin()
 {
-    if (!AuthManager::Instance()->IsLoggedin()) {
+    if (!AuthManager::Instance()->loggedIn()) {
         if (!ui->eLogin->text().isEmpty()) {
             _CancelLogin = false;
             enableButtons(false);
-            AuthManager::Instance()->DoLogin(ui->eLogin->text(), ui->ePsw->text());
+            AuthManager::Instance()->login(ui->eLogin->text(), ui->ePsw->text());
         }
     }
 }
@@ -599,45 +602,6 @@ void SjMainWindow::ExpireFinished()
         log::logt(errmsg);
 }
 
-void SjMainWindow::LoginFinished()
-{
-    QString msg;
-
-    bool ok = AuthManager::Instance()->ProcessXml_Servers(msg);
-    if (ok) {
-        SaveCreds();
-
-        if (Setting::Encryption() == ENCRYPTION_RSA)
-            Setting::Instance()->LoadServer();
-
-        // TODO: -0
-//		{
-//			SETTINGS_OBJ;
-//			int ix = settings.value("dd_Protocol_ix", -1).toInt();
-//			if (ix < 0)
-//			{
-//log::logt("sleeping 3");
-//				QThread::sleep(3);		// if first run: wait for pings  - to get adequate jump
-//			}
-//		}
-        WndManager::Instance()->ToPrimary();
-        EnableButtonsOnLogin();
-        ConstructConnecttoMenu();
-        if (_ConnectAfterLogin)
-            DoConnect();
-    } else {
-        DisableButtonsOnLogout();
-        if (!_CancelLogin) {
-            WndManager::Instance()->ToFront(this);
-            log::logt("Login Error " + msg);
-            Dlg_Error dlg(msg, "Login Error", this);
-            dlg.exec();
-        }
-    }
-    enableButtons(true);
-    _ConnectAfterLogin = false;
-}
-
 void SjMainWindow::CreateMenuItem(QMenu * m, const QString & name, size_t srv)
 {
     QAction * a = m->addAction(name);
@@ -648,9 +612,9 @@ void SjMainWindow::CreateMenuItem(QMenu * m, const QString & name, size_t srv)
 
 void SjMainWindow::ConstructConnecttoMenu()
 {
-    if (AuthManager::IsExists()) {
+    if (AuthManager::exists()) {
         AuthManager * am = AuthManager::Instance();
-        if (am->IsLoggedin()) {
+        if (am->loggedIn()) {
             ClearConnecttoMenu();
 
             const std::vector<size_t> & hubs = am->GetHubs();
@@ -762,7 +726,7 @@ void SjMainWindow::DisableMenuItems(bool connecting)
     static const char * country = "country";
     static const char * disconn = "disconnect";
     static const char * conn = "connect";
-    if (AuthManager::Instance()->IsLoggedin()) {
+    if (AuthManager::Instance()->loggedIn()) {
         s_set_enabled(_ac_SwitchCountry.get(), !connecting, country);
         s_set_enabled(_ac_Disconnect.get(), connecting, disconn);
         s_set_enabled(_ac_ConnectTo.get(), !connecting, conn);
@@ -820,7 +784,7 @@ void SjMainWindow::Timer_WifiWatcher()
             && !_wifi_processing) {			// and not already in the body below
         _wifi_processing = true;
         bool stopped = false;
-        if (!AuthManager::IsExists()) {
+        if (!AuthManager::exists()) {
             stopped = true;
         } else {
             if (!OpenvpnManager::exists()) {
@@ -832,7 +796,7 @@ void SjMainWindow::Timer_WifiWatcher()
         }
 
         if (stopped) {
-            if (!AuthManager::Instance()->IsLoggedin()) {
+            if (!AuthManager::Instance()->loggedIn()) {
                 if (Setting::Instance()->IsAutoconnect()) {	// log in only if checked Auto-connect when app starts
                     if (OsSpecific::Instance()->HasInsecureWifi()) {
                         _ConnectAfterLogin = true;
@@ -853,8 +817,8 @@ void SjMainWindow::BlockOnDisconnect()
     // implementation is the same as in the old Safejumper
     bool doblock = false;
     if (Setting::Instance()->IsBlockOnDisconnect()) {
-        if (AuthManager::IsExists()) {
-            if (!AuthManager::Instance()->IsLoggedin()) {
+        if (AuthManager::exists()) {
+            if (!AuthManager::Instance()->loggedIn()) {
                 doblock = true;
             } else {
                 if (!OpenvpnManager::exists()) {
@@ -871,4 +835,43 @@ void SjMainWindow::BlockOnDisconnect()
     if (doblock) {
         OsSpecific::Instance()->NetDown();
     }
+}
+
+void SjMainWindow::loggedIn()
+{
+    SaveCreds();
+
+    if (Setting::Encryption() == ENCRYPTION_RSA)
+        Setting::Instance()->LoadServer();
+
+    // TODO: -0
+//		{
+//			SETTINGS_OBJ;
+//			int ix = settings.value("dd_Protocol_ix", -1).toInt();
+//			if (ix < 0)
+//			{
+//log::logt("sleeping 3");
+//				QThread::sleep(3);		// if first run: wait for pings  - to get adequate jump
+//			}
+//		}
+    WndManager::Instance()->ToPrimary();
+    EnableButtonsOnLogin();
+    ConstructConnecttoMenu();
+    if (_ConnectAfterLogin)
+        DoConnect();
+    enableButtons(true);
+    _ConnectAfterLogin = false;
+}
+
+void SjMainWindow::loginError(QString message)
+{
+    DisableButtonsOnLogout();
+    if (!_CancelLogin) {
+        WndManager::Instance()->ToFront(this);
+        log::logt("Login Error " + message);
+        Dlg_Error dlg(message, "Login Error", this);
+        dlg.exec();
+    }
+    enableButtons(true);
+    _ConnectAfterLogin = false;
 }

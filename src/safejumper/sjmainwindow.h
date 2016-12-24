@@ -44,8 +44,9 @@ public:
     void BlockOnDisconnect();
 
 public slots:
+    void loggedIn();
+    void loginError(QString message);
     void AppFocusChanged(QWidget*, QWidget*);
-    void LoginFinished();
     void AccTypeFinished();
     void ExpireFinished();
     void Finished_OldIp(const QString & s);

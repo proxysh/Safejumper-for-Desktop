@@ -234,16 +234,16 @@ static const char * gs_Conn_Connecting_Template_end =  ".png);\n}";
 void Scr_Connect::InitStateWords()
 {
     if (_StateWord_Img.empty()) {
-        _StateWord_Img.insert(std::make_pair("AUTH", "auth"));
-        _StateWord_Img.insert(std::make_pair("GET_CONFIG", "config"));
-        _StateWord_Img.insert(std::make_pair("ASSIGN_IP", "ip"));
-        _StateWord_Img.insert(std::make_pair("TCP_CONNECT", "connect"));
-        _StateWord_Img.insert(std::make_pair("RESOLVE", "resolve"));
+        _StateWord_Img.insert("AUTH", "auth");
+        _StateWord_Img.insert("GET_CONFIG", "config");
+        _StateWord_Img.insert("ASSIGN_IP", "ip");
+        _StateWord_Img.insert("TCP_CONNECT", "connect");
+        _StateWord_Img.insert("RESOLVE", "resolve");
 
         // CONNECTING - default - must be absent in this collection
 
-        _StateWord_Img.insert(std::make_pair("WAIT", "wait"));
-        _StateWord_Img.insert(std::make_pair("RECONNECTING", "reconn"));
+        _StateWord_Img.insert("WAIT", "wait");
+        _StateWord_Img.insert("RECONNECTING", "reconn");
     }
 }
 
@@ -264,7 +264,7 @@ void Scr_Connect::StatusConnecting(const QString & word)
     HmWords::iterator it = _StateWord_Img.find(word);
     if (it != _StateWord_Img.end()) {
         s = gs_Conn_Connecting_Template_start;
-        s += it->second;
+        s += it.value();
         s += gs_Conn_Connecting_Template_end;
     } else {
         s = gs_Conn_Connecting;
@@ -370,7 +370,7 @@ void Scr_Connect::Clicked_Cancel()
 
 void Scr_Connect::Clicked_Jump()
 {
-    AuthManager::Instance()->Jump();
+    AuthManager::Instance()->jump();
 }
 
 void Scr_Connect::Clicked_Min()

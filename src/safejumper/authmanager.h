@@ -5,6 +5,7 @@
 #include <queue>
 #include <stdint.h>
 
+#include <QObject>
 #include <QString>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -42,22 +43,21 @@
 
 #endif		// #ifndef uint64_t
 
-class AuthManager
+class AuthManager: public QObject
 {
+    Q_OBJECT
 public:
     static AuthManager * Instance();
-    static bool IsExists()
-    {
-        return (_inst.get() != NULL);
-    }
-    static void Cleanup();
+    static bool exists();
+    static void cleanup();
+
     ~AuthManager();
 
-    bool IsLoggedin();
+    bool loggedIn();
 
-    void DoLogin(const QString & name, const QString & password);
-    void CancelLogin();
-    void DoLogout();
+    void login(const QString & name, const QString & password);
+    void cancel();
+    void logout();
 
     const QString & AccName()
     {
@@ -86,10 +86,6 @@ public:
     {
         return _oldip;
     }
-    QNetworkAccessManager & Nam()
-    {
-        return _nam;
-    }
 
     const std::vector<size_t> & GetAllServers();		// return IDs of servers inside _servers available for this encryption
     const std::vector<size_t> & GetHubs();					// return IDs of habs inside _servers
@@ -107,7 +103,7 @@ public:
 
     int PingFromSrvIx(int srv);
 
-    void Jump();
+    void jump();
     void DetermineOldIp();
 
     uint64_t GetRnd64();
@@ -133,6 +129,12 @@ public:
 
     void ForwardPorts();
 
+signals:
+    void loginCompleted();
+    void loginError(QString message);
+
+private slots:
+    void loginFinished();
 private:
     AuthManager();
     bool _logged;
