@@ -1,3 +1,4 @@
+#include <QCoreApplication>
 #include <QFile>
 #include <QFileInfo>
 #include <QString>
@@ -37,6 +38,8 @@ int main(int argc, char *argv[])
         return 2;       // param: tmp file with parameters
 
     become_root();
+
+    QCoreApplication app(argc, argv);
 
     QString openVPNPath;
     QStringList args;
