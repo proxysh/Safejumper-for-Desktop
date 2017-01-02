@@ -51,7 +51,7 @@ void Scr_Table::Fill()
     // headline
     ui->tableWidget->setHorizontalHeaderLabels(head);
 
-    const std::vector<size_t> & srvs = AuthManager::Instance()->GetAllServers();
+    const std::vector<size_t> & srvs = AuthManager::Instance()->currentEncryptionServers();
     ui->tableWidget->setRowCount(srvs.size());
     ui->tableWidget->verticalHeader()->setVisible(true);
     QStringList left;
@@ -93,7 +93,7 @@ void Scr_Table::SetStatus(int enc, size_t srv, int port, const QString & custom)
     // TODO: -1 encription
     // srv id -->> line
     int row = -1;
-    const std::vector<size_t> & srvs = AuthManager::Instance()->GetAllServers();
+    const std::vector<size_t> & srvs = AuthManager::Instance()->currentEncryptionServers();
     for (int k = 0; k < srvs.size(); ++k)
         if (srv == srvs.at(k))
             row = k;

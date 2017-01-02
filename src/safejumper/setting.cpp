@@ -307,7 +307,7 @@ void Setting::SaveServer(int ixsrv, const QString & newsrv)
 
 void Setting::LoadServer()
 {
-    if (AuthManager::Instance()->GetAllServers().empty())
+    if (AuthManager::Instance()->currentEncryptionServers().empty())
         return;		// cannot select in empty list
 
     QSettings settings;

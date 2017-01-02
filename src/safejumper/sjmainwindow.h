@@ -47,14 +47,6 @@ public slots:
     void loggedIn();
     void loginError(QString message);
     void AppFocusChanged(QWidget*, QWidget*);
-    void AccTypeFinished();
-    void ExpireFinished();
-    void Finished_OldIp(const QString & s);
-    void Finished_OldIpHttp();
-    void Finished_Dns();
-    void Finished_Updates();
-    void Finished_ObfsName();
-    void Finished_EccName();
 //	void Finished_EccxorName();
 
     // connect or login Src depending on auth status

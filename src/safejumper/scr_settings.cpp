@@ -180,7 +180,7 @@ void Scr_Settings::ToScr_Logs()
 void Scr_Settings::Clicked_Update()
 {
     // https://proxy.sh/version_osx.xml
-    OpenUrl_Update();
+    launchUpdateUrl();
 }
 
 void Scr_Settings::Toggle_BlockOnDisconnect_Line2(bool v)
@@ -320,7 +320,7 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
     if (Scr_Map::IsExists()) {
         Scr_Map::Instance()->RePopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
         Setting::Instance()->LoadProt();
-        Scr_Map::Instance()->RePopulateLocations(true);
+        Scr_Map::Instance()->RePopulateLocations(false); // Repopulate all locations
     }
     if (Scr_Connect::IsExists())
         Scr_Connect::Instance()->UpdEnc();

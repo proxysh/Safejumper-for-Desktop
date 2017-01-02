@@ -155,16 +155,13 @@ void AuthManager::SetNewIp(const QString & ip)
     }
 }
 
-const std::vector<size_t> & AuthManager::GetAllServers()
+const std::vector<size_t> & AuthManager::currentEncryptionServers()
 {
     int enc = Setting::Encryption();
-    if (_srv_ids[enc].empty()) {
-        ;
-    }
     return _srv_ids[enc];
 }
 
-const std::vector<size_t> & AuthManager::GetHubs()
+const std::vector<size_t> & AuthManager::currentEncryptionHubs()
 {
     if (!_servers.empty() && _hubs.empty()) {
         for (size_t k = 0; k < _servers.size(); ++k) {
@@ -203,7 +200,7 @@ void AuthManager::PrepareLevels()
 {
     // TODO: -1 special hub for boost
     if (!_servers.empty() && _level0.empty()) {
-        const std::vector<size_t> & h = GetHubs();
+        const std::vector<size_t> & h = currentEncryptionHubs();
         std::set<int> hub_srvids;
         for (size_t k =0; k < h.size(); ++k) {
             int srv = h.at(k);  //ServerIdFromHubId(k);
@@ -213,7 +210,7 @@ void AuthManager::PrepareLevels()
             _level1.insert(std::make_pair(k, v));
         }
 
-        const std::vector<size_t> & sr = GetAllServers();
+        const std::vector<size_t> & sr = currentEncryptionServers();
         for (size_t k = 0; k < sr.size(); ++k) {
             int srv = sr.at(k);
             std::set<int>::iterator it = hub_srvids.find(srv);
@@ -315,339 +312,72 @@ void AuthManager::ClearColls()
     _pings.clear();
 }
 
-void AuthManager::ClearReply()
+void AuthManager::clearReply()
 {
     if (_reply.get() != NULL) {
         _reply->abort();
         _reply->deleteLater();
-        QNetworkReply * rr = _reply.release();
+        _reply.release();
     }
 }
 
-void AuthManager::StartDwnl_ObfsName()
+void AuthManager::getEccServerNames()
 {
-    ClearReply();
-    // https://api.proxy.sh/safejumper/get_obfs/name
-    _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
-                     QUrl("https://api.proxy.sh/safejumper/get_obfs/name"))));
-    SjMainWindow * sj = SjMainWindow::Instance();
-    sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_ObfsName()));
-}
-
-void AuthManager::StartDwnl_EccName()
-{
-    ClearReply();
+    clearReply();
     // https://api.proxy.sh/safejumper/get_ecc/name
     _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
                      QUrl("https://api.proxy.sh/safejumper/get_ecc/name"))));
-    SjMainWindow * sj = SjMainWindow::Instance();
-    sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_EccName()));
+    connect(_reply.get(), SIGNAL(finished()),
+            this, SLOT(processEccServerNamesXml()));
 }
 
-//void AuthManager::StartDwnl_EccxorName()
-//{
-//      ClearReply();
-//      // https://api.proxy.sh/safejumper/get_ecc/name
-//      _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
-//              QUrl("https://api.proxy.sh/safejumper/get_ecc/name"))));
-//      SjMainWindow * sj = SjMainWindow::Instance();
-//      sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_EccxorName()));
-//}
-
-//void AuthManager::StartDwnl_ObfsAddr()
-//{
-//      ClearReply();
-//      // https://api.proxy.sh/safejumper/get_obfs/name
-//      _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
-//              QUrl("https://api.proxy.sh/safejumper/get_obfs/name"))));
-//      SjMainWindow * sj = SjMainWindow::Instance();
-//      sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(AccTypeFinishedZZ()));
-//}
-
-void AuthManager::StartDwnl_AccType()
+void AuthManager::processEccServerNamesXml()
 {
-    ClearReply();
-    // https://api.proxy.sh/safejumper/account_type/VPNusername/VPNpassword
-    _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
-                     QUrl("https://api.proxy.sh/safejumper/account_type/"
-                          + QUrl::toPercentEncoding(AuthManager::Instance()->VpnName(), "", "")
-                          + "/" + QUrl::toPercentEncoding(AuthManager::Instance()->VpnPsw(), "", "")))));
-    SjMainWindow * sj = SjMainWindow::Instance();
-    sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(AccTypeFinished()));
-}
+    QString message;
+    bool err = processServerNamesForEncryptionType(ENCRYPTION_ECC, message);
 
-void AuthManager::StartDwnl_Until()
-{
-    ClearReply();
-    // https://api.proxy.sh/safejumper/expire_date/VPNusername/VPNpassword
-    _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
-                     QUrl("https://api.proxy.sh/safejumper/expire_date/"
-                          + QUrl::toPercentEncoding(AuthManager::Instance()->VpnName(), "", "")
-                          + "/" + QUrl::toPercentEncoding(AuthManager::Instance()->VpnPsw(), "", "")))));
-    SjMainWindow * sj = SjMainWindow::Instance();
-    sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(ExpireFinished()));
-}
-
-void AuthManager::StartDwnl_Updates()
-{
-    QString us(SJ_UPDATE_URL);
-    if (!us.isEmpty()) {
-        SjMainWindow * sj = SjMainWindow::Instance();
-        _reply_update.reset(AuthManager::Instance()->_nam.get(BuildRequest(QUrl(us))));
-        sj->connect(_reply_update.get(), SIGNAL(finished()), sj, SLOT(Finished_Updates()));
-    }
-}
-
-void AuthManager::StartDwnl_OldIp()
-{
-    ++_ip_attempt_count;
-    log::logt("StartDwnl_OldIp() attempt " + QString::number(_ip_attempt_count));
-    static const QString us = "https://proxy.sh/ip.php";
-    SjMainWindow * sj = SjMainWindow::Instance();
-    _reply_IP.reset(AuthManager::Instance()->_nam.get(BuildRequest(QUrl(us))));
-    sj->connect(_reply_IP.get(), SIGNAL(finished()), sj, SLOT(Finished_OldIpHttp()));
-}
-
-void AuthManager::StartDwnl_Dns()
-{
-    ClearReply();
-    // https://api.proxy.sh/safejumper/get_dns
-    //<?xml version="1.0"?>
-    //<root>
-    //  <dns>146.185.134.104</dns>
-    //  <dns>192.241.172.159</dns>
-    //</root>
-    _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
-                     QUrl("https://api.proxy.sh/safejumper/get_dns"))));
-    SjMainWindow * sj = SjMainWindow::Instance();
-    sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_Dns()));
-}
-
-
-bool AuthManager::ProcessExpireXml(QString & out_msg)
-{
-    bool err = false;
-    out_msg.clear();
-    if (_reply->error() != QNetworkReply::NoError) {
-        err = true;
-        out_msg = _reply->errorString();
-    } else {
-        QByteArray ba = _reply->readAll();
-        if (ba.isEmpty()) {
-            err = true;
-            out_msg = "Cannot get expiration info. Server response is empty.";
-        }
-        if (!err) {
-            // parse XML response
-            /*
-            {QFile f("/tmp/expire.xml");
-            f.open(QIODevice::WriteOnly);
-            f.write(ba);
-            f.flush();
-            f.close();}
-            */
-            // <?xml version="1.0"?>
-            // <root><expire_date>2015-05-28</expire_date></root>
-            QDomDocument doc;
-            QString until = "--";
-            if (!doc.setContent(QString(ba), &out_msg)) {
-                err = true;
-                out_msg = "Error parsing XML expiration info\n" + out_msg;
-            } else {
-                QDomNodeList nl = doc.elementsByTagName("expire_date");
-                if (nl.size() > 0) {
-                    QDomNode n = nl.item(0);
-                    until = n.toElement().text();
-                } else {
-                    err = true;
-                    out_msg = "Missing expiration info";
-                }
-            }
-            Scr_Connect::Instance()->SetUntil(until);
-        }
-    }
-
-    if (!err)
-        StartDwnl_Dns();
-
-    return !err;
-}
-
-bool AuthManager::ProcessAccountXml(QString & out_msg)
-{
-    bool err = false;
-    out_msg.clear();
-    if (_reply->error() != QNetworkReply::NoError) {
-        err = true;
-        out_msg = _reply->errorString();
-    } else {
-        QByteArray ba = _reply->readAll();
-        if (ba.isEmpty()) {
-            err = true;
-            out_msg = "Cannot get account info. Server response is empty.";
-        }
-        if (!err) {
-            // parse XML response
-
-            // <?xml version="1.0"?>
-            //<root><package>10</package><email>aaa@gmail.com</email></root>
-            QDomDocument doc;
-            QString email, amount = "--";
-            if (!doc.setContent(QString(ba), &out_msg)) {
-                err = true;
-                out_msg = "Error parsing XML account info\n" + out_msg;
-            } else {
-                QDomNodeList nlpackage = doc.elementsByTagName("package");
-                if (nlpackage.size() > 0) {
-                    QDomNode n = nlpackage.item(0);
-                    amount = "$" + n.toElement().text();
-                } else {
-                    err = true;
-                    out_msg = "Missing package amount";
-                }
-
-            }
-            if (!err) {
-                QDomNodeList nl = doc.elementsByTagName("email");
-                if (nl.size() > 0) {
-                    QDomNode n = nl.item(0);
-                    email = n.toElement().text();
-                } else {
-                    err = true;
-                    out_msg = "Missing email in account XML";
-                }
-            }
-            Scr_Connect::Instance()->SetAmount(amount);
-            Scr_Connect::Instance()->SetEmail(email);
-            /*
-            QFile f("/tmp/acc.xml");
-            f.open(QIODevice::WriteOnly);
-            f.write(ba);
-            f.flush();
-            f.close();
-            */
-        }
-    }
-    if (!err)
-        StartDwnl_Until();
-    return !err;
-}
-
-void AuthManager::ProcessDnsXml()
-{
-    if (_reply->error() != QNetworkReply::NoError) {
-        log::logt(_reply->errorString());
-    } else {
-        QByteArray ba = _reply->readAll();
-        if (ba.isEmpty()) {
-            log::logt("Cannot get DNS info. Server response is empty.");
-        } else {
-            // parse XML response
-
-            // <?xml version="1.0"?>
-            // <root>
-            //  <dns>146.185.134.104</dns>
-            //  <dns>192.241.172.159</dns>
-            // </root>
-            QDomDocument doc;
-            QString msg;
-            if (!doc.setContent(QString(ba), &msg)) {
-                log::logt("Error parsing XML DNS info\n" + msg);
-            } else {
-                QDomNodeList nl = doc.elementsByTagName("dns");
-                if (nl.size() > 0) {
-                    QString dns[2];
-                    for (int k = 0; k < 2 && k < nl.size(); ++k) {
-                        QDomNode n = nl.item(k);
-                        dns[k] = n.toElement().text();
-                    }
-                    if (!dns[0].isEmpty() || !dns[1].isEmpty())
-                        Setting::Instance()->SetDefaultDns(dns[0], dns[1]);
-                } else {
-                    log::logt("Missing DNS nodes");
-                }
-
-            }
-        }
-    }
-
-    ClearReply();               // TODO: -2 further processing here
-}
-
-void AuthManager::ProcessUpdatesXml()
-{
-    if (_reply_update->error() != QNetworkReply::NoError) {
-        log::logt(_reply_update->errorString());
-    } else {
-        QByteArray ba = _reply_update->readAll();
-
-        /*
-        QByteArray ba =
-        "<?xml version=\"1.1\" encoding=\"UTF-8\"?>"
-        "<version>"
-          "<stable>3.0</stable>"
-          "<build>24</build>"
-          "<files>"
-                "<file url=\"/safejumper.exe\"/>"
-          "</files>"
-          "<date>2015-08-05</date>"
-        "</version>";
-        */
-        if (ba.isEmpty()) {
-            log::logt("Cannot get Updates info. Server response is empty.");
-        } else {
-            // parse XML response
-
-            // <?xml version="1.1" encoding="UTF-8"?>
-            // <version>
-            //  <stable>3.0</stable>
-            //  <build>23</build>
-            //  <files>
-            //    <file url="/safejumper.exe"/>
-            //  </files>
-            //  <date>2015-08-05</date>
-            // </version>
-            QDomDocument doc;
-            QString msg;
-            if (!doc.setContent(QString(ba), &msg)) {
-                log::logt("Error parsing XML Updates info\n" + msg);
-            } else {
-                QDomNodeList nl = doc.elementsByTagName("build");
-                if (nl.size() > 0) {
-                    QDomNode n = nl.item(0);
-                    QString ss = n.toElement().text();
-                    if (!ss.isEmpty()) {
-                        bool ok;
-                        int upd = ss.toInt(&ok);
-                        if (ok) {
-                            if (upd > SJ_BUILD_NUM) {
-                                int co = WndManager::Instance()->Confirmation("New version " + ss + " available. Update?");
-                                Setting::Instance()->UpdateMsgShown();
-                                if (QDialog::Accepted == co)
-                                    OpenUrl_Update();           // TODO: -2 auto update self
-                            }
-                        }
-                    }
-                } else {
-                    log::logt("Missing 'build' node");
-                }
-
-            }
-        }
-    }
-}
-
-bool AuthManager::ProcessXml_ObfsName(QString & out_msg)
-{
-    bool err = ProcessXml_EncryptionName(ENCRYPTION_OBFS_TOR, out_msg);
+    if (err)
+        log::logt("Error getting ecc names: " + message);
 
     // do not get obfs addresses: proceed
-    StartDwnl_EccName();
+    getAccountType();
+
+    if (!err) {
+        // clone ECC nodes into ECC+XOR
+        // TODO: -2 is there a specific for ECC+XOR  API page?
+        _srv_ids[ENCRYPTION_ECCXOR].clear();
+        _srv_ids[ENCRYPTION_ECCXOR].assign(_srv_ids[ENCRYPTION_ECC].begin(), _srv_ids[ENCRYPTION_ECC].end());
+        ForceRepopulation(ENCRYPTION_ECC);
+        ForceRepopulation(ENCRYPTION_ECCXOR);
+        if (Setting::Encryption() != ENCRYPTION_RSA)
+            Setting::Instance()->LoadServer();
+    }
+}
+
+void AuthManager::getObfsServerNames()
+{
+    clearReply();
+    // https://api.proxy.sh/safejumper/get_obfs/name
+    _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+                     QUrl("https://api.proxy.sh/safejumper/get_obfs/name"))));
+    connect(_reply.get(), SIGNAL(finished()),
+            this, SLOT(processObfsServerNamesXml()));
+}
+
+void AuthManager::processObfsServerNamesXml()
+{
+    QString message;
+    bool err = processServerNamesForEncryptionType(ENCRYPTION_OBFS_TOR, message);
+
+    if (err)
+        log::logt("Error getting obfs names: " + message);
+    // do not get obfs addresses: proceed
+    getEccServerNames();
 
     if (!err)
         ForceRepopulation(ENCRYPTION_OBFS_TOR);
 
-    return !err;
+    return;
 
 
 #if 0
@@ -732,16 +462,285 @@ bool AuthManager::ProcessXml_ObfsName(QString & out_msg)
 #endif
 }
 
-bool AuthManager::ProcessXml_EncryptionName(int enc, QString & out_msg)
+//void AuthManager::StartDwnl_EccxorName()
+//{
+//      ClearReply();
+//      // https://api.proxy.sh/safejumper/get_ecc/name
+//      _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+//              QUrl("https://api.proxy.sh/safejumper/get_ecc/name"))));
+//      SjMainWindow * sj = SjMainWindow::Instance();
+//      sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(Finished_EccxorName()));
+//}
+
+//void AuthManager::StartDwnl_ObfsAddr()
+//{
+//      ClearReply();
+//      // https://api.proxy.sh/safejumper/get_obfs/name
+//      _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+//              QUrl("https://api.proxy.sh/safejumper/get_obfs/name"))));
+//      SjMainWindow * sj = SjMainWindow::Instance();
+//      sj->connect(_reply.get(), SIGNAL(finished()), sj, SLOT(AccTypeFinishedZZ()));
+//}
+
+void AuthManager::getAccountType()
+{
+    clearReply();
+    // https://api.proxy.sh/safejumper/account_type/VPNusername/VPNpassword
+    _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+                     QUrl("https://api.proxy.sh/safejumper/account_type/"
+                          + QUrl::toPercentEncoding(AuthManager::Instance()->VpnName(), "", "")
+                          + "/" + QUrl::toPercentEncoding(AuthManager::Instance()->VpnPsw(), "", "")))));
+    connect(_reply.get(), SIGNAL(finished()),
+            this, SLOT(processAccountTypeXml()));
+}
+
+void AuthManager::getExpirationDate()
+{
+    clearReply();
+    // https://api.proxy.sh/safejumper/expire_date/VPNusername/VPNpassword
+    _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+                     QUrl("https://api.proxy.sh/safejumper/expire_date/"
+                          + QUrl::toPercentEncoding(AuthManager::Instance()->VpnName(), "", "")
+                          + "/" + QUrl::toPercentEncoding(AuthManager::Instance()->VpnPsw(), "", "")))));
+    connect(_reply.get(), SIGNAL(finished()),
+            this, SLOT(processExpirationXml()));
+}
+
+void AuthManager::checkUpdates()
+{
+    QString us(SJ_UPDATE_URL);
+    if (!us.isEmpty()) {
+        _reply_update.reset(AuthManager::Instance()->_nam.get(BuildRequest(QUrl(us))));
+        connect(_reply_update.get(), SIGNAL(finished()),
+                this, SLOT(processUpdatesXml()));
+    }
+}
+
+void AuthManager::getOldIP()
+{
+    ++_ip_attempt_count;
+    log::logt("StartDwnl_OldIp() attempt " + QString::number(_ip_attempt_count));
+    static const QString us = "https://proxy.sh/ip.php";
+    _reply_IP.reset(AuthManager::Instance()->_nam.get(BuildRequest(QUrl(us))));
+    connect(_reply_IP.get(), SIGNAL(finished()),
+            this, SLOT(processOldIP()));
+}
+
+void AuthManager::getDns()
+{
+    clearReply();
+    // https://api.proxy.sh/safejumper/get_dns
+    //<?xml version="1.0"?>
+    //<root>
+    //  <dns>146.185.134.104</dns>
+    //  <dns>192.241.172.159</dns>
+    //</root>
+    _reply.reset(AuthManager::Instance()->_nam.get(BuildRequest(
+                     QUrl("https://api.proxy.sh/safejumper/get_dns"))));
+    connect(_reply.get(), SIGNAL(finished()),
+            this, SLOT(processDnsXml()));
+}
+
+void AuthManager::processAccountTypeXml()
+{
+    QString message;
+    if (_reply->error() != QNetworkReply::NoError) {
+        log::logt(_reply->errorString());
+        return;
+    }
+    QByteArray ba = _reply->readAll();
+    if (ba.isEmpty()) {
+        log::logt("Cannot get account info. Server response is empty.");
+        return;
+    }
+    // parse XML response
+
+    // <?xml version="1.0"?>
+    //<root><package>10</package><email>aaa@gmail.com</email></root>
+    QDomDocument doc;
+    if (!doc.setContent(QString(ba), &message)) {
+        log::logt("Error parsing XML account info\n" + message);
+        return;
+    }
+    QDomNodeList nlpackage = doc.elementsByTagName("package");
+    if (nlpackage.size() <= 0) {
+        log::logt("Missing package amount");
+        return;
+    }
+    QDomNode n = nlpackage.item(0);
+    QString amount = "$" + n.toElement().text();
+
+    QDomNodeList nl = doc.elementsByTagName("email");
+    if (nl.size() <= 0) {
+        log::logt("Missing email in account XML");
+        return;
+    }
+    n = nl.item(0);
+    QString email = n.toElement().text();
+    log::logt("Got account e-mail " + email + " and amount " + amount);
+    Scr_Connect::Instance()->SetAmount(amount);
+    Scr_Connect::Instance()->SetEmail(email);
+    /*
+    QFile f("/tmp/acc.xml");
+    f.open(QIODevice::WriteOnly);
+    f.write(ba);
+    f.flush();
+    f.close();
+    */
+
+    getExpirationDate();
+}
+
+void AuthManager::processExpirationXml()
+{
+    QString message;
+    if (_reply->error() != QNetworkReply::NoError) {
+        log::logt(_reply->errorString());
+        return;
+    }
+    QByteArray ba = _reply->readAll();
+    if (ba.isEmpty()) {
+        log::logt("Cannot get expiration info. Server response is empty.");
+        return;
+    }
+    // parse XML response
+    /*
+    {QFile f("/tmp/expire.xml");
+    f.open(QIODevice::WriteOnly);
+    f.write(ba);
+    f.flush();
+    f.close();}
+    */
+    // <?xml version="1.0"?>
+    // <root><expire_date>2015-05-28</expire_date></root>
+    QDomDocument doc;
+    QString until = "--";
+    if (!doc.setContent(QString(ba), &message)) {
+        log::logt("Error parsing XML expiration info\n" + message);
+        return;
+    }
+    QDomNodeList nl = doc.elementsByTagName("expire_date");
+    if (nl.size() <= 0) {
+        log::logt("Missing expiration info");
+        return;
+    }
+    QDomNode n = nl.item(0);
+    until = n.toElement().text();
+
+    Scr_Connect::Instance()->SetUntil(until);
+
+    getDns();
+}
+
+void AuthManager::processDnsXml()
+{
+    if (_reply->error() != QNetworkReply::NoError) {
+        log::logt(_reply->errorString());
+        return;
+    }
+    QByteArray ba = _reply->readAll();
+    if (ba.isEmpty()) {
+        log::logt("Cannot get DNS info. Server response is empty.");
+        return;
+    }
+    // parse XML response
+
+    // <?xml version="1.0"?>
+    // <root>
+    //  <dns>146.185.134.104</dns>
+    //  <dns>192.241.172.159</dns>
+    // </root>
+    QDomDocument doc;
+    QString msg;
+    if (!doc.setContent(QString(ba), &msg)) {
+        log::logt("Error parsing XML DNS info\n" + msg);
+        return;
+    }
+    QDomNodeList nl = doc.elementsByTagName("dns");
+    if (nl.size() <= 0) {
+        log::logt("Missing DNS nodes");
+        return;
+    }
+    QString dns[2];
+    for (int k = 0; k < 2 && k < nl.size(); ++k) {
+        QDomNode n = nl.item(k);
+        dns[k] = n.toElement().text();
+    }
+    if (!dns[0].isEmpty() || !dns[1].isEmpty())
+        Setting::Instance()->SetDefaultDns(dns[0], dns[1]);
+
+    clearReply();               // TODO: -2 further processing here
+}
+
+void AuthManager::processUpdatesXml()
+{
+    if (_reply_update->error() != QNetworkReply::NoError) {
+        log::logt(_reply_update->errorString());
+        return;
+    }
+    QByteArray ba = _reply_update->readAll();
+
+    /*
+    QByteArray ba =
+    "<?xml version=\"1.1\" encoding=\"UTF-8\"?>"
+    "<version>"
+      "<stable>3.0</stable>"
+      "<build>24</build>"
+      "<files>"
+            "<file url=\"/safejumper.exe\"/>"
+      "</files>"
+      "<date>2015-08-05</date>"
+    "</version>";
+    */
+    if (ba.isEmpty()) {
+        log::logt("Cannot get Updates info. Server response is empty.");
+        return;
+    }
+    // parse XML response
+
+    // <?xml version="1.1" encoding="UTF-8"?>
+    // <version>
+    //  <stable>3.0</stable>
+    //  <build>23</build>
+    //  <files>
+    //    <file url="/safejumper.exe"/>
+    //  </files>
+    //  <date>2015-08-05</date>
+    // </version>
+    QDomDocument doc;
+    QString msg;
+    if (!doc.setContent(QString(ba), &msg)) {
+        log::logt("Error parsing XML Updates info\n" + msg);
+        return;
+    }
+    QDomNodeList nl = doc.elementsByTagName("build");
+    if (nl.size() <= 0) {
+        log::logt("Missing 'build' node");
+        return;
+    }
+    QDomNode n = nl.item(0);
+    QString ss = n.toElement().text();
+    if (!ss.isEmpty()) {
+        bool ok;
+        int upd = ss.toInt(&ok);
+        if (ok && SJ_BUILD_NUM < upd) {
+            int result = WndManager::Instance()->Confirmation("New version " + ss + " available. Update?");
+            Setting::Instance()->UpdateMsgShown();
+            if (result == QDialog::Accepted)
+                launchUpdateUrl();           // TODO: -2 auto update self
+        }
+    }
+}
+
+bool AuthManager::processServerNamesForEncryptionType(int enc, QString & out_msg)
 {
     out_msg.clear();
-    std::vector<QString> names;
-    bool err = ProcessXml_Names(names, out_msg);
+    QStringList names = extractNames(out_msg);
 
-    if (!err && !names.empty())
-        MatchObfsServers(names, _srv_ids[enc]);
+    if (out_msg.isEmpty() && !names.isEmpty())
+        populateServerIdsFromNames(names, _srv_ids[enc]);
 
-    return err;
+    return !out_msg.isEmpty();
 }
 
 void AuthManager::ForceRepopulation(int enc)
@@ -755,33 +754,11 @@ void AuthManager::ForceRepopulation(int enc)
     }
 }
 
-bool AuthManager::ProcessXml_EccName(QString & out_msg)
+QStringList AuthManager::extractNames(QString & out_msg)
 {
-    bool err = ProcessXml_EncryptionName(ENCRYPTION_ECC, out_msg);
-
-    // do not get obfs addresses: proceed
-    StartDwnl_AccType();
-
-    if (!err) {
-        // clone ECC nodes into ECC+XOR
-        // TODO: -2 is there a specific for ECC+XOR  API page?
-        _srv_ids[ENCRYPTION_ECCXOR].clear();
-        _srv_ids[ENCRYPTION_ECCXOR].assign(_srv_ids[ENCRYPTION_ECC].begin(), _srv_ids[ENCRYPTION_ECC].end());
-        ForceRepopulation(ENCRYPTION_ECC);
-        ForceRepopulation(ENCRYPTION_ECCXOR);
-    }
-
-
-
-    return !err;
-}
-
-bool AuthManager::ProcessXml_Names(std::vector<QString> & v, QString & out_msg)
-{
-    bool err = false;
+    QStringList names;
     if (_reply->error() != QNetworkReply::NoError) {
-        log::logt(_reply->errorString());
-        err = true;
+        log::logt("Network error:" + _reply->errorString());
         out_msg = "Network error: " + _reply->errorString();
     } else {
         QByteArray ba = _reply->readAll();
@@ -813,94 +790,59 @@ bool AuthManager::ProcessXml_Names(std::vector<QString> & v, QString & out_msg)
                 int p3 = w.indexOf("</", p2 + 1);
                 QString internal = w.mid(p2 +1, p3 - p2 - 1);
                 if (!internal.isEmpty())
-                    v.push_back(internal);
+                    names.append(internal);
                 t = w.indexOf('<', p3 + 1);
             }
         } else {
-            err = true;
             out_msg = "Error parsing Obfs name XML\n" + out_msg;
         }
-
     }
-    return err;
+    return names;
 }
 
 
-void AuthManager::MatchObfsServers(const std::vector<QString> & names, std::vector<size_t> & found)
+void AuthManager::populateServerIdsFromNames(QStringList names, std::vector<size_t> & found)
 {
-    HMSI name_id;
-    for (size_t j = 0, ses = _servers.size(); j < ses; ++j) {
-        {
-            HMSI::iterator it = name_id.find(_servers.at(j).name);
-            if (it != name_id.end()) {
-                QString dub = _servers.at(j).name;
-                log::logt("Duplicate server found: " + dub);
-            }
-        }
-        name_id.insert(_servers.at(j).name, j);
-    }
-
     std::vector<size_t> paid;
-    for (size_t k = 0, sz = names.size(); k < sz; ++k) {        // for each obfs server name
-        HMSI::iterator it = name_id.find(names.at(k));
-        if (it != name_id.end())
-            paid.push_back(it.value());
+    for (size_t j = 0, ses = _servers.size(); j < ses; ++j) {
+        if (names.contains(_servers.at(j).name)) {
+            paid.push_back(j);
+        }
     }
     std::sort(paid.begin(), paid.end());
     found.swap(paid);
 }
 
-bool AuthManager::IsObfs(int id)
+QString AuthManager::processServersXml()
 {
-    bool b = false;
-//      std::set<int>::iterator it = _obfs_enabled_srvs.find(id);
-//      if (it != _obfs_enabled_srvs.end())
-//              b = true;
-    if (id > -1)
-        b = std::binary_search(_srv_ids[ENCRYPTION_OBFS_TOR].begin(), _srv_ids[ENCRYPTION_OBFS_TOR].end(), id);
-
-    return b;
-}
-
-bool AuthManager::ProcessXml_Servers(QString & msg)
-{
+    QString message;
     ClearColls();
-    msg.clear();
     _vpnlogin.clear();
     _vpnpsw.clear();
-    bool err = false;
     if (_reply->error() != QNetworkReply::NoError) {
-        err = true;
-        msg = _reply->errorString();
         _logged = false;
-        return false;
+        return _reply->errorString();
     } else {
         QByteArray ba = _reply->readAll();
         if (ba.isEmpty()) {
-            err = true;
-            msg = "Cannot log in with this name and password pair. Server response is empty.";
             _logged = false;
-            return false;
+            return "Cannot log in with this name and password pair. Server response is empty.";
         }
 
         // parse XML response
         QDomDocument doc;
         QString login, psw;
-        if (!doc.setContent(QString(ba), &msg)) {
-            err = true;
-            msg = "Error parsing server XML response\n" + msg;
+        if (!doc.setContent(QString(ba), &message)) {
             _logged = false;
-            return false;
+            return "Error parsing server XML response\n" + message;
         } else {
             QDomNodeList nlLogin = doc.elementsByTagName("username");
             if (nlLogin.size() > 0) {
                 QDomNode n = nlLogin.item(0);
                 login = n.toElement().text();
             } else {
-                err = true;
-                msg = "Missing credentials";
                 _logged = false;
-                return false;
+                return "Missing credentials";
             }
         }
         QDomNodeList nl = doc.elementsByTagName("password");
@@ -908,10 +850,8 @@ bool AuthManager::ProcessXml_Servers(QString & msg)
             QDomNode n = nl.item(0);
             psw = n.toElement().text();
         } else {
-            err = true;
-            msg = "Missing credentials password";
             _logged = false;
-            return false;
+            return "Missing credentials password";
         }
         nl = doc.elementsByTagName("server");
         if (nl.size() > 0) {
@@ -933,28 +873,27 @@ bool AuthManager::ProcessXml_Servers(QString & msg)
             _vpnpsw = psw;
             _logged = true;
         } else {
-            err = true;
-            msg = "Incorrect credentials. Make sure to use your VPN credentials and not your email.";
             _logged = false;
-            return false;
+            return "Incorrect credentials. Make sure to use your VPN credentials and not your email.";
         }
     }
 
     // force hubs
-    const std::vector<size_t> & hr = AuthManager::GetHubs();
+    const std::vector<size_t> & hr = AuthManager::currentEncryptionHubs();
     if (hr.empty())
         log::logt("Cannot parse hubs");
 
-    StartDwnl_ObfsName();
+    getObfsServerNames();
 //  StartDwnl_AccType();
 
-    PingAll();
+    pingAllServers();
 
-    return !err;
+    return message;
 }
 
-void AuthManager::PingAll()
+void AuthManager::pingAllServers()
 {
+    // Fill _pinks with as many -1 entries as there are servers
     if (_pings.empty())
         _pings.assign(_servers.size(), -1);
     if (_pings.size() < _servers.size()) {
@@ -1151,21 +1090,6 @@ void AuthManager::jump()
     }
 }
 
-void AuthManager::DetermineOldIp()
-{
-    // start http request to proxy.sh
-    StartDwnl_OldIp();
-
-    // omit STUN due to it does not always work
-//      if (_th_oldip.get() == NULL)
-//      {
-//              _th_oldip.reset(new Thread_OldIp(SjMainWindow::Instance()));
-//              SjMainWindow::Instance()->connect(_th_oldip.get(), &Thread_OldIp::resultReady, SjMainWindow::Instance(), &SjMainWindow::Finished_OldIp);
-//              _th_oldip->start();
-//      }
-
-}
-
 uint64_t AuthManager::GetRnd64()
 {
     DoSeed();
@@ -1177,15 +1101,7 @@ uint64_t AuthManager::GetRnd64()
     return v;
 }
 
-void AuthManager::ProcessOldIp(QString ip)
-{
-    _oldip = ip;
-    delete _th_oldip.release();
-    if (Scr_Connect::IsExists())
-        Scr_Connect::Instance()->SetOldIp(_oldip);
-}
-
-void AuthManager::ProcessOldIpHttp()
+void AuthManager::processOldIP()
 {
     log::logt("ProcessOldIpHttp() attempt " + QString::number(_ip_attempt_count));
     QString ip;
@@ -1222,7 +1138,7 @@ void AuthManager::ProcessOldIpHttp()
     if (err) {
         log::logt("ProcessOldIpHttp() attempt " + QString::number(_ip_attempt_count) + " fails");
         if (_ip_attempt_count < 4)
-            StartDwnl_OldIp();
+            getOldIP();
         else
             log::logt("ProcessOldIpHttp() conceide at attempt " + QString::number(_ip_attempt_count));
     } else {
@@ -1249,9 +1165,8 @@ void AuthManager::ForwardPorts()
 
 void AuthManager::loginFinished()
 {
-    QString message;
-    bool ok = ProcessXml_Servers(message);
-    if (ok)
+    QString message = processServersXml();
+    if (message.isEmpty())
         emit loginCompleted();
     else
         emit loginError(message);

@@ -40,7 +40,7 @@ bool OpenUrl_Support();
 bool OpenUrl_Panel();
 bool OpenUrl_Earn();
 bool OpenUrl_Bug();
-bool OpenUrl_Update();
+bool launchUpdateUrl();
 
 //extern const QString & GetSettingsFn();
 

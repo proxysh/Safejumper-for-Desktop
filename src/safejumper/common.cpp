@@ -57,7 +57,7 @@ bool OpenUrl_Bug()
     //https://proxy.sh/panel/submitticket.php
 }
 
-bool OpenUrl_Update()
+bool launchUpdateUrl()
 {
     return OpenUrl("https://proxy.sh/software");
 }

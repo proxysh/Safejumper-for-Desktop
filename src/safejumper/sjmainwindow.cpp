@@ -124,10 +124,10 @@ void SjMainWindow::Timer_Constructed()
         if (OpenvpnManager::Instance()->openvpnRunning())
             OpenvpnManager::Instance()->killRunningOpenvpn();
 
-    AuthManager::Instance()->DetermineOldIp();
+    AuthManager::Instance()->getOldIP();
 
     if (Setting::Instance()->IsCheckForUpdates()) {
-        AuthManager::Instance()->StartDwnl_Updates();
+        AuthManager::Instance()->checkUpdates();
     }
 
     if (Setting::Instance()->IsAutoconnect()) {
@@ -557,27 +557,6 @@ void SjMainWindow::DoConnect()
     OpenvpnManager::Instance()->start();
 }
 
-void SjMainWindow::Finished_ObfsName()
-{
-    QString errmsg;
-    bool ok = AuthManager::Instance()->ProcessXml_ObfsName(errmsg);
-    if (!ok)
-        log::logt(errmsg);
-}
-
-void SjMainWindow::Finished_EccName()
-{
-    QString errmsg;
-    bool ok = AuthManager::Instance()->ProcessXml_EccName(errmsg);
-    if (!ok)
-        log::logt(errmsg);
-    else {
-        int enc = Setting::Encryption();
-        if (ENCRYPTION_RSA != enc)
-            Setting::Instance()->LoadServer();
-    }
-}
-
 //void SjMainWindow::Finished_EccxorName()
 //{
 //	QString errmsg;
@@ -585,22 +564,6 @@ void SjMainWindow::Finished_EccName()
 //	if (!ok)
 //		log::logt(errmsg);
 //}
-
-void SjMainWindow::AccTypeFinished()
-{
-    QString errmsg;
-    bool ok = AuthManager::Instance()->ProcessAccountXml(errmsg);
-    if (!ok)
-        log::logt(errmsg);
-}
-
-void SjMainWindow::ExpireFinished()
-{
-    QString errmsg;
-    bool ok = AuthManager::Instance()->ProcessExpireXml(errmsg);
-    if (!ok)
-        log::logt(errmsg);
-}
 
 void SjMainWindow::CreateMenuItem(QMenu * m, const QString & name, size_t srv)
 {
@@ -617,7 +580,7 @@ void SjMainWindow::ConstructConnecttoMenu()
         if (am->loggedIn()) {
             ClearConnecttoMenu();
 
-            const std::vector<size_t> & hubs = am->GetHubs();
+            const std::vector<size_t> & hubs = am->currentEncryptionHubs();
             if (_ct_menu.get() == NULL) {	// one time during entire program run
                 _ct_menu.reset(_TrayMenu->addMenu("Connect to ..."));
                 _TrayMenu->removeAction(_ac_ConnectTo.get());
@@ -736,27 +699,6 @@ void SjMainWindow::DisableMenuItems(bool connecting)
         s_set_enabled(_ac_Disconnect.get(), false, disconn);
         s_set_enabled(_ac_ConnectTo.get(), false, conn);
     }
-}
-
-void SjMainWindow::Finished_Updates()
-{
-    AuthManager::Instance()->ProcessUpdatesXml();
-}
-
-void SjMainWindow::Finished_OldIpHttp()
-{
-    AuthManager::Instance()->ProcessOldIpHttp();
-}
-
-void SjMainWindow::Finished_OldIp(const QString & s)
-{
-    log::logt("Finished_OldIp: " + s);
-    AuthManager::Instance()->ProcessOldIp(s);
-}
-
-void SjMainWindow::Finished_Dns()
-{
-    AuthManager::Instance()->ProcessDnsXml();
 }
 
 void SjMainWindow::StartWifiWatcher()

@@ -87,15 +87,14 @@ public:
         return _oldip;
     }
 
-    const std::vector<size_t> & GetAllServers();		// return IDs of servers inside _servers available for this encryption
-    const std::vector<size_t> & GetHubs();					// return IDs of habs inside _servers
+    const std::vector<size_t> & currentEncryptionServers();		// return IDs of servers inside _servers available for this encryption
+    const std::vector<size_t> & currentEncryptionHubs();					// return IDs of habs inside _servers
 
     const std::vector<std::pair<bool, int> > & GetLvl0();		// <is hub, hub id / srv id>
     const std::vector<int> & GetLvl1(size_t hub);					// for given hub id all the server ids, including hub entry itself
 
     size_t ServerIdFromHubId(size_t ixHub);
     AServer GetSrv(int id);	 // on -1 returns empty
-    bool IsObfs(int id);			// true if server has Obfs proxy
     int HubIxFromSrvName(const QString & srv);	  // -1 if not found
     int HubIdFromItsSrvId(int ixsrv);			   // -1 if ixsrv not a hub
     int SrvIxFromName(const QString & srv);		 // -1 if not found
@@ -104,22 +103,11 @@ public:
     int PingFromSrvIx(int srv);
 
     void jump();
-    void DetermineOldIp();
 
     uint64_t GetRnd64();
 
-    bool ProcessXml_Servers(QString & out_msg);	// true = ok, empty msg on ok
-    bool ProcessXml_ObfsName(QString & out_msg);
-    bool ProcessXml_EccName(QString & out_msg);
-    bool ProcessAccountXml(QString & out_msg);
-    bool ProcessExpireXml(QString & out_msg);
-    void ProcessOldIp(QString ip);
-    void ProcessOldIpHttp();
-    void ProcessDnsXml();
-    void ProcessUpdatesXml();
-
-    void StartDwnl_Updates();		// use own reply; can download in parallel with others; executed by main window at start regardless other actions
-    void StartDwnl_OldIp();
+    void checkUpdates();		// use own reply; can download in parallel with others; executed by main window at start regardless other actions
+    void getOldIP();
 
     void PingComplete(size_t idWaiter);
     void PingErr(size_t idWaiter);
@@ -135,8 +123,22 @@ signals:
 
 private slots:
     void loginFinished();
+    void processObfsServerNamesXml();
+    void processEccServerNamesXml();
+    void processAccountTypeXml();
+    void processExpirationXml();
+    void processDnsXml();
+
+    void processUpdatesXml();
+    void processOldIP();
 private:
     AuthManager();
+    QString processServersXml();	// true = ok, empty msg on ok
+    bool processServerNamesForEncryptionType(int enc, QString & out_msg);
+    void populateServerIdsFromNames(QStringList names, std::vector<size_t> & found);		// for _obfs_names lookup respective server ix in _servers
+    QStringList extractNames(QString & out_msg);
+    void pingAllServers();
+
     bool _logged;
     bool _CancelLogin;
     static std::auto_ptr<AuthManager> _inst;
@@ -164,7 +166,6 @@ private:
     //std::vector<int> _obfs_srv_available;	// id in _servers of servers available for this user (inside paid set)
 //	std::set<int> _obfs_enabled_srvs;		// for lookup
     std::vector<QString> _obfs_addr;		// 64.110.129.100 ; or boost-sg.proxy.sh
-    void MatchObfsServers(const std::vector<QString> & names, std::vector<size_t> & found);		// for _obfs_names lookup respective server ix in _servers
 
     QString _aclogin;
     QString _acnpsw;
@@ -182,12 +183,11 @@ private:
     std::auto_ptr<QNetworkReply> _reply;
     std::auto_ptr<QNetworkReply> _reply_IP;
     int _ip_attempt_count;
-    void ClearReply();
+    void clearReply();
     std::auto_ptr<QNetworkReply> _reply_update;
 
     std::vector<int> _pings;		// ping for each server; -1 on err
     std::vector<int> GetPings(const std::vector<size_t> & toping);	// from _pings; do not wait for pings; return vec of the same size
-    void PingAll();
     std::queue<size_t> _toping;				// id inside _servers
     bool _pings_loaded;
 
@@ -197,15 +197,13 @@ private:
     std::vector<QTimer *>  _timers;
     void StartWorker(size_t id);
 
-    void StartDwnl_AccType();		// TODO: -2 chain in a more flexible way e.g. queue
-    void StartDwnl_Until();
-    void StartDwnl_Dns();
-    void StartDwnl_ObfsName();
-    void StartDwnl_EccName();
+    void getAccountType();		// TODO: -2 chain in a more flexible way e.g. queue
+    void getExpirationDate();
+    void getDns();
+    void getObfsServerNames();
+    void getEccServerNames();
 //	void StartDwnl_EccxorName();
 
-    bool ProcessXml_Names(std::vector<QString> & v, QString & out_msg);
-    bool ProcessXml_EncryptionName(int enc, QString & out_msg);
     void ForceRepopulation(int enc);
 
     std::auto_ptr<Thread_OldIp> _th_oldip;
