@@ -234,6 +234,8 @@ void Scr_Map::RePopulateLocations(bool random)
             }
             if (new_row != -1)
                 toselect = new_row + 1;
+            else
+                toselect = qrand() % ui->dd_Location->count() + 1;
         }
     }
     ui->dd_Location->setCurrentIndex(toselect);
