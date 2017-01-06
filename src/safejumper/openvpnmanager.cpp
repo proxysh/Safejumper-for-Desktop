@@ -96,10 +96,16 @@ void OpenvpnManager::launchOpenvpn()
         setState(ovsConnecting);
         int enc = Setting::Encryption();
         bool obfs = enc == ENCRYPTION_OBFS_TOR;
+        QString server = Setting::Instance()->Server();
+        QString port = Setting::Instance()->Port();
+        if (server.isEmpty() || port.isEmpty()) {
+            QString message = "Server or port is empty, select a location";
+            log::logt(message);
+            WndManager::Instance()->ErrMsg(message);
+            return;
+        }
         if (obfs) {
-            OsSpecific::Instance()->runObfsproxy(Setting::Instance()->Server(),
-                                                 Setting::Instance()->Port(),
-                                                 "1050");
+            OsSpecific::Instance()->runObfsproxy(server, port, "1050");
             if (!OsSpecific::Instance()->obfsproxyRunning()) {
                 log::logt("Cannot run Obfsproxy");
                 WndManager::Instance()->ErrMsg("Cannot run Obfsproxy");
