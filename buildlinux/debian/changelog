@@ -1,3 +1,9 @@
+safejumper (2017.01.05.0) unstable; urgency=medium
+
+  * Updated packaging with bug fixes for version 3.2 alpha build 71
+
+ -- Jeremy Whiting <info@3monkeysinternational.com>  Thu, 5 Jan 2017 17:26:00 -0700
+
 safejumper (2016.12.02.0) unstable; urgency=medium
 
   * New Ubuntu packaging for Safejumper
