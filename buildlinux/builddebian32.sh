@@ -16,5 +16,5 @@ cd ../
 tar -zxpvf safejumper_$1_orig.tar.gz
 cp -r buildlinux/debian linuxfiles/
 cd linuxfiles
-dpkg-buildpackage -b -uc -us
+dpkg-buildpackage -b -uc -us -ai386
 
