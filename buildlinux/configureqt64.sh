@@ -3,4 +3,4 @@ export SKIP="qtlocation qtdeclarative qt3d qtwayland qtwebchannel qtquickcontrol
 for f in $SKIP; do
   rm -fR $f
 done
-./configure -platform linux-g++-32 -confirm-license -debug -developer-build -opensource -nomake examples -nomake tests -openssl -static -qt-libpng -v $1
+./configure -platform linux-g++-64 -confirm-license -debug -developer-build -opensource -nomake examples -nomake tests -openssl -static -qt-libpng -v $1
