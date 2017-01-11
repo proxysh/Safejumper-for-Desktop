@@ -16,12 +16,13 @@ Name:           safejumper
 Summary:        The Open Build Service -- Server Component
 License:        GPL-2.0 and GPL-3.0
 Group:          Productivity/Networking/Web/Utilities
-Version:        2016.12.15
+Version:        2017.01.05
 Release:        0
 Url:            http://proxy.sh
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source:         safejumper-%version.tar.gz
 Conflicts:      safejumper < %version-%release
+Requires:	net-tools
 
 %description
 VPN client for proxy.sh.
@@ -42,7 +43,7 @@ Authors:
 #
 # configure lighttpd web service (default until OBS 2.1)
 mkdir -p $RPM_BUILD_ROOT/opt/safejumper/
-install -m 0744 safejumper                $RPM_BUILD_ROOT/opt/safejumper/safejumper
+install -m 0755 safejumper                $RPM_BUILD_ROOT/opt/safejumper/safejumper
 install -m 0755 launchopenvpn             $RPM_BUILD_ROOT/opt/safejumper/launchopenvpn
 install -m 0755 netdown                   $RPM_BUILD_ROOT/opt/safejumper/netdown
 install -m 0755 openvpn                   $RPM_BUILD_ROOT/opt/safejumper/openvpn

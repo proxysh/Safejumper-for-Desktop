@@ -15,11 +15,16 @@ cp netdown/netdown linuxfiles
 Then the content of linuxfiles mostly goes into /opt/safejumper/.
 
 To package debian/ubuntu do the following:
+For 32 bit package:
+builddebian32.sh <version>
 
-tar -zcpvf ../../safejumper_<version>_orig.tar.gz linuxfiles
-cd ../../
-tar -zxpvf safejumper_<version>_orig.tar.gz
-cp -r Safejumper-Desktop/buildlinux/debian linuxfiles/
-cd linuxfiles
-dpkg-buildpackage -b -uc -us
+For 64 bit package:
+builddebian64.sh <version>
 
+
+To package redhat/centos do the following:
+For 32 bit package:
+buildredhat32.sh
+
+For 64 bit package:
+buildredhat64.sh
