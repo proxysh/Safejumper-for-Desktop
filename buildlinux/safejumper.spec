@@ -23,6 +23,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source:         safejumper-%version.tar.gz
 Conflicts:      safejumper < %version-%release
 Requires:	net-tools
+Requires:	redhat-rpm-config # Remove once obfsproxy is bundled
 
 %description
 VPN client for proxy.sh.
