@@ -102,7 +102,6 @@ void AuthManager::login(const QString & name, const QString & password)
 
     _reply.reset(_nam.get(BuildRequest(QUrl("https://proxy.sh/access.php?u=" + QUrl::toPercentEncoding(name, "", "") + "&p=" + QUrl::toPercentEncoding(password, "", "")))));
     connect(_reply.get(), SIGNAL(finished()), this, SLOT(loginFinished()));
-
 }
 
 void AuthManager::cancel()
@@ -1012,7 +1011,7 @@ static bool PCmp(const IUPair & a, const IUPair & b)
     return a.first < b.first;
 }
 
-int AuthManager::SrvToJump()
+int AuthManager::getServerToJump()
 {
     int srv = -1;
     if (!_servers.empty()) {
@@ -1082,7 +1081,7 @@ int AuthManager::SrvToJump()
 void AuthManager::jump()
 {
     // TODO: -2 update lists
-    int srv = SrvToJump();              // except current srv/hub
+    int srv = getServerToJump();              // except current srv/hub
     if (srv > -1) {
 // TODO: -0             SetNewIp("");
         Scr_Map::Instance()->SetServer(srv);

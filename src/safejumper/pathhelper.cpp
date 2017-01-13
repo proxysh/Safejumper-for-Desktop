@@ -26,7 +26,11 @@ void PathHelper::cleanup()
 }
 
 PathHelper::PathHelper()
-{}
+{
+    QDir dir(tempPath());
+    if (!dir.exists())
+        dir.mkpath(tempPath());
+}
 
 PathHelper::~PathHelper()
 {}
@@ -65,22 +69,26 @@ QString PathHelper::resourcesPath()
 #endif
 }
 
+QString PathHelper::tempPath()
+{
+#ifdef Q_OS_DARWIN
+    return QDir::homePath() + "/.safejumper/";
+#else
+    return "/tmp/";
+#ifdef Q_OS_WIN
+    return QDir::tempPath();
+#endif
+#endif
+}
+
 QString PathHelper::openvpnLogFilename()
 {
-#ifndef Q_OS_WIN
-    return "/tmp/safejumper-openvpn.log";
-#else
-    return QDir::tempPath() + "/safejumper-openvpn.log";
-#endif // Q_OS_WIN
+    return tempPath() + "safejumper-openvpn.log";
 }
 
 QString PathHelper::openvpnConfigFilename()
 {
-#ifndef Q_OS_WIN
-    return "/tmp/safejumper-openvpn.ovpn";
-#else
-    return QDir::tempPath() + "/safejumper-openvpn.ovpn";
-#endif // Q_OS_WIN
+    return tempPath() + "safejumper-openvpn.ovpn";
 }
 
 QString PathHelper::proxyshCaCertFilename()
@@ -128,11 +136,7 @@ QString PathHelper::installObfsproxyFilename()
 
 QString PathHelper::safejumperLogFilename()
 {
-#ifndef Q_OS_WIN
-    return "/tmp/safejumper-debug.log";
-#else
-    return QDir::tempPath() + "/safejumper-debug.log";
-#endif // Q_OS_WIN
+    return tempPath() + "safejumper-debug.log";
 }
 
 

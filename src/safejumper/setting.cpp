@@ -330,7 +330,7 @@ void Setting::LoadServer()
     }
 
     if (ixsrv < 0)
-        ixsrv = AuthManager::Instance()->SrvToJump();
+        ixsrv = AuthManager::Instance()->getServerToJump();
 
     Scr_Map * sm = Scr_Map::Instance(); // initiate population of the Location drop-down; will call Setting::IsShowNodes() which will initiate scr_settings and load checkboxes
 

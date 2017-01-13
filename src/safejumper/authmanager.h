@@ -113,7 +113,7 @@ public:
     void PingErr(size_t idWaiter);
     void PingTerminate(size_t idWaiter);
 
-    int SrvToJump();		// except current Scr_Map::Instance()->CurrSrv()
+    int getServerToJump();		// except current Scr_Map::Instance()->CurrSrv()
 
     void ForwardPorts();
 

@@ -30,6 +30,7 @@ public:
     QString resourcesPath();
 
 private:
+    QString tempPath(); // Where to keep config file, logs etc.
     PathHelper();
     static std::auto_ptr<PathHelper> _inst;
 };
