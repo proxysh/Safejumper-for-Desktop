@@ -11,7 +11,7 @@
 #include "setting.h"
 #include "openvpnmanager.h"
 #include "scr_map.h"
-#include "sjmainwindow.h"
+#include "loginwindow.h"
 #include "osspecific.h"
 #include "scr_connect.h"
 #include "log.h"
@@ -904,7 +904,7 @@ void AuthManager::pingAllServers()
 
     if (_workers.empty()) {
         _inprogress.assign(PINGWORKERS_NUM, 0);
-        SjMainWindow * m = SjMainWindow::Instance();
+        LoginWindow * m = LoginWindow::Instance();
         for (size_t k = 0; k < PINGWORKERS_NUM; ++k) {
             _workers.push_back(NULL);
             _waiters.push_back(new PingWaiter(k, m));
@@ -926,7 +926,7 @@ void AuthManager::StartWorker(size_t id)
         //log::logt(QString("Pop srv ") + QString::number(srv));
 
         _inprogress.at(id) = srv;
-        SjMainWindow * m = SjMainWindow::Instance();
+        LoginWindow * m = LoginWindow::Instance();
 
         if (_workers.at(id) !=NULL) {
             m->disconnect(_workers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)),

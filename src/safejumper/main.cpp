@@ -1,4 +1,4 @@
-#include "sjmainwindow.h"
+#include "loginwindow.h"
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -37,9 +37,9 @@ int main(int argc, char *argv[])
     g_pTheApp = new THE_APP_CLASS(argc, argv);
 
     log::logt("Starting Application");
-    SjMainWindow::Instance()->show();
+    LoginWindow::Instance()->show();
     int res = g_pTheApp->exec();
-    SjMainWindow::Cleanup();
+    LoginWindow::Cleanup();
     log::logt("Quit Application");
     delete g_pTheApp;
     return res;

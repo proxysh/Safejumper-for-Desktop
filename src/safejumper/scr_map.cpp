@@ -17,7 +17,7 @@
 #include "lvrowdelegate.h"
 #include "lvrowdelegateprotocol.h"
 #include "fonthelper.h"
-#include "sjmainwindow.h"
+#include "loginwindow.h"
 
 Scr_Map::Scr_Map(QWidget *parent) :
     QDialog(parent),
@@ -490,7 +490,7 @@ void Scr_Map::Clicked_Min()
 
 void Scr_Map::Clicked_Cross()
 {
-    SjMainWindow::Instance()->DoClose();
+    LoginWindow::Instance()->quitApplication();
 }
 
 

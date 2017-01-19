@@ -15,8 +15,6 @@
 
 #include <QNetworkRequest>
 
-#include "stringize.hpp"
-
 #include <map>
 #include <set>
 #include <string>

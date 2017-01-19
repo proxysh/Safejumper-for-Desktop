@@ -11,7 +11,7 @@
 #include "wndmanager.h"
 #include "setting.h"
 #include "log.h"
-#include "sjmainwindow.h"
+#include "loginwindow.h"
 #include "pathhelper.h"
 
 #ifdef MONITOR_TOOL
@@ -626,7 +626,7 @@ void OpenvpnManager::parseNewIp(const QString & s)
 void OpenvpnManager::cancel(const QString & msg)
 {
     stop();
-    SjMainWindow::Instance()->BlockOnDisconnect();
+    LoginWindow::Instance()->BlockOnDisconnect();
     WndManager::Instance()->ErrMsg(msg);
 }
 
@@ -934,7 +934,7 @@ void OpenvpnManager::parseSocketPlainWord(const QString & word, const QString & 
         } else {
             if (word.compare("ERROR", Qt::CaseInsensitive) == 0 || word.compare("FATAL", Qt::CaseInsensitive) == 0) {
                 disconnectFromOpenvpnSocket();
-                SjMainWindow::Instance()->BlockOnDisconnect();
+                LoginWindow::Instance()->BlockOnDisconnect();
                 WndManager::Instance()->ErrMsg(s);
             }
         }

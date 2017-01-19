@@ -37,7 +37,7 @@
 
 #include "common.h"
 #include "log.h"
-#include "sjmainwindow.h"
+#include "loginwindow.h"
 #include "wndmanager.h"
 #include "pathhelper.h"
 
@@ -459,7 +459,7 @@ int OsSpecific::Ping(const QString & adr)
 {
     int n = -1;
 #ifdef Q_OS_MAC
-    QProcess pr(SjMainWindow::Instance());
+    QProcess pr(LoginWindow::Instance());
     pr.start(GetCmd(), FormatArgs(adr));
     pr.waitForFinished(1500);		// ms
     if (pr.state() == QProcess::NotRunning && pr.exitStatus() == QProcess::NormalExit) {

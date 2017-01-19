@@ -7,7 +7,7 @@
 #include "common.h"
 #include "wndmanager.h"
 #include "fonthelper.h"
-#include "sjmainwindow.h"
+#include "loginwindow.h"
 
 Scr_Logs::Scr_Logs(QWidget *parent) :
     QDialog(parent),
@@ -121,5 +121,5 @@ void Scr_Logs::Clicked_Min()
 
 void Scr_Logs::Clicked_Cross()
 {
-    SjMainWindow::Instance()->DoClose();
+    LoginWindow::Instance()->quitApplication();
 }

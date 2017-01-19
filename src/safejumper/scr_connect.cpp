@@ -3,7 +3,7 @@
 #include "ui_scr_connect.h"
 #include "scr_settings.h"
 #include "scr_map.h"
-#include "sjmainwindow.h"
+#include "loginwindow.h"
 #include "authmanager.h"
 #include "common.h"
 #include "wndmanager.h"
@@ -365,7 +365,7 @@ void Scr_Connect::Clicked_Cancel()
     Ctr_Openvpn::Instance()->StopLoop();
 #endif	// MONITOR_TOOL
     OpenvpnManager::Instance()->stop();
-    SjMainWindow::Instance()->BlockOnDisconnect();
+    LoginWindow::Instance()->BlockOnDisconnect();
 }
 
 void Scr_Connect::Clicked_Jump()
@@ -380,7 +380,7 @@ void Scr_Connect::Clicked_Min()
 
 void Scr_Connect::Clicked_Cross()
 {
-    SjMainWindow::Instance()->DoClose();
+    LoginWindow::Instance()->quitApplication();
 }
 
 void Scr_Connect::ConnectError(QProcess::ProcessError error)

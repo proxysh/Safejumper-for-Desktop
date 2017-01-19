@@ -5,7 +5,7 @@
 #include <QPainter>
 
 #include "scr_settings.h"
-#include "sjmainwindow.h"
+#include "loginwindow.h"
 #include "scr_map.h"
 #include "scr_logs.h"
 #include "scr_connect.h"
@@ -45,16 +45,16 @@ QWidget * WndManager::Primary()
     if (AuthManager::Instance()->loggedIn())
         return Scr_Connect::Instance();
     else
-        return SjMainWindow::Instance();
+        return LoginWindow::Instance();
 }
 
 void WndManager::ToLogin()
 {
     QWidget * from = ScrVisible();
-    if (SjMainWindow::Instance() != from) {
-        trans(from, SjMainWindow::Instance());
+    if (LoginWindow::Instance() != from) {
+        trans(from, LoginWindow::Instance());
     } else {
-        ToFront(SjMainWindow::Instance());		// activate it
+        ToFront(LoginWindow::Instance());		// activate it
     }
 }
 
@@ -145,9 +145,9 @@ void WndManager::CloseAll()
             SaveAndHide(Scr_Connect::Instance());
             ++visible;
         }
-    if (SjMainWindow::IsExists())
-        if (SjMainWindow::Instance()->isVisible()) {
-            SaveAndHide(SjMainWindow::Instance());
+    if (LoginWindow::IsExists())
+        if (LoginWindow::Instance()->isVisible()) {
+            SaveAndHide(LoginWindow::Instance());
             ++visible;
         }
     if (Scr_Logs::IsExists())
@@ -229,9 +229,9 @@ QWidget * WndManager::ScrVisible()
             w = Scr_Connect::Instance();
             ++visible;
         }
-    if (SjMainWindow::IsExists())
-        if (SjMainWindow::Instance()->isVisible()) {
-            w = SjMainWindow::Instance();
+    if (LoginWindow::IsExists())
+        if (LoginWindow::Instance()->isVisible()) {
+            w = LoginWindow::Instance();
             ++visible;
         }
     if (Scr_Logs::IsExists())
@@ -260,7 +260,7 @@ void WndManager::HandleConnecting()
     Scr_Connect::Instance()->StatusConnecting();
     if (Scr_Map::IsExists())
         Scr_Map::Instance()->StatusConnecting();
-    SjMainWindow::Instance()->StatusConnecting();
+    LoginWindow::Instance()->StatusConnecting();
 
     // if any form visible
 #ifndef MONITOR_TOOL
@@ -271,14 +271,14 @@ void WndManager::HandleConnecting()
     // disable menu buttons
 
     // change tray icon
-    SjMainWindow::Instance()->StatusConnecting();
+    LoginWindow::Instance()->StatusConnecting();
 }
 
 void WndManager::HandleConnected()
 {
     ClosePortDlg();
     Scr_Connect::Instance()->StatusConnected();
-    SjMainWindow::Instance()->StatusConnected();
+    LoginWindow::Instance()->StatusConnected();
 
 #ifdef MONITOR_TOOL
     Scr_Table::Instance()->SetStatus(Setting::Encryption(), Setting::Instance()->ServerID(), Setting::Instance()->CurrProto(), snsConnected);
@@ -290,7 +290,7 @@ void WndManager::HandleDisconnected()
     Scr_Connect::Instance()->StatusDisconnected();
     if (Scr_Map::IsExists())
         Scr_Map::Instance()->StatusDisconnected();
-    SjMainWindow::Instance()->StatusDisconnected();
+    LoginWindow::Instance()->StatusDisconnected();
     // TODO: -0
 
 #ifdef MONITOR_TOOL

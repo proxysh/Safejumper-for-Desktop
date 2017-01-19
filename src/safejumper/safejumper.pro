@@ -57,80 +57,82 @@ linux: {
 }
 
 SOURCES += \
-    main.cpp \
-    sjmainwindow.cpp \
-    scr_connect.cpp \
-    scr_settings.cpp \
-    common.cpp \
-    scr_logs.cpp \
+    acconnectto.cpp \
     authmanager.cpp \
-    scr_map.cpp \
-    wndmanager.cpp \
+    common.cpp \
+    confirmationdialog.cpp \
     dlg_error.cpp \
-    setting.cpp \
-    osspecific.cpp \
-    log.cpp \
+    dlg_newnode.cpp \
     flag.cpp \
+    fonthelper.cpp \
+    log.cpp \
+    loginwindow.cpp \
+    lvrowdelegate.cpp \
+    lvrowdelegateencryption.cpp \
+    lvrowdelegateprotocol.cpp \
+    main.cpp \
+    ministun.c \
+    openvpnmanager.cpp \
+    osspecific.cpp \
+    pathhelper.cpp \
+    pingwaiter.cpp \
+    portforwarder.cpp \
+    scr_connect.cpp \
+    scr_logs.cpp \
+    scr_map.cpp \
+    scr_settings.cpp \
+    scr_table.cpp \
+    setting.cpp \
     stun.cpp \
     thread_oldip.cpp \
-    ministun.c \
-    pingwaiter.cpp \
-    pathhelper.cpp \
     thread_forwardports.cpp \
-    portforwarder.cpp \
-    acconnectto.cpp \
-    lvrowdelegate.cpp \
-    lvrowdelegateprotocol.cpp \
-    fonthelper.cpp \
-    dlg_newnode.cpp \
-    lvrowdelegateencryption.cpp \
-    scr_table.cpp \
-    openvpnmanager.cpp \
-    confirmationdialog.cpp
+    trayiconmanager.cpp \
+    wndmanager.cpp
 
 HEADERS += \
-    sjmainwindow.h \
-    scr_connect.h \
-    scr_settings.h \
-    common.h \
-    scr_logs.h \
-    authmanager.h \
-    scr_map.h \
-    wndmanager.h \
-    dlg_error.h \
-    setting.h \
-    osspecific.h \
-    log.h \
-    flag.h \
-    stun.h \
-    thread_oldip.h \
-    ministun.h \
-    pingwaiter.h \
-    pathhelper.h \
-    thread_forwardports.h \
-    portforwarder.h \
     acconnectto.h \
-    lvrowdelegate.h \
-    lvrowdelegateprotocol.h \
-    fonthelper.h \
-    version.h \
-    update.h \
+    authmanager.h \
+    common.h \
+    confirmationdialog.h \
+    dlg_error.h \
     dlg_newnode.h \
+    flag.h \
+    fonthelper.h \
+    log.h \
+    loginwindow.h \
+    lvrowdelegate.h \
     lvrowdelegateencryption.h \
-    scr_table.h \
+    lvrowdelegateprotocol.h \
+    ministun.h \
     openvpnmanager.h \
-    confirmationdialog.h
+    osspecific.h \
+    pathhelper.h \
+    pingwaiter.h \
+    portforwarder.h \
+    scr_connect.h \
+    scr_logs.h \
+    scr_map.h \
+    scr_settings.h \
+    scr_table.h \
+    setting.h \
+    stun.h \
+    thread_forwardports.h \
+    thread_oldip.h \
+    trayiconmanager.h \
+    update.h \
+    version.h \
+    wndmanager.h
 
 FORMS += \
-    sjmainwindow.ui \
-    scr_connect.ui \
-    scr_settings.ui \
-    scr_logs.ui \
-    scr_map.ui \
+    confirmationdialog.ui \
     dlg_error.ui \
     dlg_newnode.ui \
-    scr_table.ui \
-    confirmationdialog.ui
+    loginwindow.ui \
+    scr_connect.ui \
+    scr_logs.ui \
+    scr_map.ui \
+    scr_settings.ui \
+    scr_table.ui
 
 RESOURCES += \
     imgs.qrc

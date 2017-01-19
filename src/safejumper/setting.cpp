@@ -8,8 +8,8 @@
 #include "scr_map.h"
 #include "common.h"
 #include "authmanager.h"
-#include "sjmainwindow.h"
-
+#include "loginwindow.h"
+#include "trayiconmanager.h"
 
 
 //In future, we’ll add things such as “OpenVPN with XOR TCP 448” or “OpenVPN with TOR UDP 4044”.
@@ -187,7 +187,7 @@ void Setting::ToggleShowNodes(bool v)
         int old = Scr_Map::Instance()->CurrSrv();
         Scr_Map::Instance()->RePopulateLocations();
     }
-    SjMainWindow::Instance()->ConstructConnecttoMenu();
+    TrayIconManager::instance()->constructConnectToMenu();
 }
 
 int Setting::Encryption()

@@ -5,7 +5,7 @@
 #include "scr_connect.h"
 #include "scr_map.h"
 #include "common.h"
-#include "sjmainwindow.h"
+#include "loginwindow.h"
 #include "wndmanager.h"
 #include "setting.h"
 #include "fonthelper.h"
@@ -219,9 +219,9 @@ void Scr_Settings::Toggle_cb_InsecureWiFi(bool v)
 {
     SaveCb("cb_InsecureWiFi", v);
     if (v)
-        SjMainWindow::Instance()->StartWifiWatcher();
+        LoginWindow::Instance()->StartWifiWatcher();
     else
-        SjMainWindow::Instance()->StopWifiWatcher();
+        LoginWindow::Instance()->StopWifiWatcher();
 }
 
 void Scr_Settings::Toggle_cb_ShowNodes(bool v)
@@ -497,5 +497,5 @@ void Scr_Settings::Clicked_Min()
 
 void Scr_Settings::Clicked_Cross()
 {
-    SjMainWindow::Instance()->DoClose();
+    LoginWindow::Instance()->quitApplication();
 }
