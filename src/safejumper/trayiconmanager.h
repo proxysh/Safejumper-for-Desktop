@@ -24,10 +24,6 @@
 #include "openvpnmanager.h"
 
 class QAction;
-class AcConnectto;
-
-//#include "acconnectto.h"
-//#include "openvpnmanager.h"
 
 // This class manages the system tray icon and it's menu.
 class TrayIconManager : public QObject
@@ -117,7 +113,6 @@ private:
     unsigned int mActivatedCount;
     std::auto_ptr<QTimer> mIconTimer;
 
-    std::vector<AcConnectto *> mConnectToActions;
     std::auto_ptr<QMenu> mConnectToMenu;
     std::vector<QMenu *> mHubMenus;
 

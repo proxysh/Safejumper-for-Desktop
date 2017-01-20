@@ -27,7 +27,6 @@
 #include "scr_map.h"
 #include "dlg_error.h"
 #include "confirmationdialog.h"
-#include "acconnectto.h"
 
 #ifdef MONITOR_TOOL
 #include "scr_table.h"
@@ -198,10 +197,12 @@ void TrayIconManager::actionActivated(QSystemTrayIcon::ActivationReason )
 {
     ++mActivatedCount;
     if (mActivatedCount == 1 && !mFixed) {
-        connect(g_pTheApp, SIGNAL(focusChanged(QWidget*, QWidget*)), this, SLOT(focusChanged(QWidget*, QWidget*)));
-        if (NULL == mIconTimer.get()) {
+        connect(g_pTheApp, SIGNAL(focusChanged(QWidget*, QWidget*)),
+                this, SLOT(focusChanged(QWidget*, QWidget*)));
+        if (mIconTimer.get() == NULL) {
             mIconTimer.reset(new QTimer(this));
-            connect(mIconTimer.get(), SIGNAL(timeout()), this, SLOT(updateStateIcon()));
+            connect(mIconTimer.get(), SIGNAL(timeout()),
+                    this, SLOT(updateStateIcon()));
             mIconTimer->start(210);
         }
         updateStateIcon();
@@ -218,7 +219,7 @@ void TrayIconManager::disconnectIconWatcher()
                this, SLOT(actionActivated(QSystemTrayIcon::ActivationReason)));
     disconnect(g_pTheApp, SIGNAL(focusChanged(QWidget*, QWidget*)),
                this, SLOT(focusChanged(QWidget*, QWidget*)));
-    if (NULL != mIconTimer.get())
+    if (mIconTimer.get() != NULL)
         mIconTimer->stop();
 }
 
@@ -279,17 +280,20 @@ void TrayIconManager::connectTriggered()
 
 void TrayIconManager::connectToTriggered()
 {
-    connectTriggered();	// TODO: -0
-    return;
-
     fixIcon();
+    // Get the action from the sender
+    QAction *action = qobject_cast<QAction*>(sender());
+    if (action != NULL) {
+        // Get the action's server id
+        if (AuthManager::Instance()->loggedIn()) {
+            size_t serverId = action->data().toInt();
 
-    // TODO: -0 pick location
-
-    emit login();
-
-//	if (AuthManager::Instance()->IsLoggedin())
-//		WndManager::Instance()->ToMap();
+            Scr_Map::Instance()->SetServer(serverId);
+            OpenvpnManager::Instance()->start();
+        } else {
+            emit login();
+        }
+    }
 }
 
 void TrayIconManager::disconnectTriggered()
@@ -400,9 +404,9 @@ void TrayIconManager::cleanup()
 void TrayIconManager::createMenuItem(QMenu * m, const QString & name, size_t srv)
 {
     QAction * a = m->addAction(name);
-    AcConnectto * o = new AcConnectto(srv);
-    mConnectToActions.push_back(o);
-    connect(a, SIGNAL(triggered()), o, SLOT(ac_ConnectTo()));
+    a->setData(QVariant(int(srv)));
+    connect(a, SIGNAL(triggered()),
+            this, SLOT(connectToTriggered()));
 }
 
 void TrayIconManager::constructConnectToMenu()
@@ -463,13 +467,6 @@ void TrayIconManager::clearConnectToMenu()
     for (size_t k = 0; k < mHubMenus.size(); ++k)
         delete mHubMenus.at(k);
     mHubMenus.clear();
-
-    // remove handlers
-    if (!mConnectToActions.empty()) {
-        for (size_t k = 0; k < mConnectToActions.size(); ++k)
-            delete mConnectToActions[k];
-        mConnectToActions.clear();
-    }
 
     // destroy menu items
     if (mConnectToMenu.get())

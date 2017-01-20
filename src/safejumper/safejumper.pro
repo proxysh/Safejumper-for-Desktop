@@ -57,7 +57,6 @@ linux: {
 }
 
 SOURCES += \
-    acconnectto.cpp \
     authmanager.cpp \
     common.cpp \
     confirmationdialog.cpp \
@@ -90,7 +89,6 @@ SOURCES += \
     wndmanager.cpp
 
 HEADERS += \
-    acconnectto.h \
     authmanager.h \
     common.h \
     confirmationdialog.h \
