@@ -14,7 +14,6 @@
 #define THE_APP_CLASS QApplication
 #endif
 
-#include "scr_connect.h"
 #include "log.h"
 
 THE_APP_CLASS * g_pTheApp;

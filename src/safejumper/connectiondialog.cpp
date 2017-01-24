@@ -1,6 +1,6 @@
-#include "scr_connect.h"
+#include "connectiondialog.h"
 
-#include "ui_scr_connect.h"
+#include "ui_connectiondialog.h"
 #include "scr_settings.h"
 #include "scr_map.h"
 #include "loginwindow.h"
@@ -13,11 +13,11 @@
 #include "flag.h"
 #include "fonthelper.h"
 
-Scr_Connect::HmWords Scr_Connect::_StateWord_Img;
+ConnectionDialog::HmWords ConnectionDialog::_StateWord_Img;
 
-Scr_Connect::Scr_Connect(QWidget *parent) :
+ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Scr_Connect)
+    ui(new Ui::ConnectionDialog)
     , _moving(false)
 {
     ui->setupUi(this);
@@ -62,9 +62,18 @@ Scr_Connect::Scr_Connect(QWidget *parent) :
 //		move(p0);
 //	}
     qApp->installEventFilter(this);
+
+    connect(AuthManager::Instance(), SIGNAL(oldIpLoaded(QString)),
+            this, SLOT(SetOldIp(QString)));
+    connect(AuthManager::Instance(), SIGNAL(emailLoaded(QString)),
+            this, SLOT(SetEmail(QString)));
+    connect(AuthManager::Instance(), SIGNAL(untilLoaded(QString)),
+            this, SLOT(SetUntil(QString)));
+    connect(AuthManager::Instance(), SIGNAL(amountLoaded(QString)),
+            this, SLOT(SetAmount(QString)));
 }
 
-bool Scr_Connect::eventFilter(QObject *obj, QEvent *event)
+bool ConnectionDialog::eventFilter(QObject *obj, QEvent *event)
 {
     switch (event->type()) {
     case QEvent::MouseMove: {
@@ -87,7 +96,7 @@ bool Scr_Connect::eventFilter(QObject *obj, QEvent *event)
     }
 }
 
-void Scr_Connect::Init()
+void ConnectionDialog::Init()
 {
     // Setting::Instance()->LoadServer();
     Setting::Instance()->LoadProt();
@@ -100,7 +109,7 @@ void Scr_Connect::Init()
     UpdProtocol();
 }
 
-void Scr_Connect::SetNoSrv()
+void ConnectionDialog::SetNoSrv()
 {
     ui->L_Percent->hide();
     ui->L_Percent->setText("0%");
@@ -110,7 +119,7 @@ void Scr_Connect::SetNoSrv()
     ui->L_Country->setText("No location specified.");
 }
 
-void Scr_Connect::SetServer(int srv)
+void ConnectionDialog::SetServer(int srv)
 {
     if (srv < 0) {	// none
         SetNoSrv();
@@ -137,12 +146,12 @@ void Scr_Connect::SetServer(int srv)
     }
 }
 
-void Scr_Connect::DwnlStrs()
+void ConnectionDialog::DwnlStrs()
 {
 
 }
 
-void Scr_Connect::UpdNewIp(const QString & s)
+void ConnectionDialog::UpdNewIp(const QString & s)
 {
     static const QString self = "127.0.0.1";
     if (s != self) {
@@ -151,51 +160,51 @@ void Scr_Connect::UpdNewIp(const QString & s)
     }
 }
 
-void Scr_Connect::UpdEnc()
+void ConnectionDialog::UpdEnc()
 {
     int enc = Setting::Encryption();
     ui->L_Encryption->setText(Setting::EncText(enc));
 }
 
-void Scr_Connect::SetOldIp(const QString & s)
+void ConnectionDialog::SetOldIp(const QString & s)
 {
     ui->L_OldIp->setText(s);
     ui->L_OldIp->show();
 }
 
-void Scr_Connect::SetAccName(const QString & s)
+void ConnectionDialog::SetAccName(const QString & s)
 {
     if (ui->L_Login->text().isEmpty() || ui->L_Login->text() == "--")
         ui->L_Login->setText(s);
     ui->L_Login->show();
 }
 
-void Scr_Connect::SetEmail(const QString & s)
+void ConnectionDialog::SetEmail(const QString & s)
 {
     ui->L_Email->setText(s);
     ui->L_Email->show();
 }
 
-void Scr_Connect::SetAmount(const QString & s)
+void ConnectionDialog::SetAmount(const QString & s)
 {
     ui->L_Amount->setText(s);
     ui->L_Amount->show();
 }
 
-void Scr_Connect::SetUntil(const QString & date)
+void ConnectionDialog::SetUntil(const QString & date)
 {
     ui->L_Until->setText("active until\n" + date);
     ui->L_Until->show();
 }
 
-void Scr_Connect::SetFlag(int srv)
+void ConnectionDialog::SetFlag(int srv)
 {
     QString n = AuthManager::Instance()->GetSrv(srv).name;
     QString fl = flag::IconFromSrvName(n);
     ui->b_Flag->setStyleSheet("QPushButton\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/flags/" + fl + ".png);\n}");
 }
 
-void Scr_Connect::SetProtocol(int ix)
+void ConnectionDialog::SetProtocol(int ix)
 {
     if (ix < 0)
         ui->L_Protocol->setText("Not selected");
@@ -203,12 +212,12 @@ void Scr_Connect::SetProtocol(int ix)
         ui->L_Protocol->setText(Setting::Instance()->ProtoStr(ix));
 }
 
-void Scr_Connect::UpdProtocol()
+void ConnectionDialog::UpdProtocol()
 {
     SetProtocol(Setting::Instance()->CurrProto());
 }
 
-Scr_Connect::~Scr_Connect()
+ConnectionDialog::~ConnectionDialog()
 {
     {
         if (this->isVisible()) {
@@ -219,7 +228,7 @@ Scr_Connect::~Scr_Connect()
     delete ui;
 }
 
-void Scr_Connect::closeEvent(QCloseEvent * event)
+void ConnectionDialog::closeEvent(QCloseEvent * event)
 {
     event->ignore();
     WndManager::Instance()->HideThis(this);
@@ -231,7 +240,7 @@ static const char * gs_Conn_Connecting = "QLabel\n{\n	border:0px;\n	color: #ffff
 static const char * gs_Conn_Connecting_Template_start = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-y-";
 static const char * gs_Conn_Connecting_Template_end =  ".png);\n}";
 
-void Scr_Connect::InitStateWords()
+void ConnectionDialog::InitStateWords()
 {
     if (_StateWord_Img.empty()) {
         _StateWord_Img.insert("AUTH", "auth");
@@ -247,13 +256,13 @@ void Scr_Connect::InitStateWords()
     }
 }
 
-void Scr_Connect::StatusConnecting()
+void ConnectionDialog::StatusConnecting()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_Conn_Connecting);
     SetEnabledButtons(false);
 }
 
-void Scr_Connect::StatusConnecting(const QString & word)
+void ConnectionDialog::StatusConnecting(const QString & word)
 {
 //	ModifyWndTitle(word);
 //	this->StatusConnecting();
@@ -278,7 +287,7 @@ void Scr_Connect::StatusConnecting(const QString & word)
     ui->L_ConnectStatus->setStyleSheet(s);
 }
 
-void Scr_Connect::ModifyWndTitle(const QString & word)
+void ConnectionDialog::ModifyWndTitle(const QString & word)
 {
     QString s = "Safejumper";
 //	if (!word.isEmpty())
@@ -286,7 +295,7 @@ void Scr_Connect::ModifyWndTitle(const QString & word)
     this->setWindowTitle(s);
 }
 
-void Scr_Connect::SetEnabledButtons(bool enabled)
+void ConnectionDialog::SetEnabledButtons(bool enabled)
 {
     if (enabled) {
         ui->b_Connect->show();
@@ -303,7 +312,7 @@ void Scr_Connect::SetEnabledButtons(bool enabled)
     ui->b_Row_Protocol->setEnabled(enabled);
 }
 
-void Scr_Connect::StatusConnected()
+void ConnectionDialog::StatusConnected()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_ConnGreen);
     SetEnabledButtons(true);
@@ -312,54 +321,54 @@ void Scr_Connect::StatusConnected()
     ModifyWndTitle("");
 }
 
-void Scr_Connect::StatusDisconnected()
+void ConnectionDialog::StatusDisconnected()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_ConnRed);
     SetEnabledButtons(true);
     ModifyWndTitle("");
 }
 
-std::auto_ptr<Scr_Connect> Scr_Connect::_inst;
-Scr_Connect * Scr_Connect::Instance()
+std::auto_ptr<ConnectionDialog> ConnectionDialog::_inst;
+ConnectionDialog * ConnectionDialog::Instance()
 {
     if (!_inst.get()) {
-        _inst.reset(new Scr_Connect());
+        _inst.reset(new ConnectionDialog());
         _inst->Init();
     }
     return _inst.get();
 }
 
-void Scr_Connect::ToScr_Settings()
+void ConnectionDialog::ToScr_Settings()
 {
     WndManager::Instance()->ToSettings();
 }
 
-void Scr_Connect::ToScr_Primary()
+void ConnectionDialog::ToScr_Primary()
 {
     WndManager::Instance()->ToPrimary();
 }
 
-void Scr_Connect::ToScr_Login()
+void ConnectionDialog::ToScr_Login()
 {
     WndManager::Instance()->ToPrimary();
 }
 
-void Scr_Connect::ToScr_Map()
+void ConnectionDialog::ToScr_Map()
 {
     WndManager::Instance()->ToMap();
 }
 
-void Scr_Connect::ShowPackageUrl()
+void ConnectionDialog::ShowPackageUrl()
 {
     OpenUrl_Panel();
 }
 
-void Scr_Connect::Clicked_Connect()
+void ConnectionDialog::Clicked_Connect()
 {
     OpenvpnManager::Instance()->start();		// handle visuals inside
 }
 
-void Scr_Connect::Clicked_Cancel()
+void ConnectionDialog::Clicked_Cancel()
 {
 #ifdef MONITOR_TOOL
     Ctr_Openvpn::Instance()->StopLoop();
@@ -368,68 +377,68 @@ void Scr_Connect::Clicked_Cancel()
     LoginWindow::Instance()->BlockOnDisconnect();
 }
 
-void Scr_Connect::Clicked_Jump()
+void ConnectionDialog::Clicked_Jump()
 {
     AuthManager::Instance()->jump();
 }
 
-void Scr_Connect::Clicked_Min()
+void ConnectionDialog::Clicked_Min()
 {
     WndManager::Instance()->HideThis(this);
 }
 
-void Scr_Connect::Clicked_Cross()
+void ConnectionDialog::Clicked_Cross()
 {
     LoginWindow::Instance()->quitApplication();
 }
 
-void Scr_Connect::ConnectError(QProcess::ProcessError error)
+void ConnectionDialog::ConnectError(QProcess::ProcessError error)
 {
     log::logt("Scr_Connect::ConnectError(): error = " + QString::number(error));
     WndManager::Instance()->HandleDisconnected();
 }
 
-void Scr_Connect::ConnectStarted()
+void ConnectionDialog::ConnectStarted()
 {
     log::logt("Scr_Connect::ConnectStarted()");
 }
 
-void Scr_Connect::ConnectStateChanged(QProcess::ProcessState newState)
+void ConnectionDialog::ConnectStateChanged(QProcess::ProcessState newState)
 {
     log::logt("Scr_Connect::ConnectStateChanged(): newState = " + QString::number(newState));
     OpenvpnManager::Instance()->processStateChanged(newState);
 }
 
-void Scr_Connect::ConnectFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void ConnectionDialog::ConnectFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     log::logt("Scr_Connect::ConnectFinished(): exitCode = " + QString::number(exitCode) + " exitStatus = " +  QString::number(exitStatus));
     OpenvpnManager::Instance()->processFinished(exitCode, exitStatus);
 }
 
-void Scr_Connect::ConnectStderr()
+void ConnectionDialog::ConnectStderr()
 {
     OpenvpnManager::Instance()->logStderr();
 }
 
-void Scr_Connect::ConnectStdout()
+void ConnectionDialog::ConnectStdout()
 {
     OpenvpnManager::Instance()->logStdout();
 }
 
-void Scr_Connect::Pressed_Head()
+void ConnectionDialog::Pressed_Head()
 {
     _WndStart = this->pos();
     _CursorStart = QCursor::pos();
     _moving = true;
 }
 
-void Scr_Connect::keyPressEvent(QKeyEvent * e)
+void ConnectionDialog::keyPressEvent(QKeyEvent * e)
 {
     if(e->key() != Qt::Key_Escape)
         QDialog::keyPressEvent(e);
 }
 
-void Scr_Connect::PortDlgAction(int action)
+void ConnectionDialog::PortDlgAction(int action)
 {
     if (QDialog::Accepted == action) {
         OpenvpnManager::Instance()->startPortLoop(WndManager::Instance()->IsCyclePort());

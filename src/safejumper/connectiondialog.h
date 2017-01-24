@@ -11,21 +11,21 @@
 
 namespace Ui
 {
-class Scr_Connect;
+class ConnectionDialog;
 }
 
-class Scr_Connect : public QDialog
+class ConnectionDialog : public QDialog
 {
     Q_OBJECT
 
 public:
 
-    ~Scr_Connect();
+    ~ConnectionDialog();
     static bool IsExists()
     {
         return (_inst.get() != NULL);
     }
-    static Scr_Connect * Instance();
+    static ConnectionDialog * Instance();
     static void Cleanup()
     {
         if (_inst.get() != NULL) delete _inst.release();
@@ -35,13 +35,6 @@ public:
     void UpdNewIp(const QString & s);
     void UpdEnc();
 
-    void SetOldIp(const QString & ip);
-    void SetAccName(const QString & s);
-    void SetEmail(const QString & s);
-    void SetAmount(const QString & s);
-    void SetUntil(const QString & date);
-
-    void SetProtocol(int ix);   // -1 for none
 
     void SetVpnName(const QString & vpnname);
     void StatusConnecting();
@@ -57,11 +50,18 @@ public slots:
     void ConnectStderr();
     void ConnectStdout();
 
+    void SetOldIp(const QString & ip);
+    void SetAccName(const QString & s);
+    void SetEmail(const QString & s);
+    void SetAmount(const QString & s);
+    void SetUntil(const QString & date);
+
+    void SetProtocol(int ix);   // -1 for none
     void PortDlgAction(int action);
 private:
-    Ui::Scr_Connect *ui;
-    static std::auto_ptr<Scr_Connect> _inst;
-    explicit Scr_Connect(QWidget *parent = 0);
+    Ui::ConnectionDialog *ui;
+    static std::auto_ptr<ConnectionDialog> _inst;
+    explicit ConnectionDialog(QWidget *parent = 0);
     void Init();
 
     void SetFlag(int srv);

@@ -4,7 +4,7 @@
 
 #include "scr_settings.h"
 #include "scr_map.h"
-#include "scr_connect.h"
+#include "connectiondialog.h"
 #include "scr_map.h"
 #include "common.h"
 #include "authmanager.h"
@@ -272,7 +272,7 @@ int Setting::LoadProt()
     }
     Scr_Map::Instance()->SetProtocol(ix);   // will trigger if differs
     if (ix < 0)		 // forse update - handle case when not differs
-        Scr_Connect::Instance()->SetProtocol(ix);
+        ConnectionDialog::Instance()->SetProtocol(ix);
 
     _loading_protocol = false;
     return ix;
@@ -336,7 +336,7 @@ void Setting::LoadServer()
 
     sm->SetServer(ixsrv);   // will trigger if differs
     if (ixsrv < 0)					// force update - handle case when not differs
-        Scr_Connect::Instance()->SetServer(ixsrv);
+        ConnectionDialog::Instance()->SetServer(ixsrv);
 }
 
 QString Setting::Server()

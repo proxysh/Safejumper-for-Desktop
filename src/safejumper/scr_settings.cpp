@@ -2,7 +2,7 @@
 
 #include "scr_logs.h"
 #include "ui_scr_settings.h"
-#include "scr_connect.h"
+#include "connectiondialog.h"
 #include "scr_map.h"
 #include "common.h"
 #include "loginwindow.h"
@@ -322,8 +322,8 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
         Setting::Instance()->LoadProt();
         Scr_Map::Instance()->RePopulateLocations(false); // Repopulate all locations
     }
-    if (Scr_Connect::IsExists())
-        Scr_Connect::Instance()->UpdEnc();
+    if (ConnectionDialog::IsExists())
+        ConnectionDialog::Instance()->UpdEnc();
 }
 
 static const char * gs_sErrStyle =

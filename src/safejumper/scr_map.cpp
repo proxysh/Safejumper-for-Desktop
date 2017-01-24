@@ -6,11 +6,11 @@
 
 #include "setting.h"
 #include "ui_scr_map.h"
-#include "scr_connect.h"
+#include "connectiondialog.h"
 #include "scr_settings.h"
 #include "wndmanager.h"
 #include "authmanager.h"
-#include "scr_connect.h"
+#include "connectiondialog.h"
 #include "openvpnmanager.h"
 #include "log.h"
 #include "flag.h"
@@ -301,8 +301,8 @@ void Scr_Map::SwitchToNextNode()
 void Scr_Map::ToScr_Connect()
 {
     int srv = CurrSrv();
-    Scr_Connect::Instance()->SetServer(srv);
-    Scr_Connect::Instance()->SetProtocol(ui->dd_Protocol->currentIndex() - 1);
+    ConnectionDialog::Instance()->SetServer(srv);
+    ConnectionDialog::Instance()->SetProtocol(ui->dd_Protocol->currentIndex() - 1);
     WndManager::Instance()->ToPrimary();
 }
 
@@ -355,8 +355,8 @@ void Scr_Map::Changed_dd_Protocol(int ix)
         ui->L_1->setStyleSheet(gs_stIcon1);
         ui->L_2->setStyleSheet(gs_stIcon2inact);
     }
-    if (Scr_Connect::IsExists())
-        Scr_Connect::Instance()->SetProtocol(ix - 1);
+    if (ConnectionDialog::IsExists())
+        ConnectionDialog::Instance()->SetProtocol(ix - 1);
     Setting::Instance()->SaveProt(ix - 1);
 }
 
@@ -365,22 +365,22 @@ void Scr_Map::Changed_dd_Sever(int ix)
     int ixsrv = -1;
     if (ix > 0) {
         ui->L_2->setStyleSheet(gs_stIconV);
-        if (Scr_Connect::IsExists()) {
+        if (ConnectionDialog::IsExists()) {
 //			if (_IsShowNodes)
 //				ixsrv = ix - 1;
 //			else
 //				ixsrv = AuthManager::Instance()->ServerIdFromHubId(ix - 1);
             ixsrv = CurrSrv();
         }
-        AuthManager::Instance()->SetNewIp("");
+        AuthManager::Instance()->setNewIp("");
     } else {
         ui->L_2->setStyleSheet(gs_stIcon2);
     }
     AServer se = AuthManager::Instance()->GetSrv(ixsrv);
     QString newsrv = se.name;
     //= ui->dd_Location->currentText();
-    if (Scr_Connect::IsExists())
-        Scr_Connect::Instance()->SetServer(ixsrv);
+    if (ConnectionDialog::IsExists())
+        ConnectionDialog::Instance()->SetServer(ixsrv);
     Setting::Instance()->SaveServer(ixsrv, newsrv);
 
     DisplayMark(se.name);

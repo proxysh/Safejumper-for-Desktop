@@ -4,17 +4,12 @@
 #include <QFontDatabase>
 
 #include "ui_loginwindow.h"
-#include "scr_connect.h"
 #include "scr_settings.h"
 #include "scr_logs.h"
 #include "scr_map.h"
 #include "dlg_error.h"
 #include "confirmationdialog.h"
 #include "trayiconmanager.h"
-
-#ifdef MONITOR_TOOL
-#include "scr_table.h"
-#endif	// MONITOR_TOOL
 
 #include "authmanager.h"
 #include "wndmanager.h"
@@ -144,15 +139,11 @@ LoginWindow::~LoginWindow()
     AuthManager::cleanup();
     OpenvpnManager::cleanup();
     OsSpecific::Cleanup();
-    Scr_Connect::Cleanup();
     Scr_Logs::Cleanup();
     Scr_Map::Cleanup();
     Scr_Settings::Cleanup();
     Setting::Cleanup();
     WndManager::Cleanup();
-#ifdef MONITOR_TOOL
-    Scr_Table::Cleanup();
-#endif	// MONITOR_TOOL
 
     delete ui;
 }

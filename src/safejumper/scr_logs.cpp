@@ -3,7 +3,7 @@
 #include <QClipboard>
 
 #include "ui_scr_logs.h"
-#include "scr_connect.h"
+#include "connectiondialog.h"
 #include "common.h"
 #include "wndmanager.h"
 #include "fonthelper.h"

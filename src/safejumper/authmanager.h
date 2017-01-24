@@ -80,7 +80,6 @@ public:
     {
         return _newip;
     }
-    void SetNewIp(const QString & ip);
 
     const QString & OldIp()
     {
@@ -117,9 +116,17 @@ public:
 
     void ForwardPorts();
 
+public slots:
+    void setNewIp(const QString & ip);
+
 signals:
     void loginCompleted();
     void loginError(QString message);
+    void untilLoaded(QString until);
+    void amountLoaded(QString amount);
+    void emailLoaded(QString email);
+    void oldIpLoaded(QString oldIp);
+    void newIpLoaded(QString newIp);
 
 private slots:
     void loginFinished();

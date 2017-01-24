@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Scr_Connect</class>
- <widget class="QDialog" name="Scr_Connect">
+ <class>ConnectionDialog</class>
+ <widget class="QDialog" name="ConnectionDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -1600,7 +1600,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Settings</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>ToScr_Settings()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1616,7 +1616,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Flag</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>ToScr_Map()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1632,7 +1632,7 @@ QPushButton:pressed
   <connection>
    <sender>b_FlagBox</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>ToScr_Map()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1648,7 +1648,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Package</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>ShowPackageUrl()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1664,7 +1664,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Row_Country</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>ToScr_Map()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1680,7 +1680,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Row_Ip</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>ToScr_Map()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1696,7 +1696,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Row_Protocol</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>ToScr_Map()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1712,7 +1712,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Connect</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>Clicked_Connect()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1728,7 +1728,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Jump</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>Clicked_Jump()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1744,7 +1744,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Head</sender>
    <signal>pressed()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>Pressed_Head()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1760,7 +1760,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Minimize</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>Clicked_Min()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1776,7 +1776,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Cross</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>Clicked_Cross()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1792,7 +1792,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Cancel</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>Clicked_Cancel()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1808,7 +1808,7 @@ QPushButton:pressed
   <connection>
    <sender>b_Row_Encryption</sender>
    <signal>clicked()</signal>
-   <receiver>Scr_Connect</receiver>
+   <receiver>ConnectionDialog</receiver>
    <slot>ToScr_Settings()</slot>
    <hints>
     <hint type="sourcelabel">

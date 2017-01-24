@@ -8,7 +8,7 @@
 #include "loginwindow.h"
 #include "scr_map.h"
 #include "scr_logs.h"
-#include "scr_connect.h"
+#include "connectiondialog.h"
 
 #ifdef MONITOR_TOOL
 #include "scr_table.h"
@@ -43,7 +43,7 @@ void WndManager::ToPrimary()
 QWidget * WndManager::Primary()
 {
     if (AuthManager::Instance()->loggedIn())
-        return Scr_Connect::Instance();
+        return ConnectionDialog::Instance();
     else
         return LoginWindow::Instance();
 }
@@ -61,11 +61,11 @@ void WndManager::ToLogin()
 void WndManager::ToConnect()
 {
     QWidget * from = ScrVisible();
-    if (Scr_Connect::Instance() != from) {
-        trans(from, Scr_Connect::Instance());
-        Scr_Connect::Instance()->SetAccName(AuthManager::Instance()->VpnName());
+    if (ConnectionDialog::Instance() != from) {
+        trans(from, ConnectionDialog::Instance());
+        ConnectionDialog::Instance()->SetAccName(AuthManager::Instance()->VpnName());
     } else {
-        ToFront(Scr_Connect::Instance());		// activate it
+        ToFront(ConnectionDialog::Instance());		// activate it
     }
 }
 
@@ -140,9 +140,9 @@ QPoint WndManager::CurrPos()
 void WndManager::CloseAll()
 {
     int visible = 0;
-    if (Scr_Connect::IsExists())
-        if (Scr_Connect::Instance()->isVisible()) {
-            SaveAndHide(Scr_Connect::Instance());
+    if (ConnectionDialog::IsExists())
+        if (ConnectionDialog::Instance()->isVisible()) {
+            SaveAndHide(ConnectionDialog::Instance());
             ++visible;
         }
     if (LoginWindow::IsExists())
@@ -224,9 +224,9 @@ QWidget * WndManager::ScrVisible()
 {
     QWidget * w = NULL;
     int visible = 0;
-    if (Scr_Connect::IsExists())
-        if (Scr_Connect::Instance()->isVisible()) {
-            w = Scr_Connect::Instance();
+    if (ConnectionDialog::IsExists())
+        if (ConnectionDialog::Instance()->isVisible()) {
+            w = ConnectionDialog::Instance();
             ++visible;
         }
     if (LoginWindow::IsExists())
@@ -257,7 +257,7 @@ void WndManager::HandleConnecting()
 {
     // disable buttons
     // change status label to connecting
-    Scr_Connect::Instance()->StatusConnecting();
+    ConnectionDialog::Instance()->StatusConnecting();
     if (Scr_Map::IsExists())
         Scr_Map::Instance()->StatusConnecting();
     LoginWindow::Instance()->StatusConnecting();
@@ -277,7 +277,7 @@ void WndManager::HandleConnecting()
 void WndManager::HandleConnected()
 {
     ClosePortDlg();
-    Scr_Connect::Instance()->StatusConnected();
+    ConnectionDialog::Instance()->StatusConnected();
     LoginWindow::Instance()->StatusConnected();
 
 #ifdef MONITOR_TOOL
@@ -287,7 +287,7 @@ void WndManager::HandleConnected()
 
 void WndManager::HandleDisconnected()
 {
-    Scr_Connect::Instance()->StatusDisconnected();
+    ConnectionDialog::Instance()->StatusDisconnected();
     if (Scr_Map::IsExists())
         Scr_Map::Instance()->StatusDisconnected();
     LoginWindow::Instance()->StatusDisconnected();
@@ -306,7 +306,7 @@ void WndManager::HandleDisconnected()
 
 void WndManager::HandleState(const QString & word)
 {
-    Scr_Connect::Instance()->StatusConnecting(word);
+    ConnectionDialog::Instance()->StatusConnecting(word);
 }
 
 void WndManager::ErrMsg(const QString & msg)
@@ -331,7 +331,7 @@ void WndManager::ShowPortDlg()
         _DlgPort->deleteLater();
     _DlgPort = new Dlg_newnode("Connection failed? Try another node or port.", Primary());
     //_DlgPort->setWindowModality(Qt::ApplicationModal);
-    Scr_Connect * w = Scr_Connect::Instance();
+    ConnectionDialog * w = ConnectionDialog::Instance();
     w->connect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
     _DlgPort->open();
 }
@@ -339,8 +339,8 @@ void WndManager::ShowPortDlg()
 void WndManager::ClosePortDlg()
 {
     if (_DlgPort != NULL) {
-        if (Scr_Connect::IsExists()) {
-            Scr_Connect * w = Scr_Connect::Instance();
+        if (ConnectionDialog::IsExists()) {
+            ConnectionDialog * w = ConnectionDialog::Instance();
             w->disconnect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
         }
         _DlgPort->close();

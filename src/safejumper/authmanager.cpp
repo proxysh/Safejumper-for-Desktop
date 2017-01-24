@@ -13,7 +13,6 @@
 #include "scr_map.h"
 #include "loginwindow.h"
 #include "osspecific.h"
-#include "scr_connect.h"
 #include "log.h"
 #include "flag.h"
 #include "common.h"
@@ -46,7 +45,10 @@ AuthManager::AuthManager()
     , _seeded(false)
     , _CancelLogin(false)
     , _ip_attempt_count(0)
-{}
+{
+    connect(OpenvpnManager::Instance(), SIGNAL(gotNewIp(QString)),
+            this, SLOT(setNewIp(QString)));
+}
 
 AuthManager::~AuthManager()
 {
@@ -141,16 +143,12 @@ AServer AuthManager::GetHub(int idhub)
     return GetSrv(idsrv);
 }
 
-void AuthManager::SetNewIp(const QString & ip)
+void AuthManager::setNewIp(const QString & ip)
 {
     static const QString self = "127.0.0.1";
-    if (ip != self)
+    if (ip != self) {
         _newip = ip;
-    if (Scr_Connect::IsExists()
-//              && Setting::Encryption() != ENCRYPTION_OBFS_TOR
-            && ip != self
-       ) {
-        Scr_Connect::Instance()->UpdNewIp(ip);
+        emit newIpLoaded(ip);
     }
 }
 
@@ -577,8 +575,8 @@ void AuthManager::processAccountTypeXml()
     n = nl.item(0);
     QString email = n.toElement().text();
     log::logt("Got account e-mail " + email + " and amount " + amount);
-    Scr_Connect::Instance()->SetAmount(amount);
-    Scr_Connect::Instance()->SetEmail(email);
+    emit amountLoaded(amount);
+    emit emailLoaded(email);
     /*
     QFile f("/tmp/acc.xml");
     f.open(QIODevice::WriteOnly);
@@ -626,7 +624,7 @@ void AuthManager::processExpirationXml()
     QDomNode n = nl.item(0);
     until = n.toElement().text();
 
-    Scr_Connect::Instance()->SetUntil(until);
+    emit untilLoaded(until);
 
     getDns();
 }
@@ -1144,8 +1142,7 @@ void AuthManager::processOldIP()
         log::logt("Determined old IP:  " + ip);
         _oldip = ip;
         // try to push value (if Scr_Connect was constructed yet)
-        if (Scr_Connect::IsExists())
-            Scr_Connect::Instance()->SetOldIp(_oldip);
+        emit oldIpLoaded(_oldip);
     }
 }
 

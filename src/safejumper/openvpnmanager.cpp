@@ -6,7 +6,7 @@
 
 #include "authmanager.h"
 #include "osspecific.h"
-#include "scr_connect.h"
+#include "connectiondialog.h"
 #include "scr_map.h"
 #include "wndmanager.h"
 #include "setting.h"
@@ -582,7 +582,7 @@ void OpenvpnManager::gotConnected(const QString & s)
         int p1 = s.indexOf(',', p + 1);
         QString ip = p1 > -1 ? s.mid(p + 1, p1 - p - 1) : s.mid(p + 1);
         if (Setting::Encryption() != ENCRYPTION_OBFS_TOR)   // for proxy it shows 127.0.0.1
-            AuthManager::Instance()->SetNewIp(ip);
+            emit gotNewIp(ip);
     }
 
     AuthManager::Instance()->ForwardPorts();
@@ -617,8 +617,7 @@ void OpenvpnManager::parseNewIp(const QString & s)
                     break;
             }
             QString ip = s.mid(p2 + 1, p1 - p2 - 1);
-            AuthManager::Instance()->SetNewIp(ip);
-            Scr_Connect::Instance()->UpdNewIp(ip);
+            emit gotNewIp(ip);
         }
     }
 }

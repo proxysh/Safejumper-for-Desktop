@@ -40,11 +40,6 @@ bool OpenUrl_Earn();
 bool OpenUrl_Bug();
 bool launchUpdateUrl();
 
-//extern const QString & GetSettingsFn();
-
-#define SETTINGS_OBJ QSettings settings("proxy.sh", "Safejumper")
-//#define CB_SAVE_VALUE(name) do { SETTINGS_OBJ; settings.setValue(BOOST_PP_STRINGIZE(name), ui-> ##name## ->isChecked()); } while (0)
-
 void SaveCb(const char * name, bool val);
 
 struct AServer {

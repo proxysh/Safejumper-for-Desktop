@@ -65,6 +65,9 @@ public:
     }
 #endif	// MONITOR_TOOL
 
+signals:
+    void gotNewIp(QString ip);
+
 private slots:
     void socketConnected();
     void socketError(QAbstractSocket::SocketError error);

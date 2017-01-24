@@ -60,6 +60,7 @@ SOURCES += \
     authmanager.cpp \
     common.cpp \
     confirmationdialog.cpp \
+    connectiondialog.cpp \
     dlg_error.cpp \
     dlg_newnode.cpp \
     flag.cpp \
@@ -76,7 +77,6 @@ SOURCES += \
     pathhelper.cpp \
     pingwaiter.cpp \
     portforwarder.cpp \
-    scr_connect.cpp \
     scr_logs.cpp \
     scr_map.cpp \
     scr_settings.cpp \
@@ -92,6 +92,7 @@ HEADERS += \
     authmanager.h \
     common.h \
     confirmationdialog.h \
+    connectiondialog.h \
     dlg_error.h \
     dlg_newnode.h \
     flag.h \
@@ -107,7 +108,6 @@ HEADERS += \
     pathhelper.h \
     pingwaiter.h \
     portforwarder.h \
-    scr_connect.h \
     scr_logs.h \
     scr_map.h \
     scr_settings.h \
@@ -123,14 +123,14 @@ HEADERS += \
 
 FORMS += \
     confirmationdialog.ui \
+    connectiondialog.ui \
     dlg_error.ui \
     dlg_newnode.ui \
     loginwindow.ui \
-    scr_connect.ui \
     scr_logs.ui \
     scr_map.ui \
     scr_settings.ui \
-    scr_table.ui
+    scr_table.ui \
 
 RESOURCES += \
     imgs.qrc
