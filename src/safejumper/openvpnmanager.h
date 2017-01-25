@@ -41,11 +41,6 @@ public:
 
     bool openvpnRunning();
 
-    void logStderr();
-    void logStdout();
-    void processStateChanged(QProcess::ProcessState st);
-    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
-
     OvState state();
 
     void startPortLoop(bool port);		// true - cycle ports; false - cycle nodes
@@ -75,6 +70,13 @@ private slots:
     void reconnectTimeout();
     void openvpnLogfileChanged(const QString & pfn);		// OpenVpn log file
     void checkState();		// timer calls it
+
+    void processError(QProcess::ProcessError error);
+    void processStarted();
+    void processStateChanged(QProcess::ProcessState st);
+    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void logStderr();
+    void logStdout();
 
 private:
     OpenvpnManager();

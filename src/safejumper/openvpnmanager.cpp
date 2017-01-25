@@ -6,7 +6,6 @@
 
 #include "authmanager.h"
 #include "osspecific.h"
-#include "connectiondialog.h"
 #include "scr_map.h"
 #include "wndmanager.h"
 #include "setting.h"
@@ -204,14 +203,19 @@ void OpenvpnManager::launchOpenvpn()
             setupFileWatcher();
             log::logt("after attaching to OpenVPN");
 #else
-            Scr_Connect * sc = Scr_Connect::Instance();
             _process.reset(new QProcess());
-            sc->connect(_process.get(), SIGNAL(error(QProcess::ProcessError)), sc, SLOT(ConnectError(QProcess::ProcessError)));
-            sc->connect(_process.get(), SIGNAL(started()), sc, SLOT(ConnectStarted()));
-            sc->connect(_process.get(), SIGNAL(stateChanged(QProcess::ProcessState)), sc, SLOT(ConnectStateChanged(QProcess::ProcessState)));
-            sc->connect(_process.get(), SIGNAL(finished(int, QProcess::ExitStatus)), sc, SLOT(ConnectFinished(int, QProcess::ExitStatus)));
-            sc->connect(_process.get(), SIGNAL(readyReadStandardError()), sc, SLOT(ConnectStderr()));
-            sc->connect(_process.get(), SIGNAL(readyReadStandardOutput()), sc, SLOT(ConnectStdout()));
+            connect(_process.get(), SIGNAL(error(QProcess::ProcessError)),
+                    this, SLOT(processError(QProcess::ProcessError)));
+            connect(_process.get(), SIGNAL(started()),
+                    this, SLOT(processStarted()));
+            connect(_process.get(), SIGNAL(stateChanged(QProcess::ProcessState)),
+                    this, SLOT(processStateChanged(QProcess::ProcessState)));
+            connect(_process.get(), SIGNAL(finished(int, QProcess::ExitStatus)),
+                    this, SLOT(processFinished(int, QProcess::ExitStatus)));
+            connect(_process.get(), SIGNAL(readyReadStandardError()),
+                    this, SLOT(logStderr()));
+            connect(_process.get(), SIGNAL(readyReadStandardOutput()),
+                    this, SLOT(logStdout()));
             _process->start(prog, args);
             _process->waitForStarted(2000);
             log::logt("Process ID is: " + QString::number(_process->processId()));
@@ -235,6 +239,17 @@ void OpenvpnManager::launchOpenvpn()
     }
     log::logt("launchopenvpn done");
 #undef NO_PARAMFILE
+}
+
+void OpenvpnManager::processError(QProcess::ProcessError error)
+{
+    log::logt("OpenvpnManager::processError(): error = " + QString::number(error));
+    WndManager::Instance()->HandleDisconnected();
+}
+
+void OpenvpnManager::processStarted()
+{
+    log::logt("OpenvpnManager::ConnectStarted()");
 }
 
 bool OpenvpnManager::writeConfigFile()
@@ -703,13 +718,15 @@ void OpenvpnManager::logStdout()
 
 void OpenvpnManager::processStateChanged(QProcess::ProcessState st)
 {
+    log::logt("OpenvpnManager::processStateChanged(): newState = " + QString::number(st));
     // TODO: handle open vpn  process startup
     setupFileWatcher();
 }
 
 void OpenvpnManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    // OpenVpn crushed or just spawn a child and exit during startup
+    log::logt("OpenvpnManager::processFinished(): exitCode = " + QString::number(exitCode) + " exitStatus = " +  QString::number(exitStatus));
+    // OpenVpn crashed or just spawn a child and exit during startup
     if (exitCode != 0) { // TODO: -1 handle open vpn process startup
         // TODO: -1 handle used socket
         // MANAGEMENT: Socket bind failed on local address [AF_INET]127.0.0.1:6842: Address already in use

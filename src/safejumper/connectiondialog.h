@@ -43,13 +43,6 @@ public:
     void StatusDisconnected();
 
 public slots:
-    void ConnectError(QProcess::ProcessError error);
-    void ConnectStarted();
-    void ConnectStateChanged(QProcess::ProcessState newState);
-    void ConnectFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void ConnectStderr();
-    void ConnectStdout();
-
     void SetOldIp(const QString & ip);
     void SetAccName(const QString & s);
     void SetEmail(const QString & s);

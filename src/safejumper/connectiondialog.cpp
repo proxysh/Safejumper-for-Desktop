@@ -392,39 +392,6 @@ void ConnectionDialog::Clicked_Cross()
     LoginWindow::Instance()->quitApplication();
 }
 
-void ConnectionDialog::ConnectError(QProcess::ProcessError error)
-{
-    log::logt("Scr_Connect::ConnectError(): error = " + QString::number(error));
-    WndManager::Instance()->HandleDisconnected();
-}
-
-void ConnectionDialog::ConnectStarted()
-{
-    log::logt("Scr_Connect::ConnectStarted()");
-}
-
-void ConnectionDialog::ConnectStateChanged(QProcess::ProcessState newState)
-{
-    log::logt("Scr_Connect::ConnectStateChanged(): newState = " + QString::number(newState));
-    OpenvpnManager::Instance()->processStateChanged(newState);
-}
-
-void ConnectionDialog::ConnectFinished(int exitCode, QProcess::ExitStatus exitStatus)
-{
-    log::logt("Scr_Connect::ConnectFinished(): exitCode = " + QString::number(exitCode) + " exitStatus = " +  QString::number(exitStatus));
-    OpenvpnManager::Instance()->processFinished(exitCode, exitStatus);
-}
-
-void ConnectionDialog::ConnectStderr()
-{
-    OpenvpnManager::Instance()->logStderr();
-}
-
-void ConnectionDialog::ConnectStdout()
-{
-    OpenvpnManager::Instance()->logStdout();
-}
-
 void ConnectionDialog::Pressed_Head()
 {
     _WndStart = this->pos();
