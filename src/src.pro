@@ -6,6 +6,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS = \
+	safechecker \
 	safejumper
 
 macx: {
