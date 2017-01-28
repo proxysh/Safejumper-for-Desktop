@@ -63,7 +63,7 @@ void WndManager::ToConnect()
     QWidget * from = ScrVisible();
     if (TestDialog::instance() != from) {
         trans(from, TestDialog::instance());
-        TestDialog::instance()->SetAccName(AuthManager::Instance()->VpnName());
+        TestDialog::instance()->setAccountName(AuthManager::Instance()->VpnName());
     } else {
         ToFront(TestDialog::instance());		// activate it
     }
@@ -206,7 +206,7 @@ void WndManager::ApplyCoords(QWidget * to)
     int nx = _x + 187 - (to->width() / 2);
 
 //log::logt(QString().sprintf("ApplyCoords(): moving to (%d,%d)", nx, _y));
-    to->move(nx, _y);
+//    to->move(nx, _y);
 }
 
 void WndManager::DoShape(QWidget * d)

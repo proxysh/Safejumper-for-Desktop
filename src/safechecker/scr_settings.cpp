@@ -323,7 +323,7 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
         Scr_Map::Instance()->RePopulateLocations(false); // Repopulate all locations
     }
     if (TestDialog::exists())
-        TestDialog::instance()->UpdEnc();
+        TestDialog::instance()->updateEncoding();
 }
 
 static const char * gs_sErrStyle =

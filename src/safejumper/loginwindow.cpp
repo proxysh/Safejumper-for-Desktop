@@ -210,7 +210,7 @@ void LoginWindow::quitApplication()
 // HACK: workaround: without any form visible program exits => force show() primary
 //	if (WndManager::Instance()->ScrVisible() != NULL)
     WndManager::Instance()->ToPrimary();
-    int res = WndManager::Instance()->Confirmation("Would you like to shut Safejumper down?");
+    int res = WndManager::Instance()->Confirmation(QString("Would you like to shut %1 down?").arg(QApplication::applicationName()));
     if (res == QDialog::Accepted) {
         WndManager::Instance()->CloseAll();
         if (OpenvpnManager::exists())

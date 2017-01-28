@@ -301,8 +301,8 @@ void Scr_Map::SwitchToNextNode()
 void Scr_Map::ToScr_Connect()
 {
     int srv = CurrSrv();
-    TestDialog::instance()->SetServer(srv);
-    TestDialog::instance()->SetProtocol(ui->dd_Protocol->currentIndex() - 1);
+    TestDialog::instance()->setServer(srv);
+    TestDialog::instance()->setProtocol(ui->dd_Protocol->currentIndex() - 1);
     WndManager::Instance()->ToPrimary();
 }
 
@@ -356,7 +356,7 @@ void Scr_Map::Changed_dd_Protocol(int ix)
         ui->L_2->setStyleSheet(gs_stIcon2inact);
     }
     if (TestDialog::exists())
-        TestDialog::instance()->SetProtocol(ix - 1);
+        TestDialog::instance()->setProtocol(ix - 1);
     Setting::Instance()->SaveProt(ix - 1);
 }
 
@@ -380,7 +380,7 @@ void Scr_Map::Changed_dd_Sever(int ix)
     QString newsrv = se.name;
     //= ui->dd_Location->currentText();
     if (TestDialog::exists())
-        TestDialog::instance()->SetServer(ixsrv);
+        TestDialog::instance()->setServer(ixsrv);
     Setting::Instance()->SaveServer(ixsrv, newsrv);
 
     DisplayMark(se.name);

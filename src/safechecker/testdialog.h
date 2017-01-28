@@ -43,19 +43,12 @@ public:
     static TestDialog * instance();
     static void cleanup();
 
-    void SetServer(int srv);	// -1 or id inside all servers
-    void UpdNewIp(const QString & s);
-    void UpdEnc();
+    void setProtocol(int ix);   // -1 for none
+    void setServer(int srv);	// -1 or id inside all servers
+    void updateNewIP(const QString & s);
+    void updateEncoding();
 
-    void SetOldIp(const QString & ip);
-    void SetAccName(const QString & s);
-    void SetEmail(const QString & s);
-    void SetAmount(const QString & s);
-    void SetUntil(const QString & date);
-
-    void SetProtocol(int ix);   // -1 for none
-
-    void SetVpnName(const QString & vpnname);
+    void setVPNName(const QString & vpnname);
     void StatusConnecting();
     void StatusConnecting(const QString & word);
     void StatusConnected();
@@ -63,6 +56,7 @@ public:
 
 public slots:
     void PortDlgAction(int action);
+    void setAccountName(const QString & s);
 
 protected:
     virtual void closeEvent(QCloseEvent * event);
@@ -72,6 +66,11 @@ protected:
 private slots:
     void on_startButton_clicked();
     void on_cancelButton_clicked();
+
+    void setOldIP(const QString & ip);
+    void setEmail(const QString & s);
+    void setAmount(const QString & s);
+    void setUntil(const QString & date);
 
 private:
     Ui::TestDialog *ui;

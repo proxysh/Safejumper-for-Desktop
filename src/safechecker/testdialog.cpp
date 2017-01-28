@@ -57,9 +57,9 @@ TestDialog::TestDialog(QWidget *parent) :
     ui->L_Until->setFont(FontHelper::pt(7));
     ui->L_Package->setFont(FontHelper::pt(10));
 #endif
-    QPoint p1 = ui->L_LOAD->pos();
-    p1.setX(p1.x() + 10);
-    ui->L_LOAD->move(p1);
+//    QPoint p1 = ui->L_LOAD->pos();
+//    p1.setX(p1.x() + 10);
+//    ui->L_LOAD->move(p1);
 #endif
 
     StatusDisconnected();
@@ -78,6 +78,15 @@ TestDialog::TestDialog(QWidget *parent) :
 //		log::logt("Non equal! Move back;");
 //		move(p0);
 //	}
+    connect(AuthManager::Instance(), SIGNAL(oldIpLoaded(QString)),
+            this, SLOT(setOldIP(QString)));
+    connect(AuthManager::Instance(), SIGNAL(emailLoaded(QString)),
+            this, SLOT(setEmail(QString)));
+    connect(AuthManager::Instance(), SIGNAL(untilLoaded(QString)),
+            this, SLOT(setUntil(QString)));
+    connect(AuthManager::Instance(), SIGNAL(amountLoaded(QString)),
+            this, SLOT(setAmount(QString)));
+
     qApp->installEventFilter(this);
 }
 
@@ -123,8 +132,8 @@ void TestDialog::Init()
     // TODO: -1  get actual data
     ui->L_Until->setText("active until\n-");
     ui->L_Amount->setText("-");
-    SetOldIp(AuthManager::Instance()->OldIp());
-    UpdEnc();
+    setOldIP(AuthManager::Instance()->OldIp());
+    updateEncoding();
     UpdProtocol();
 }
 
@@ -138,7 +147,7 @@ void TestDialog::SetNoSrv()
     ui->countryLabel->setText("No location specified.");
 }
 
-void TestDialog::SetServer(int srv)
+void TestDialog::setServer(int srv)
 {
     if (srv < 0) {	// none
         SetNoSrv();
@@ -169,7 +178,7 @@ void TestDialog::DwnlStrs()
 
 }
 
-void TestDialog::UpdNewIp(const QString & s)
+void TestDialog::updateNewIP(const QString & s)
 {
     static const QString self = "127.0.0.1";
     if (s != self) {
@@ -178,38 +187,38 @@ void TestDialog::UpdNewIp(const QString & s)
     }
 }
 
-void TestDialog::UpdEnc()
+void TestDialog::updateEncoding()
 {
     int enc = Setting::Encryption();
     ui->encryptionLabel->setText(Setting::EncText(enc));
 }
 
-void TestDialog::SetOldIp(const QString & s)
+void TestDialog::setOldIP(const QString & s)
 {
     ui->L_OldIp->setText(s);
     ui->L_OldIp->show();
 }
 
-void TestDialog::SetAccName(const QString & s)
+void TestDialog::setAccountName(const QString & s)
 {
     if (ui->L_Login->text().isEmpty() || ui->L_Login->text() == "--")
         ui->L_Login->setText(s);
     ui->L_Login->show();
 }
 
-void TestDialog::SetEmail(const QString & s)
+void TestDialog::setEmail(const QString & s)
 {
     ui->L_Email->setText(s);
     ui->L_Email->show();
 }
 
-void TestDialog::SetAmount(const QString & s)
+void TestDialog::setAmount(const QString & s)
 {
     ui->L_Amount->setText(s);
     ui->L_Amount->show();
 }
 
-void TestDialog::SetUntil(const QString & date)
+void TestDialog::setUntil(const QString & date)
 {
     ui->L_Until->setText("active until\n" + date);
     ui->L_Until->show();
@@ -222,7 +231,7 @@ void TestDialog::SetFlag(int srv)
     ui->flagButton->setStyleSheet("QPushButton\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/flags/" + fl + ".png);\n}");
 }
 
-void TestDialog::SetProtocol(int ix)
+void TestDialog::setProtocol(int ix)
 {
     if (ix < 0)
         ui->L_Protocol->setText("Not selected");
@@ -232,7 +241,7 @@ void TestDialog::SetProtocol(int ix)
 
 void TestDialog::UpdProtocol()
 {
-    SetProtocol(Setting::Instance()->CurrProto());
+    setProtocol(Setting::Instance()->CurrProto());
 }
 
 TestDialog::~TestDialog()
@@ -276,14 +285,19 @@ void TestDialog::InitStateWords()
 
 void TestDialog::on_startButton_clicked()
 {
+    ui->startButton->hide();
+    ui->cancelButton->show();
     // Get all encryption types
     mEncryptionTypes = {ENCRYPTION_RSA, ENCRYPTION_OBFS_TOR, ENCRYPTION_ECC, ENCRYPTION_ECCXOR};
     // Set encryption to type 0
     mCurrentEncryptionType = 0;
+    setProtocol(mCurrentEncryptionType);
+    Setting::Instance()->SaveProt(mCurrentEncryptionType);
     // Get all servers
     mServerIds = AuthManager::Instance()->currentEncryptionServers();
     // Set server to first
     mCurrentServerId = 0;
+    setServer(mServerIds.at(mCurrentServerId));
     // Get all protocols
     mProtocols = Setting::Instance()->GetAllPorts();
     // Set protocol to first
