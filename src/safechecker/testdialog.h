@@ -49,14 +49,15 @@ public:
     void updateEncoding();
 
     void setVPNName(const QString & vpnname);
-    void StatusConnecting();
-    void StatusConnecting(const QString & word);
-    void StatusConnected();
-    void StatusDisconnected();
 
 public slots:
     void PortDlgAction(int action);
     void setAccountName(const QString & s);
+    void setStatusConnecting();
+    void setStatusConnecting(const QString & word);
+    void setStatusConnected();
+    void setStatusDisconnected();
+    void setError(const QString &message);
 
 protected:
     virtual void closeEvent(QCloseEvent * event);
@@ -76,21 +77,25 @@ private:
     Ui::TestDialog *ui;
     static std::auto_ptr<TestDialog> mInstance;
     explicit TestDialog(QWidget *parent = 0);
-    void Init();
 
-    void SetFlag(int srv);
-    void SetNoSrv();
-    void UpdProtocol();
-    void SetEnabledButtons(bool enabled);
+    void setFlag(int srv);
+    void setNoServer();
+    void updateProtocol();
 
-    bool _moving;
-    void DwnlStrs();
-    QPoint _WndStart;
-    QPoint _CursorStart;
+    // Record current encryption/server/protocol result and go to the next one
+    void iterate();
+    // Add a row to the table widget
+    int addRow();
+    // Add a "connected" line to the table widget
+    void addConnected();
+    void addError(QString message);
 
-    static void InitStateWords();
-    typedef QHash<QString, const char *> HmWords;
-    static HmWords _StateWord_Img;
+    bool mMoving;
+    QPoint mStartPosition;
+    QPoint mCursorStartPosition;
+
+    static void initializeStateWords();
+    static QHash<QString, const char*> mStateWordImages;
 
     int mCurrentEncryptionType;
     int mCurrentServerId;
@@ -101,4 +106,4 @@ private:
 };
 
 
-#endif // SCR_CONNECT_H
+#endif // TESTDIALOG_H

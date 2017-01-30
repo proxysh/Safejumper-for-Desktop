@@ -6,18 +6,18 @@
 
 QT	   += network xml core gui widgets
 u
-TARGET = serverchecker
+TARGET = safechecker
 TEMPLATE = app
 INCLUDEPATH += ../safejumper/
 
 macx: {
-    TARGET = ServerChecker
+    TARGET = Safechecker
     QMAKE_INFO_PLIST = ./Info.plist
     QMAKE_LFLAGS += -F /System/Library/Frameworks/
     QMAKE_RPATHDIR += @executable_path/../Frameworks
     LIBS += -framework Security
     target.path = /Applications
-    resources.path = /Applications/ServerChecker.app/Contents/Resources
+    resources.path = /Applications/Safechecker.app/Contents/Resources
     resources.files = ./resources/*
     INSTALLS = target resources
     ICON = Safejumper.icns
@@ -27,7 +27,7 @@ win32: {
     WINSDK_DIR = C:/Program Files/Microsoft SDKs/Windows/v7.1
     WIN_PWD = $$replace(PWD, /, \\)
     OUT_PWD_WIN = $$replace(OUT_PWD, /, \\)
-#    QMAKE_POST_LINK = "$$quote($$OUT_PWD_WIN\\..\\fixbinary.bat) $$quote($$OUT_PWD_WIN\\..\\serverchecker.exe) $$quote($$WIN_PWD\\$$basename(TARGET).manifest)"
+    QMAKE_POST_LINK = "$$quote($$OUT_PWD_WIN\\..\\fixbinary.bat) $$quote($$OUT_PWD_WIN\\..\\safechecker.exe) $$quote($$WIN_PWD\\..\\safejumper\\safejumper.manifest)"
     RC_FILE = ../safejumper/safejumper.rc
     LIBS += -lws2_32 -lIphlpapi
     DESTDIR = ../../buildwindows/

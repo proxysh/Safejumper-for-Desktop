@@ -1,3 +1,21 @@
+/***************************************************************************
+ *   Copyright (C) 2017 by Jeremy Whiting <jeremypwhiting@gmail.com>       *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation version 2 of the License.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
+ ***************************************************************************/
+
 #include "wndmanager.h"
 
 #include <cassert>
@@ -257,7 +275,7 @@ void WndManager::HandleConnecting()
 {
     // disable buttons
     // change status label to connecting
-    TestDialog::instance()->StatusConnecting();
+    TestDialog::instance()->setStatusConnecting();
     if (Scr_Map::IsExists())
         Scr_Map::Instance()->StatusConnecting();
     LoginWindow::Instance()->StatusConnecting();
@@ -277,7 +295,7 @@ void WndManager::HandleConnecting()
 void WndManager::HandleConnected()
 {
     ClosePortDlg();
-    TestDialog::instance()->StatusConnected();
+    TestDialog::instance()->setStatusConnected();
     LoginWindow::Instance()->StatusConnected();
 
 #ifdef MONITOR_TOOL
@@ -287,7 +305,7 @@ void WndManager::HandleConnected()
 
 void WndManager::HandleDisconnected()
 {
-    TestDialog::instance()->StatusDisconnected();
+    TestDialog::instance()->setStatusDisconnected();
     if (Scr_Map::IsExists())
         Scr_Map::Instance()->StatusDisconnected();
     LoginWindow::Instance()->StatusDisconnected();
@@ -306,16 +324,12 @@ void WndManager::HandleDisconnected()
 
 void WndManager::HandleState(const QString & word)
 {
-    TestDialog::instance()->StatusConnecting(word);
+    TestDialog::instance()->setStatusConnecting(word);
 }
 
 void WndManager::ErrMsg(const QString & msg)
 {
-#ifndef MONITOR_TOOL
-    this->ToPrimary();
-    Dlg_Error dlg(msg, "Error", this->ScrVisible());
-    dlg.exec();
-#endif	// MONITOR_TOOL
+    TestDialog::instance()->setError(msg);
 }
 
 int WndManager::Confirmation(const QString & msg)

@@ -894,30 +894,6 @@ background: transparent;
         </property>
        </widget>
       </item>
-      <item row="8" column="0" colspan="6">
-       <widget class="QTableWidget" name="tableWidget">
-        <column>
-         <property name="text">
-          <string>Server</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Protocol</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Port</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Result</string>
-         </property>
-        </column>
-       </widget>
-      </item>
       <item row="3" column="1">
        <widget class="QLabel" name="L_Percent">
         <property name="font">
@@ -968,27 +944,6 @@ background: transparent;
         </property>
        </widget>
       </item>
-      <item row="5" column="4" colspan="2">
-       <widget class="QLabel" name="L_NewIp">
-        <property name="font">
-         <font>
-          <family>Helvetica Neue</family>
-          <pointsize>11</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>123.36.29.128</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
       <item row="4" column="4" colspan="2">
        <widget class="QLabel" name="L_OldIpCaplion_2">
         <property name="font">
@@ -1014,42 +969,24 @@ background: transparent;
         </property>
        </widget>
       </item>
-      <item row="1" column="4" rowspan="3" colspan="2">
-       <widget class="QPushButton" name="flagButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>26</width>
-          <height>26</height>
-         </size>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
+      <item row="5" column="4" colspan="2">
+       <widget class="QLabel" name="L_NewIp">
+        <property name="font">
+         <font>
+          <family>Helvetica Neue</family>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton
-{
-	border:0px;
-	color: #ffffff;
-border-image: url(:/imgs/flag-usa.png);
-}</string>
+         <string notr="true"/>
         </property>
         <property name="text">
-         <string/>
+         <string>123.36.29.128</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
         </property>
        </widget>
       </item>
@@ -1077,14 +1014,57 @@ color: #818181;
         </property>
        </widget>
       </item>
+      <item row="1" column="4" rowspan="3" colspan="3">
+       <widget class="QLabel" name="flagLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>26</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="../safejumper/imgs.qrc">:/flags/US.png</pixmap>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0" colspan="7">
+       <widget class="QTableWidget" name="tableWidget">
+        <column>
+         <property name="text">
+          <string>Server</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Protocol</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Port</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Result</string>
+         </property>
+        </column>
+       </widget>
+      </item>
      </layout>
-     <zorder>cancelButton</zorder>
-     <zorder>startButton</zorder>
      <zorder>gv_Globe</zorder>
      <zorder>countryLabel</zorder>
      <zorder>L_Percent</zorder>
      <zorder>L_LOAD</zorder>
-     <zorder>flagButton</zorder>
      <zorder>gv_Globe_2</zorder>
      <zorder>L_OldIpCaplion</zorder>
      <zorder>L_OldIp</zorder>
@@ -1095,12 +1075,15 @@ color: #818181;
      <zorder>gv_Globe_3</zorder>
      <zorder>L_Protocol</zorder>
      <zorder>encryptionLabel</zorder>
-     <zorder>settingsButton</zorder>
      <zorder>tableWidget</zorder>
+     <zorder>flagLabel</zorder>
     </widget>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../safejumper/imgs.qrc"/>
+  <include location="../safejumper/imgs.qrc"/>
+ </resources>
  <connections/>
 </ui>

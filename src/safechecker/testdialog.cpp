@@ -31,12 +31,12 @@
 #include "flag.h"
 #include "fonthelper.h"
 
-TestDialog::HmWords TestDialog::_StateWord_Img;
+QHash<QString, const char*> TestDialog::mStateWordImages;
 
 TestDialog::TestDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::TestDialog)
-    , _moving(false)
+    , mMoving(false)
 {
     ui->setupUi(this);
 
@@ -44,7 +44,7 @@ TestDialog::TestDialog(QWidget *parent) :
     ui->L_Percent->setText("0%");
     ui->L_OldIp->setText("");
     ui->L_NewIp->setText("");
-    SetNoSrv();
+    setNoServer();
 
     setWindowFlags(Qt::Dialog);
 #ifndef Q_OS_MAC
@@ -62,7 +62,7 @@ TestDialog::TestDialog(QWidget *parent) :
 //    ui->L_LOAD->move(p1);
 #endif
 
-    StatusDisconnected();
+    setStatusDisconnected();
 
     ui->cancelButton->hide();
 
@@ -70,14 +70,13 @@ TestDialog::TestDialog(QWidget *parent) :
     ui->L_Amount->setText("-");
     ui->L_OldIp->setText("");
 
-//	QPoint p0 = _WndStart = pos();
-//	WndManager::DoShape(this);
-//	QPoint p1 = pos();
-//	if (p0 != p1)
-//	{
-//		log::logt("Non equal! Move back;");
-//		move(p0);
-//	}
+    // Setting::Instance()->LoadServer();
+    Setting::Instance()->LoadProt();
+
+    setOldIP(AuthManager::Instance()->OldIp());
+    updateEncoding();
+    updateProtocol();
+
     connect(AuthManager::Instance(), SIGNAL(oldIpLoaded(QString)),
             this, SLOT(setOldIP(QString)));
     connect(AuthManager::Instance(), SIGNAL(emailLoaded(QString)),
@@ -105,17 +104,17 @@ bool TestDialog::eventFilter(QObject *obj, QEvent *event)
 {
     switch (event->type()) {
     case QEvent::MouseMove: {
-        if (_moving) {
-            QPoint d = QCursor::pos() - _CursorStart;
+        if (mMoving) {
+            QPoint d = QCursor::pos() - mCursorStartPosition;
             if (d.x() != 0 || d.y() != 0) {
-                QPoint NewAbs = _WndStart + d;
+                QPoint NewAbs = mStartPosition + d;
                 this->move(NewAbs);
             }
         }
         return false;
     }
     case QEvent::MouseButtonRelease: {
-        _moving = false;
+        mMoving = false;
 //			_WndStart = pos();
         return false;
     }
@@ -124,25 +123,12 @@ bool TestDialog::eventFilter(QObject *obj, QEvent *event)
     }
 }
 
-void TestDialog::Init()
-{
-    // Setting::Instance()->LoadServer();
-    Setting::Instance()->LoadProt();
-
-    // TODO: -1  get actual data
-    ui->L_Until->setText("active until\n-");
-    ui->L_Amount->setText("-");
-    setOldIP(AuthManager::Instance()->OldIp());
-    updateEncoding();
-    UpdProtocol();
-}
-
-void TestDialog::SetNoSrv()
+void TestDialog::setNoServer()
 {
     ui->L_Percent->hide();
     ui->L_Percent->setText("0%");
     ui->L_LOAD->hide();
-    ui->flagButton->hide();
+    ui->flagLabel->hide();
     ui->L_NewIp->hide();
     ui->countryLabel->setText("No location specified.");
 }
@@ -150,11 +136,11 @@ void TestDialog::SetNoSrv()
 void TestDialog::setServer(int srv)
 {
     if (srv < 0) {	// none
-        SetNoSrv();
+        setNoServer();
     } else {
         const AServer & se = AuthManager::Instance()->GetSrv(srv);
         ui->countryLabel->setText(se.name);
-        ui->flagButton->show();
+        ui->flagLabel->show();
 
         QString nip = AuthManager::Instance()->NewIp();
         if (nip.isEmpty())
@@ -169,13 +155,8 @@ void TestDialog::setServer(int srv)
         ui->L_Percent->setText(QString::number(i) + "%");
         ui->L_Percent->show();
         ui->L_LOAD->show();
-        SetFlag(srv);
+        setFlag(srv);
     }
-}
-
-void TestDialog::DwnlStrs()
-{
-
 }
 
 void TestDialog::updateNewIP(const QString & s)
@@ -224,11 +205,11 @@ void TestDialog::setUntil(const QString & date)
     ui->L_Until->show();
 }
 
-void TestDialog::SetFlag(int srv)
+void TestDialog::setFlag(int srv)
 {
     QString n = AuthManager::Instance()->GetSrv(srv).name;
     QString fl = flag::IconFromSrvName(n);
-    ui->flagButton->setStyleSheet("QPushButton\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/flags/" + fl + ".png);\n}");
+    ui->flagLabel->setPixmap(QPixmap(":/flags/" + fl + ".png"));
 }
 
 void TestDialog::setProtocol(int ix)
@@ -239,9 +220,75 @@ void TestDialog::setProtocol(int ix)
         ui->L_Protocol->setText(Setting::Instance()->ProtoStr(ix));
 }
 
-void TestDialog::UpdProtocol()
+void TestDialog::updateProtocol()
 {
     setProtocol(Setting::Instance()->CurrProto());
+}
+
+void TestDialog::iterate()
+{
+    // First see if we can just go to the next protocol
+    if (++mCurrentProtocol < mProtocols.size()) {
+        Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
+        OpenvpnManager::Instance()->start();
+        return;
+    }
+    if (++mCurrentServerId < mServerIds.size()) {
+        // Got to the end of the list of protocols, so go to the next server
+        // and start over at the top of the list of protocols
+        setServer(mServerIds.at(mCurrentServerId));
+        mCurrentProtocol = 0;
+        Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
+        OpenvpnManager::Instance()->start();
+        return;
+    }
+    // Got to the end of the list of servers, so switch to the next encryption
+    // type and start over
+    if (++mCurrentEncryptionType < mEncryptionTypes.size()) {
+        setProtocol(mCurrentEncryptionType);
+        Setting::Instance()->SaveProt(mCurrentEncryptionType);
+        // Get all servers
+        mServerIds = AuthManager::Instance()->currentEncryptionServers();
+        // Set server to first
+        mCurrentServerId = 0;
+        setServer(mServerIds.at(mCurrentServerId));
+        // Get all protocols
+        mProtocols = Setting::Instance()->GetAllPorts();
+        // Set protocol to first
+        mCurrentProtocol = 0;
+        Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
+        OpenvpnManager::Instance()->start();
+    }
+    // Otherwise we finished checking all servers, all encryption types, all ports
+    // Ask to save table widget to pipe separated values file.
+}
+
+int TestDialog::addRow()
+{
+    int row = ui->tableWidget->rowCount();
+    ui->tableWidget->setRowCount(row + 1);
+
+    QTableWidgetItem *serverItem = new QTableWidgetItem(ui->countryLabel->text());
+    ui->tableWidget->setItem(row, 0, serverItem);
+    QTableWidgetItem *encryptionItem = new QTableWidgetItem(ui->encryptionLabel->text());
+    ui->tableWidget->setItem(row, 1, encryptionItem);
+    QTableWidgetItem *portItem = new QTableWidgetItem(ui->L_Protocol->text());
+    ui->tableWidget->setItem(row, 2, portItem);
+    return row;
+}
+
+void TestDialog::addConnected()
+{
+    int row = addRow();
+    QTableWidgetItem *resultItem = new QTableWidgetItem(tr("Connected"));
+    ui->tableWidget->setItem(row, 3, resultItem);
+}
+
+void TestDialog::addError(QString message)
+{
+    int row = addRow();
+    QTableWidgetItem *resultItem = new QTableWidgetItem(QString("Error %1").arg(message));
+    ui->tableWidget->setItem(row, 3, resultItem);
 }
 
 TestDialog::~TestDialog()
@@ -267,19 +314,19 @@ static const char * gs_Conn_Connecting = "QLabel\n{\n	border:0px;\n	color: #ffff
 static const char * gs_Conn_Connecting_Template_start = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-y-";
 static const char * gs_Conn_Connecting_Template_end =  ".png);\n}";
 
-void TestDialog::InitStateWords()
+void TestDialog::initializeStateWords()
 {
-    if (_StateWord_Img.empty()) {
-        _StateWord_Img.insert("AUTH", "auth");
-        _StateWord_Img.insert("GET_CONFIG", "config");
-        _StateWord_Img.insert("ASSIGN_IP", "ip");
-        _StateWord_Img.insert("TCP_CONNECT", "connect");
-        _StateWord_Img.insert("RESOLVE", "resolve");
+    if (mStateWordImages.empty()) {
+        mStateWordImages.insert("AUTH", "auth");
+        mStateWordImages.insert("GET_CONFIG", "config");
+        mStateWordImages.insert("ASSIGN_IP", "ip");
+        mStateWordImages.insert("TCP_CONNECT", "connect");
+        mStateWordImages.insert("RESOLVE", "resolve");
 
         // CONNECTING - default - must be absent in this collection
 
-        _StateWord_Img.insert("WAIT", "wait");
-        _StateWord_Img.insert("RECONNECTING", "reconn");
+        mStateWordImages.insert("WAIT", "wait");
+        mStateWordImages.insert("RECONNECTING", "reconn");
     }
 }
 
@@ -287,6 +334,8 @@ void TestDialog::on_startButton_clicked()
 {
     ui->startButton->hide();
     ui->cancelButton->show();
+    // Clear out previous results if any
+    ui->tableWidget->setRowCount(0);
     // Get all encryption types
     mEncryptionTypes = {ENCRYPTION_RSA, ENCRYPTION_OBFS_TOR, ENCRYPTION_ECC, ENCRYPTION_ECCXOR};
     // Set encryption to type 0
@@ -301,31 +350,32 @@ void TestDialog::on_startButton_clicked()
     // Get all protocols
     mProtocols = Setting::Instance()->GetAllPorts();
     // Set protocol to first
-    // Get all ports
-    // Set port to first
+    mCurrentProtocol = 0;
+    Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
     // Connect
+    OpenvpnManager::Instance()->start();
 }
 
 void TestDialog::on_cancelButton_clicked()
 {
-
+    ui->cancelButton->hide();
+    ui->startButton->show();
+    OpenvpnManager::Instance()->stop();
+    setStatusDisconnected();
 }
 
-void TestDialog::StatusConnecting()
+void TestDialog::setStatusConnecting()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_Conn_Connecting);
-    SetEnabledButtons(false);
 }
 
-void TestDialog::StatusConnecting(const QString & word)
+void TestDialog::setStatusConnecting(const QString & word)
 {
-//	this->StatusConnecting();
-    SetEnabledButtons(false);
-    InitStateWords();
+    initializeStateWords();
 
     QString s;
-    HmWords::iterator it = _StateWord_Img.find(word);
-    if (it != _StateWord_Img.end()) {
+    QHash<QString, const char*>::iterator it = mStateWordImages.find(word);
+    if (it != mStateWordImages.end()) {
         s = gs_Conn_Connecting_Template_start;
         s += it.value();
         s += gs_Conn_Connecting_Template_end;
@@ -341,31 +391,27 @@ void TestDialog::StatusConnecting(const QString & word)
     ui->L_ConnectStatus->setStyleSheet(s);
 }
 
-void TestDialog::SetEnabledButtons(bool enabled)
-{
-    if (enabled) {
-        ui->startButton->show();
-        ui->cancelButton->hide();
-    } else {
-        ui->startButton->hide();
-        ui->cancelButton->show();
-    }
-
-    ui->flagButton->setEnabled(enabled);
-}
-
-void TestDialog::StatusConnected()
+void TestDialog::setStatusConnected()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_ConnGreen);
-    SetEnabledButtons(true);
-    ui->startButton->hide();
-    ui->cancelButton->show();
+    // Add the current encryption type, server, and port to the table
+    addConnected();
+
+    OpenvpnManager::Instance()->stop();
+    iterate();
 }
 
-void TestDialog::StatusDisconnected()
+void TestDialog::setStatusDisconnected()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_ConnRed);
-    SetEnabledButtons(true);
+}
+
+void TestDialog::setError(const QString &message)
+{
+    addError(message);
+
+    OpenvpnManager::Instance()->stop();
+    iterate();
 }
 
 std::auto_ptr<TestDialog> TestDialog::mInstance;
@@ -373,7 +419,6 @@ TestDialog * TestDialog::instance()
 {
     if (!mInstance.get()) {
         mInstance.reset(new TestDialog());
-        mInstance->Init();
     }
     return mInstance.get();
 }
