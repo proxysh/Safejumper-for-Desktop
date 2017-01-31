@@ -67,6 +67,7 @@ protected:
 private slots:
     void on_startButton_clicked();
     void on_cancelButton_clicked();
+    void on_saveCSVButton_clicked();
 
     void setOldIP(const QString & ip);
     void setEmail(const QString & s);
@@ -89,6 +90,8 @@ private:
     // Add a "connected" line to the table widget
     void addConnected();
     void addError(QString message);
+
+    bool saveCSV(QString filename);
 
     bool mMoving;
     QPoint mStartPosition;

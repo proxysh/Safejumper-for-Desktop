@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-	<string>ServerChecker</string>
+	<string>Safechecker</string>
 	<key>CFBundleIconFile</key>
 	<string>safejumper.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>sh.proxy.ServerChecker</string>
+	<string>sh.proxy.Safechecker</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
         <key>CFBundleVersion</key>

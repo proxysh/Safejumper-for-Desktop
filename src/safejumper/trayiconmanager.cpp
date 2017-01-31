@@ -28,10 +28,6 @@
 #include "errordialog.h"
 #include "confirmationdialog.h"
 
-#ifdef MONITOR_TOOL
-#include "scr_table.h"
-#endif	// MONITOR_TOOL
-
 #include "authmanager.h"
 #include "wndmanager.h"
 #include "common.h"

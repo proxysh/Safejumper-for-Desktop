@@ -31,6 +31,11 @@
 #include "flag.h"
 #include "fonthelper.h"
 
+#include <QDir>
+#include <QFileDialog>
+
+const QString kLastFilenameKey = "lastFilename";
+
 QHash<QString, const char*> TestDialog::mStateWordImages;
 
 TestDialog::TestDialog(QWidget *parent) :
@@ -44,6 +49,7 @@ TestDialog::TestDialog(QWidget *parent) :
     ui->L_Percent->setText("0%");
     ui->L_OldIp->setText("");
     ui->L_NewIp->setText("");
+    ui->settingsButton->hide();
     setNoServer();
 
     setWindowFlags(Qt::Dialog);
@@ -140,6 +146,7 @@ void TestDialog::setServer(int srv)
     } else {
         const AServer & se = AuthManager::Instance()->GetSrv(srv);
         ui->countryLabel->setText(se.name);
+        ui->serverIpLabel->setText(se.address);
         ui->flagLabel->show();
 
         QString nip = AuthManager::Instance()->NewIp();
@@ -236,6 +243,10 @@ void TestDialog::iterate()
     if (++mCurrentServerId < mServerIds.size()) {
         // Got to the end of the list of protocols, so go to the next server
         // and start over at the top of the list of protocols
+        const AServer & se = AuthManager::Instance()->GetSrv(mServerIds.at(mCurrentServerId));
+        qDebug() << "Switching to server " << mServerIds.at(mCurrentServerId)
+                 << " which is " << se.name
+                 << " address: " << se.address;
         setServer(mServerIds.at(mCurrentServerId));
         mCurrentProtocol = 0;
         Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
@@ -269,10 +280,11 @@ int TestDialog::addRow()
     ui->tableWidget->setRowCount(row + 1);
 
     QTableWidgetItem *serverItem = new QTableWidgetItem(ui->countryLabel->text());
+    serverItem->setToolTip(ui->serverIpLabel->text());
     ui->tableWidget->setItem(row, 0, serverItem);
     QTableWidgetItem *encryptionItem = new QTableWidgetItem(ui->encryptionLabel->text());
     ui->tableWidget->setItem(row, 1, encryptionItem);
-    QTableWidgetItem *portItem = new QTableWidgetItem(ui->L_Protocol->text());
+    QTableWidgetItem *portItem = new QTableWidgetItem(Setting::Instance()->Port());
     ui->tableWidget->setItem(row, 2, portItem);
     return row;
 }
@@ -280,15 +292,61 @@ int TestDialog::addRow()
 void TestDialog::addConnected()
 {
     int row = addRow();
-    QTableWidgetItem *resultItem = new QTableWidgetItem(tr("Connected"));
+    QTableWidgetItem *resultItem = new QTableWidgetItem(tr("success"));
+    resultItem->setForeground(Qt::green);
+    resultItem->setToolTip(ui->L_NewIp->text());
     ui->tableWidget->setItem(row, 3, resultItem);
 }
 
 void TestDialog::addError(QString message)
 {
     int row = addRow();
-    QTableWidgetItem *resultItem = new QTableWidgetItem(QString("Error %1").arg(message));
+    QTableWidgetItem *resultItem = new QTableWidgetItem(QString("failure %1").arg(message));
+    resultItem->setForeground(Qt::red);
     ui->tableWidget->setItem(row, 3, resultItem);
+}
+
+bool TestDialog::saveCSV(QString filename)
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly|QIODevice::Text)) {
+        // Show file error dialog
+        return false;
+    }
+
+    // Iterate over the rows of the table
+    for (int i=0; i < ui->tableWidget->rowCount(); ++i) {
+        // Write server name and ip address from the widget item
+        file.write(ui->tableWidget->item(i, 0)->text().toLatin1());
+        file.write("|");
+        file.write(ui->tableWidget->item(i, 0)->toolTip().toLatin1());
+        file.write("|");
+        // Write the port number
+        file.write(ui->tableWidget->item(i, 2)->text().toLatin1());
+        file.write("|");
+        // Write the encryption type
+        file.write(ui->tableWidget->item(i, 1)->text().toLatin1());
+        file.write("|");
+        // Write the result
+        file.write(ui->tableWidget->item(i, 3)->text().toLatin1());
+        file.write("|");
+        // Write the debug file name
+        file.write("null");
+        file.write("|");
+        // Write the log file name
+        file.write("null");
+        file.write("|");
+        // Write the new ip address
+        QString newIp = ui->tableWidget->item(i, 3)->toolTip();
+        if (newIp.isEmpty())
+            file.write("null");
+        else
+            file.write(newIp.toLatin1());
+        // Write a newline
+        file.write("\n");
+    }
+    file.close();
+    return true;
 }
 
 TestDialog::~TestDialog()
@@ -362,6 +420,21 @@ void TestDialog::on_cancelButton_clicked()
     ui->startButton->show();
     OpenvpnManager::Instance()->stop();
     setStatusDisconnected();
+}
+
+void TestDialog::on_saveCSVButton_clicked()
+{
+    // Get filename
+    QSettings settings;
+    QString filename = QFileDialog::getSaveFileName(this,
+                                                    "Save CSV file",
+                                                    settings.value(kLastFilenameKey, QDir::home().absolutePath()).toString(),
+                                                    "CSV File (*.csv)");
+    // Save table to file
+    if (saveCSV(filename))
+        WndManager::Instance()->Confirmation("CSV File Saved");
+    else
+        WndManager::Instance()->ErrMsg(QString("Unable to save to file %1").arg(filename));
 }
 
 void TestDialog::setStatusConnecting()

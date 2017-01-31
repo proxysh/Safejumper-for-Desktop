@@ -37,6 +37,7 @@ std::vector<QString> Setting::_protocols[ENCRYPTION_COUNT];
 std::vector<int> Setting::_ports[ENCRYPTION_COUNT];
 
 Setting::Setting()
+    :mTesting(false)
 {
     _default_dns[0] = "146.185.134.104";
     _default_dns[1] = "192.241.172.159";
@@ -364,6 +365,16 @@ QString Setting::Server()
     if (ix > -1)
         s = AuthManager::Instance()->GetSrv(ix).address;
     return s;
+}
+
+bool Setting::testing()
+{
+    return mTesting;
+}
+
+void Setting::setTesting(bool value)
+{
+    mTesting = value;
 }
 
 int Setting::ServerID()

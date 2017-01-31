@@ -53,6 +53,8 @@ public:
     bool IsInsecureWifi();
     bool IsBlockOnDisconnect();
     bool IsFixDns();
+    bool testing();
+    void setTesting(bool value);
 
     void SaveServer(int ixsrv, const QString & newsrv);
     void LoadServer();
@@ -123,6 +125,7 @@ private:
     int _idStartNode;
 #endif	// MONITOR_TOOL
     int DetermineNextPort();
+    bool mTesting;
 };
 
 #endif // SETTING_H
