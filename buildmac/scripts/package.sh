@@ -12,3 +12,14 @@ scripts/pkg-dmg \
     --icon safejumper.icns  \
     --mkdir .background \
     --symlink  /Applications:Applications \
+
+scripts/pkg-dmg \
+    --verbosity 2 \
+    --volname "safechecker" \
+    --source safechecker/Safechecker.app \
+    --sourcefile \
+    --format UDRW \
+    --target safechecker.dmg \
+    --icon safejumper.icns  \
+    --mkdir .background \
+    --symlink  /Applications:Applications \
