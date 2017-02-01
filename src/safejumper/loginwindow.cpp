@@ -104,8 +104,8 @@ void LoginWindow::Timer_Constructed()
     Scr_Logs * l = Scr_Logs::Instance();
 
     if (l->IsExists())		// force construction
-        if (OpenvpnManager::Instance()->openvpnRunning())
-            OpenvpnManager::Instance()->killRunningOpenvpn();
+        if (OpenvpnManager::instance()->openvpnRunning())
+            OpenvpnManager::instance()->killRunningOpenvpn();
 
     AuthManager::Instance()->getOldIP();
 
@@ -181,7 +181,7 @@ void LoginWindow::quitApplication()
     if (res == QDialog::Accepted) {
         WndManager::Instance()->CloseAll();
         if (OpenvpnManager::exists())
-            OpenvpnManager::Instance()->stop();
+            OpenvpnManager::instance()->stop();
         g_pTheApp->quit();
     }
 }
@@ -284,7 +284,7 @@ void LoginWindow::Timer_WifiWatcher()
             if (!OpenvpnManager::exists()) {
                 stopped = true;
             } else {
-                if (OpenvpnManager::Instance()->state() == OpenvpnManager::ovsDisconnected)
+                if (OpenvpnManager::instance()->state() == OpenvpnManager::ovsDisconnected)
                     stopped = true;
             }
         }
@@ -299,7 +299,7 @@ void LoginWindow::Timer_WifiWatcher()
                 }
             } else {
                 if (OsSpecific::Instance()->HasInsecureWifi())
-                    OpenvpnManager::Instance()->start();
+                    OpenvpnManager::instance()->start();
             }
         }
         _wifi_processing = false;
@@ -318,7 +318,7 @@ void LoginWindow::BlockOnDisconnect()
                 if (!OpenvpnManager::exists()) {
                     doblock = true;
                 } else {
-                    if (OpenvpnManager::Instance()->state() == OpenvpnManager::ovsDisconnected)
+                    if (OpenvpnManager::instance()->state() == OpenvpnManager::ovsDisconnected)
                         doblock = true;
                     // otherwise unblocked and should be unblocked
                 }
@@ -352,7 +352,7 @@ void LoginWindow::loggedIn()
     TrayIconManager::instance()->enableButtonsOnLogin();
     TrayIconManager::instance()->constructConnectToMenu();
     if (_ConnectAfterLogin)
-        OpenvpnManager::Instance()->start();
+        OpenvpnManager::instance()->start();
     enableButtons(true);
     _ConnectAfterLogin = false;
 }

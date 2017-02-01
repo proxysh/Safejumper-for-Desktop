@@ -46,7 +46,7 @@ AuthManager::AuthManager()
     , _CancelLogin(false)
     , _ip_attempt_count(0)
 {
-    connect(OpenvpnManager::Instance(), SIGNAL(gotNewIp(QString)),
+    connect(OpenvpnManager::instance(), SIGNAL(gotNewIp(QString)),
             this, SLOT(setNewIp(QString)));
 }
 
@@ -1083,7 +1083,7 @@ void AuthManager::jump()
     if (srv > -1) {
 // TODO: -0             SetNewIp("");
         Scr_Map::Instance()->SetServer(srv);
-        OpenvpnManager::Instance()->start();               // contains stop
+        OpenvpnManager::instance()->start();               // contains stop
     }
 }
 

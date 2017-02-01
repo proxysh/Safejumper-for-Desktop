@@ -365,7 +365,7 @@ void ConnectionDialog::ShowPackageUrl()
 
 void ConnectionDialog::Clicked_Connect()
 {
-    OpenvpnManager::Instance()->start();		// handle visuals inside
+    OpenvpnManager::instance()->start();		// handle visuals inside
 }
 
 void ConnectionDialog::Clicked_Cancel()
@@ -373,7 +373,7 @@ void ConnectionDialog::Clicked_Cancel()
 #ifdef MONITOR_TOOL
     Ctr_Openvpn::Instance()->StopLoop();
 #endif	// MONITOR_TOOL
-    OpenvpnManager::Instance()->stop();
+    OpenvpnManager::instance()->stop();
     LoginWindow::Instance()->BlockOnDisconnect();
 }
 
@@ -408,7 +408,7 @@ void ConnectionDialog::keyPressEvent(QKeyEvent * e)
 void ConnectionDialog::PortDlgAction(int action)
 {
     if (QDialog::Accepted == action) {
-        OpenvpnManager::Instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
+        OpenvpnManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
     }
 }
 

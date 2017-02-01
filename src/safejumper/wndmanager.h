@@ -52,7 +52,6 @@ public:
     void ClosePortDlg();
     bool IsCyclePort();		// true - if cycle ports; false - cycle nodes
 
-    void ShowTable();
 private:
     WndManager();
     static std::auto_ptr<WndManager> _inst;

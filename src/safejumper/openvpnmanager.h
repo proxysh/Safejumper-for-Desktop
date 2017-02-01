@@ -29,7 +29,7 @@ public:
     };
 
     ~OpenvpnManager();
-    static OpenvpnManager * Instance();
+    static OpenvpnManager * instance();
     static void cleanup();
     static bool exists();
 
@@ -44,21 +44,6 @@ public:
     OvState state();
 
     void startPortLoop(bool port);		// true - cycle ports; false - cycle nodes
-#ifdef MONITOR_TOOL
-    void StopLoop();
-    bool IsErr()
-    {
-        return _err;
-    }
-    QString ErrMsg()
-    {
-        return _err_msg;
-    }
-    bool IsInNextPort()
-    {
-        return _InNextPort;
-    }
-#endif	// MONITOR_TOOL
 
 signals:
     void gotNewIp(QString ip);
@@ -104,37 +89,28 @@ private:
 
     void setState(OvState st);
 
-    static std::auto_ptr<OpenvpnManager> _inst;
+    static std::auto_ptr<OpenvpnManager> mInstance;
 
-    std::auto_ptr<QFileSystemWatcher> _watcher;	// OpenVpn log file
-    std::auto_ptr<QTemporaryFile> _paramFile;
-    std::auto_ptr<QProcess> _process;
-    OvState _state;
+    std::auto_ptr<QFileSystemWatcher> mFileSystemWatcher;	// OpenVpn log file
+    std::auto_ptr<QTemporaryFile> mParametersTempFile;
+    std::auto_ptr<QProcess> mProcess;
+    OvState mState;
     QTimer *mStateTimer;
-    int _pid;		// for running process (run safejumper after crash)
+    int mPID;		// for running process (run safejumper after crash)
     std::auto_ptr<QTcpSocket> mSocket;
 
-    qint64 _lastpos;
-    bool _processing;
-    bool _tunerr;
-    bool _err;
-#ifdef MONITOR_TOOL
-    QString _err_msg;
-#endif// MONITOR_TOOL
+    qint64 mLogFilePosition;
+    bool mProcessing;
+    bool mTunError;
+    bool mError;
 
-    QString _prev_st_word;
+    QString mPreviousStateWord;
 
-    int _reconnect_attempt;
-#ifdef MONITOR_TOOL
-    int _attempt;
-    void ReconnectIfMax();
-    bool _StopLoop;
-    bool _InNextPort;
-#endif	// MONITOR_TOOL
-    bool _PortDlgShown;
-    uint _dtStart;
-    bool _InPortLoop;
-    bool _IsPort;
+    int mReconnectAttempt;
+    bool mPortDialogShown;
+    uint mStartDateTime;
+    bool mInPortLoop;
+    bool mChangingPorts;
 };
 
 #endif // OPENVPNMANAGER_H

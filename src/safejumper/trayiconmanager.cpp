@@ -233,7 +233,7 @@ void TrayIconManager::updateStateIcon()
 {
     OpenvpnManager::OvState st = OpenvpnManager::ovsDisconnected;
     if (OpenvpnManager::exists())
-        st = OpenvpnManager::Instance()->state();
+        st = OpenvpnManager::instance()->state();
     updateStateIcon(st);
 }
 
@@ -274,7 +274,7 @@ void TrayIconManager::connectTriggered()
     if (!AuthManager::Instance()->loggedIn()) {
         emit login();
     } else {
-        OpenvpnManager::Instance()->start();
+        OpenvpnManager::instance()->start();
     }
 }
 
@@ -289,7 +289,7 @@ void TrayIconManager::connectToTriggered()
             size_t serverId = action->data().toInt();
 
             Scr_Map::Instance()->SetServer(serverId);
-            OpenvpnManager::Instance()->start();
+            OpenvpnManager::instance()->start();
         } else {
             emit login();
         }
@@ -299,7 +299,7 @@ void TrayIconManager::connectToTriggered()
 void TrayIconManager::disconnectTriggered()
 {
     fixIcon();
-    OpenvpnManager::Instance()->stop();
+    OpenvpnManager::instance()->stop();
 }
 
 void TrayIconManager::statusTriggered()
@@ -377,7 +377,7 @@ void TrayIconManager::logoutTriggered()
 {
     fixIcon();
     if (OpenvpnManager::exists())
-        OpenvpnManager::Instance()->stop();
+        OpenvpnManager::instance()->stop();
     if (AuthManager::exists())
         AuthManager::Instance()->logout();
     WndManager::Instance()->ToPrimary();
