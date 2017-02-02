@@ -67,42 +67,30 @@ private:
     Ui::ConnectionDialog *ui;
     static std::auto_ptr<ConnectionDialog> mInstance;
     explicit ConnectionDialog(QWidget *parent = 0);
-    void initialize();
 
     void setFlag(int srv);
     void setNoServer();
     void updateProtocol();
     void enableButtons(bool enabled);
-    void updateWindowTitle(const QString & word);
-
-    bool mMoving;
-    QPoint mWindowPosition;
-    QPoint mCursorPosition;
 
     static void initializeStateWords();
     typedef QHash<QString, const char *> HmWords;
     static HmWords mStateWordImages;
 
 private slots:
-    void connectClicked();
-    void cancelClicked();
-    void jumpClicked();
+    void on_connectButton_clicked();
+    void on_cancelButton_clicked();
+    void on_jumpButton_clicked();
 
-    void minimizeClicked();
-    void closeClicked();
-
-    void showSettings();
+    void on_settingsButton_clicked();
     void showMainWindow();
     void showLoginWindow();
     void showMapWindow();
     void showPackageUrl();
 
-    void titlebarClicked();
-
 protected:
     virtual void closeEvent(QCloseEvent * event);
     virtual void keyPressEvent(QKeyEvent * event);
-    virtual bool eventFilter(QObject *obj, QEvent *event);
 };
 
 

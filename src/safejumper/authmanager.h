@@ -36,7 +36,7 @@
 #include "pingwaiter.h"
 #include "portforwarder.h"
 
-#define PINGWORKERS_NUM 16
+#define PINGWORKERS_NUM 2
 #define PINGWORKER_MAX_TIMEOUT 2000
 
 #ifndef uint64_t

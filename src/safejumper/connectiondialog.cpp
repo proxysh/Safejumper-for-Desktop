@@ -36,7 +36,6 @@ ConnectionDialog::HmWords ConnectionDialog::mStateWordImages;
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConnectionDialog)
-    , mMoving(false)
 {
     ui->setupUi(this);
     this->setFixedSize(this->size());
@@ -65,21 +64,11 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 
     statusDisconnected();
 
-    ui->b_Cancel->hide();
+    ui->cancelButton->hide();
 
     ui->L_Until->setText("active until\n-");
     ui->L_Amount->setText("-");
     ui->L_OldIp->setText("");
-
-//	QPoint p0 = _WndStart = pos();
-//	WndManager::DoShape(this);
-//	QPoint p1 = pos();
-//	if (p0 != p1)
-//	{
-//		log::logt("Non equal! Move back;");
-//		move(p0);
-//	}
-    qApp->installEventFilter(this);
 
     connect(AuthManager::Instance(), SIGNAL(oldIpLoaded(QString)),
             this, SLOT(setOldIP(QString)));
@@ -90,7 +79,15 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     connect(AuthManager::Instance(), SIGNAL(amountLoaded(QString)),
             this, SLOT(setAmount(QString)));
 
-    initialize();
+    // Setting::Instance()->LoadServer();
+    Setting::Instance()->LoadProt();
+
+    // TODO: -1  get actual data
+    ui->L_Until->setText("active until\n-");
+    ui->L_Amount->setText("-");
+    setOldIP(AuthManager::Instance()->OldIp());
+    updateEncoding();
+    updateProtocol();
 }
 
 bool ConnectionDialog::exists()
@@ -102,42 +99,6 @@ void ConnectionDialog::cleanup()
 {
     if (mInstance.get() != NULL)
         delete mInstance.release();
-}
-
-bool ConnectionDialog::eventFilter(QObject *obj, QEvent *event)
-{
-    switch (event->type()) {
-    case QEvent::MouseMove: {
-        if (mMoving) {
-            QPoint d = QCursor::pos() - mCursorPosition;
-            if (d.x() != 0 || d.y() != 0) {
-                QPoint NewAbs = mWindowPosition + d;
-                this->move(NewAbs);
-            }
-        }
-        return false;
-    }
-    case QEvent::MouseButtonRelease: {
-        mMoving = false;
-//			_WndStart = pos();
-        return false;
-    }
-    default:
-        return QDialog::eventFilter(obj, event);
-    }
-}
-
-void ConnectionDialog::initialize()
-{
-    // Setting::Instance()->LoadServer();
-    Setting::Instance()->LoadProt();
-
-    // TODO: -1  get actual data
-    ui->L_Until->setText("active until\n-");
-    ui->L_Amount->setText("-");
-    setOldIP(AuthManager::Instance()->OldIp());
-    updateEncoding();
-    updateProtocol();
 }
 
 void ConnectionDialog::setNoServer()
@@ -313,22 +274,14 @@ void ConnectionDialog::statusConnecting(const QString & word)
     ui->L_ConnectStatus->setStyleSheet(s);
 }
 
-void ConnectionDialog::updateWindowTitle(const QString & word)
-{
-    QString s = "Safejumper";
-//	if (!word.isEmpty())
-//		s += " " + word;
-    this->setWindowTitle(s);
-}
-
 void ConnectionDialog::enableButtons(bool enabled)
 {
     if (enabled) {
-        ui->b_Connect->show();
-        ui->b_Cancel->hide();
+        ui->connectButton->show();
+        ui->cancelButton->hide();
     } else {
-        ui->b_Connect->hide();
-        ui->b_Cancel->show();
+        ui->connectButton->hide();
+        ui->cancelButton->show();
     }
 
     ui->b_Flag->setEnabled(enabled);
@@ -342,16 +295,14 @@ void ConnectionDialog::statusConnected()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_ConnGreen);
     enableButtons(true);
-    ui->b_Connect->hide();
-    ui->b_Cancel->show();
-    updateWindowTitle("");
+    ui->connectButton->hide();
+    ui->cancelButton->show();
 }
 
 void ConnectionDialog::statusDisconnected()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_ConnRed);
     enableButtons(true);
-    updateWindowTitle("");
 }
 
 std::auto_ptr<ConnectionDialog> ConnectionDialog::mInstance;
@@ -363,7 +314,7 @@ ConnectionDialog * ConnectionDialog::instance()
     return mInstance.get();
 }
 
-void ConnectionDialog::showSettings()
+void ConnectionDialog::on_settingsButton_clicked()
 {
     WndManager::Instance()->ToSettings();
 }
@@ -388,40 +339,20 @@ void ConnectionDialog::showPackageUrl()
     OpenUrl_Panel();
 }
 
-void ConnectionDialog::connectClicked()
+void ConnectionDialog::on_connectButton_clicked()
 {
     OpenvpnManager::instance()->start();		// handle visuals inside
 }
 
-void ConnectionDialog::cancelClicked()
+void ConnectionDialog::on_cancelButton_clicked()
 {
-#ifdef MONITOR_TOOL
-    Ctr_Openvpn::Instance()->StopLoop();
-#endif	// MONITOR_TOOL
     OpenvpnManager::instance()->stop();
     LoginWindow::Instance()->BlockOnDisconnect();
 }
 
-void ConnectionDialog::jumpClicked()
+void ConnectionDialog::on_jumpButton_clicked()
 {
     AuthManager::Instance()->jump();
-}
-
-void ConnectionDialog::minimizeClicked()
-{
-    WndManager::Instance()->HideThis(this);
-}
-
-void ConnectionDialog::closeClicked()
-{
-    LoginWindow::Instance()->quitApplication();
-}
-
-void ConnectionDialog::titlebarClicked()
-{
-    mWindowPosition = this->pos();
-    mCursorPosition = QCursor::pos();
-    mMoving = true;
 }
 
 void ConnectionDialog::keyPressEvent(QKeyEvent * e)
