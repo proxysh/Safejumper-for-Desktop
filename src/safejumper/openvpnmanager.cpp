@@ -939,12 +939,12 @@ void OpenvpnManager::parseSocketQueryWord(const QString & word, const QString & 
         ;
     } else {
         if (word.compare("FATAL", Qt::CaseInsensitive) == 0) {
-            mError = true;
             int p = s.indexOf(':');
             QString msg = s.mid(p + 1);
             if (msg.compare("Cannot allocate TUN/TAP dev dynamically", Qt::CaseInsensitive) == 0) {
                 gotTunErr(msg);
             } else {
+                mError = true;
                 cancel(msg);
             }
         }

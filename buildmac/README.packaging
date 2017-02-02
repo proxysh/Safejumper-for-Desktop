@@ -4,7 +4,7 @@ This directory contains files required to build the Mac OSX installer for Safeju
   - README.packaging: this file
   - scripts/: Various scripts used to build app or dmg.
   - scripts/pkg-dmg: Mozilla disk image creation script suite
-  - safejumper.icns: The icon used in the SDK app bundle
+  - safejumper.icns: The icon used in the Safejumper app bundle
 
 - Installer creation:
   - To create the installer XCode has to be installed in Applications folder and XCode command-line tools also needs to be installed
