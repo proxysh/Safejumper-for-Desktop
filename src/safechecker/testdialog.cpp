@@ -79,17 +79,17 @@ TestDialog::TestDialog(QWidget *parent) :
     // Setting::Instance()->LoadServer();
     Setting::Instance()->LoadProt();
 
-    setOldIP(AuthManager::Instance()->OldIp());
+    setOldIP(AuthManager::instance()->oldIP());
     updateEncoding();
     updateProtocol();
 
-    connect(AuthManager::Instance(), SIGNAL(oldIpLoaded(QString)),
+    connect(AuthManager::instance(), SIGNAL(oldIpLoaded(QString)),
             this, SLOT(setOldIP(QString)));
-    connect(AuthManager::Instance(), SIGNAL(emailLoaded(QString)),
+    connect(AuthManager::instance(), SIGNAL(emailLoaded(QString)),
             this, SLOT(setEmail(QString)));
-    connect(AuthManager::Instance(), SIGNAL(untilLoaded(QString)),
+    connect(AuthManager::instance(), SIGNAL(untilLoaded(QString)),
             this, SLOT(setUntil(QString)));
-    connect(AuthManager::Instance(), SIGNAL(amountLoaded(QString)),
+    connect(AuthManager::instance(), SIGNAL(amountLoaded(QString)),
             this, SLOT(setAmount(QString)));
 
     qApp->installEventFilter(this);
@@ -144,12 +144,12 @@ void TestDialog::setServer(int srv)
     if (srv < 0) {	// none
         setNoServer();
     } else {
-        const AServer & se = AuthManager::Instance()->GetSrv(srv);
+        const AServer & se = AuthManager::instance()->getServer(srv);
         ui->countryLabel->setText(se.name);
         ui->serverIpLabel->setText(se.address);
         ui->flagLabel->show();
 
-        QString nip = AuthManager::Instance()->NewIp();
+        QString nip = AuthManager::instance()->newIP();
         if (nip.isEmpty())
             nip = se.address;
         ui->L_NewIp->setText(nip);
@@ -214,7 +214,7 @@ void TestDialog::setUntil(const QString & date)
 
 void TestDialog::setFlag(int srv)
 {
-    QString n = AuthManager::Instance()->GetSrv(srv).name;
+    QString n = AuthManager::instance()->getServer(srv).name;
     QString fl = flag::IconFromSrvName(n);
     ui->flagLabel->setPixmap(QPixmap(":/flags/" + fl + ".png"));
 }
@@ -243,7 +243,7 @@ void TestDialog::iterate()
     if (++mCurrentServerId < mServerIds.size()) {
         // Got to the end of the list of protocols, so go to the next server
         // and start over at the top of the list of protocols
-        const AServer & se = AuthManager::Instance()->GetSrv(mServerIds.at(mCurrentServerId));
+        const AServer & se = AuthManager::instance()->getServer(mServerIds.at(mCurrentServerId));
         qDebug() << "Switching to server " << mServerIds.at(mCurrentServerId)
                  << " which is " << se.name
                  << " address: " << se.address;
@@ -259,7 +259,7 @@ void TestDialog::iterate()
         setProtocol(mCurrentEncryptionType);
         Setting::Instance()->SaveProt(mCurrentEncryptionType);
         // Get all servers
-        mServerIds = AuthManager::Instance()->currentEncryptionServers();
+        mServerIds = AuthManager::instance()->currentEncryptionServers();
         // Set server to first
         mCurrentServerId = 0;
         setServer(mServerIds.at(mCurrentServerId));
@@ -401,7 +401,7 @@ void TestDialog::on_startButton_clicked()
     setProtocol(mCurrentEncryptionType);
     Setting::Instance()->SaveProt(mCurrentEncryptionType);
     // Get all servers
-    mServerIds = AuthManager::Instance()->currentEncryptionServers();
+    mServerIds = AuthManager::instance()->currentEncryptionServers();
     // Set server to first
     mCurrentServerId = 0;
     setServer(mServerIds.at(mCurrentServerId));

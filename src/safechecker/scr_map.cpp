@@ -141,7 +141,7 @@ void Scr_Map::RePopulateLocations(bool random)
     if (oldN > 1) {
         ixoldsrv = CurrSrv();
         if (ixoldsrv > -1) {
-            oldsrv = AuthManager::Instance()->GetSrv(ixoldsrv).name;
+            oldsrv = AuthManager::instance()->getServer(ixoldsrv).name;
         }
         // and clear the list
         ui->dd_Location->setCurrentIndex(0);
@@ -158,8 +158,8 @@ void Scr_Map::RePopulateLocations(bool random)
 
     const std::vector<size_t> & coll = (
                                            _UseSrvColl ?
-                                           AuthManager::Instance()->currentEncryptionServers() :
-                                           AuthManager::Instance()->currentEncryptionHubs() );
+                                           AuthManager::instance()->currentEncryptionServers() :
+                                           AuthManager::instance()->currentEncryptionHubs() );
 
     // populate server ids to show
     _srvIds.clear();
@@ -170,8 +170,8 @@ void Scr_Map::RePopulateLocations(bool random)
         // add individual srv / hub node item
         // TODO: -1 format the line
         int ix = _srvIds.at(j);
-        AServer srv = AuthManager::Instance()->GetSrv(ix);
-        int ping = AuthManager::Instance()->PingFromSrvIx(ix);
+        AServer srv = AuthManager::instance()->getServer(ix);
+        int ping = AuthManager::instance()->pingFromServerIx(ix);
         QString s0 = srv.name;
         QString s1;
         int load = (int)srv.load.toDouble();
@@ -215,7 +215,7 @@ void Scr_Map::RePopulateLocations(bool random)
             for (size_t k = 0; k < _srvIds.size(); ++k) {
                 if (_srvIds.at(k) == ixoldsrv) {
                     // srv id match: ensure this is the same server after list updated
-                    if (oldsrv == AuthManager::Instance()->GetSrv(_srvIds.at(k)).name) {
+                    if (oldsrv == AuthManager::instance()->getServer(_srvIds.at(k)).name) {
                         new_row = k;
                         break;
                     }
@@ -224,7 +224,7 @@ void Scr_Map::RePopulateLocations(bool random)
 
             if (new_row == -1) {
                 // lookup by name
-                int ixnew = AuthManager::Instance()->SrvIxFromName(oldsrv);
+                int ixnew = AuthManager::instance()->serverIxFromName(oldsrv);
                 if (ixnew > -1) {
                     for (size_t k = 0; k < _srvIds.size(); ++k) {
                         if (_srvIds.at(k) == ixnew) {
@@ -239,7 +239,7 @@ void Scr_Map::RePopulateLocations(bool random)
                 // lookup by name
                 if (!_IsShowNodes && oldShownodes) {
                     // all -->> hubs
-                    int newhubix = AuthManager::Instance()->HubIxFromSrvName(oldsrv);
+                    int newhubix = AuthManager::instance()->hubIxFromServerName(oldsrv);
                     if (newhubix > -1) {
                         for (size_t k = 0; k < _srvIds.size(); ++k) {
                             if (_srvIds.at(k) == newhubix) {
@@ -390,11 +390,11 @@ void Scr_Map::Changed_dd_Sever(int ix)
 //				ixsrv = AuthManager::Instance()->ServerIdFromHubId(ix - 1);
             ixsrv = CurrSrv();
         }
-        AuthManager::Instance()->setNewIp("");
+        AuthManager::instance()->setNewIp("");
     } else {
         ui->L_2->setStyleSheet(gs_stIcon2);
     }
-    AServer se = AuthManager::Instance()->GetSrv(ixsrv);
+    AServer se = AuthManager::instance()->getServer(ixsrv);
     QString newsrv = se.name;
     //= ui->dd_Location->currentText();
     if (TestDialog::exists())
@@ -416,13 +416,13 @@ void Scr_Map::DisplayMark(const QString & name)
 void Scr_Map::SetServer(int ixsrv)
 {
     int toselect = 0;
-    const std::vector<size_t> & srvs = AuthManager::Instance()->currentEncryptionServers();
+    const std::vector<size_t> & srvs = AuthManager::instance()->currentEncryptionServers();
     if (ixsrv > -1) {
         if (_Encryption == ENCRYPTION_RSA) {
             if (_IsShowNodes)
                 toselect = ixsrv + 1;
             else
-                toselect = AuthManager::Instance()->HubIdFromItsSrvId(ixsrv) + 1;
+                toselect = AuthManager::instance()->hubIdFromServerId(ixsrv) + 1;
         } else {
             if (!srvs.empty()) {
                 for (size_t k = 0; k < srvs.size(); ++k) {

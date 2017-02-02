@@ -52,7 +52,7 @@ WndManager::~WndManager()
 
 void WndManager::ToPrimary()
 {
-    if (AuthManager::Instance()->loggedIn())
+    if (AuthManager::instance()->loggedIn())
         ToConnect();
     else
         ToLogin();
@@ -60,7 +60,7 @@ void WndManager::ToPrimary()
 
 QWidget * WndManager::Primary()
 {
-    if (AuthManager::Instance()->loggedIn())
+    if (AuthManager::instance()->loggedIn())
         return TestDialog::instance();
     else
         return LoginWindow::Instance();
@@ -81,7 +81,7 @@ void WndManager::ToConnect()
     QWidget * from = ScrVisible();
     if (TestDialog::instance() != from) {
         trans(from, TestDialog::instance());
-        TestDialog::instance()->setAccountName(AuthManager::Instance()->VpnName());
+        TestDialog::instance()->setAccountName(AuthManager::instance()->VPNName());
     } else {
         ToFront(TestDialog::instance());		// activate it
     }
@@ -99,7 +99,7 @@ void WndManager::ToLogs()
 
 void WndManager::ToMap()
 {
-    if (AuthManager::Instance()->loggedIn())
+    if (AuthManager::instance()->loggedIn())
         trans(ScrVisible(), Scr_Map::Instance());
     else
         ToLogin();
