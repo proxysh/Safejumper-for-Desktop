@@ -103,8 +103,8 @@ LoginWindow::LoginWindow(QWidget *parent) :
 
     QTimer::singleShot(210, this, SLOT(Timer_Constructed()));
 
-    connect(AuthManager::Instance(), SIGNAL(loginCompleted()), this, SLOT(loggedIn()));
-    connect(AuthManager::Instance(), SIGNAL(loginError(QString)), this, SLOT(loginError(QString)));
+    connect(AuthManager::instance(), SIGNAL(loginCompleted()), this, SLOT(loggedIn()));
+    connect(AuthManager::instance(), SIGNAL(loginError(QString)), this, SLOT(loginError(QString)));
 }
 
 void LoginWindow::on_rememberMeButton_toggled()
@@ -125,10 +125,10 @@ void LoginWindow::Timer_Constructed()
         if (OpenvpnManager::instance()->openvpnRunning())
             OpenvpnManager::instance()->killRunningOpenvpn();
 
-    AuthManager::Instance()->getOldIP();
+    AuthManager::instance()->getOldIP();
 
     if (Setting::Instance()->IsCheckForUpdates()) {
-        AuthManager::Instance()->checkUpdates();
+        AuthManager::instance()->checkUpdates();
     }
 
     if (Setting::Instance()->IsAutoconnect()) {
@@ -217,16 +217,16 @@ void LoginWindow::ToScr_Primary()
 void LoginWindow::on_cancelButton_clicked()
 {
     _CancelLogin = true;
-    AuthManager::Instance()->cancel();
+    AuthManager::instance()->cancel();
 }
 
 void LoginWindow::on_loginButton_clicked()
 {
-    if (!AuthManager::Instance()->loggedIn()) {
+    if (!AuthManager::instance()->loggedIn()) {
         if (!ui->eLogin->text().isEmpty()) {
             _CancelLogin = false;
             enableButtons(false);
-            AuthManager::Instance()->login(ui->eLogin->text(), ui->ePsw->text());
+            AuthManager::instance()->login(ui->eLogin->text(), ui->ePsw->text());
         }
     }
 }
@@ -308,7 +308,7 @@ void LoginWindow::Timer_WifiWatcher()
         }
 
         if (stopped) {
-            if (!AuthManager::Instance()->loggedIn()) {
+            if (!AuthManager::instance()->loggedIn()) {
                 if (Setting::Instance()->IsAutoconnect()) {	// log in only if checked Auto-connect when app starts
                     if (OsSpecific::Instance()->HasInsecureWifi()) {
                         _ConnectAfterLogin = true;
@@ -330,7 +330,7 @@ void LoginWindow::BlockOnDisconnect()
     bool doblock = false;
     if (Setting::Instance()->IsBlockOnDisconnect()) {
         if (AuthManager::exists()) {
-            if (!AuthManager::Instance()->loggedIn()) {
+            if (!AuthManager::instance()->loggedIn()) {
                 doblock = true;
             } else {
                 if (!OpenvpnManager::exists()) {

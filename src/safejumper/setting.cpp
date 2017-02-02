@@ -325,7 +325,7 @@ void Setting::SaveServer(int ixsrv, const QString & newsrv)
 
 void Setting::LoadServer()
 {
-    if (AuthManager::Instance()->currentEncryptionServers().empty())
+    if (AuthManager::instance()->currentEncryptionServers().empty())
         return;		// cannot select in empty list
 
     QSettings settings;
@@ -335,20 +335,20 @@ void Setting::LoadServer()
     int ixsrv = -1;
     // verify that the sever exists
     if (savedsrv > -1) {
-        AServer  sr1 = AuthManager::Instance()->GetSrv(savedsrv);
+        AServer  sr1 = AuthManager::instance()->getServer(savedsrv);
         if (!sr1.name.isEmpty()) {
             if (sr1.name == savedname)
                 ixsrv = savedsrv;
             else if (savedname != "undefined")
-                ixsrv = AuthManager::Instance()->SrvIxFromName(savedname);
+                ixsrv = AuthManager::instance()->serverIxFromName(savedname);
         } else {
             if (savedname != "undefined")
-                ixsrv = AuthManager::Instance()->SrvIxFromName(savedname);
+                ixsrv = AuthManager::instance()->serverIxFromName(savedname);
         }
     }
 
     if (ixsrv < 0)
-        ixsrv = AuthManager::Instance()->getServerToJump();
+        ixsrv = AuthManager::instance()->getServerToJump();
 
     Scr_Map * sm = Scr_Map::Instance(); // initiate population of the Location drop-down; will call Setting::IsShowNodes() which will initiate scr_settings and load checkboxes
 
@@ -362,7 +362,7 @@ QString Setting::Server()
     QString s;
     int ix = Scr_Map::Instance()->CurrSrv();
     if (ix > -1)
-        s = AuthManager::Instance()->GetSrv(ix).address;
+        s = AuthManager::instance()->getServer(ix).address;
     return s;
 }
 

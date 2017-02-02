@@ -26,7 +26,7 @@
 void Thread_OldIp::run()
 {
     QString ip;
-    uint64_t v = AuthManager::Instance()->GetRnd64();
+    uint64_t v = AuthManager::instance()->getRandom64();
     sockaddr_in sa;
     const char * sv;
 

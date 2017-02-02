@@ -119,8 +119,8 @@
    <property name="styleSheet">
     <string notr="true">QFrame
 {
-	background-color: #ffffff;
-	border: 0;
+    background-color: #ffffff;
+    border: 0;
 }</string>
    </property>
    <property name="frameShape">
@@ -144,7 +144,7 @@
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/logo2.png);
+    border-image: url(:/imgs/logo2.png);
 }</string>
     </property>
     <property name="interactive">
@@ -197,9 +197,9 @@ background: transparent;
     <property name="styleSheet">
      <string notr="true">QLabel
 {
-	border:0px;
-	color: #ffffff;
-	border-image: url(:/imgs/connect-status-red.png);
+    border:0px;
+    color: #ffffff;
+    border-image: url(:/imgs/connect-status-red.png);
 }</string>
     </property>
     <property name="text">
@@ -262,8 +262,8 @@ background: transparent;
     <property name="styleSheet">
      <string notr="true">QLabel
 {
-	border:0px;
-	color: #818181;
+    border:0px;
+    color: #818181;
 background: transparent;
 }</string>
     </property>
@@ -289,7 +289,7 @@ background: transparent;
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/ballance.png);
+    border-image: url(:/imgs/ballance.png);
 }</string>
     </property>
     <property name="interactive">
@@ -379,9 +379,9 @@ color: #0f0f0f;
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	color: #ffffff;
-	border-image: url(:/imgs/cb-empty.png);
+    border:0px;
+    color: #ffffff;
+    border-image: url(:/imgs/cb-empty.png);
 }</string>
     </property>
     <property name="text">
@@ -531,8 +531,8 @@ color: #0f0f0f;
    <property name="styleSheet">
     <string notr="true">QFrame
 {
-	background-color: #f7f7f7;
-	border: 0;
+    background-color: #f7f7f7;
+    border: 0;
 }</string>
    </property>
    <property name="frameShape">
@@ -565,17 +565,17 @@ color: #0f0f0f;
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	color: #ffffff;
-	border-image: url(:/imgs/b-connect-norm.png);
+    border:0px;
+    color: #ffffff;
+    border-image: url(:/imgs/b-connect-norm.png);
 }
 QPushButton:hover:!pressed
 {
-	border-image: url(:/imgs/b-connect-hover.png);
+    border-image: url(:/imgs/b-connect-hover.png);
 }
 QPushButton:pressed
 {
-	border-image: url(:/imgs/b-connect-pressed.png);
+    border-image: url(:/imgs/b-connect-pressed.png);
 }</string>
     </property>
     <property name="text">
@@ -594,8 +594,8 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QLabel
 {
-	border:0px;
-	border-image: url(:/imgs/h-line.png);
+    border:0px;
+    border-image: url(:/imgs/h-line.png);
 }</string>
     </property>
     <property name="text">
@@ -614,8 +614,8 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QLabel
 {
-	border:0px;
-	border-image: url(:/imgs/h-line.png);
+    border:0px;
+    border-image: url(:/imgs/h-line.png);
 }</string>
     </property>
     <property name="text">
@@ -634,8 +634,8 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QLabel
 {
-	border:0px;
-	border-image: url(:/imgs/h-line.png);
+    border:0px;
+    border-image: url(:/imgs/h-line.png);
 }</string>
     </property>
     <property name="text">
@@ -654,8 +654,8 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QLabel
 {
-	border:0px;
-	border-image: url(:/imgs/h-line.png);
+    border:0px;
+    border-image: url(:/imgs/h-line.png);
 }</string>
     </property>
     <property name="text">
@@ -674,7 +674,7 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/icon-globe.png);
+    border-image: url(:/imgs/icon-globe.png);
 }</string>
     </property>
     <property name="interactive">
@@ -693,7 +693,7 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/v-line-short.png);
+    border-image: url(:/imgs/v-line-short.png);
 }</string>
     </property>
     <property name="interactive">
@@ -806,8 +806,8 @@ color: #818181;
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	color: #ffffff;
+    border:0px;
+    color: #ffffff;
 border-image: url(:/imgs/flag-usa.png);
 }</string>
     </property>
@@ -833,8 +833,8 @@ border-image: url(:/imgs/flag-usa.png);
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	color: #ff0000;
+    border:0px;
+    color: #ff0000;
 border-image: url(:/imgs/flag-box.png);
 }</string>
     </property>
@@ -854,7 +854,7 @@ border-image: url(:/imgs/flag-box.png);
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/icon-plug.png);
+    border-image: url(:/imgs/icon-plug.png);
 }</string>
     </property>
     <property name="interactive">
@@ -904,7 +904,7 @@ background: transparent;
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/v-line-short.png);
+    border-image: url(:/imgs/v-line-short.png);
 }</string>
     </property>
     <property name="interactive">
@@ -984,7 +984,7 @@ background: transparent;
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/v-line-short.png);
+    border-image: url(:/imgs/v-line-short.png);
 }</string>
     </property>
     <property name="interactive">
@@ -1030,7 +1030,7 @@ background: transparent;
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/v-line-short.png);
+    border-image: url(:/imgs/v-line-short.png);
 }</string>
     </property>
     <property name="interactive">
@@ -1111,7 +1111,7 @@ background: transparent;
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/icon-direction.png);
+    border-image: url(:/imgs/icon-direction.png);
 }</string>
     </property>
     <property name="interactive">
@@ -1130,7 +1130,7 @@ background: transparent;
     <property name="styleSheet">
      <string notr="true">QGraphicsView
 {
-	border-image: url(:/imgs/v-line-short.png);
+    border-image: url(:/imgs/v-line-short.png);
 }</string>
     </property>
     <property name="interactive">
@@ -1221,17 +1221,17 @@ background: transparent;
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	color: #ffffff;
-	border-image: url(:/imgs/b-jump-norm.png);
+    border:0px;
+    color: #ffffff;
+    border-image: url(:/imgs/b-jump-norm.png);
 }
 QPushButton:hover:!pressed
 {
-	border-image: url(:/imgs/b-jump-hover.png);
+    border-image: url(:/imgs/b-jump-hover.png);
 }
 QPushButton:pressed
 {
-	border-image: url(:/imgs/b-jump-pressed.png);
+    border-image: url(:/imgs/b-jump-pressed.png);
 }</string>
     </property>
     <property name="text">
@@ -1262,17 +1262,17 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	color: #ffffff;
-	border-image: url(:/imgs/b-settings-norm.png);
+    border:0px;
+    color: #ffffff;
+    border-image: url(:/imgs/b-settings-norm.png);
 }
 QPushButton:hover:!pressed
 {
-	border-image: url(:/imgs/b-settings-hover.png);
+    border-image: url(:/imgs/b-settings-hover.png);
 }
 QPushButton:pressed
 {
-	border-image: url(:/imgs/b-settings-pressed.png);
+    border-image: url(:/imgs/b-settings-pressed.png);
 }</string>
     </property>
     <property name="text">
@@ -1297,8 +1297,8 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	border-image: url(:/imgs/cb-empty.png);
+    border:0px;
+    border-image: url(:/imgs/cb-empty.png);
 }</string>
     </property>
     <property name="text">
@@ -1323,8 +1323,8 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	border-image: url(:/imgs/cb-empty.png);
+    border:0px;
+    border-image: url(:/imgs/cb-empty.png);
 }</string>
     </property>
     <property name="text">
@@ -1349,8 +1349,8 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	border-image: url(:/imgs/cb-empty.png);
+    border:0px;
+    border-image: url(:/imgs/cb-empty.png);
 }</string>
     </property>
     <property name="text">
@@ -1381,17 +1381,17 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	color: #ffffff;
-	border-image: url(:/imgs/b-cancel-norm.png);
+    border:0px;
+    color: #ffffff;
+    border-image: url(:/imgs/b-cancel-norm.png);
 }
 QPushButton:hover:!pressed
 {
-	border-image: url(:/imgs/b-cancel-hover.png);
+    border-image: url(:/imgs/b-cancel-hover.png);
 }
 QPushButton:pressed
 {
-	border-image: url(:/imgs/b-cancel-pressed.png);
+    border-image: url(:/imgs/b-cancel-pressed.png);
 }</string>
     </property>
     <property name="text">
@@ -1416,8 +1416,8 @@ QPushButton:pressed
     <property name="styleSheet">
      <string notr="true">QPushButton
 {
-	border:0px;
-	border-image: url(:/imgs/cb-empty.png);
+    border:0px;
+    border-image: url(:/imgs/cb-empty.png);
 }</string>
     </property>
     <property name="text">
@@ -1508,6 +1508,12 @@ QPushButton:pressed
      <y>168</y>
     </hint>
    </hints>
+  </connection>
+  <connection>
+   <sender>b_Row_Protocol</sender>
+   <signal>clicked()</signal>
+   <receiver>ConnectionDialog</receiver>
+   <slot>showMapWindow()</slot>
   </connection>
   <connection>
    <sender>b_Row_Country</sender>

@@ -43,7 +43,7 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
     if (Scr_Map::IsExists() && id > -1) {
         idsrv = Scr_Map::Instance()->SrvIxFromLineIx(id);
     }
-    AServer sr = AuthManager::Instance()->GetSrv(idsrv);	//AServer sr = nodes ? 	AuthManager::Instance()->GetSrv(id) : AuthManager::Instance()->GetHub(id);
+    AServer sr = AuthManager::instance()->getServer(idsrv);	//AServer sr = nodes ? 	AuthManager::Instance()->GetSrv(id) : AuthManager::Instance()->GetHub(id);
 
     painter->setRenderHint(QPainter::Antialiasing, true);
 
@@ -86,7 +86,7 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
         painter->drawText(R, Qt::AlignRight | Qt::AlignVCenter, sload);
 
 
-        int ping = AuthManager::Instance()->PingFromSrvIx(idsrv);
+        int ping = AuthManager::instance()->pingFromServerIx(idsrv);
         if (ping > -1) {
             if (selected || checked)
                 painter->setPen(white);

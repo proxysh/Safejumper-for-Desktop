@@ -65,7 +65,7 @@ class AuthManager: public QObject
 {
     Q_OBJECT
 public:
-    static AuthManager * Instance();
+    static AuthManager * instance();
     static bool exists();
     static void cleanup();
 
@@ -77,62 +77,62 @@ public:
     void cancel();
     void logout();
 
-    const QString & AccName()
+    const QString & accountName()
     {
-        return _aclogin;    // TODO: -1 check: still valid, synchro with the main wnd
+        return mAccountLogin;    // TODO: -1 check: still valid, synchro with the main wnd
     }
-    const QString & AccPsw()
+    const QString & accountPassword()
     {
-        return _acnpsw;
+        return mAccountPassword;
     }
-    const QString & VpnName()
+    const QString & VPNName()
     {
-        return _vpnlogin;    // TODO: -1 check: still valid
+        return mVPNLogin;    // TODO: -1 check: still valid
     }
-    const QString & VpnPsw()
+    const QString & VPNPassword()
     {
-        return _vpnpsw;
-    }
-
-    const QString & NewIp()
-    {
-        return _newip;
+        return mVPNPassword;
     }
 
-    const QString & OldIp()
+    const QString & newIP()
     {
-        return _oldip;
+        return mNewIP;
+    }
+
+    const QString & oldIP()
+    {
+        return mOldIP;
     }
 
     const std::vector<size_t> & currentEncryptionServers();		// return IDs of servers inside _servers available for this encryption
     const std::vector<size_t> & currentEncryptionHubs();					// return IDs of habs inside _servers
 
-    const std::vector<std::pair<bool, int> > & GetLvl0();		// <is hub, hub id / srv id>
-    const std::vector<int> & GetLvl1(size_t hub);					// for given hub id all the server ids, including hub entry itself
+    const std::vector<std::pair<bool, int> > & getLevel0();		// <is hub, hub id / srv id>
+    const std::vector<int> & getLevel1(size_t hub);					// for given hub id all the server ids, including hub entry itself
 
-    size_t ServerIdFromHubId(size_t ixHub);
-    AServer GetSrv(int id);	 // on -1 returns empty
-    int HubIxFromSrvName(const QString & srv);	  // -1 if not found
-    int HubIdFromItsSrvId(int ixsrv);			   // -1 if ixsrv not a hub
-    int SrvIxFromName(const QString & srv);		 // -1 if not found
-    AServer GetHub(int idhub);
+    size_t serverIdFromHubId(size_t ixHub);
+    AServer getServer(int id);	 // on -1 returns empty
+    int hubIxFromServerName(const QString & srv);	  // -1 if not found
+    int hubIdFromServerId(int ixsrv);			   // -1 if ixsrv not a hub
+    int serverIxFromName(const QString & srv);		 // -1 if not found
+    AServer getHub(int idhub);
 
-    int PingFromSrvIx(int srv);
+    int pingFromServerIx(int srv);
 
     void jump();
 
-    uint64_t GetRnd64();
+    uint64_t getRandom64();
 
     void checkUpdates();		// use own reply; can download in parallel with others; executed by main window at start regardless other actions
     void getOldIP();
 
-    void PingComplete(size_t idWaiter);
-    void PingErr(size_t idWaiter);
-    void PingTerminate(size_t idWaiter);
+    void pingComplete(size_t idWaiter);
+    void pingError(size_t idWaiter);
+    void pingTerminated(size_t idWaiter);
 
     int getServerToJump();		// except current Scr_Map::Instance()->CurrSrv()
 
-    void ForwardPorts();
+    void forwardPorts();
 
 public slots:
     void setNewIp(const QString & ip);
@@ -164,63 +164,63 @@ private:
     QStringList extractNames(QString & out_msg);
     void pingAllServers();
 
-    bool _logged;
-    bool _CancelLogin;
-    static std::auto_ptr<AuthManager> _inst;
+    bool mLoggedIn;
+    bool mCancellingLogin;
+    static std::auto_ptr<AuthManager> mInstance;
 
-    void ClearColls();
-    bool _seeded;
-    void DoSeed();
+    void clearServerLists();
+    bool mSeeded;
+    void seed();
 
-    std::vector<AServer> _servers;
-    std::vector<size_t> _srv_ids[ENCRYPTION_COUNT];		// IDs inside _servers available for each encryption
-    std::vector<AServer> _hubs;
-    std::vector<size_t> _hub_ids[ENCRYPTION_COUNT];		// IDs of hubs inside _servers available for each encryption		// _hub_ids[0] the same as _HubToServer
-    std::vector<std::pair<bool, int> > _level0;		// <is hub, hub id / srv id>
-    std::map<int, std::vector<int> > _level1;		// <hub id, <srv ids, including srv id of hub entry> >
-    std::vector<int> _fake;
-    void PrepareLevels();
-    int HubidForServerNode(size_t srv);					// -1 if cannot find hub for this srv
-    std::map<std::string, size_t> _HubClearedId;	//std::map<QString, size_t> _HubClearedId;		// <hub cleared name (w/o ' Hub'), its hub id>
-    std::vector<size_t> _HubToServer;	   // id of hub inside _servers
-    IIMap _SrvidToHubId;
-    SIMap _SrvNameToId;
+    std::vector<AServer> mServers;
+    std::vector<size_t> mServerIds[ENCRYPTION_COUNT];		// IDs inside _servers available for each encryption
+    std::vector<AServer> mHubs;
+    std::vector<size_t> mHubIds[ENCRYPTION_COUNT];		// IDs of hubs inside _servers available for each encryption		// _hub_ids[0] the same as _HubToServer
+    std::vector<std::pair<bool, int> > mLevel0;		// <is hub, hub id / srv id>
+    std::map<int, std::vector<int> > mLevel1;		// <hub id, <srv ids, including srv id of hub entry> >
+    std::vector<int> mFake;
+    void prepareLevels();
+    int hubidForServerNode(size_t srv);					// -1 if cannot find hub for this srv
+    std::map<std::string, size_t> mHubClearedId;	//std::map<QString, size_t> _HubClearedId;		// <hub cleared name (w/o ' Hub'), its hub id>
+    std::vector<size_t> mHubToServer;	   // id of hub inside _servers
+    IIMap mServerIdToHubId;
+    SIMap mServerNameToId;
 
 //	std::vector<QString> _obfs_names;	// U.S. California 3
 //	std::vector<int> _obfs_srv;				// id in _servers ; -1 if cannot find
     //std::vector<int> _obfs_srv_available;	// id in _servers of servers available for this user (inside paid set)
 //	std::set<int> _obfs_enabled_srvs;		// for lookup
-    std::vector<QString> _obfs_addr;		// 64.110.129.100 ; or boost-sg.proxy.sh
+    std::vector<QString> mObfsAddress;		// 64.110.129.100 ; or boost-sg.proxy.sh
 
-    QString _aclogin;
-    QString _acnpsw;
-    QString _vpnlogin;
-    QString _vpnpsw;
+    QString mAccountLogin;
+    QString mAccountPassword;
+    QString mVPNLogin;
+    QString mVPNPassword;
 
-    QString _newip;
-    QString _oldip;
-    QString _accname;
-    QString _email;
-    QString _amount;
-    QString _until;
+    QString mNewIP;
+    QString mOldIP;
+    QString mAccountName;
+    QString mEmail;
+    QString mAmount;
+    QString mUntil;
 
-    QNetworkAccessManager _nam;
-    std::auto_ptr<QNetworkReply> _reply;
-    std::auto_ptr<QNetworkReply> _reply_IP;
-    int _ip_attempt_count;
+    QNetworkAccessManager mNAM;
+    std::auto_ptr<QNetworkReply> mReply;
+    std::auto_ptr<QNetworkReply> mIPReply;
+    int mIPAttemptCount;
     void clearReply();
-    std::auto_ptr<QNetworkReply> _reply_update;
+    std::auto_ptr<QNetworkReply> mUpdateReply;
 
-    std::vector<int> _pings;		// ping for each server; -1 on err
-    std::vector<int> GetPings(const std::vector<size_t> & toping);	// from _pings; do not wait for pings; return vec of the same size
-    std::queue<size_t> _toping;				// id inside _servers
-    bool _pings_loaded;
+    std::vector<int> mPings;		// ping for each server; -1 on err
+    std::vector<int> getPings(const std::vector<size_t> & toping);	// from _pings; do not wait for pings; return vec of the same size
+    std::queue<size_t> mToPing;				// id inside _servers
+    bool mPingsLoaded;
 
-    std::vector<QProcess *> _workers;		// 3 vectors of the same size WORKERS_NUM
-    std::vector<PingWaiter *> _waiters;
-    std::vector<size_t> _inprogress;			// id inside _servers
-    std::vector<QTimer *>  _timers;
-    void StartWorker(size_t id);
+    std::vector<QProcess *> mWorkers;		// 3 vectors of the same size WORKERS_NUM
+    std::vector<PingWaiter *> mWaiters;
+    std::vector<size_t> mInProgress;			// id inside _servers
+    std::vector<QTimer *>  mTimers;
+    void startWorker(size_t id);
 
     void getAccountType();		// TODO: -2 chain in a more flexible way e.g. queue
     void getExpirationDate();
@@ -229,10 +229,10 @@ private:
     void getEccServerNames();
 //	void StartDwnl_EccxorName();
 
-    void ForceRepopulation(int enc);
+    void forceRepopulation(int enc);
 
-    std::auto_ptr<Thread_OldIp> _th_oldip;
-    std::auto_ptr<PortForwarder> _forwarder;
+    std::auto_ptr<Thread_OldIp> mOldIPThread;
+    std::auto_ptr<PortForwarder> mPortForwarderThread;
 };
 
 #endif // AUTHMANAGER_H

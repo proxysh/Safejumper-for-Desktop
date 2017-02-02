@@ -271,7 +271,7 @@ void TrayIconManager::fixIcon()
 void TrayIconManager::connectTriggered()
 {
     fixIcon();
-    if (!AuthManager::Instance()->loggedIn()) {
+    if (!AuthManager::instance()->loggedIn()) {
         emit login();
     } else {
         OpenvpnManager::instance()->start();
@@ -285,7 +285,7 @@ void TrayIconManager::connectToTriggered()
     QAction *action = qobject_cast<QAction*>(sender());
     if (action != NULL) {
         // Get the action's server id
-        if (AuthManager::Instance()->loggedIn()) {
+        if (AuthManager::instance()->loggedIn()) {
             size_t serverId = action->data().toInt();
 
             Scr_Map::Instance()->SetServer(serverId);
@@ -312,7 +312,7 @@ void TrayIconManager::jumpTriggered()
 {
     fixIcon();
     WndManager::Instance()->ToPrimary();
-    AuthManager::Instance()->jump();
+    AuthManager::instance()->jump();
 }
 
 void TrayIconManager::switchCountryTriggered()
@@ -379,7 +379,7 @@ void TrayIconManager::logoutTriggered()
     if (OpenvpnManager::exists())
         OpenvpnManager::instance()->stop();
     if (AuthManager::exists())
-        AuthManager::Instance()->logout();
+        AuthManager::instance()->logout();
     WndManager::Instance()->ToPrimary();
     emit logout();
     clearConnectToMenu();
@@ -413,7 +413,7 @@ void TrayIconManager::constructConnectToMenu()
 {
     qDebug() << "creating connect to menu";
     if (AuthManager::exists()) {
-        AuthManager * am = AuthManager::Instance();
+        AuthManager * am = AuthManager::instance();
         if (am->loggedIn()) {
             qDebug() << "Logged in so making actions";
             clearConnectToMenu();
@@ -430,33 +430,33 @@ void TrayIconManager::constructConnectToMenu()
             if (!Setting::Instance()->IsShowNodes()) {
                 qDebug() << "showNodes is off, so using hubs of size " << hubs.size();
                 for (size_t k = 0; k < hubs.size(); ++k) {
-                    AServer sr = am->GetSrv(hubs[k]);
+                    AServer sr = am->getServer(hubs[k]);
                     createMenuItem(mConnectToMenu.get(), sr.name, hubs[k]);//am->ServerIdFromHubId(k));
                 }
             } else {
-                const std::vector<std::pair<bool, int> > & L0 = am->GetLvl0();
+                const std::vector<std::pair<bool, int> > & L0 = am->getLevel0();
                 qDebug() << "showNodes is on, so using servers level 0 size is " << L0.size();
                 for (size_t k = 0; k < L0.size(); ++k) {
                     if (L0[k].first) {
                         // hub - add submenu
                         int idhub = L0[k].second;
-                        AServer h = am->GetHub(idhub);
+                        AServer h = am->getHub(idhub);
                         QMenu * m = new QMenu(h.name);
                         mHubMenus.push_back(m);
 
                         // add into it all individual servers
-                        const std::vector<int> & L1 = am->GetLvl1(idhub);
+                        const std::vector<int> & L1 = am->getLevel1(idhub);
                         for (size_t k = 0; k < L1.size(); ++k) {
                             int idsrv = L1[k];
                             if (idsrv > -1) {
-                                AServer se = am->GetSrv(idsrv);
+                                AServer se = am->getServer(idsrv);
                                 createMenuItem(m, se.name, idsrv);
                             }
                         }
                         mConnectToMenu->addMenu(m);
                     } else {	// just a server without hub
                         int idsrv = L0[k].second;
-                        AServer se = am->GetSrv(idsrv);
+                        AServer se = am->getServer(idsrv);
                         createMenuItem(mConnectToMenu.get(), se.name, idsrv);
                     }
                 }
@@ -517,7 +517,7 @@ void TrayIconManager::updateActionsEnabled(bool connecting)
     static const char * country = "country";
     static const char * disconn = "disconnect";
     static const char * conn = "connect";
-    if (AuthManager::Instance()->loggedIn()) {
+    if (AuthManager::instance()->loggedIn()) {
         s_set_enabled(mSwitchCountryAction.get(), !connecting, country);
         s_set_enabled(mDisconnectAction.get(), connecting, disconn);
         s_set_enabled(mConnectToAction.get(), !connecting, conn);

@@ -90,7 +90,7 @@ void OpenvpnManager::launchOpenvpn()
     stop();
     // TODO: -1 cleanup
 
-    if (AuthManager::Instance()->loggedIn()) {
+    if (AuthManager::instance()->loggedIn()) {
         setState(ovsConnecting);
         int enc = Setting::Encryption();
         bool obfs = enc == ENCRYPTION_OBFS_TOR;
@@ -556,7 +556,7 @@ void OpenvpnManager::gotConnected(const QString & s)
             emit gotNewIp(ip);
     }
 
-    AuthManager::Instance()->ForwardPorts();
+    AuthManager::instance()->forwardPorts();
 }
 
 void OpenvpnManager::gotTunErr(const QString & s)
@@ -922,8 +922,8 @@ void OpenvpnManager::parseSocketQueryWord(const QString & word, const QString & 
     } else if (word.compare("PASSWORD", Qt::CaseInsensitive) == 0) {
         if (s.indexOf("Need 'Auth' username/password") > -1) {
             log::logt("sending vpn login+password");
-            QString u1 = "username \"Auth\" \"" + EscapePsw(AuthManager::Instance()->VpnName()) + "\"\n";
-            QString p1 = "password \"Auth\" \"" + EscapePsw(AuthManager::Instance()->VpnPsw()) + "\"\n";
+            QString u1 = "username \"Auth\" \"" + EscapePsw(AuthManager::instance()->VPNName()) + "\"\n";
+            QString p1 = "password \"Auth\" \"" + EscapePsw(AuthManager::instance()->VPNPassword()) + "\"\n";
             mSocket->write(u1.toLatin1());
             mSocket->write(p1.toLatin1());
             mSocket->flush();

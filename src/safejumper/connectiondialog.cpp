@@ -70,13 +70,13 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->L_Amount->setText("-");
     ui->L_OldIp->setText("");
 
-    connect(AuthManager::Instance(), SIGNAL(oldIpLoaded(QString)),
+    connect(AuthManager::instance(), SIGNAL(oldIpLoaded(QString)),
             this, SLOT(setOldIP(QString)));
-    connect(AuthManager::Instance(), SIGNAL(emailLoaded(QString)),
+    connect(AuthManager::instance(), SIGNAL(emailLoaded(QString)),
             this, SLOT(setEmail(QString)));
-    connect(AuthManager::Instance(), SIGNAL(untilLoaded(QString)),
+    connect(AuthManager::instance(), SIGNAL(untilLoaded(QString)),
             this, SLOT(setUntil(QString)));
-    connect(AuthManager::Instance(), SIGNAL(amountLoaded(QString)),
+    connect(AuthManager::instance(), SIGNAL(amountLoaded(QString)),
             this, SLOT(setAmount(QString)));
 
     // Setting::Instance()->LoadServer();
@@ -85,7 +85,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     // TODO: -1  get actual data
     ui->L_Until->setText("active until\n-");
     ui->L_Amount->setText("-");
-    setOldIP(AuthManager::Instance()->OldIp());
+    setOldIP(AuthManager::instance()->oldIP());
     updateEncoding();
     updateProtocol();
 }
@@ -116,12 +116,12 @@ void ConnectionDialog::setServer(int srv)
     if (srv < 0) {	// none
         setNoServer();
     } else {
-        const AServer & se = AuthManager::Instance()->GetSrv(srv);
+        const AServer & se = AuthManager::instance()->getServer(srv);
         ui->L_Country->setText(se.name);
         ui->b_Flag->show();
         ui->b_FlagBox->show();
 
-        QString nip = AuthManager::Instance()->NewIp();
+        QString nip = AuthManager::instance()->newIP();
         if (nip.isEmpty())
             nip = se.address;
         ui->L_NewIp->setText(nip);
@@ -186,7 +186,7 @@ void ConnectionDialog::setUntil(const QString & date)
 
 void ConnectionDialog::setFlag(int srv)
 {
-    QString n = AuthManager::Instance()->GetSrv(srv).name;
+    QString n = AuthManager::instance()->getServer(srv).name;
     QString fl = flag::IconFromSrvName(n);
     ui->b_Flag->setStyleSheet("QPushButton\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/flags/" + fl + ".png);\n}");
 }
@@ -352,7 +352,7 @@ void ConnectionDialog::on_cancelButton_clicked()
 
 void ConnectionDialog::on_jumpButton_clicked()
 {
-    AuthManager::Instance()->jump();
+    AuthManager::instance()->jump();
 }
 
 void ConnectionDialog::keyPressEvent(QKeyEvent * e)

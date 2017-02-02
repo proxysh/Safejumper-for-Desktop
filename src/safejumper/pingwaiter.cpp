@@ -29,17 +29,17 @@ PingWaiter::~PingWaiter()
 
 void PingWaiter::PingFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    AuthManager::Instance()->PingComplete(_idWaiter);
+    AuthManager::instance()->pingComplete(_idWaiter);
 }
 
 void PingWaiter::PingError(QProcess::ProcessError)
 {
-    AuthManager::Instance()->PingErr(_idWaiter);
+    AuthManager::instance()->pingError(_idWaiter);
 }
 
 void PingWaiter::Timer_Terminate()
 {
-    AuthManager::Instance()->PingTerminate(_idWaiter);
+    AuthManager::instance()->pingTerminated(_idWaiter);
 }
 
 

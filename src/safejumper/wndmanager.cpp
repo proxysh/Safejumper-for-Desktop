@@ -47,7 +47,7 @@ WndManager::~WndManager()
 
 void WndManager::ToPrimary()
 {
-    if (AuthManager::Instance()->loggedIn())
+    if (AuthManager::instance()->loggedIn())
         ToConnect();
     else
         ToLogin();
@@ -55,7 +55,7 @@ void WndManager::ToPrimary()
 
 QWidget * WndManager::Primary()
 {
-    if (AuthManager::Instance()->loggedIn())
+    if (AuthManager::instance()->loggedIn())
         return ConnectionDialog::instance();
     else
         return LoginWindow::Instance();
@@ -76,7 +76,7 @@ void WndManager::ToConnect()
     QWidget * from = ScrVisible();
     if (ConnectionDialog::instance() != from) {
         trans(from, ConnectionDialog::instance());
-        ConnectionDialog::instance()->setAccountName(AuthManager::Instance()->VpnName());
+        ConnectionDialog::instance()->setAccountName(AuthManager::instance()->VPNName());
     } else {
         ToFront(ConnectionDialog::instance());		// activate it
     }
@@ -94,7 +94,7 @@ void WndManager::ToLogs()
 
 void WndManager::ToMap()
 {
-    if (AuthManager::Instance()->loggedIn())
+    if (AuthManager::instance()->loggedIn())
         trans(ScrVisible(), Scr_Map::Instance());
     else
         ToLogin();
@@ -320,7 +320,7 @@ void WndManager::ShowPortDlg()
     _DlgPort = new Dlg_newnode("Connection failed? Try another node or port.", Primary());
     //_DlgPort->setWindowModality(Qt::ApplicationModal);
     ConnectionDialog * w = ConnectionDialog::instance();
-    w->connect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
+    w->connect(_DlgPort, SIGNAL(finished(int)), w, SLOT(portDialogResult(int)));
     _DlgPort->open();
 }
 
@@ -329,7 +329,7 @@ void WndManager::ClosePortDlg()
     if (_DlgPort != NULL) {
         if (ConnectionDialog::exists()) {
             ConnectionDialog * w = ConnectionDialog::instance();
-            w->disconnect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
+            w->disconnect(_DlgPort, SIGNAL(finished(int)), w, SLOT(portDialogResult(int)));
         }
         _DlgPort->close();
     }
