@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dlg_Error</class>
- <widget class="QDialog" name="Dlg_Error">
+ <class>ErrorDialog</class>
+ <widget class="QDialog" name="ErrorDialog">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -44,7 +44,7 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <widget class="QLabel" name="L_Caption">
+    <widget class="QLabel" name="captionLabel">
      <property name="font">
       <font>
        <family>Helvetica Neue</family>
@@ -103,7 +103,7 @@ color: #ca1726;
        <number>0</number>
       </property>
       <item row="2" column="1">
-       <widget class="QPushButton" name="b_Support">
+       <widget class="QPushButton" name="supportButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -150,7 +150,7 @@ QPushButton:pressed
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QPushButton" name="b_Close">
+       <widget class="QPushButton" name="closeButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -197,7 +197,7 @@ QPushButton:pressed
        </widget>
       </item>
       <item row="1" column="0" colspan="2">
-       <widget class="QLabel" name="L_Text">
+       <widget class="QLabel" name="textLabel">
         <property name="font">
          <font>
           <family>Helvetica Neue</family>
@@ -224,38 +224,5 @@ QPushButton:pressed
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>b_Close</sender>
-   <signal>clicked()</signal>
-   <receiver>Dlg_Error</receiver>
-   <slot>_ac_Close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>94</x>
-     <y>143</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>87</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Support</sender>
-   <signal>clicked()</signal>
-   <receiver>Dlg_Error</receiver>
-   <slot>_ac_Support()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>219</x>
-     <y>143</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>87</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

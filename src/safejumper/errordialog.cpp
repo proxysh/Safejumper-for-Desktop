@@ -16,36 +16,48 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include "lvrowdelegateprotocol.h"
-#include "scr_map.h"
-#include "setting.h"
+#include "errordialog.h"
 
-#include <QPen>
-#include <QPainter>
-#include <QPicture>
+#include "ui_errordialog.h"
 
-void LvRowDelegateProtocol::paint(QPainter * painter, const QStyleOptionViewItem & option,
-                                  const QModelIndex & index) const
+#include "common.h"
+#include "wndmanager.h"
+#include "fonthelper.h"
+
+ErrorDialog::ErrorDialog(const QString & msg, const QString & caption, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::ErrorDialog)
 {
-    QStyledItemDelegate::paint(painter, option, index);
-    painter->save();
+    ui->setupUi(this);
+#ifndef Q_OS_MAC
+    FontHelper::SetFont(this);
+#endif
+    WndManager::DoShape(this);
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
 
-    int id = index.row() - 1;
-    bool selected = option.state & QStyle::State_Selected;
-    bool checked = !(option.state & QStyle::State_Selected);
-    if (Scr_Map::IsExists())
-        checked = checked && (Scr_Map::Instance()->CurrProto() == id);
+    this->setAttribute(Qt::WA_MacNoShadow, false);
+    ui->captionLabel->setText(caption);
+    ui->textLabel->setText(msg);
+}
 
-    if (checked && !selected && id > -1) {
-        static QPixmap pm(":/imgs/dd-selectionrow.png");
-        painter->drawPixmap(option.rect, pm);
+ErrorDialog::~ErrorDialog()
+{
+    delete ui;
+}
 
-        static QPen white(QColor("#FFFFFF"));
-        static int margin_left = 5;		// padding-left: 10px;
-        QRect L = option.rect.adjusted(margin_left, 0, 0, 0);
-        painter->setPen(white);
-        painter->drawText(L, Qt::AlignLeft | Qt::AlignVCenter, id < 0 ? PROTOCOL_SELECTION_STR : Setting::GetAllProt().at(id));
-    }
+void ErrorDialog::resizeEvent(QResizeEvent * )
+{
+    // on resize: it harms shape
+    //WndManager::DoShape(this);
+}
 
-    painter->restore();
+void ErrorDialog::on_closeButton_clicked()
+{
+    accept();
+}
+
+void ErrorDialog::on_supportButton_clicked()
+{
+    OpenUrl_Support();
+    accept();
 }

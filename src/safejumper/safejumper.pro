@@ -61,7 +61,6 @@ SOURCES += \
     common.cpp \
     confirmationdialog.cpp \
     connectiondialog.cpp \
-    dlg_error.cpp \
     dlg_newnode.cpp \
     flag.cpp \
     fonthelper.cpp \
@@ -80,20 +79,19 @@ SOURCES += \
     scr_logs.cpp \
     scr_map.cpp \
     scr_settings.cpp \
-    scr_table.cpp \
     setting.cpp \
     stun.cpp \
     thread_oldip.cpp \
     thread_forwardports.cpp \
     trayiconmanager.cpp \
-    wndmanager.cpp
+    wndmanager.cpp \
+    errordialog.cpp
 
 HEADERS += \
     authmanager.h \
     common.h \
     confirmationdialog.h \
     connectiondialog.h \
-    dlg_error.h \
     dlg_newnode.h \
     flag.h \
     fonthelper.h \
@@ -111,7 +109,6 @@ HEADERS += \
     scr_logs.h \
     scr_map.h \
     scr_settings.h \
-    scr_table.h \
     setting.h \
     stun.h \
     thread_forwardports.h \
@@ -119,18 +116,18 @@ HEADERS += \
     trayiconmanager.h \
     update.h \
     version.h \
-    wndmanager.h
+    wndmanager.h \
+    errordialog.h
 
 FORMS += \
     confirmationdialog.ui \
     connectiondialog.ui \
-    dlg_error.ui \
     dlg_newnode.ui \
+    errordialog.ui \
     loginwindow.ui \
     scr_logs.ui \
     scr_map.ui \
-    scr_settings.ui \
-    scr_table.ui \
+    scr_settings.ui
 
 RESOURCES += \
     imgs.qrc

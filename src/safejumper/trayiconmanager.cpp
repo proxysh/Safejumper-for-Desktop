@@ -25,7 +25,7 @@
 #include "scr_settings.h"
 #include "scr_logs.h"
 #include "scr_map.h"
-#include "dlg_error.h"
+#include "errordialog.h"
 #include "confirmationdialog.h"
 
 #ifdef MONITOR_TOOL

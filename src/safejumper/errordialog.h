@@ -16,36 +16,31 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include "lvrowdelegateprotocol.h"
-#include "scr_map.h"
-#include "setting.h"
+#ifndef ERRORDIALOG_H
+#define ERRORDIALOG_H
 
-#include <QPen>
-#include <QPainter>
-#include <QPicture>
+#include <QDialog>
 
-void LvRowDelegateProtocol::paint(QPainter * painter, const QStyleOptionViewItem & option,
-                                  const QModelIndex & index) const
+namespace Ui
 {
-    QStyledItemDelegate::paint(painter, option, index);
-    painter->save();
-
-    int id = index.row() - 1;
-    bool selected = option.state & QStyle::State_Selected;
-    bool checked = !(option.state & QStyle::State_Selected);
-    if (Scr_Map::IsExists())
-        checked = checked && (Scr_Map::Instance()->CurrProto() == id);
-
-    if (checked && !selected && id > -1) {
-        static QPixmap pm(":/imgs/dd-selectionrow.png");
-        painter->drawPixmap(option.rect, pm);
-
-        static QPen white(QColor("#FFFFFF"));
-        static int margin_left = 5;		// padding-left: 10px;
-        QRect L = option.rect.adjusted(margin_left, 0, 0, 0);
-        painter->setPen(white);
-        painter->drawText(L, Qt::AlignLeft | Qt::AlignVCenter, id < 0 ? PROTOCOL_SELECTION_STR : Setting::GetAllProt().at(id));
-    }
-
-    painter->restore();
+class ErrorDialog;
 }
+
+class ErrorDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit ErrorDialog(const QString & msg, const QString & caption, QWidget *parent = 0);
+    ~ErrorDialog();
+private slots:
+    void on_closeButton_clicked();
+    void on_supportButton_clicked();
+private:
+    Ui::ErrorDialog *ui;
+    void DoClose();
+protected:
+    void resizeEvent(QResizeEvent *event);
+};
+
+#endif // ERRORDIALOG_H

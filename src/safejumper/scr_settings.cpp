@@ -1,3 +1,21 @@
+/***************************************************************************
+ *   Copyright (C) 2017 by Jeremy Whiting <jeremypwhiting@gmail.com>       *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation version 2 of the License.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
+ ***************************************************************************/
+
 #include "scr_settings.h"
 
 #include "scr_logs.h"
@@ -12,7 +30,7 @@
 #include "osspecific.h"
 #include "log.h"
 #include "lvrowdelegateencryption.h"
-#include "dlg_error.h"
+#include "errordialog.h"
 #include "pathhelper.h"
 
 #include <cstdio>
@@ -307,7 +325,7 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
         OsSpecific::Instance()->InstallObfs();
         if (!OsSpecific::Instance()->IsObfsInstalled()) {
 #endif
-            Dlg_Error dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
+            ErrorDialog dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
             dlg.exec();
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
         }
