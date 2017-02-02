@@ -1,3 +1,21 @@
+/***************************************************************************
+ *   Copyright (C) 2017 by Jeremy Whiting <jeremypwhiting@gmail.com>       *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation version 2 of the License.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
+ ***************************************************************************/
+
 #include "connectiondialog.h"
 
 #include "ui_connectiondialog.h"
@@ -13,12 +31,12 @@
 #include "flag.h"
 #include "fonthelper.h"
 
-ConnectionDialog::HmWords ConnectionDialog::_StateWord_Img;
+ConnectionDialog::HmWords ConnectionDialog::mStateWordImages;
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConnectionDialog)
-    , _moving(false)
+    , mMoving(false)
 {
     ui->setupUi(this);
     this->setFixedSize(this->size());
@@ -27,7 +45,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->L_Percent->setText("0%");
     ui->L_OldIp->setText("");
     ui->L_NewIp->setText("");
-    SetNoSrv();
+    setNoServer();
 
     setWindowFlags(Qt::Dialog);
 #ifndef Q_OS_MAC
@@ -45,7 +63,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->L_LOAD->move(p1);
 #endif
 
-    StatusDisconnected();
+    statusDisconnected();
 
     ui->b_Cancel->hide();
 
@@ -64,30 +82,43 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     qApp->installEventFilter(this);
 
     connect(AuthManager::Instance(), SIGNAL(oldIpLoaded(QString)),
-            this, SLOT(SetOldIp(QString)));
+            this, SLOT(setOldIP(QString)));
     connect(AuthManager::Instance(), SIGNAL(emailLoaded(QString)),
-            this, SLOT(SetEmail(QString)));
+            this, SLOT(setEmail(QString)));
     connect(AuthManager::Instance(), SIGNAL(untilLoaded(QString)),
-            this, SLOT(SetUntil(QString)));
+            this, SLOT(setUntil(QString)));
     connect(AuthManager::Instance(), SIGNAL(amountLoaded(QString)),
-            this, SLOT(SetAmount(QString)));
+            this, SLOT(setAmount(QString)));
+
+    initialize();
+}
+
+bool ConnectionDialog::exists()
+{
+    return (mInstance.get() != NULL);
+}
+
+void ConnectionDialog::cleanup()
+{
+    if (mInstance.get() != NULL)
+        delete mInstance.release();
 }
 
 bool ConnectionDialog::eventFilter(QObject *obj, QEvent *event)
 {
     switch (event->type()) {
     case QEvent::MouseMove: {
-        if (_moving) {
-            QPoint d = QCursor::pos() - _CursorStart;
+        if (mMoving) {
+            QPoint d = QCursor::pos() - mCursorPosition;
             if (d.x() != 0 || d.y() != 0) {
-                QPoint NewAbs = _WndStart + d;
+                QPoint NewAbs = mWindowPosition + d;
                 this->move(NewAbs);
             }
         }
         return false;
     }
     case QEvent::MouseButtonRelease: {
-        _moving = false;
+        mMoving = false;
 //			_WndStart = pos();
         return false;
     }
@@ -96,7 +127,7 @@ bool ConnectionDialog::eventFilter(QObject *obj, QEvent *event)
     }
 }
 
-void ConnectionDialog::Init()
+void ConnectionDialog::initialize()
 {
     // Setting::Instance()->LoadServer();
     Setting::Instance()->LoadProt();
@@ -104,12 +135,12 @@ void ConnectionDialog::Init()
     // TODO: -1  get actual data
     ui->L_Until->setText("active until\n-");
     ui->L_Amount->setText("-");
-    SetOldIp(AuthManager::Instance()->OldIp());
-    UpdEnc();
-    UpdProtocol();
+    setOldIP(AuthManager::Instance()->OldIp());
+    updateEncoding();
+    updateProtocol();
 }
 
-void ConnectionDialog::SetNoSrv()
+void ConnectionDialog::setNoServer()
 {
     ui->L_Percent->hide();
     ui->L_Percent->setText("0%");
@@ -119,10 +150,10 @@ void ConnectionDialog::SetNoSrv()
     ui->L_Country->setText("No location specified.");
 }
 
-void ConnectionDialog::SetServer(int srv)
+void ConnectionDialog::setServer(int srv)
 {
     if (srv < 0) {	// none
-        SetNoSrv();
+        setNoServer();
     } else {
         const AServer & se = AuthManager::Instance()->GetSrv(srv);
         ui->L_Country->setText(se.name);
@@ -142,16 +173,11 @@ void ConnectionDialog::SetServer(int srv)
         ui->L_Percent->setText(QString::number(i) + "%");
         ui->L_Percent->show();
         ui->L_LOAD->show();
-        SetFlag(srv);
+        setFlag(srv);
     }
 }
 
-void ConnectionDialog::DwnlStrs()
-{
-
-}
-
-void ConnectionDialog::UpdNewIp(const QString & s)
+void ConnectionDialog::updateNewIP(const QString & s)
 {
     static const QString self = "127.0.0.1";
     if (s != self) {
@@ -160,51 +186,51 @@ void ConnectionDialog::UpdNewIp(const QString & s)
     }
 }
 
-void ConnectionDialog::UpdEnc()
+void ConnectionDialog::updateEncoding()
 {
     int enc = Setting::Encryption();
     ui->L_Encryption->setText(Setting::EncText(enc));
 }
 
-void ConnectionDialog::SetOldIp(const QString & s)
+void ConnectionDialog::setOldIP(const QString & s)
 {
     ui->L_OldIp->setText(s);
     ui->L_OldIp->show();
 }
 
-void ConnectionDialog::SetAccName(const QString & s)
+void ConnectionDialog::setAccountName(const QString & s)
 {
     if (ui->L_Login->text().isEmpty() || ui->L_Login->text() == "--")
         ui->L_Login->setText(s);
     ui->L_Login->show();
 }
 
-void ConnectionDialog::SetEmail(const QString & s)
+void ConnectionDialog::setEmail(const QString & s)
 {
     ui->L_Email->setText(s);
     ui->L_Email->show();
 }
 
-void ConnectionDialog::SetAmount(const QString & s)
+void ConnectionDialog::setAmount(const QString & s)
 {
     ui->L_Amount->setText(s);
     ui->L_Amount->show();
 }
 
-void ConnectionDialog::SetUntil(const QString & date)
+void ConnectionDialog::setUntil(const QString & date)
 {
     ui->L_Until->setText("active until\n" + date);
     ui->L_Until->show();
 }
 
-void ConnectionDialog::SetFlag(int srv)
+void ConnectionDialog::setFlag(int srv)
 {
     QString n = AuthManager::Instance()->GetSrv(srv).name;
     QString fl = flag::IconFromSrvName(n);
     ui->b_Flag->setStyleSheet("QPushButton\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/flags/" + fl + ".png);\n}");
 }
 
-void ConnectionDialog::SetProtocol(int ix)
+void ConnectionDialog::setProtocol(int ix)
 {
     if (ix < 0)
         ui->L_Protocol->setText("Not selected");
@@ -212,9 +238,9 @@ void ConnectionDialog::SetProtocol(int ix)
         ui->L_Protocol->setText(Setting::Instance()->ProtoStr(ix));
 }
 
-void ConnectionDialog::UpdProtocol()
+void ConnectionDialog::updateProtocol()
 {
-    SetProtocol(Setting::Instance()->CurrProto());
+    setProtocol(Setting::Instance()->CurrProto());
 }
 
 ConnectionDialog::~ConnectionDialog()
@@ -240,38 +266,38 @@ static const char * gs_Conn_Connecting = "QLabel\n{\n	border:0px;\n	color: #ffff
 static const char * gs_Conn_Connecting_Template_start = "QLabel\n{\n	border:0px;\n	color: #ffffff;\n	border-image: url(:/imgs/connect-status-y-";
 static const char * gs_Conn_Connecting_Template_end =  ".png);\n}";
 
-void ConnectionDialog::InitStateWords()
+void ConnectionDialog::initializeStateWords()
 {
-    if (_StateWord_Img.empty()) {
-        _StateWord_Img.insert("AUTH", "auth");
-        _StateWord_Img.insert("GET_CONFIG", "config");
-        _StateWord_Img.insert("ASSIGN_IP", "ip");
-        _StateWord_Img.insert("TCP_CONNECT", "connect");
-        _StateWord_Img.insert("RESOLVE", "resolve");
+    if (mStateWordImages.empty()) {
+        mStateWordImages.insert("AUTH", "auth");
+        mStateWordImages.insert("GET_CONFIG", "config");
+        mStateWordImages.insert("ASSIGN_IP", "ip");
+        mStateWordImages.insert("TCP_CONNECT", "connect");
+        mStateWordImages.insert("RESOLVE", "resolve");
 
         // CONNECTING - default - must be absent in this collection
 
-        _StateWord_Img.insert("WAIT", "wait");
-        _StateWord_Img.insert("RECONNECTING", "reconn");
+        mStateWordImages.insert("WAIT", "wait");
+        mStateWordImages.insert("RECONNECTING", "reconn");
     }
 }
 
-void ConnectionDialog::StatusConnecting()
+void ConnectionDialog::statusConnecting()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_Conn_Connecting);
-    SetEnabledButtons(false);
+    enableButtons(false);
 }
 
-void ConnectionDialog::StatusConnecting(const QString & word)
+void ConnectionDialog::statusConnecting(const QString & word)
 {
 //	ModifyWndTitle(word);
 //	this->StatusConnecting();
-    SetEnabledButtons(false);
-    InitStateWords();
+    enableButtons(false);
+    initializeStateWords();
 
     QString s;
-    HmWords::iterator it = _StateWord_Img.find(word);
-    if (it != _StateWord_Img.end()) {
+    HmWords::iterator it = mStateWordImages.find(word);
+    if (it != mStateWordImages.end()) {
         s = gs_Conn_Connecting_Template_start;
         s += it.value();
         s += gs_Conn_Connecting_Template_end;
@@ -287,7 +313,7 @@ void ConnectionDialog::StatusConnecting(const QString & word)
     ui->L_ConnectStatus->setStyleSheet(s);
 }
 
-void ConnectionDialog::ModifyWndTitle(const QString & word)
+void ConnectionDialog::updateWindowTitle(const QString & word)
 {
     QString s = "Safejumper";
 //	if (!word.isEmpty())
@@ -295,7 +321,7 @@ void ConnectionDialog::ModifyWndTitle(const QString & word)
     this->setWindowTitle(s);
 }
 
-void ConnectionDialog::SetEnabledButtons(bool enabled)
+void ConnectionDialog::enableButtons(bool enabled)
 {
     if (enabled) {
         ui->b_Connect->show();
@@ -312,63 +338,62 @@ void ConnectionDialog::SetEnabledButtons(bool enabled)
     ui->b_Row_Protocol->setEnabled(enabled);
 }
 
-void ConnectionDialog::StatusConnected()
+void ConnectionDialog::statusConnected()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_ConnGreen);
-    SetEnabledButtons(true);
+    enableButtons(true);
     ui->b_Connect->hide();
     ui->b_Cancel->show();
-    ModifyWndTitle("");
+    updateWindowTitle("");
 }
 
-void ConnectionDialog::StatusDisconnected()
+void ConnectionDialog::statusDisconnected()
 {
     ui->L_ConnectStatus->setStyleSheet(gs_ConnRed);
-    SetEnabledButtons(true);
-    ModifyWndTitle("");
+    enableButtons(true);
+    updateWindowTitle("");
 }
 
-std::auto_ptr<ConnectionDialog> ConnectionDialog::_inst;
-ConnectionDialog * ConnectionDialog::Instance()
+std::auto_ptr<ConnectionDialog> ConnectionDialog::mInstance;
+ConnectionDialog * ConnectionDialog::instance()
 {
-    if (!_inst.get()) {
-        _inst.reset(new ConnectionDialog());
-        _inst->Init();
+    if (!mInstance.get()) {
+        mInstance.reset(new ConnectionDialog());
     }
-    return _inst.get();
+    return mInstance.get();
 }
 
-void ConnectionDialog::ToScr_Settings()
+void ConnectionDialog::showSettings()
 {
     WndManager::Instance()->ToSettings();
 }
 
-void ConnectionDialog::ToScr_Primary()
+void ConnectionDialog::showMainWindow()
 {
     WndManager::Instance()->ToPrimary();
 }
 
-void ConnectionDialog::ToScr_Login()
+void ConnectionDialog::showLoginWindow()
 {
     WndManager::Instance()->ToPrimary();
 }
 
-void ConnectionDialog::ToScr_Map()
+void ConnectionDialog::showMapWindow()
 {
     WndManager::Instance()->ToMap();
 }
 
-void ConnectionDialog::ShowPackageUrl()
+void ConnectionDialog::showPackageUrl()
 {
     OpenUrl_Panel();
 }
 
-void ConnectionDialog::Clicked_Connect()
+void ConnectionDialog::connectClicked()
 {
     OpenvpnManager::instance()->start();		// handle visuals inside
 }
 
-void ConnectionDialog::Clicked_Cancel()
+void ConnectionDialog::cancelClicked()
 {
 #ifdef MONITOR_TOOL
     Ctr_Openvpn::Instance()->StopLoop();
@@ -377,26 +402,26 @@ void ConnectionDialog::Clicked_Cancel()
     LoginWindow::Instance()->BlockOnDisconnect();
 }
 
-void ConnectionDialog::Clicked_Jump()
+void ConnectionDialog::jumpClicked()
 {
     AuthManager::Instance()->jump();
 }
 
-void ConnectionDialog::Clicked_Min()
+void ConnectionDialog::minimizeClicked()
 {
     WndManager::Instance()->HideThis(this);
 }
 
-void ConnectionDialog::Clicked_Cross()
+void ConnectionDialog::closeClicked()
 {
     LoginWindow::Instance()->quitApplication();
 }
 
-void ConnectionDialog::Pressed_Head()
+void ConnectionDialog::titlebarClicked()
 {
-    _WndStart = this->pos();
-    _CursorStart = QCursor::pos();
-    _moving = true;
+    mWindowPosition = this->pos();
+    mCursorPosition = QCursor::pos();
+    mMoving = true;
 }
 
 void ConnectionDialog::keyPressEvent(QKeyEvent * e)
@@ -405,7 +430,7 @@ void ConnectionDialog::keyPressEvent(QKeyEvent * e)
         QDialog::keyPressEvent(e);
 }
 
-void ConnectionDialog::PortDlgAction(int action)
+void ConnectionDialog::portDialogResult(int action)
 {
     if (QDialog::Accepted == action) {
         OpenvpnManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());

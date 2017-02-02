@@ -1,5 +1,23 @@
-#ifndef SCR_CONNECT_H
-#define SCR_CONNECT_H
+/***************************************************************************
+ *   Copyright (C) 2017 by Jeremy Whiting <jeremypwhiting@gmail.com>       *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation version 2 of the License.                *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
+ ***************************************************************************/
+
+#ifndef CONNECTIONDIALOG_H
+#define CONNECTIONDIALOG_H
 
 #include "common.h"
 
@@ -21,72 +39,65 @@ class ConnectionDialog : public QDialog
 public:
 
     ~ConnectionDialog();
-    static bool IsExists()
-    {
-        return (_inst.get() != NULL);
-    }
-    static ConnectionDialog * Instance();
-    static void Cleanup()
-    {
-        if (_inst.get() != NULL) delete _inst.release();
-    }
+    static bool exists();
+    static ConnectionDialog *instance();
+    static void cleanup();
 
-    void SetServer(int srv);	// -1 or id inside all servers
-    void UpdNewIp(const QString & s);
-    void UpdEnc();
+    void setServer(int srv);	// -1 or id inside all servers
+    void updateNewIP(const QString & s);
+    void updateEncoding();
 
 
-    void SetVpnName(const QString & vpnname);
-    void StatusConnecting();
-    void StatusConnecting(const QString & word);
-    void StatusConnected();
-    void StatusDisconnected();
+    void setVPNName(const QString & vpnname);
+    void statusConnecting();
+    void statusConnecting(const QString & word);
+    void statusConnected();
+    void statusDisconnected();
 
 public slots:
-    void SetOldIp(const QString & ip);
-    void SetAccName(const QString & s);
-    void SetEmail(const QString & s);
-    void SetAmount(const QString & s);
-    void SetUntil(const QString & date);
+    void setOldIP(const QString & ip);
+    void setAccountName(const QString & s);
+    void setEmail(const QString & s);
+    void setAmount(const QString & s);
+    void setUntil(const QString & date);
 
-    void SetProtocol(int ix);   // -1 for none
-    void PortDlgAction(int action);
+    void setProtocol(int ix);   // -1 for none
+    void portDialogResult(int action);
 private:
     Ui::ConnectionDialog *ui;
-    static std::auto_ptr<ConnectionDialog> _inst;
+    static std::auto_ptr<ConnectionDialog> mInstance;
     explicit ConnectionDialog(QWidget *parent = 0);
-    void Init();
+    void initialize();
 
-    void SetFlag(int srv);
-    void SetNoSrv();
-    void UpdProtocol();
-    void SetEnabledButtons(bool enabled);
-    void ModifyWndTitle(const QString & word);
+    void setFlag(int srv);
+    void setNoServer();
+    void updateProtocol();
+    void enableButtons(bool enabled);
+    void updateWindowTitle(const QString & word);
 
-    bool _moving;
-    void DwnlStrs();
-    QPoint _WndStart;
-    QPoint _CursorStart;
+    bool mMoving;
+    QPoint mWindowPosition;
+    QPoint mCursorPosition;
 
-    static void InitStateWords();
+    static void initializeStateWords();
     typedef QHash<QString, const char *> HmWords;
-    static HmWords _StateWord_Img;
+    static HmWords mStateWordImages;
 
 private slots:
-    void Clicked_Connect();
-    void Clicked_Cancel();
-    void Clicked_Jump();
+    void connectClicked();
+    void cancelClicked();
+    void jumpClicked();
 
-    void Clicked_Min();
-    void Clicked_Cross();
+    void minimizeClicked();
+    void closeClicked();
 
-    void ToScr_Settings();
-    void ToScr_Primary();
-    void ToScr_Login();
-    void ToScr_Map();
-    void ShowPackageUrl();
+    void showSettings();
+    void showMainWindow();
+    void showLoginWindow();
+    void showMapWindow();
+    void showPackageUrl();
 
-    void Pressed_Head();
+    void titlebarClicked();
 
 protected:
     virtual void closeEvent(QCloseEvent * event);

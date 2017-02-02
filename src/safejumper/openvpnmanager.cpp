@@ -181,22 +181,22 @@ void OpenvpnManager::launchOpenvpn()
             setupFileWatcher();
             log::logt("after attaching to OpenVPN");
 #else
-            _process.reset(new QProcess());
-            connect(_process.get(), SIGNAL(error(QProcess::ProcessError)),
+            mProcess.reset(new QProcess());
+            connect(mProcess.get(), SIGNAL(error(QProcess::ProcessError)),
                     this, SLOT(processError(QProcess::ProcessError)));
-            connect(_process.get(), SIGNAL(started()),
+            connect(mProcess.get(), SIGNAL(started()),
                     this, SLOT(processStarted()));
-            connect(_process.get(), SIGNAL(stateChanged(QProcess::ProcessState)),
+            connect(mProcess.get(), SIGNAL(stateChanged(QProcess::ProcessState)),
                     this, SLOT(processStateChanged(QProcess::ProcessState)));
-            connect(_process.get(), SIGNAL(finished(int, QProcess::ExitStatus)),
+            connect(mProcess.get(), SIGNAL(finished(int, QProcess::ExitStatus)),
                     this, SLOT(processFinished(int, QProcess::ExitStatus)));
-            connect(_process.get(), SIGNAL(readyReadStandardError()),
+            connect(mProcess.get(), SIGNAL(readyReadStandardError()),
                     this, SLOT(logStderr()));
-            connect(_process.get(), SIGNAL(readyReadStandardOutput()),
+            connect(mProcess.get(), SIGNAL(readyReadStandardOutput()),
                     this, SLOT(logStdout()));
-            _process->start(prog, args);
-            _process->waitForStarted(2000);
-            log::logt("Process ID is: " + QString::number(_process->processId()));
+            mProcess->start(prog, args);
+            mProcess->waitForStarted(2000);
+            log::logt("Process ID is: " + QString::number(mProcess->processId()));
 #endif
             ok = true;
         } catch(std::exception & ex) {

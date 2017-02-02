@@ -272,7 +272,7 @@ int Setting::LoadProt()
     }
     Scr_Map::Instance()->SetProtocol(ix);   // will trigger if differs
     if (ix < 0)		 // forse update - handle case when not differs
-        ConnectionDialog::Instance()->SetProtocol(ix);
+        ConnectionDialog::instance()->setProtocol(ix);
 
     _loading_protocol = false;
     return ix;
@@ -336,7 +336,7 @@ void Setting::LoadServer()
 
     sm->SetServer(ixsrv);   // will trigger if differs
     if (ixsrv < 0)					// force update - handle case when not differs
-        ConnectionDialog::Instance()->SetServer(ixsrv);
+        ConnectionDialog::instance()->setServer(ixsrv);
 }
 
 QString Setting::Server()

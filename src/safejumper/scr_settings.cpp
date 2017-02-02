@@ -322,8 +322,8 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
         Setting::Instance()->LoadProt();
         Scr_Map::Instance()->RePopulateLocations(false); // Repopulate all locations
     }
-    if (ConnectionDialog::IsExists())
-        ConnectionDialog::Instance()->UpdEnc();
+    if (ConnectionDialog::exists())
+        ConnectionDialog::instance()->updateEncoding();
 }
 
 static const char * gs_sErrStyle =

@@ -38,7 +38,7 @@ void WndManager::ToPrimary()
 QWidget * WndManager::Primary()
 {
     if (AuthManager::Instance()->loggedIn())
-        return ConnectionDialog::Instance();
+        return ConnectionDialog::instance();
     else
         return LoginWindow::Instance();
 }
@@ -56,11 +56,11 @@ void WndManager::ToLogin()
 void WndManager::ToConnect()
 {
     QWidget * from = ScrVisible();
-    if (ConnectionDialog::Instance() != from) {
-        trans(from, ConnectionDialog::Instance());
-        ConnectionDialog::Instance()->SetAccName(AuthManager::Instance()->VpnName());
+    if (ConnectionDialog::instance() != from) {
+        trans(from, ConnectionDialog::instance());
+        ConnectionDialog::instance()->setAccountName(AuthManager::Instance()->VpnName());
     } else {
-        ToFront(ConnectionDialog::Instance());		// activate it
+        ToFront(ConnectionDialog::instance());		// activate it
     }
 }
 
@@ -135,9 +135,9 @@ QPoint WndManager::CurrPos()
 void WndManager::CloseAll()
 {
     int visible = 0;
-    if (ConnectionDialog::IsExists())
-        if (ConnectionDialog::Instance()->isVisible()) {
-            SaveAndHide(ConnectionDialog::Instance());
+    if (ConnectionDialog::exists())
+        if (ConnectionDialog::instance()->isVisible()) {
+            SaveAndHide(ConnectionDialog::instance());
             ++visible;
         }
     if (LoginWindow::IsExists())
@@ -212,9 +212,9 @@ QWidget * WndManager::ScrVisible()
 {
     QWidget * w = NULL;
     int visible = 0;
-    if (ConnectionDialog::IsExists())
-        if (ConnectionDialog::Instance()->isVisible()) {
-            w = ConnectionDialog::Instance();
+    if (ConnectionDialog::exists())
+        if (ConnectionDialog::instance()->isVisible()) {
+            w = ConnectionDialog::instance();
             ++visible;
         }
     if (LoginWindow::IsExists())
@@ -245,7 +245,7 @@ void WndManager::HandleConnecting()
 {
     // disable buttons
     // change status label to connecting
-    ConnectionDialog::Instance()->StatusConnecting();
+    ConnectionDialog::instance()->statusConnecting();
     if (Scr_Map::IsExists())
         Scr_Map::Instance()->StatusConnecting();
     LoginWindow::Instance()->StatusConnecting();
@@ -263,13 +263,13 @@ void WndManager::HandleConnecting()
 void WndManager::HandleConnected()
 {
     ClosePortDlg();
-    ConnectionDialog::Instance()->StatusConnected();
+    ConnectionDialog::instance()->statusConnected();
     LoginWindow::Instance()->StatusConnected();
 }
 
 void WndManager::HandleDisconnected()
 {
-    ConnectionDialog::Instance()->StatusDisconnected();
+    ConnectionDialog::instance()->statusDisconnected();
     if (Scr_Map::IsExists())
         Scr_Map::Instance()->StatusDisconnected();
     LoginWindow::Instance()->StatusDisconnected();
@@ -278,7 +278,7 @@ void WndManager::HandleDisconnected()
 
 void WndManager::HandleState(const QString & word)
 {
-    ConnectionDialog::Instance()->StatusConnecting(word);
+    ConnectionDialog::instance()->statusConnecting(word);
 }
 
 void WndManager::ErrMsg(const QString & msg)
@@ -301,7 +301,7 @@ void WndManager::ShowPortDlg()
         _DlgPort->deleteLater();
     _DlgPort = new Dlg_newnode("Connection failed? Try another node or port.", Primary());
     //_DlgPort->setWindowModality(Qt::ApplicationModal);
-    ConnectionDialog * w = ConnectionDialog::Instance();
+    ConnectionDialog * w = ConnectionDialog::instance();
     w->connect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
     _DlgPort->open();
 }
@@ -309,8 +309,8 @@ void WndManager::ShowPortDlg()
 void WndManager::ClosePortDlg()
 {
     if (_DlgPort != NULL) {
-        if (ConnectionDialog::IsExists()) {
-            ConnectionDialog * w = ConnectionDialog::Instance();
+        if (ConnectionDialog::exists()) {
+            ConnectionDialog * w = ConnectionDialog::instance();
             w->disconnect(_DlgPort, SIGNAL(finished(int)), w, SLOT(PortDlgAction(int)));
         }
         _DlgPort->close();

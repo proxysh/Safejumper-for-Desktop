@@ -301,8 +301,8 @@ void Scr_Map::SwitchToNextNode()
 void Scr_Map::ToScr_Connect()
 {
     int srv = CurrSrv();
-    ConnectionDialog::Instance()->SetServer(srv);
-    ConnectionDialog::Instance()->SetProtocol(ui->dd_Protocol->currentIndex() - 1);
+    ConnectionDialog::instance()->setServer(srv);
+    ConnectionDialog::instance()->setProtocol(ui->dd_Protocol->currentIndex() - 1);
     WndManager::Instance()->ToPrimary();
 }
 
@@ -355,8 +355,8 @@ void Scr_Map::Changed_dd_Protocol(int ix)
         ui->L_1->setStyleSheet(gs_stIcon1);
         ui->L_2->setStyleSheet(gs_stIcon2inact);
     }
-    if (ConnectionDialog::IsExists())
-        ConnectionDialog::Instance()->SetProtocol(ix - 1);
+    if (ConnectionDialog::exists())
+        ConnectionDialog::instance()->setProtocol(ix - 1);
     Setting::Instance()->SaveProt(ix - 1);
 }
 
@@ -365,7 +365,7 @@ void Scr_Map::Changed_dd_Sever(int ix)
     int ixsrv = -1;
     if (ix > 0) {
         ui->L_2->setStyleSheet(gs_stIconV);
-        if (ConnectionDialog::IsExists()) {
+        if (ConnectionDialog::exists()) {
 //			if (_IsShowNodes)
 //				ixsrv = ix - 1;
 //			else
@@ -379,8 +379,8 @@ void Scr_Map::Changed_dd_Sever(int ix)
     AServer se = AuthManager::Instance()->GetSrv(ixsrv);
     QString newsrv = se.name;
     //= ui->dd_Location->currentText();
-    if (ConnectionDialog::IsExists())
-        ConnectionDialog::Instance()->SetServer(ixsrv);
+    if (ConnectionDialog::exists())
+        ConnectionDialog::instance()->setServer(ixsrv);
     Setting::Instance()->SaveServer(ixsrv, newsrv);
 
     DisplayMark(se.name);
