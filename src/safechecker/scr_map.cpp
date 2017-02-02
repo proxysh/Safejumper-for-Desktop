@@ -331,7 +331,7 @@ void Scr_Map::ToScr_Settings()
 
 void Scr_Map::Clicked_b_Connect()
 {
-    OpenvpnManager::Instance()->start();
+    OpenvpnManager::instance()->start();
 }
 
 void Scr_Map::Clicked_b_Tmp()

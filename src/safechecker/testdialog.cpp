@@ -237,7 +237,7 @@ void TestDialog::iterate()
     // First see if we can just go to the next protocol
     if (++mCurrentProtocol < mProtocols.size()) {
         Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
-        OpenvpnManager::Instance()->start();
+        OpenvpnManager::instance()->start();
         return;
     }
     if (++mCurrentServerId < mServerIds.size()) {
@@ -250,7 +250,7 @@ void TestDialog::iterate()
         setServer(mServerIds.at(mCurrentServerId));
         mCurrentProtocol = 0;
         Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
-        OpenvpnManager::Instance()->start();
+        OpenvpnManager::instance()->start();
         return;
     }
     // Got to the end of the list of servers, so switch to the next encryption
@@ -268,7 +268,7 @@ void TestDialog::iterate()
         // Set protocol to first
         mCurrentProtocol = 0;
         Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
-        OpenvpnManager::Instance()->start();
+        OpenvpnManager::instance()->start();
     }
     // Otherwise we finished checking all servers, all encryption types, all ports
     // Ask to save table widget to pipe separated values file.
@@ -411,14 +411,14 @@ void TestDialog::on_startButton_clicked()
     mCurrentProtocol = 0;
     Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
     // Connect
-    OpenvpnManager::Instance()->start();
+    OpenvpnManager::instance()->start();
 }
 
 void TestDialog::on_cancelButton_clicked()
 {
     ui->cancelButton->hide();
     ui->startButton->show();
-    OpenvpnManager::Instance()->stop();
+    OpenvpnManager::instance()->stop();
     setStatusDisconnected();
 }
 
@@ -470,7 +470,7 @@ void TestDialog::setStatusConnected()
     // Add the current encryption type, server, and port to the table
     addConnected();
 
-    OpenvpnManager::Instance()->stop();
+    OpenvpnManager::instance()->stop();
     iterate();
 }
 
@@ -483,7 +483,7 @@ void TestDialog::setError(const QString &message)
 {
     addError(message);
 
-    OpenvpnManager::Instance()->stop();
+    OpenvpnManager::instance()->stop();
     iterate();
 }
 
@@ -505,7 +505,7 @@ void TestDialog::keyPressEvent(QKeyEvent * e)
 void TestDialog::PortDlgAction(int action)
 {
     if (QDialog::Accepted == action) {
-        OpenvpnManager::Instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
+        OpenvpnManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
     }
 }
 
