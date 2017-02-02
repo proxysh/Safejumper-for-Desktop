@@ -30,7 +30,7 @@
 #include "osspecific.h"
 #include "log.h"
 #include "lvrowdelegateencryption.h"
-#include "dlg_error.h"
+#include "errordialog.h"
 #include "pathhelper.h"
 
 #include <cstdio>
@@ -325,7 +325,7 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
         OsSpecific::Instance()->InstallObfs();
         if (!OsSpecific::Instance()->IsObfsInstalled()) {
 #endif
-            Dlg_Error dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
+            ErrorDialog dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
             dlg.exec();
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
         }

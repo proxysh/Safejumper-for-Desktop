@@ -34,7 +34,7 @@
 #endif	// MONITOR_TOOL
 
 #include "authmanager.h"
-#include "dlg_error.h"
+#include "errordialog.h"
 #include "log.h"
 
 WndManager::WndManager()

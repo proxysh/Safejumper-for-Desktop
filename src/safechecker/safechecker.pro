@@ -61,8 +61,8 @@ SOURCES += \
     ../safejumper/authmanager.cpp \
     ../safejumper/common.cpp \
     ../safejumper/confirmationdialog.cpp \
-    ../safejumper/dlg_error.cpp \
     ../safejumper/dlg_newnode.cpp \
+    ../safejumper/errordialog.cpp \
     ../safejumper/flag.cpp \
     ../safejumper/fonthelper.cpp \
     ../safejumper/log.cpp \
@@ -92,8 +92,8 @@ HEADERS += \
     ../safejumper/authmanager.h \
     ../safejumper/common.h \
     ../safejumper/confirmationdialog.h \
-    ../safejumper/dlg_error.h \
     ../safejumper/dlg_newnode.h \
+    ../safejumper/errordialog.h \
     ../safejumper/flag.h \
     ../safejumper/fonthelper.h \
     ../safejumper/log.h \
@@ -121,8 +121,8 @@ HEADERS += \
 
 FORMS += \
     ../safejumper/confirmationdialog.ui \
-    ../safejumper/dlg_error.ui \
     ../safejumper/dlg_newnode.ui \
+    ../safejumper/errordialog.ui \
     ../safejumper/loginwindow.ui \
     scr_logs.ui \
     scr_map.ui \
