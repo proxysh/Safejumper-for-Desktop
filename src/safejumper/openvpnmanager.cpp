@@ -91,6 +91,11 @@ void OpenvpnManager::launchOpenvpn()
     // TODO: -1 cleanup
 
     if (AuthManager::instance()->loggedIn()) {
+        if (Setting::instance()->testing()) {
+            // If testing, nuke the log files between launches
+            QFile::remove(PathHelper::Instance()->openvpnLogFilename());
+            QFile::remove(PathHelper::Instance()->safejumperLogFilename());
+        }
         setState(ovsConnecting);
         int enc = Setting::encryption();
         bool obfs = enc == ENCRYPTION_OBFS_TOR;
