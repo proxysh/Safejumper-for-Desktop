@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName("proxy.sh");
     QApplication::setApplicationName("Safechecker");
     g_pTheApp = new THE_APP_CLASS(argc, argv);
-    Setting::Instance()->setTesting(true); // This application uses "testing" settings
+    Setting::instance()->setTesting(true); // This application uses "testing" settings
 
     log::logt("Starting Application");
     LoginWindow::Instance()->show();

@@ -77,7 +77,7 @@ TestDialog::TestDialog(QWidget *parent) :
     ui->L_OldIp->setText("");
 
     // Setting::Instance()->LoadServer();
-    Setting::Instance()->LoadProt();
+    Setting::instance()->loadProt();
 
     setOldIP(AuthManager::instance()->oldIP());
     updateEncoding();
@@ -177,8 +177,8 @@ void TestDialog::updateNewIP(const QString & s)
 
 void TestDialog::updateEncoding()
 {
-    int enc = Setting::Encryption();
-    ui->encryptionLabel->setText(Setting::EncText(enc));
+    int enc = Setting::encryption();
+    ui->encryptionLabel->setText(Setting::encryptionName(enc));
 }
 
 void TestDialog::setOldIP(const QString & s)
@@ -224,12 +224,12 @@ void TestDialog::setProtocol(int ix)
     if (ix < 0)
         ui->L_Protocol->setText("Not selected");
     else
-        ui->L_Protocol->setText(Setting::Instance()->ProtoStr(ix));
+        ui->L_Protocol->setText(Setting::instance()->protocolName(ix));
 }
 
 void TestDialog::updateProtocol()
 {
-    setProtocol(Setting::Instance()->CurrProto());
+    setProtocol(Setting::instance()->currentProtocol());
 }
 
 void TestDialog::iterate()
@@ -257,14 +257,14 @@ void TestDialog::iterate()
     // type and start over
     if (++mCurrentEncryptionType < mEncryptionTypes.size()) {
         setProtocol(mCurrentEncryptionType);
-        Setting::Instance()->SaveProt(mCurrentEncryptionType);
+        Setting::instance()->setProtocol(mCurrentEncryptionType);
         // Get all servers
         mServerIds = AuthManager::instance()->currentEncryptionServers();
         // Set server to first
         mCurrentServerId = 0;
         setServer(mServerIds.at(mCurrentServerId));
         // Get all protocols
-        mProtocols = Setting::Instance()->GetAllPorts();
+        mProtocols = Setting::instance()->allPorts();
         // Set protocol to first
         mCurrentProtocol = 0;
         Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
@@ -284,7 +284,7 @@ int TestDialog::addRow()
     ui->tableWidget->setItem(row, 0, serverItem);
     QTableWidgetItem *encryptionItem = new QTableWidgetItem(ui->encryptionLabel->text());
     ui->tableWidget->setItem(row, 1, encryptionItem);
-    QTableWidgetItem *portItem = new QTableWidgetItem(Setting::Instance()->Port());
+    QTableWidgetItem *portItem = new QTableWidgetItem(Setting::instance()->port());
     ui->tableWidget->setItem(row, 2, portItem);
     return row;
 }
@@ -399,14 +399,14 @@ void TestDialog::on_startButton_clicked()
     // Set encryption to type 0
     mCurrentEncryptionType = 0;
     setProtocol(mCurrentEncryptionType);
-    Setting::Instance()->SaveProt(mCurrentEncryptionType);
+    Setting::instance()->setProtocol(mCurrentEncryptionType);
     // Get all servers
     mServerIds = AuthManager::instance()->currentEncryptionServers();
     // Set server to first
     mCurrentServerId = 0;
     setServer(mServerIds.at(mCurrentServerId));
     // Get all protocols
-    mProtocols = Setting::Instance()->GetAllPorts();
+    mProtocols = Setting::instance()->allPorts();
     // Set protocol to first
     mCurrentProtocol = 0;
     Scr_Map::Instance()->SetProtocol(mCurrentProtocol);

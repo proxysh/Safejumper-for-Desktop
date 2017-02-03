@@ -64,7 +64,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
     _repopulation_inprogress = true;
     ui->dd_Encryption->clear();
     for (int k = 0; k < ENCRYPTION_COUNT; ++k)
-        ui->dd_Encryption->addItem(Setting::EncText(k));
+        ui->dd_Encryption->addItem(Setting::encryptionName(k));
     ui->dd_Encryption->setView(ui->lv_Encryption);
     ui->dd_Encryption->setItemDelegate(new LvRowDelegateEncryption(this));
     _repopulation_inprogress = false;
@@ -114,9 +114,9 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
 
     if (ui->cb_FixDnsLeak->isChecked()) {
         if (ui->e_PrimaryDns->text().isEmpty())
-            ui->e_PrimaryDns->setText(Setting::Instance()->DefaultDns1());
+            ui->e_PrimaryDns->setText(Setting::instance()->defaultDNS1());
         if (ui->e_SecondaryDns->text().isEmpty())
-            ui->e_SecondaryDns->setText(Setting::Instance()->DefaultDns2());
+            ui->e_SecondaryDns->setText(Setting::instance()->defaultDNS2());
     }
 
     if (ui->cb_Startup->isEnabled())
@@ -244,7 +244,7 @@ void Scr_Settings::Toggle_cb_InsecureWiFi(bool v)
 
 void Scr_Settings::Toggle_cb_ShowNodes(bool v)
 {
-    Setting::Instance()->ToggleShowNodes(v);
+    Setting::instance()->setShowNodes(v);
 }
 
 void Scr_Settings::Toggle_cb_DisableIpv6(bool v)
@@ -261,8 +261,8 @@ void Scr_Settings::Toggle_cb_FixDnsLeak(bool v)
 {
     SaveCb("cb_FixDnsLeak", v);
     if (v) {
-        ui->e_PrimaryDns->setText(Setting::Instance()->DefaultDns1());
-        ui->e_SecondaryDns->setText(Setting::Instance()->DefaultDns2());
+        ui->e_PrimaryDns->setText(Setting::instance()->defaultDNS1());
+        ui->e_SecondaryDns->setText(Setting::instance()->defaultDNS2());
     } else {	// 2) Please make sure that when we uncheck fix DNS leak, the primary and secondary DNS fields are set to blank https://github.com/proxysh/Safejumper-Desktop/issues/36
         ui->e_PrimaryDns->setText("");			// TODO: -1 force saved settings cleanup
         ui->e_SecondaryDns->setText("");
@@ -337,7 +337,7 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
 
     if (Scr_Map::IsExists()) {
         Scr_Map::Instance()->RePopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
-        Setting::Instance()->LoadProt();
+        Setting::instance()->loadProt();
         Scr_Map::Instance()->RePopulateLocations(false); // Repopulate all locations
     }
     if (TestDialog::exists())
