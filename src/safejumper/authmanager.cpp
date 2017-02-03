@@ -202,7 +202,7 @@ void AuthManager::setNewIp(const QString & ip)
 
 const std::vector<size_t> & AuthManager::currentEncryptionServers()
 {
-    int enc = Setting::Encryption();
+    int enc = Setting::encryption();
     return mServerIds[enc];
 }
 
@@ -220,7 +220,7 @@ const std::vector<size_t> & AuthManager::currentEncryptionHubs()
             }
         }
     }
-    int enc = Setting::Encryption();
+    int enc = Setting::encryption();
     return mHubIds[enc];
 }
 
@@ -394,8 +394,8 @@ void AuthManager::processEccServerNamesXml()
         mServerIds[ENCRYPTION_ECCXOR].assign(mServerIds[ENCRYPTION_ECC].begin(), mServerIds[ENCRYPTION_ECC].end());
         forceRepopulation(ENCRYPTION_ECC);
         forceRepopulation(ENCRYPTION_ECCXOR);
-        if (Setting::Encryption() != ENCRYPTION_RSA)
-            Setting::Instance()->LoadServer();
+        if (Setting::encryption() != ENCRYPTION_RSA)
+            Setting::instance()->loadServer();
     }
 }
 
@@ -712,7 +712,7 @@ void AuthManager::processDnsXml()
         dns[k] = n.toElement().text();
     }
     if (!dns[0].isEmpty() || !dns[1].isEmpty())
-        Setting::Instance()->SetDefaultDns(dns[0], dns[1]);
+        Setting::instance()->setDefaultDNS(dns[0], dns[1]);
 
     clearReply();               // TODO: -2 further processing here
 }
@@ -770,7 +770,7 @@ void AuthManager::processUpdatesXml()
         int upd = ss.toInt(&ok);
         if (ok && SJ_BUILD_NUM < upd) {
             int result = WndManager::Instance()->Confirmation("New version " + ss + " available. Update?");
-            Setting::Instance()->UpdateMsgShown();
+            Setting::instance()->updateMessageShown();
             if (result == QDialog::Accepted)
                 launchUpdateUrl();           // TODO: -2 auto update self
         }
@@ -791,8 +791,8 @@ bool AuthManager::processServerNamesForEncryptionType(int enc, QString & out_msg
 void AuthManager::forceRepopulation(int enc)
 {
     // force update of locations: if needed, previously empy
-    if (Setting::Encryption() == enc) {
-        if (Setting::IsExists() && Scr_Map::IsExists()) {
+    if (Setting::encryption() == enc) {
+        if (Setting::exists() && Scr_Map::IsExists()) {
             Scr_Map::Instance()->RePopulateLocations();
             // TODO: -0 LoadServer()
         }
@@ -931,7 +931,7 @@ QString AuthManager::processServersXml()
     getObfsServerNames();
 //  StartDwnl_AccType();
 
-    if (!Setting::Instance()->testing())
+    if (!Setting::instance()->testing())
         pingAllServers(); // No need to ping servers when in testing mode
 
     return message;
@@ -1064,7 +1064,7 @@ int AuthManager::getServerToJump()
     if (!mServers.empty()) {
         int prev = Scr_Map::Instance()->CurrSrv();
         std::vector<size_t> toping;     // ix inside _servers
-        if (Setting::Instance()->IsShowNodes()) {
+        if (Setting::instance()->showNodes()) {
             // jump to server
             for (size_t k = 0; k < mServers.size(); ++k) {
                 if (k != prev)
@@ -1096,7 +1096,7 @@ int AuthManager::getServerToJump()
 
         if (!ping_ix.empty()) {
             std::sort(ping_ix.begin(), ping_ix.end(), PCmp);
-            int num = Setting::Instance()->IsShowNodes() ? 20 : 6;      // pick this many from the top
+            int num = Setting::instance()->showNodes() ? 20 : 6;      // pick this many from the top
             if (num >= ping_ix.size())
                 num = ping_ix.size();
             int offset = rand() % num;
@@ -1109,7 +1109,7 @@ int AuthManager::getServerToJump()
             if (!toping.empty()) {
                 srv = toping.at(rand() % toping.size());
             } else {
-                if (Setting::Instance()->IsShowNodes()) {
+                if (Setting::instance()->showNodes()) {
                     if (!mServers.empty())
                         srv = rand() % mServers.size();
                 } else {
@@ -1197,7 +1197,7 @@ void AuthManager::processOldIP()
 
 void AuthManager::forwardPorts()
 {
-    UVec ports = Setting::Instance()->ForwardPorts();
+    UVec ports = Setting::instance()->forwardPorts();
     if (!ports.empty()) {
         mPortForwarderThread.reset(new PortForwarder(ports, mNAM, mAccountLogin, mAccountPassword));
         mPortForwarderThread->StartFirst();

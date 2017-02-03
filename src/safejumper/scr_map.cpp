@@ -108,7 +108,7 @@ void Scr_Map::RePopulateProtocols()
 {
     _repopulation_inprogress = true;
 
-    const std::vector<QString> & v = Setting::GetAllProt();
+    const std::vector<QString> & v = Setting::allProtocols();
     ui->dd_Protocol->clear();
     ui->dd_Protocol->addItem(PROTOCOL_SELECTION_STR);
     for (size_t k = 0; k < v.size(); ++k)
@@ -150,8 +150,8 @@ void Scr_Map::RePopulateLocations(bool random)
     }
 
     // populate with the actual servers
-    _IsShowNodes = Setting::Instance()->IsShowNodes();
-    _Encryption = Setting::Instance()->Encryption();
+    _IsShowNodes = Setting::instance()->showNodes();
+    _Encryption = Setting::instance()->encryption();
     _UseSrvColl = ((_Encryption == ENCRYPTION_RSA) && _IsShowNodes) || (_Encryption > ENCRYPTION_RSA);
 
     SetRowStyle(_UseSrvColl);
@@ -375,7 +375,7 @@ void Scr_Map::Changed_dd_Protocol(int ix)
     }
     if (ConnectionDialog::exists())
         ConnectionDialog::instance()->setProtocol(ix - 1);
-    Setting::Instance()->SaveProt(ix - 1);
+    Setting::instance()->setProtocol(ix - 1);
 }
 
 void Scr_Map::Changed_dd_Sever(int ix)
@@ -399,7 +399,7 @@ void Scr_Map::Changed_dd_Sever(int ix)
     //= ui->dd_Location->currentText();
     if (ConnectionDialog::exists())
         ConnectionDialog::instance()->setServer(ixsrv);
-    Setting::Instance()->SaveServer(ixsrv, newsrv);
+    Setting::instance()->setServer(ixsrv, newsrv);
 
     DisplayMark(se.name);
 }

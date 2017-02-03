@@ -92,10 +92,10 @@ void OpenvpnManager::launchOpenvpn()
 
     if (AuthManager::instance()->loggedIn()) {
         setState(ovsConnecting);
-        int enc = Setting::Encryption();
+        int enc = Setting::encryption();
         bool obfs = enc == ENCRYPTION_OBFS_TOR;
-        QString server = Setting::Instance()->Server();
-        QString port = Setting::Instance()->Port();
+        QString server = Setting::instance()->serverAddress();
+        QString port = Setting::instance()->port();
         if (server.isEmpty() || port.isEmpty()) {
             QString message = "Server or port is empty, select a location";
             log::logt(message);
@@ -111,13 +111,13 @@ void OpenvpnManager::launchOpenvpn()
             }
         }
         try {
-            OsSpecific::Instance()->SetIPv6(!Setting::Instance()->IsDisableIPv6());
+            OsSpecific::Instance()->SetIPv6(!Setting::instance()->disableIPv6());
 #ifdef Q_OS_WIN
             OsSpecific::Instance()->EnableTap(); // TODO check win10 tap
 #endif
         } catch(std::exception & ex) {
             log::logt(ex.what());
-            if (Setting::Instance()->IsDisableIPv6()) {
+            if (Setting::instance()->disableIPv6()) {
                 WndManager::Instance()->ErrMsg(QString("Cannot disable IPv6 ") + ex.what());
                 return;
             }
@@ -135,9 +135,9 @@ void OpenvpnManager::launchOpenvpn()
 #endif  // NO_PARAMFILE
 
         QStringList args = getOpenvpnArgs();
-        if (Setting::Instance()->IsFixDns() ||
-                !Setting::Instance()->Dns1().isEmpty() ||
-                !Setting::Instance()->Dns2().isEmpty())
+        if (Setting::instance()->fixDns() ||
+                !Setting::instance()->dns1().isEmpty() ||
+                !Setting::instance()->dns2().isEmpty())
             OsSpecific::Instance()->FixDnsLeak();
 
         QString prog = PathHelper::Instance()->openvpnFilename();
@@ -250,7 +250,7 @@ void OpenvpnManager::processStarted()
 
 bool OpenvpnManager::writeConfigFile()
 {
-    int enc = Setting::Encryption();
+    int enc = Setting::encryption();
     bool obfs = enc == ENCRYPTION_OBFS_TOR;
     QFile ff(PathHelper::Instance()->openvpnConfigFilename());
     if (!ff.open(QIODevice::WriteOnly)) {
@@ -262,13 +262,13 @@ bool OpenvpnManager::writeConfigFile()
     ff.write("client\n");
     ff.write("dev tun\n");
     ff.write("proto ");
-    ff.write(Setting::Instance()->Protocol().toLatin1());
+    ff.write(Setting::instance()->tcpOrUdp().toLatin1());
     ff.write("\n");       // "tcp"/"udp"
 //ff.write("proto udp\n");
 //ff.write("proto tcp\n");
 
-    QString server = Setting::Instance()->Server();
-    QString port = Setting::Instance()->Port();
+    QString server = Setting::instance()->serverAddress();
+    QString port = Setting::instance()->port();
     if (server.isEmpty() || port.isEmpty()) {
         QString message = "Server or port is empty, select a location";
         log::logt(message);
@@ -345,7 +345,7 @@ bool OpenvpnManager::writeConfigFile()
 // TODO: -0 OS
         ff.write("socks-proxy 127.0.0.1 1050\n");
         ff.write("route ");
-        ff.write(Setting::Instance()->Server().toLatin1());
+        ff.write(Setting::instance()->serverAddress().toLatin1());
         ff.write(" 255.255.255.255 net_gateway\n");
     }
 
@@ -357,7 +357,7 @@ bool OpenvpnManager::writeConfigFile()
 QStringList OpenvpnManager::getOpenvpnArgs()
 {
     QStringList args;
-    int enc = Setting::Encryption();
+    int enc = Setting::encryption();
 //          << "--auth-nocache"
 #ifndef NO_PARAMFILE
     args << "--config" << PathHelper::Instance()->openvpnConfigFilename(); // /tmp/proxysh.ovpn
@@ -392,7 +392,7 @@ QStringList OpenvpnManager::getOpenvpnArgs()
             << "--route-delay" << "2"
             << "--allow-pull-fqdn";
 #endif
-    args << "--management" << kLocalAddress << Setting::Instance()->LocalPort()
+    args << "--management" << kLocalAddress << Setting::instance()->localPort()
          << "--management-hold"
          << "--management-query-passwords";
     args << "--log" << PathHelper::Instance()->openvpnLogFilename();           // /tmp/openvpn.log
@@ -411,10 +411,10 @@ QStringList OpenvpnManager::getOpenvpnArgs()
     if (enc != ENCRYPTION_ECC && enc != ENCRYPTION_ECCXOR)
         args << "--ca" << PathHelper::Instance()->proxyshCaCertFilename();    // /tmp/proxysh.crt
 
-    if (!Setting::Instance()->Dns1().isEmpty())
-        args << "--dhcp-option" << "DNS" << Setting::Instance()->Dns1();
-    if (!Setting::Instance()->Dns2().isEmpty())
-        args << "--dhcp-option" << "DNS" << Setting::Instance()->Dns2();
+    if (!Setting::instance()->dns1().isEmpty())
+        args << "--dhcp-option" << "DNS" << Setting::instance()->dns1();
+    if (!Setting::instance()->dns2().isEmpty())
+        args << "--dhcp-option" << "DNS" << Setting::instance()->dns2();
     return args;
 }
 
@@ -444,7 +444,7 @@ void OpenvpnManager::checkState()
         }
     } else if (state() == ovsConnected) {
         // handle crush
-        if (Setting::Instance()->IsReconnect())
+        if (Setting::instance()->reconnect())
             start();
         else
             setState(ovsDisconnected);
@@ -452,8 +452,13 @@ void OpenvpnManager::checkState()
 
     if (state() == ovsConnecting) {
         uint d = QDateTime::currentDateTimeUtc().toTime_t() - mStartDateTime;
-        if (!mPortDialogShown && !mInPortLoop) {
-            if (d > G_Delay_PortQuestion) {
+        if (Setting::instance()->testing()) {
+            if (d > kTryNextPortSeconds) {
+                cancel(QString("Timeout at %1 seconds").arg(kTryNextPortSeconds));
+            }
+        }
+        else if (!mPortDialogShown && !mInPortLoop) {
+            if (d > kTryNextPortSeconds) {
                 mPortDialogShown = true;
                 WndManager::Instance()->ShowPortDlg();
             }
@@ -552,7 +557,7 @@ void OpenvpnManager::gotConnected(const QString & s)
     if (p > -1) {
         int p1 = s.indexOf(',', p + 1);
         QString ip = p1 > -1 ? s.mid(p + 1, p1 - p - 1) : s.mid(p + 1);
-        if (Setting::Encryption() != ENCRYPTION_OBFS_TOR)   // for proxy it shows 127.0.0.1
+        if (Setting::encryption() != ENCRYPTION_OBFS_TOR)   // for proxy it shows 127.0.0.1
             emit gotNewIp(ip);
     }
 
@@ -731,7 +736,7 @@ void OpenvpnManager::connectToOpenvpnSocket()
             this, SLOT(socketReadyRead()));
     connect(mSocket.get(), SIGNAL(connected()),
             this, SLOT(socketConnected()));
-    mSocket->connectToHost(kLocalAddress, Setting::Instance()->LocalPort().toInt());
+    mSocket->connectToHost(kLocalAddress, Setting::instance()->localPort().toInt());
     log::logt("done connecting to openvpn management socket");
 }
 
@@ -845,7 +850,7 @@ void OpenvpnManager::parseSocketStateWord(const QString & word, const QString & 
 //  } else { if (word.compare("AUTH", Qt::CaseInsensitive) == 0) {
 //      WndManager::Instance()->HandleState(word);
     } else if (word.compare("EXITING", Qt::CaseInsensitive) == 0) {
-        if (Setting::Instance()->IsReconnect()) {
+        if (Setting::instance()->reconnect()) {
             // initiate autoreconnect
             startReconnectTimer();
             WndManager::Instance()->HandleConnecting();
@@ -1092,9 +1097,9 @@ void OpenvpnManager::tryNextPort()
 {
     mStartDateTime = QDateTime::currentDateTimeUtc().toTime_t();      // force start interval - prevent double port change
     if (mChangingPorts)
-        Setting::Instance()->SwitchToNextPort();
+        Setting::instance()->switchToNextPort();
     else
-        Setting::Instance()->SwitchToNextNode();
+        Setting::instance()->switchToNextNode();
     launchOpenvpn();
 }
 

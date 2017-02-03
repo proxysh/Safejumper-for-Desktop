@@ -102,28 +102,32 @@ void TrayIconManager::createTrayIconMenu()
     mTrayIconMenu.reset(new QMenu(mParent));
     createMenuActions();
 
-    mTrayIconMenu->addAction(mConnectAction.get());
-    mTrayIconMenu->addAction(mConnectToAction.get());
-    mTrayIconMenu->addAction(mDisconnectAction.get());
-    mTrayIconMenu->addSeparator();
+    if (!Setting::instance()->testing()) {
+        mTrayIconMenu->addAction(mConnectAction.get());
+        mTrayIconMenu->addAction(mConnectToAction.get());
+        mTrayIconMenu->addAction(mDisconnectAction.get());
+        mTrayIconMenu->addSeparator();
+    }
 
     mTrayIconMenu->addAction(mStatusAction.get());
     mTrayIconMenu->addSeparator();
 
-    mTrayIconMenu->addAction(mJumpAction.get());
-    mTrayIconMenu->addAction(mSwitchCountryAction.get());
-    mSwitchCountryAction->setEnabled(false);
-    mTrayIconMenu->addSeparator();
+    if (!Setting::instance()->testing()) {
+        mTrayIconMenu->addAction(mJumpAction.get());
+        mTrayIconMenu->addAction(mSwitchCountryAction.get());
+        mSwitchCountryAction->setEnabled(false);
+        mTrayIconMenu->addSeparator();
 
-    mTrayIconMenu->addAction(mSettingsAction.get());
-    mTrayIconMenu->addAction(mLogsAction.get());
-    mTrayIconMenu->addSeparator();
+        mTrayIconMenu->addAction(mSettingsAction.get());
+        mTrayIconMenu->addAction(mLogsAction.get());
+        mTrayIconMenu->addSeparator();
 
-    mTrayIconMenu->addAction(mWebManageAction.get());
-    mTrayIconMenu->addAction(mSupportAction.get());
-    mTrayIconMenu->addAction(mBugAction.get());
-    mTrayIconMenu->addAction(mEarnAction.get());
-    mTrayIconMenu->addSeparator();
+        mTrayIconMenu->addAction(mWebManageAction.get());
+        mTrayIconMenu->addAction(mSupportAction.get());
+        mTrayIconMenu->addAction(mBugAction.get());
+        mTrayIconMenu->addAction(mEarnAction.get());
+        mTrayIconMenu->addSeparator();
+    }
 
     //_TrayMenu->addAction(_ac_About.get());
     mTrayIconMenu->addAction(mLogoutAction.get());
@@ -411,6 +415,9 @@ void TrayIconManager::createMenuItem(QMenu * m, const QString & name, size_t srv
 
 void TrayIconManager::constructConnectToMenu()
 {
+    if (Setting::instance()->testing())
+        return;
+
     qDebug() << "creating connect to menu";
     if (AuthManager::exists()) {
         AuthManager * am = AuthManager::instance();
@@ -427,7 +434,7 @@ void TrayIconManager::constructConnectToMenu()
             mConnectToMenu->setEnabled(true);
             //_ct_menu->setIcon(QIcon(":/icons-tm/connect-red.png"));
 
-            if (!Setting::Instance()->IsShowNodes()) {
+            if (!Setting::instance()->showNodes()) {
                 qDebug() << "showNodes is off, so using hubs of size " << hubs.size();
                 for (size_t k = 0; k < hubs.size(); ++k) {
                     AServer sr = am->getServer(hubs[k]);

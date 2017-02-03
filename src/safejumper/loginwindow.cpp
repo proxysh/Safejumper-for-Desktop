@@ -60,6 +60,10 @@ LoginWindow::LoginWindow(QWidget *parent) :
 
     ui->cancelButton->hide();
 
+    if (Setting::instance()->testing()) {
+        ui->optionsButton->hide();
+    }
+
 #ifndef Q_OS_MAC
     FontHelper::SetFont(this);
     ui->eLogin->setFont(FontHelper::pt(14));
@@ -127,16 +131,16 @@ void LoginWindow::Timer_Constructed()
 
     AuthManager::instance()->getOldIP();
 
-    if (Setting::Instance()->IsCheckForUpdates()) {
+    if (Setting::instance()->checkForUpdates()) {
         AuthManager::instance()->checkUpdates();
     }
 
-    if (Setting::Instance()->IsAutoconnect()) {
+    if (Setting::instance()->autoconnect()) {
         _ConnectAfterLogin = true;
         on_loginButton_clicked();
     }
 
-    if (Setting::Instance()->IsInsecureWifi()) {
+    if (Setting::instance()->detectInsecureWifi()) {
         StartWifiWatcher();
     }
 }
@@ -160,7 +164,7 @@ LoginWindow::~LoginWindow()
     Scr_Logs::Cleanup();
     Scr_Map::Cleanup();
     Scr_Settings::Cleanup();
-    Setting::Cleanup();
+    Setting::cleanup();
     WndManager::Cleanup();
 
     delete ui;
@@ -309,7 +313,7 @@ void LoginWindow::Timer_WifiWatcher()
 
         if (stopped) {
             if (!AuthManager::instance()->loggedIn()) {
-                if (Setting::Instance()->IsAutoconnect()) {	// log in only if checked Auto-connect when app starts
+                if (Setting::instance()->autoconnect()) {	// log in only if checked Auto-connect when app starts
                     if (OsSpecific::Instance()->HasInsecureWifi()) {
                         _ConnectAfterLogin = true;
                         on_loginButton_clicked();
@@ -328,7 +332,7 @@ void LoginWindow::BlockOnDisconnect()
 {
     // implementation is the same as in the old Safejumper
     bool doblock = false;
-    if (Setting::Instance()->IsBlockOnDisconnect()) {
+    if (Setting::instance()->blockOnDisconnect()) {
         if (AuthManager::exists()) {
             if (!AuthManager::instance()->loggedIn()) {
                 doblock = true;
@@ -353,8 +357,8 @@ void LoginWindow::loggedIn()
 {
     SaveCreds();
 
-    if (Setting::Encryption() == ENCRYPTION_RSA)
-        Setting::Instance()->LoadServer();
+    if (Setting::encryption() == ENCRYPTION_RSA)
+        Setting::instance()->loadServer();
 
     // TODO: -0
 //		{

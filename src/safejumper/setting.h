@@ -33,84 +33,67 @@ class Setting
 {
 public:
     ~Setting();
-    static Setting * Instance();
-    static void Cleanup()
-    {
-        if (_inst.get() != NULL) delete _inst.release();
-    }
-    static bool IsExists()
-    {
-        return (_inst.get() != NULL);
-    }
+    static Setting * instance();
+    static void cleanup();
+    static bool exists();
 
-    bool IsShowNodes();
-    bool IsDisableIPv6();
-    void ToggleShowNodes(bool v);
+    bool showNodes();
+    bool disableIPv6();
+    void setShowNodes(bool v);
 
-    bool IsAutoconnect();
-    bool IsStartup();
-    bool IsReconnect();
-    bool IsInsecureWifi();
-    bool IsBlockOnDisconnect();
-    bool IsFixDns();
+    bool autoconnect();
+    bool startup();
+    bool reconnect();
+    bool detectInsecureWifi();
+    bool blockOnDisconnect();
+    bool fixDns();
+    bool testing();
+    void setTesting(bool value);
 
-    void SaveServer(int ixsrv, const QString & newsrv);
-    void LoadServer();
+    void setServer(int ixsrv, const QString & newsrv);
+    void loadServer();
 
-    void SaveProt(int ix);  // -1 for not selected
-    int LoadProt();
-    int CurrProto();			// -1 if none selected
+    void setProtocol(int ix);  // -1 for not selected
+    void loadProtocol();
+    int currentProtocol();			// -1 if none selected
 
-    QString Server();			// "" if none
-    int ServerID();				// -1 if none selected
-    QString Port();				// "" if none
-    QString LocalPort();
-    QString Protocol();			// "tcp" : "udp"
+    QString serverAddress();			// "" if none
+    int serverID();				// -1 if none selected
+    QString port();				// "" if none
+    QString localPort();
+    QString tcpOrUdp();			// "tcp" : "udp"
 
-    QString Dns1();				// empty string if none / not valid
-    QString Dns2();				//
+    QString dns1();				// empty string if none / not valid
+    QString dns2();				//
 
-    void SetDefaultDns(const QString & dns1, const QString & dns2);
-    QString DefaultDns1()
-    {
-        return _default_dns[0];
-    }
-    QString DefaultDns2()
-    {
-        return _default_dns[1];
-    }
+    void setDefaultDNS(const QString & dns1, const QString & dns2);
+    QString defaultDNS1();
+    QString defaultDNS2();
 
-    static const std::vector<QString> & GetAllProt();
-    static const std::vector<int> & GetAllPorts();
-    static const QString & ProtoStr(int ix);
-    const QString & CurrProtoStr();
+    static const std::vector<QString> & allProtocols();
+    static const std::vector<int> & allPorts();
+    static const QString & protocolName(int ix);
+    const QString & currentProtocolName();
 
-    UVec ForwardPorts();		// load from the GUI; parse errors skipped - GUI should handle errors; empty vector if none
+    UVec forwardPorts();		// load from the GUI; parse errors skipped - GUI should handle errors; empty vector if none
 
-    bool IsCheckForUpdates();
-    void UpdateMsgShown();
+    bool checkForUpdates();
+    void updateMessageShown();
 
-    void SwitchToNextPort();
-    void SwitchToNextNode();
+    void switchToNextPort();
+    void switchToNextNode();
 
-#ifdef MONITOR_TOOL
-    void InitLoop();
-    // enumerate all the ports and then switch to next node
-    // return false after one full cycle
-    bool SwitchToNext();
-#endif	// MONITOR_TOOL
+    static int encryption();
 
-    static int Encryption();
-
-    static const char * EncText(size_t enc);
+    static const char * encryptionName(size_t enc);
 
 private:
     Setting();
-    static std::auto_ptr<Setting> _inst;
-    static std::vector<QString> _protocols[ENCRYPTION_COUNT];
-    static std::vector<int> _ports[ENCRYPTION_COUNT];
+    static std::auto_ptr<Setting> mInstance;
+    static std::vector<QString> mProtocols[ENCRYPTION_COUNT];
+    static std::vector<int> mPorts[ENCRYPTION_COUNT];
 
-    QString _default_dns[2];
+    QString mDefaultDNS[2];
     static void PopulateColls(std::vector<QString> & v_strs, std::vector<int> & v_ports, size_t sz, const char ** protocols, const int * ports);
 
     QString ProtocolSettingsName();
@@ -118,10 +101,6 @@ private:
     QString EncryptionIx();
     QString LocationSettingsName();
     QString LocationSettingsStrName();
-#ifdef MONITOR_TOOL
-    int _ixStartPort;
-    int _idStartNode;
-#endif	// MONITOR_TOOL
     int DetermineNextPort();
 };
 

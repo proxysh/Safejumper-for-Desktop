@@ -80,7 +80,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
             this, SLOT(setAmount(QString)));
 
     // Setting::Instance()->LoadServer();
-    Setting::Instance()->LoadProt();
+    Setting::instance()->loadProtocol();
 
     // TODO: -1  get actual data
     ui->L_Until->setText("active until\n-");
@@ -149,8 +149,8 @@ void ConnectionDialog::updateNewIP(const QString & s)
 
 void ConnectionDialog::updateEncoding()
 {
-    int enc = Setting::Encryption();
-    ui->L_Encryption->setText(Setting::EncText(enc));
+    int enc = Setting::encryption();
+    ui->L_Encryption->setText(Setting::encryptionName(enc));
 }
 
 void ConnectionDialog::setOldIP(const QString & s)
@@ -196,12 +196,12 @@ void ConnectionDialog::setProtocol(int ix)
     if (ix < 0)
         ui->L_Protocol->setText("Not selected");
     else
-        ui->L_Protocol->setText(Setting::Instance()->ProtoStr(ix));
+        ui->L_Protocol->setText(Setting::instance()->protocolName(ix));
 }
 
 void ConnectionDialog::updateProtocol()
 {
-    setProtocol(Setting::Instance()->CurrProto());
+    setProtocol(Setting::instance()->currentProtocol());
 }
 
 ConnectionDialog::~ConnectionDialog()
