@@ -23,6 +23,7 @@
 #include "scr_map.h"
 #include "loginwindow.h"
 #include "authmanager.h"
+#include "pathhelper.h"
 #include "common.h"
 #include "wndmanager.h"
 #include "setting.h"
@@ -51,6 +52,9 @@ TestDialog::TestDialog(QWidget *parent) :
     ui->L_NewIp->setText("");
     ui->settingsButton->hide();
     setNoServer();
+
+    mLogFolder = QDir::homePath() + "/.safecheckerlogs";
+    qDebug() << "log folder is " << mLogFolder;
 
     setWindowFlags(Qt::Dialog);
 #ifndef Q_OS_MAC
@@ -390,6 +394,16 @@ void TestDialog::initializeStateWords()
 
 void TestDialog::on_startButton_clicked()
 {
+    // Make and clean out log folder
+    QDir dir(mLogFolder);
+    if (!dir.exists())
+        dir.mkdir(mLogFolder);
+    if (!dir.entryList(QDir::NoDotAndDotDot).isEmpty()) {
+        QStringList filenames = dir.entryList(QDir::NoDotAndDotDot);
+        foreach(QString filename, filenames)
+            dir.remove(filename);
+    }
+
     ui->startButton->hide();
     ui->cancelButton->show();
     // Clear out previous results if any
@@ -481,9 +495,20 @@ void TestDialog::setStatusDisconnected()
 
 void TestDialog::setError(const QString &message)
 {
+    OpenvpnManager::instance()->stop();
+
     addError(message);
 
-    OpenvpnManager::instance()->stop();
+    // Copy logs
+    QString serverName = ui->countryLabel->text();
+    QString encryptionName = ui->encryptionLabel->text();
+    QString protocolName = ui->L_Protocol->text();
+    QFile::copy(PathHelper::Instance()->openvpnLogFilename(),
+                QString("%1/%2-%3-%4-%5").arg(mLogFolder).arg(serverName).arg(encryptionName)
+                .arg(protocolName).arg("openvpn.log"));
+    QFile::copy(PathHelper::Instance()->safejumperLogFilename(),
+                QString("%1/%2-%3-%4-%5").arg(mLogFolder).arg(serverName).arg(encryptionName)
+                .arg(protocolName).arg("debug.log"));
     iterate();
 }
 

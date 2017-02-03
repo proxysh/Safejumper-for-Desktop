@@ -106,6 +106,7 @@ private:
     std::vector<size_t> mEncryptionTypes; // List of all encryption types to iterate over
     std::vector<size_t> mServerIds; // List of current encryption type server ids
     std::vector<int> mProtocols; // List of current encryption type protocols
+    QString mLogFolder; // Folder to keep failure logs
 };
 
 
