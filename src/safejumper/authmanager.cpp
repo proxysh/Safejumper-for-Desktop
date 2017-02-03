@@ -142,6 +142,36 @@ void AuthManager::logout()
     mAccountPassword.clear();            // TODO: -2 secure clear
 }
 
+const QString &AuthManager::accountName()
+{
+    return mAccountLogin;    // TODO: -1 check: still valid, synchro with the main wnd
+}
+
+const QString &AuthManager::accountPassword()
+{
+    return mAccountPassword;
+}
+
+const QString &AuthManager::VPNName()
+{
+    return mVPNLogin;    // TODO: -1 check: still valid
+}
+
+const QString &AuthManager::VPNPassword()
+{
+    return mVPNPassword;
+}
+
+const QString &AuthManager::newIP()
+{
+    return mNewIP;
+}
+
+const QString &AuthManager::oldIP()
+{
+    return mOldIP;
+}
+
 AServer AuthManager::getServer(int id)
 {
     AServer s;
@@ -901,7 +931,8 @@ QString AuthManager::processServersXml()
     getObfsServerNames();
 //  StartDwnl_AccType();
 
-    pingAllServers();
+    if (!Setting::Instance()->testing())
+        pingAllServers(); // No need to ping servers when in testing mode
 
     return message;
 }

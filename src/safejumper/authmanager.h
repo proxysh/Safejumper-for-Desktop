@@ -77,32 +77,13 @@ public:
     void cancel();
     void logout();
 
-    const QString & accountName()
-    {
-        return mAccountLogin;    // TODO: -1 check: still valid, synchro with the main wnd
-    }
-    const QString & accountPassword()
-    {
-        return mAccountPassword;
-    }
-    const QString & VPNName()
-    {
-        return mVPNLogin;    // TODO: -1 check: still valid
-    }
-    const QString & VPNPassword()
-    {
-        return mVPNPassword;
-    }
+    const QString & accountName();
+    const QString & accountPassword();
+    const QString & VPNName();
+    const QString & VPNPassword();
 
-    const QString & newIP()
-    {
-        return mNewIP;
-    }
-
-    const QString & oldIP()
-    {
-        return mOldIP;
-    }
+    const QString & newIP();
+    const QString & oldIP();
 
     const std::vector<size_t> & currentEncryptionServers();		// return IDs of servers inside _servers available for this encryption
     const std::vector<size_t> & currentEncryptionHubs();					// return IDs of habs inside _servers
@@ -227,7 +208,6 @@ private:
     void getDns();
     void getObfsServerNames();
     void getEccServerNames();
-//	void StartDwnl_EccxorName();
 
     void forceRepopulation(int enc);
 
