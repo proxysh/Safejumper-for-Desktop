@@ -397,8 +397,8 @@ void Scr_Map::Changed_dd_Sever(int ix)
     AServer se = AuthManager::instance()->getServer(ixsrv);
     QString newsrv = se.name;
     //= ui->dd_Location->currentText();
-    if (TestDialog::exists())
-        TestDialog::instance()->setServer(ixsrv);
+//    if (TestDialog::exists())
+//        TestDialog::instance()->setServer(ixsrv);
     Setting::Instance()->SaveServer(ixsrv, newsrv);
 
     DisplayMark(se.name);
