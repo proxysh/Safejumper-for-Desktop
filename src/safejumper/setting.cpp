@@ -276,7 +276,7 @@ const char * Setting::encryptionName(size_t enc)
         "RSA 4096-bit",
         "RSA + TOR (obfs2)",
         "RSA + TOR (obfs3)",
-        "RSA + TOR (scramblesuit)"
+        "RSA + TOR (scramblesuit)",
         "ECC (secp384r1)",
         "ECC + XOR",
     };

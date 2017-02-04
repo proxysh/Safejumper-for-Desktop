@@ -348,7 +348,7 @@ bool OpenvpnManager::writeConfigFile()
     }
 
 #ifdef Q_OS_WIN
-    if (Setting::Instance()->IsFixDns()) {
+    if (Setting::instance()->fixDns()) {
         if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS10)
             ff.write("block-outside-dns\n");
     }
