@@ -1106,7 +1106,10 @@ void OsSpecific::StopObfs()
     }
 }
 
-void OsSpecific::runObfsproxy(const QString & srv, const QString & port, const QString & local_port)
+void OsSpecific::runObfsproxy(const QString &srv,
+                              const QString &port,
+                              const QString &obfstype,
+                              const QString & local_port)
 {
     log::logt("RunObfs() in");
     if (!IsObfsInstalled()) {
@@ -1131,8 +1134,8 @@ void OsSpecific::runObfsproxy(const QString & srv, const QString & port, const Q
         "--data-dir /tmp "
 #else
 #endif
-        "obfs2 "
-        "--dest "
+        + obfstype +
+        " --dest "
 //	"185.47.202.158"
         + srv +
 //	":888 "

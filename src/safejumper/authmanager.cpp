@@ -412,15 +412,27 @@ void AuthManager::getObfsServerNames()
 void AuthManager::processObfsServerNamesXml()
 {
     QString message;
-    bool err = processServerNamesForEncryptionType(ENCRYPTION_OBFS_TOR, message);
+    bool err = processServerNamesForEncryptionType(ENCRYPTION_TOR_OBFS2, message);
 
-    if (err)
-        log::logt("Error getting obfs names: " + message);
+    if (!err) {
+        // clone ECC nodes into ECC+XOR
+        // TODO: -2 is there a specific for ECC+XOR  API page?
+        mServerIds[ENCRYPTION_TOR_OBFS3].clear();
+        mServerIds[ENCRYPTION_TOR_OBFS3].assign(mServerIds[ENCRYPTION_TOR_OBFS2].begin(), mServerIds[ENCRYPTION_TOR_OBFS2].end());
+        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].clear();
+        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].assign(mServerIds[ENCRYPTION_TOR_OBFS2].begin(), mServerIds[ENCRYPTION_TOR_OBFS2].end());
+        forceRepopulation(ENCRYPTION_TOR_OBFS2);
+        forceRepopulation(ENCRYPTION_TOR_OBFS3);
+        forceRepopulation(ENCRYPTION_TOR_SCRAMBLESUIT);
+        if (Setting::encryption() != ENCRYPTION_RSA)
+            Setting::instance()->loadServer();
+    }
+
     // do not get obfs addresses: proceed
     getEccServerNames();
 
     if (!err)
-        forceRepopulation(ENCRYPTION_OBFS_TOR);
+        forceRepopulation(ENCRYPTION_TOR_OBFS2);
 
     return;
 
@@ -782,8 +794,9 @@ bool AuthManager::processServerNamesForEncryptionType(int enc, QString & out_msg
     out_msg.clear();
     QStringList names = extractNames(out_msg);
 
-    if (out_msg.isEmpty() && !names.isEmpty())
-        populateServerIdsFromNames(names, mServerIds[enc]);
+    if (out_msg.isEmpty() && !names.isEmpty()) {
+       populateServerIdsFromNames(names, mServerIds[enc]);
+    }
 
     return !out_msg.isEmpty();
 }

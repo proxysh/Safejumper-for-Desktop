@@ -356,6 +356,7 @@ static const char * const gs_stIcon1 = "QLabel\n{\n	border:0px;\n	color: #ffffff
 static const char * const gs_stIcon2 = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-2.png);\n}";
 static const char * const gs_stIcon2inact = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-2-inactive.png);\n}";
 static const char * const gs_stIconV = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-v.png);\n}";
+
 void Scr_Map::Changed_dd_Protocol(int ix)
 {
     if (_repopulation_inprogress)

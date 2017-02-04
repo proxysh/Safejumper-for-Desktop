@@ -98,7 +98,9 @@ void OpenvpnManager::launchOpenvpn()
         }
         setState(ovsConnecting);
         int enc = Setting::encryption();
-        bool obfs = enc == ENCRYPTION_OBFS_TOR;
+        bool obfs = (enc == ENCRYPTION_TOR_OBFS2 ||
+                     enc == ENCRYPTION_TOR_OBFS3 ||
+                     enc == ENCRYPTION_TOR_SCRAMBLESUIT);
         QString server = Setting::instance()->serverAddress();
         QString port = Setting::instance()->port();
         if (server.isEmpty() || port.isEmpty()) {
@@ -108,7 +110,14 @@ void OpenvpnManager::launchOpenvpn()
             return;
         }
         if (obfs) {
-            OsSpecific::Instance()->runObfsproxy(server, port, "1050");
+            QString obfstype;
+            if (enc == ENCRYPTION_TOR_OBFS2)
+                obfstype = "obfs2";
+            else if (enc == ENCRYPTION_TOR_OBFS3)
+                obfstype = "obfs3";
+            else
+                obfstype = "scramblesuit";
+            OsSpecific::Instance()->runObfsproxy(server, port, obfstype, "1050");
             if (!OsSpecific::Instance()->obfsproxyRunning()) {
                 log::logt("Cannot run Obfsproxy");
                 WndManager::Instance()->ErrMsg("Cannot run Obfsproxy");
@@ -256,7 +265,9 @@ void OpenvpnManager::processStarted()
 bool OpenvpnManager::writeConfigFile()
 {
     int enc = Setting::encryption();
-    bool obfs = enc == ENCRYPTION_OBFS_TOR;
+    bool obfs = (enc == ENCRYPTION_TOR_OBFS2 ||
+                 enc == ENCRYPTION_TOR_OBFS3 ||
+                 enc == ENCRYPTION_TOR_SCRAMBLESUIT);
     QFile ff(PathHelper::Instance()->openvpnConfigFilename());
     if (!ff.open(QIODevice::WriteOnly)) {
         QString se = "Cannot write config file '" + PathHelper::Instance()->openvpnConfigFilename() + "'";
@@ -562,7 +573,10 @@ void OpenvpnManager::gotConnected(const QString & s)
     if (p > -1) {
         int p1 = s.indexOf(',', p + 1);
         QString ip = p1 > -1 ? s.mid(p + 1, p1 - p - 1) : s.mid(p + 1);
-        if (Setting::encryption() != ENCRYPTION_OBFS_TOR)   // for proxy it shows 127.0.0.1
+        int enc = Setting::encryption();
+        if ((enc != ENCRYPTION_TOR_OBFS2) &&
+                enc != ENCRYPTION_TOR_OBFS3 &&
+                enc != ENCRYPTION_TOR_SCRAMBLESUIT) // for proxy it shows 127.0.0.1
             emit gotNewIp(ip);
     }
 

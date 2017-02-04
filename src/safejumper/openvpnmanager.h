@@ -26,7 +26,7 @@
 #include <QFileSystemWatcher>
 #include <QTemporaryFile>
 
-#define G_Delay_PortQuestion 60
+#define kTryNextPortSeconds 60
 #define G_Delay_PortIteration 80
 
 // only 5 seconds for each TCP connection

@@ -37,6 +37,7 @@ std::vector<QString> Setting::mProtocols[ENCRYPTION_COUNT];
 std::vector<int> Setting::mPorts[ENCRYPTION_COUNT];
 
 Setting::Setting()
+    :mTesting(false)
 {
     mDefaultDNS[0] = "146.185.134.104";
     mDefaultDNS[1] = "192.241.172.159";
@@ -108,12 +109,34 @@ const std::vector<QString> & Setting::allProtocols()
             break;
         }
 
-        case ENCRYPTION_OBFS_TOR: {
+        case ENCRYPTION_TOR_OBFS2: {
             static const char * gs_protocols1 [] = {
                 "TCP 888 (RSA+TOR)"
             };
             static const int gs_ports1 [] = {
                 888
+            };
+            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
+            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
+            break;
+        }
+        case ENCRYPTION_TOR_OBFS3: {
+            static const char *gs_protocols1 [] = {
+                "TCP 898 (RSA+TOR)"
+            };
+            static const int gs_ports1 [] = {
+                898
+            };
+            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
+            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
+            break;
+        }
+        case ENCRYPTION_TOR_SCRAMBLESUIT: {
+            static const char *gs_protocols1 [] = {
+                "TCP 988 (RSA+TOR)"
+            };
+            static const int gs_ports1 [] = {
+                988
             };
             size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
             PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
@@ -250,10 +273,12 @@ int Setting::encryption()
 const char * Setting::encryptionName(size_t enc)
 {
     static const char * g_ar [] = {
-        "RSA 4096-bit"
-        , "RSA + TOR’s Obfs"
-        , "ECC (secp384r1)"
-        , "ECC + XOR"
+        "RSA 4096-bit",
+        "RSA + TOR (obfs2)",
+        "RSA + TOR (obfs3)",
+        "RSA + TOR (scramblesuit)"
+        "ECC (secp384r1)",
+        "ECC + XOR",
     };
     if (enc >= ENCRYPTION_COUNT || enc >= (sizeof(g_ar)/sizeof(g_ar[0])))
         enc = ENCRYPTION_RSA;

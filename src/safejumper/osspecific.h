@@ -86,7 +86,10 @@ public:
     QString RunFastCmd(const char * cmd, uint16_t ms = 500);			// returns stdout
     QString RunFastCmd(const QString & cmd, uint16_t ms = 500);
 
-    void runObfsproxy(const QString & srv, const QString & port, const QString & local_port);
+    void runObfsproxy(const QString &srv,
+                      const QString &port,
+                      const QString &obfstype,
+                      const QString &local_port);
     bool obfsproxyRunning();
     void StopObfs();
     bool IsObfsInstalled();

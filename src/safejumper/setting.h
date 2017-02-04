@@ -94,6 +94,7 @@ private:
     static std::vector<int> mPorts[ENCRYPTION_COUNT];
 
     QString mDefaultDNS[2];
+    bool mTesting;
     static void PopulateColls(std::vector<QString> & v_strs, std::vector<int> & v_ports, size_t sz, const char ** protocols, const int * ports);
 
     QString ProtocolSettingsName();
