@@ -1111,7 +1111,7 @@ void OsSpecific::runObfsproxy(const QString &srv,
                               const QString &obfstype,
                               const QString & local_port)
 {
-    log::logt("RunObfs() in");
+    log::logt("runObfsproxy called with server " + srv + " and type " + obfstype);
     if (!IsObfsInstalled()) {
 #ifndef Q_OS_WIN
         InstallObfs();
@@ -1130,8 +1130,9 @@ void OsSpecific::runObfsproxy(const QString &srv,
 //	"c:\\python27\\Scripts\\obfsproxy.exe "
 #endif
 //	"--log-min-severity debug --no-safe-logging "
+        + " --log-file " + PathHelper::Instance()->obfsproxyLogFilename() + " "
 #ifndef Q_OS_WIN
-        "--data-dir /tmp "
+        + " --data-dir /tmp "
 #else
 #endif
         + obfstype +
@@ -1142,9 +1143,8 @@ void OsSpecific::runObfsproxy(const QString &srv,
         ":" + port + " "
         "socks "
         "127.0.0.1:"
-        + local_port
+        + local_port;
 //	"1050"
-        ;
 
     log::logt("SRV = " + srv);
 

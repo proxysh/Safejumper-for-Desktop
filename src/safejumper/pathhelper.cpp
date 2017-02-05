@@ -147,6 +147,11 @@ QString PathHelper::obfsproxyFilename()
 #endif	// 	Q_OS_MAC
 }
 
+QString PathHelper::obfsproxyLogFilename()
+{
+    return tempPath() + "obfsproxy.log";
+}
+
 QString PathHelper::installObfsproxyFilename()
 {
     return resourcesPath() + "/installobfsproxy.sh";
