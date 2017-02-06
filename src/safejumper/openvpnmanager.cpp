@@ -117,17 +117,17 @@ void OpenvpnManager::launchOpenvpn()
                 obfstype = "obfs3";
             else
                 obfstype = "scramblesuit";
-            OsSpecific::Instance()->runObfsproxy(server, port, obfstype, "1050");
-            if (!OsSpecific::Instance()->obfsproxyRunning()) {
+            OsSpecific::instance()->runObfsproxy(server, port, obfstype, "1050");
+            if (!OsSpecific::instance()->obfsproxyRunning()) {
                 log::logt("Cannot run Obfsproxy");
                 WndManager::Instance()->ErrMsg("Cannot run Obfsproxy");
                 return;
             }
         }
         try {
-            OsSpecific::Instance()->SetIPv6(!Setting::instance()->disableIPv6());
+            OsSpecific::instance()->SetIPv6(!Setting::instance()->disableIPv6());
 #ifdef Q_OS_WIN
-            OsSpecific::Instance()->EnableTap(); // TODO check win10 tap
+            OsSpecific::instance()->EnableTap(); // TODO check win10 tap
 #endif
         } catch(std::exception & ex) {
             log::logt(ex.what());
@@ -152,7 +152,7 @@ void OpenvpnManager::launchOpenvpn()
         if (Setting::instance()->fixDns() ||
                 !Setting::instance()->dns1().isEmpty() ||
                 !Setting::instance()->dns2().isEmpty())
-            OsSpecific::Instance()->FixDnsLeak();
+            OsSpecific::instance()->FixDnsLeak();
 
         QString prog = PathHelper::Instance()->openvpnFilename();
         log::logt("Prog is: " + prog);
@@ -656,8 +656,8 @@ void OpenvpnManager::stop()
     if (mSocket.get() != NULL)
         disconnectFromOpenvpnSocket();
 
-    if (OsSpecific::Instance()->obfsproxyRunning()) {
-        OsSpecific::Instance()->StopObfs();
+    if (OsSpecific::instance()->obfsproxyRunning()) {
+        OsSpecific::instance()->StopObfs();
     }
 
     if (mFileSystemWatcher.get() != NULL) {       // OpenVPN log file watcher
@@ -861,7 +861,8 @@ void OpenvpnManager::parseSocketStateWord(const QString & word, const QString & 
         else {
 //          log::logt("isnew = false; word = " + word + " _prev_st_word = " + _prev_st_word);
         }
-    } else if (word.compare("CONNECTING", Qt::CaseInsensitive) == 0) {
+    } else if (word.compare("CONNECTING", Qt::CaseInsensitive) == 0 ||
+               word.compare("TCP_CONNECT", Qt::CaseInsensitive) == 0) {
         setState(ovsConnecting);
         WndManager::Instance()->HandleState(word);
     } else if (word.compare("WAIT", Qt::CaseInsensitive) == 0) {
@@ -892,7 +893,7 @@ void OpenvpnManager::parseSocketStateWord(const QString & word, const QString & 
         WndManager::Instance()->HandleState(word);
     } else if (word.compare("RESOLVE", Qt::CaseInsensitive) == 0) {
         WndManager::Instance()->HandleState(word);
-        if (OsSpecific::Instance()->IsNetdown()) {
+        if (OsSpecific::instance()->IsNetdown()) {
             stop();
             WndManager::Instance()->ErrMsg("Turn Internet connection on manually, please");
         }
@@ -1083,7 +1084,7 @@ void OpenvpnManager::killRunningOpenvpn()
                 QStringList a;
                 a << "-9" << QString::number(mPID);
                 try {
-                    OsSpecific::Instance()->ExecAsRoot("/bin/kill", a);
+                    OsSpecific::instance()->ExecAsRoot("/bin/kill", a);
                 } catch(std::exception & ex) {
                     log::logt(ex.what());
                     WndManager::Instance()->ErrMsg(ex.what());

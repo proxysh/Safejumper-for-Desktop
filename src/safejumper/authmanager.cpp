@@ -1000,7 +1000,7 @@ void AuthManager::startWorker(size_t id)
         mWorkers.at(id) = new QProcess(m);
         m->connect(mWorkers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)), mWaiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
         m->connect(mWorkers.at(id), SIGNAL(error(QProcess::ProcessError)), mWaiters.at(id), SLOT(PingError(QProcess::ProcessError)));
-        OsSpecific::Instance()->StartPing(*mWorkers.at(id), mServers.at(srv).address);
+        OsSpecific::instance()->StartPing(*mWorkers.at(id), mServers.at(srv).address);
         m->connect(mTimers.at(id), SIGNAL(timeout()), mWaiters.at(id), SLOT(Timer_Terminate()));
         mTimers.at(id)->setSingleShot(true);
         mTimers.at(id)->start(PINGWORKER_MAX_TIMEOUT);
@@ -1015,7 +1015,7 @@ void AuthManager::startWorker(size_t id)
 void AuthManager::pingComplete(size_t idWaiter)
 {
     mTimers.at(idWaiter)->stop();
-    int p = OsSpecific::Instance()->ExtractPing(*mWorkers.at(idWaiter));
+    int p = OsSpecific::instance()->ExtractPing(*mWorkers.at(idWaiter));
 //      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " Got ping " + QString::number(p));
     mPings.at(mInProgress.at(idWaiter)) = p;
     startWorker(idWaiter);
@@ -1024,7 +1024,7 @@ void AuthManager::pingComplete(size_t idWaiter)
 void AuthManager::pingError(size_t idWaiter)
 {
     mTimers.at(idWaiter)->stop();
-    int p = OsSpecific::Instance()->ExtractPing(*mWorkers.at(idWaiter));
+    int p = OsSpecific::instance()->ExtractPing(*mWorkers.at(idWaiter));
 //      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process error, extracted ping: " + QString::number(p));
     mPings.at(mInProgress.at(idWaiter)) = p;
     startWorker(idWaiter);
@@ -1033,7 +1033,7 @@ void AuthManager::pingError(size_t idWaiter)
 void AuthManager::pingTerminated(size_t idWaiter)
 {
     mWorkers.at(idWaiter)->terminate();
-    int p = OsSpecific::Instance()->ExtractPing(*mWorkers.at(idWaiter));
+    int p = OsSpecific::instance()->ExtractPing(*mWorkers.at(idWaiter));
 //      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process terminated, extracted ping: " + QString::number(p));
     mPings.at(mInProgress.at(idWaiter)) = p;
     startWorker(idWaiter);

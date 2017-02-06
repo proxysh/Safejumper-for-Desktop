@@ -203,7 +203,7 @@ bool Setting::exists()
 
 bool Setting::showNodes()
 {
-    return Scr_Settings::Instance()->Is_cb_ShowNodes();
+    return mSettings.value("cb_ShowNodes", false).toBool();
 }
 
 bool Setting::disableIPv6()
@@ -213,7 +213,7 @@ bool Setting::disableIPv6()
 
 bool Setting::autoconnect()
 {
-    return Scr_Settings::Instance()->Is_cb_AutoConnect();
+    return mSettings.value("cb_AutoConnect", false).toBool();
 }
 
 bool Setting::detectInsecureWifi()
@@ -253,7 +253,7 @@ bool Setting::reconnect()
 
 void Setting::setShowNodes(bool v)
 {
-    SaveCb("cb_ShowNodes", v);
+    mSettings.setValue("cb_ShowNodes", v);
 
     if (Scr_Map::IsExists()) {
         int old = Scr_Map::Instance()->CurrSrv();

@@ -62,11 +62,21 @@
 
 
 std::auto_ptr<OsSpecific> OsSpecific::_inst;
-OsSpecific * OsSpecific::Instance()
+bool OsSpecific::exists()
+{
+    return (_inst.get() != NULL);
+}
+
+OsSpecific * OsSpecific::instance()
 {
     if (!_inst.get())
         _inst.reset(new OsSpecific());
     return _inst.get();
+}
+
+void OsSpecific::cleanup()
+{
+    if (_inst.get() != NULL) delete _inst.release();
 }
 
 OsSpecific::OsSpecific()
@@ -1118,44 +1128,48 @@ void OsSpecific::runObfsproxy(const QString &srv,
 #endif
     }
 
-    static const QString cmd =
+    const QString cmd =
 #ifndef Q_OS_WIN
 #ifndef Q_OS_REDHAT
-        PathHelper::Instance()->obfsproxyFilename() + " "
+        PathHelper::Instance()->obfsproxyFilename() + " " +
 #else
-        "/usr/bin/obfsproxy "
+        "/usr/bin/obfsproxy " +
 #endif
 #else		// Win
-        "cmd /k c:\\python27\\Scripts\\obfsproxy.exe "
+        "cmd /k c:\\python27\\Scripts\\obfsproxy.exe " +
 //	"c:\\python27\\Scripts\\obfsproxy.exe "
 #endif
 //	"--log-min-severity debug --no-safe-logging "
-        + " --log-file " + PathHelper::Instance()->obfsproxyLogFilename() + " "
+        obfstype +
 #ifndef Q_OS_WIN
-        + " --data-dir /tmp "
+        " --log-file " + PathHelper::Instance()->obfsproxyLogFilename() +
+        " --data-dir /tmp "
 #else
 #endif
-        + obfstype +
-        " --dest "
+        " --dest " +
 //	"185.47.202.158"
-        + srv +
+        srv +
 //	":888 "
-        ":" + port + " "
-        "socks "
-        "127.0.0.1:"
-        + local_port;
+        ":" + port +
+        " socks "
+        "127.0.0.1:" +
 //	"1050"
+        local_port;
 
     log::logt("SRV = " + srv);
 
     if (!obfsproxyRunning()) {
         _obfs.reset(new QProcess());
+        connect(_obfs.get(), SIGNAL(finished(int,QProcess::ExitStatus)),
+                this, SLOT(obfsFinished(int,QProcess::ExitStatus)));
+        _obfs->setStandardErrorFile(PathHelper::Instance()->obfsproxyLogFilename());
+        _obfs->setStandardOutputFile(PathHelper::Instance()->obfsproxyLogFilename());
         log::logt("Executing obfsproxy with command " + cmd);
         _obfs->start(cmd);
         QThread::msleep(100);
         log::logt(QString("if (!IsObfsRunning()) ") + cmd);
     }
-    log::logt("RunObfs() out");
+    log::logt("runObfsproxy() done");
 }
 
 void OsSpecific::InstallObfs()
@@ -1190,6 +1204,12 @@ void OsSpecific::InstallObfs()
 #endif	// Q_OS_MAC
 #endif	// Q_OS_LINUX
     log::logt("InstallObfs() out");
+}
+
+void OsSpecific::obfsFinished(int exitCode, QProcess::ExitStatus status)
+{
+    log::logt("obfsFinished with code " + QString::number(exitCode) +
+              " and status " + QString::number(status));
 }
 
 bool OsSpecific::IsObfsInstalled()

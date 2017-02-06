@@ -89,14 +89,7 @@ QString PathHelper::resourcesPath()
 
 QString PathHelper::tempPath()
 {
-#ifdef Q_OS_DARWIN
     return QDir::homePath() + "/.safejumper/";
-#else
-    return "/tmp/";
-#ifdef Q_OS_WIN
-    return QDir::tempPath();
-#endif
-#endif
 }
 
 QString PathHelper::openvpnLogFilename()
@@ -149,7 +142,7 @@ QString PathHelper::obfsproxyFilename()
 
 QString PathHelper::obfsproxyLogFilename()
 {
-    return tempPath() + "obfsproxy.log";
+    return tempPath() + "safejumper-obfsproxy.log";
 }
 
 QString PathHelper::installObfsproxyFilename()

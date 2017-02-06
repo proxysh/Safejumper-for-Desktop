@@ -160,7 +160,7 @@ LoginWindow::~LoginWindow()
     TrayIconManager::cleanup();
     AuthManager::cleanup();
     OpenvpnManager::cleanup();
-    OsSpecific::Cleanup();
+    OsSpecific::cleanup();
     Scr_Logs::Cleanup();
     Scr_Map::Cleanup();
     Scr_Settings::Cleanup();
@@ -314,13 +314,13 @@ void LoginWindow::Timer_WifiWatcher()
         if (stopped) {
             if (!AuthManager::instance()->loggedIn()) {
                 if (Setting::instance()->autoconnect()) {	// log in only if checked Auto-connect when app starts
-                    if (OsSpecific::Instance()->HasInsecureWifi()) {
+                    if (OsSpecific::instance()->HasInsecureWifi()) {
                         _ConnectAfterLogin = true;
                         on_loginButton_clicked();
                     }
                 }
             } else {
-                if (OsSpecific::Instance()->HasInsecureWifi())
+                if (OsSpecific::instance()->HasInsecureWifi())
                     OpenvpnManager::instance()->start();
             }
         }
@@ -349,7 +349,7 @@ void LoginWindow::BlockOnDisconnect()
     }
 
     if (doblock) {
-        OsSpecific::Instance()->NetDown();
+        OsSpecific::instance()->NetDown();
     }
 }
 

@@ -25,18 +25,13 @@
 #include <QString>
 #include <QProcess>
 
-class OsSpecific
+class OsSpecific: public QObject
 {
+    Q_OBJECT
 public:
-    static bool IsExists()
-    {
-        return (_inst.get() != NULL);
-    }
-    static OsSpecific * Instance();
-    static void Cleanup()
-    {
-        if (_inst.get() != NULL) delete _inst.release();
-    }
+    static bool exists();
+    static OsSpecific *instance();
+    static void cleanup();
     ~OsSpecific();
 
 
@@ -99,6 +94,8 @@ public:
 #ifdef Q_OS_MAC
     bool isDark() const;
 #endif
+private slots:
+    void obfsFinished(int exitCode, QProcess::ExitStatus status);
 private:
     OsSpecific();
     static std::auto_ptr<OsSpecific> _inst;

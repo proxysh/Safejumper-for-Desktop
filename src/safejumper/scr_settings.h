@@ -52,10 +52,8 @@ public:
 
     bool Is_cb_BlockOnDisconnect();
     bool Is_cb_Startup();
-    bool Is_cb_AutoConnect();
     bool Is_cb_Reconnect();
     bool Is_cb_InsecureWiFi();
-    bool Is_cb_ShowNodes();
     bool Is_cb_DisableIpv6();
     bool Is_cb_FixDnsLeak();
 

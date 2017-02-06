@@ -33,7 +33,7 @@ class Setting
 {
 public:
     ~Setting();
-    static Setting * instance();
+    static Setting *instance();
     static void cleanup();
     static bool exists();
 
@@ -103,6 +103,7 @@ private:
     QString LocationSettingsName();
     QString LocationSettingsStrName();
     int DetermineNextPort();
+    QSettings mSettings;
 };
 
 #endif // SETTING_H

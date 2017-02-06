@@ -82,7 +82,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
         ui->cb_DisableIpv6->setChecked(settings.value("cb_DisableIpv6", true).toBool());
         ui->cb_FixDnsLeak->setChecked(settings.value("cb_FixDnsLeak", true).toBool());
         ui->cb_Reconnect->setChecked(settings.value("cb_Reconnect", true).toBool());
-        ui->cb_ShowNodes->setChecked(settings.value("cb_ShowNodes", false).toBool());
+        ui->cb_ShowNodes->setChecked(Setting::instance()->showNodes());
         ui->cb_Startup->setChecked(settings.value("cb_Startup", true).toBool());
         ui->cb_InsecureWiFi->setChecked(settings.value("cb_InsecureWiFi", false).toBool());
 
@@ -120,7 +120,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
     }
 
     if (ui->cb_Startup->isEnabled())
-        OsSpecific::Instance()->SetStartup(ui->cb_Startup->isChecked());
+        OsSpecific::instance()->SetStartup(ui->cb_Startup->isChecked());
 }
 
 void Scr_Settings::closeEvent(QCloseEvent * event)
@@ -218,7 +218,7 @@ void Scr_Settings::Toggle_cb_BlockOnDisconnect(bool v)
 void Scr_Settings::Toggle_cb_Startup(bool v)
 {
     SaveCb("cb_Startup", v);
-    OsSpecific::Instance()->SetStartup(v);
+    OsSpecific::instance()->SetStartup(v);
 }
 
 void Scr_Settings::Toggle_cb_AutoConnect(bool v)
@@ -251,7 +251,7 @@ void Scr_Settings::Toggle_cb_DisableIpv6(bool v)
 {
     SaveCb("cb_DisableIpv6", v);
     try {
-        OsSpecific::Instance()->SetIPv6(!v);
+        OsSpecific::instance()->SetIPv6(!v);
     } catch(std::exception & ex) {
         log::logt(ex.what());
     }
@@ -279,11 +279,6 @@ bool Scr_Settings::Is_cb_Startup()
     return ui->cb_Startup->isChecked();
 }
 
-bool Scr_Settings::Is_cb_AutoConnect()
-{
-    return ui->cb_AutoConnect->isChecked();
-}
-
 bool Scr_Settings::Is_cb_Reconnect()
 {
     return ui->cb_Reconnect->isChecked();
@@ -292,11 +287,6 @@ bool Scr_Settings::Is_cb_Reconnect()
 bool Scr_Settings::Is_cb_InsecureWiFi()
 {
     return ui->cb_InsecureWiFi->isChecked();
-}
-
-bool Scr_Settings::Is_cb_ShowNodes()
-{
-    return ui->cb_ShowNodes->isChecked();
 }
 
 bool Scr_Settings::Is_cb_DisableIpv6()
@@ -319,7 +309,7 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
     if (_repopulation_inprogress)
         return;
 
-    if (ix == ENCRYPTION_TOR_OBFS2 && !OsSpecific::Instance()->IsObfsInstalled()) {
+    if (ix == ENCRYPTION_TOR_OBFS2 && !OsSpecific::instance()->IsObfsInstalled()) {
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
         // Try to install first, then check if it's not installed again.
         OsSpecific::Instance()->InstallObfs();
