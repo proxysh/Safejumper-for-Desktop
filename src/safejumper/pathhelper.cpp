@@ -133,9 +133,13 @@ QString PathHelper::obfsproxyFilename()
     return resourcesPath() + "/env/bin/obfsproxy";
 #else
 #ifdef Q_OS_LINUX
+#ifdef Q_OS_REDHAT
+    "/usr/bin/obfsproxy " +
+#else
     return "/usr/local/bin/obfsproxy";
+#endif
 #else		// Win
-    return "";
+    return         "cmd /k c:\\python27\\Scripts\\obfsproxy.exe";
 #endif	// linux
 #endif	// 	Q_OS_MAC
 }

@@ -1128,37 +1128,23 @@ void OsSpecific::runObfsproxy(const QString &srv,
 #endif
     }
 
-    const QString cmd =
-#ifndef Q_OS_WIN
-#ifndef Q_OS_REDHAT
-        PathHelper::Instance()->obfsproxyFilename() + " " +
-#else
-        "/usr/bin/obfsproxy " +
-#endif
-#else		// Win
-        "cmd /k c:\\python27\\Scripts\\obfsproxy.exe " +
-//	"c:\\python27\\Scripts\\obfsproxy.exe "
-#endif
-//	"--log-min-severity debug --no-safe-logging "
-        obfstype +
-#ifndef Q_OS_WIN
-        " --log-file " + PathHelper::Instance()->obfsproxyLogFilename() +
-        " --data-dir /tmp "
-#else
-#endif
-        " --dest " +
-//	"185.47.202.158"
-        srv +
-//	":888 "
-        ":" + port +
-        " socks "
-        "127.0.0.1:" +
-//	"1050"
-        local_port;
-
     log::logt("SRV = " + srv);
 
     if (!obfsproxyRunning()) {
+        QStringList args;
+        args << PathHelper::Instance()->obfsproxyFilename();
+
+#ifndef Q_OS_WIN
+        args << "--log-file " + PathHelper::Instance()->obfsproxyLogFilename();
+        args << "--data-dir /tmp";
+#endif
+        args << obfstype;
+        args << "--dest " + srv + ":" + port;
+    //	"185.47.202.158:888 "
+        args << "socks 127.0.0.1:" + local_port;
+    //	"1050"
+        const QString cmd = args.join(' ');
+
         _obfs.reset(new QProcess());
         connect(_obfs.get(), SIGNAL(finished(int,QProcess::ExitStatus)),
                 this, SLOT(obfsFinished(int,QProcess::ExitStatus)));

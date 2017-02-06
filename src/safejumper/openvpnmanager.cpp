@@ -166,7 +166,7 @@ void OpenvpnManager::launchOpenvpn()
             if (!mParametersTempFile->open())
                 throw std::runtime_error("Cannot create tmp file.");
 
-            OsSpecific::Instance()->SetRights();        // lean inside, throw on error
+            OsSpecific::instance()->SetRights();        // lean inside, throw on error
 
             mParametersTempFile->write(params.toLatin1());
             mParametersTempFile->flush();
@@ -1021,7 +1021,7 @@ bool OpenvpnManager::openvpnRunning()
         QTemporaryFile outf(QDir::tempPath() + "/safejumper-tmp-XXXXXX.out");
         if (file.open())
             if (outf.open()) {
-                QString script = QString(OsSpecific::Instance()->isOpenvpnRunningCommand()) + " > " + outf.fileName();
+                QString script = QString(OsSpecific::instance()->isOpenvpnRunningCommand()) + " > " + outf.fileName();
                 file.write(script.toLatin1());
                 file.flush();
 
