@@ -29,8 +29,9 @@
 // major controler in this Singleton while serialized storage in QSettings
 // and current storage directly in checkboxes/controls around
 // TODO: -2 move all settings controller code to here
-class Setting
+class Setting: public QObject
 {
+    Q_OBJECT
 public:
     ~Setting();
     static Setting *instance();
@@ -38,8 +39,9 @@ public:
     static bool exists();
 
     bool showNodes();
-    bool disableIPv6();
     void setShowNodes(bool v);
+
+    bool disableIPv6();
 
     bool autoconnect();
     bool startup();
@@ -87,6 +89,8 @@ public:
 
     static const char * encryptionName(size_t enc);
 
+signals:
+    void showNodesChanged();
 private:
     Setting();
     static std::auto_ptr<Setting> mInstance;
@@ -102,7 +106,7 @@ private:
     QString EncryptionIx();
     QString LocationSettingsName();
     QString LocationSettingsStrName();
-    int DetermineNextPort();
+    int determineNextPort();
     QSettings mSettings;
 };
 

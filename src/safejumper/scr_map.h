@@ -55,7 +55,6 @@ public:
     }
     int CurrProto();	// -1 if not selected, otherwise [0-...] id of protocol inside Settings
 
-    void RePopulateLocations(bool random = false);		// TODO: -1 methods to update particular row with new ping/load%
     void RePopulateProtocols();
     void SetServer(int ixsrv);
     void SetProtocol(int ix);
@@ -65,6 +64,9 @@ public:
 
     void SwitchToNextNode();
 
+public slots:
+    void repopulateLocations();
+    void RePopulateLocations(bool random = false);		// TODO: -1 methods to update particular row with new ping/load%
 private:
     Ui::Scr_Map *ui;
     static std::auto_ptr<Scr_Map> _inst;

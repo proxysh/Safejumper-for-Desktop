@@ -40,8 +40,6 @@ public:
     void statusConnected();
     void statusDisconnected();
 
-    void constructConnectToMenu();
-
     void disableActionsOnLogout();
     void enableButtonsOnLogin();
     void updateActionsEnabled(bool connecting);
@@ -56,6 +54,8 @@ signals:
 public slots:
     void focusChanged(QWidget*, QWidget*);
 //	void Finished_EccxorName();
+
+    void constructConnectToMenu();
 
     void connectTriggered();
     void connectToTriggered();

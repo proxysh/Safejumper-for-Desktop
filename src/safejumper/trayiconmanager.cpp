@@ -54,6 +54,9 @@ TrayIconManager::TrayIconManager(QWidget *parent)
     statusDisconnected();
 
     disableActionsOnLogout();
+
+    connect(Setting::instance(), SIGNAL(showNodesChanged()),
+            this, SLOT(constructConnectToMenu()));
 }
 
 bool TrayIconManager::exists()

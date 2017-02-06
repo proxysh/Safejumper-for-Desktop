@@ -206,6 +206,12 @@ bool Setting::showNodes()
     return mSettings.value("cb_ShowNodes", false).toBool();
 }
 
+void Setting::setShowNodes(bool v)
+{
+    mSettings.setValue("cb_ShowNodes", v);
+    emit showNodesChanged();
+}
+
 bool Setting::disableIPv6()
 {
     return Scr_Settings::Instance()->Is_cb_DisableIpv6();
@@ -249,17 +255,6 @@ bool Setting::startup()
 bool Setting::reconnect()
 {
     return Scr_Settings::Instance()->Is_cb_Reconnect();
-}
-
-void Setting::setShowNodes(bool v)
-{
-    mSettings.setValue("cb_ShowNodes", v);
-
-    if (Scr_Map::IsExists()) {
-        int old = Scr_Map::Instance()->CurrSrv();
-        Scr_Map::Instance()->RePopulateLocations();
-    }
-    TrayIconManager::instance()->constructConnectToMenu();
 }
 
 int Setting::encryption()
@@ -479,7 +474,7 @@ bool Setting::SwitchToNext()
 }
 #endif	// MONITOR_TOOL
 
-int Setting::DetermineNextPort()
+int Setting::determineNextPort()
 {
     int ix = Scr_Map::Instance()->CurrProto();
     ++ix;
@@ -494,7 +489,7 @@ int Setting::DetermineNextPort()
 
 void Setting::switchToNextPort()
 {
-    int ix = DetermineNextPort();
+    int ix = determineNextPort();
     Scr_Map::Instance()->SetProtocol(ix);
 }
 

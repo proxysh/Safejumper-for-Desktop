@@ -81,7 +81,8 @@ Scr_Map::Scr_Map(QWidget *parent) :
     ui->dd_Location->setItemDelegate(new LvRowDelegate(this));
 
 //	setMouseTracking(true); // E.g. set in your constructor of your widget.
-
+    connect(Setting::instance(), SIGNAL(showNodesChanged()),
+            this, SLOT(repopulateLocations()));
 }
 
 
@@ -314,6 +315,11 @@ void Scr_Map::SwitchToNextNode()
             ix = 1;
         ui->dd_Location->setCurrentIndex(ix);
     }
+}
+
+void Scr_Map::repopulateLocations()
+{
+    RePopulateLocations();
 }
 
 void Scr_Map::ToScr_Connect()
