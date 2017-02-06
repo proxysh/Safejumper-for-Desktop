@@ -120,7 +120,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
     }
 
     if (ui->cb_Startup->isEnabled())
-        OsSpecific::instance()->SetStartup(ui->cb_Startup->isChecked());
+        OsSpecific::instance()->setStartup(ui->cb_Startup->isChecked());
 }
 
 void Scr_Settings::closeEvent(QCloseEvent * event)
@@ -218,7 +218,7 @@ void Scr_Settings::Toggle_cb_BlockOnDisconnect(bool v)
 void Scr_Settings::Toggle_cb_Startup(bool v)
 {
     SaveCb("cb_Startup", v);
-    OsSpecific::instance()->SetStartup(v);
+    OsSpecific::instance()->setStartup(v);
 }
 
 void Scr_Settings::Toggle_cb_AutoConnect(bool v)
@@ -251,7 +251,7 @@ void Scr_Settings::Toggle_cb_DisableIpv6(bool v)
 {
     SaveCb("cb_DisableIpv6", v);
     try {
-        OsSpecific::instance()->SetIPv6(!v);
+        OsSpecific::instance()->setIPv6(!v);
     } catch(std::exception & ex) {
         log::logt(ex.what());
     }
@@ -309,11 +309,13 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
     if (_repopulation_inprogress)
         return;
 
-    if (ix == ENCRYPTION_TOR_OBFS2 && !OsSpecific::instance()->IsObfsInstalled()) {
+    if ((ix == ENCRYPTION_TOR_OBFS2 ||
+         ix == ENCRYPTION_TOR_OBFS3 ||
+         ix == ENCRYPTION_TOR_SCRAMBLESUIT) && !OsSpecific::instance()->obfsproxyInstalled()) {
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
         // Try to install first, then check if it's not installed again.
-        OsSpecific::instance()->InstallObfs();
-        if (!OsSpecific::instance()->IsObfsInstalled()) {
+        OsSpecific::instance()->installObfsproxy();
+        if (!OsSpecific::instance()->obfsproxyInstalled()) {
 #endif
             ErrorDialog dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
             dlg.exec();

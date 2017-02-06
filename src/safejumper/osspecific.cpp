@@ -61,33 +61,33 @@
 
 
 
-std::auto_ptr<OsSpecific> OsSpecific::_inst;
+std::auto_ptr<OsSpecific> OsSpecific::mInstance;
 bool OsSpecific::exists()
 {
-    return (_inst.get() != NULL);
+    return (mInstance.get() != NULL);
 }
 
 OsSpecific * OsSpecific::instance()
 {
-    if (!_inst.get())
-        _inst.reset(new OsSpecific());
-    return _inst.get();
+    if (!mInstance.get())
+        mInstance.reset(new OsSpecific());
+    return mInstance.get();
 }
 
 void OsSpecific::cleanup()
 {
-    if (_inst.get() != NULL) delete _inst.release();
+    if (mInstance.get() != NULL) delete mInstance.release();
 }
 
 OsSpecific::OsSpecific()
-    : _netdown(false)
+    : mNetDown(false)
 {}
 
 bool _auth(false);
 #ifdef Q_OS_MAC
 AuthorizationRef _AuthorizationRef;
 // throw std::exception on error
-AuthorizationRef & GetAuth()
+AuthorizationRef & getMacAuthorization()
 {
     if (!_auth) {
         OSStatus res;
@@ -118,15 +118,15 @@ AuthorizationRef & GetAuth()
     return _AuthorizationRef;
 }
 
-void OsSpecific::SetOwnerRoot(const QString & pfn)
+void OsSpecific::setOwnerRoot(const QString & pfn)
 {
     // check if bit set already
-    if (!IsOwnerRoot(pfn)) {
+    if (!isOwnerRoot(pfn)) {
 #ifdef Q_OS_WIN
 #error SetOwnerRoot() Not implemented
         throw std::runtime_error("SetOwnerRoot() Not implemented");
 #endif
-        AuthorizationRef & ra = GetAuth();
+        AuthorizationRef & ra = getMacAuthorization();
 //		QStringList args;
 //		args << "u+s" << pfn;
 //		ExecAsRoot("chmod", args);
@@ -160,7 +160,7 @@ void OsSpecific::SetOwnerRoot(const QString & pfn)
         try {
             QStringList args;
             args << "root" << pfn;
-            ExecAsRoot("/usr/sbin/chown", args);
+            execAsRoot("/usr/sbin/chown", args);
 
 
             // additional files
@@ -180,19 +180,19 @@ OsSpecific::~OsSpecific()
 #endif
         _auth = false;
     }
-    if (_obfs.get()) {
-        _obfs->terminate();
+    if (mObfsproxy.get()) {
+        mObfsproxy->terminate();
         // TODO: -2 gracefully stop
     }
 }
 
-bool OsSpecific::IsOwnerRoot(const QString & pfn)
+bool OsSpecific::isOwnerRoot(const QString & pfn)
 {
     QFileInfo fi(pfn);
     return fi.exists() && fi.ownerId() == 0;
 }
 
-void OsSpecific::ReleaseRights()
+void OsSpecific::releaseRights()
 {
     if (_auth) {
 #ifdef Q_OS_MAC
@@ -202,11 +202,11 @@ void OsSpecific::ReleaseRights()
     }
 }
 
-static void ExecAsRootMac(const QString & cmd, char * const * argv)
+static void execAsRootMac(const QString & cmd, char * const * argv)
 {
     //execute
 #ifdef Q_OS_MAC
-    AuthorizationRef & ra = GetAuth();
+    AuthorizationRef & ra = getMacAuthorization();
     OSStatus res = AuthorizationExecuteWithPrivileges(ra,
                    cmd.toStdString().c_str()	//myToolPath
                    , kAuthorizationFlagDefaults,
@@ -244,13 +244,11 @@ static void ExecAsRootUbuntu(const QString & cmd, const QStringList & args)
     }
 }
 
-void OsSpecific::ExecAsRoot(const QString & cmd, const QStringList & args)
+void OsSpecific::execAsRoot(const QString & cmd, const QStringList & args)
 {
-    {
-        QString m = "Executing as root. Cmd = " + cmd + " args = ";
-        m += args.join(' ');
-        log::logt(m);
-    }
+    QString m = "Executing as root. Cmd = " + cmd + " args = ";
+    m += args.join(' ');
+    log::logt(m);
 
 #ifdef Q_OS_MAC
     std::vector<const char *> argv1;
@@ -264,7 +262,7 @@ void OsSpecific::ExecAsRoot(const QString & cmd, const QStringList & args)
     }
     argv1.push_back(NULL);
 
-    ExecAsRootMac(cmd, (char * const *)&argv1[0]);
+    execAsRootMac(cmd, (char * const *)&argv1[0]);
 #else		// Q_OS_MAC
 #ifdef Q_OS_LINUX
     ExecAsRootUbuntu(cmd, args);
@@ -278,7 +276,7 @@ void OsSpecific::ExecAsRoot(const QString & cmd, const QStringList & args)
     log::logt("ExecAsRoot() success");
 }
 
-void OsSpecific::SetRights()
+void OsSpecific::setRights()
 {
     // Qt uses permissions in HEX while OS's in 8-based !
 
@@ -286,30 +284,30 @@ void OsSpecific::SetRights()
     // will ask for elevated rights inside
 #ifdef Q_OS_MAC
 
-    SetChmod("0744", PathHelper::Instance()->upScriptFilename());
-    SetChown(PathHelper::Instance()->upScriptFilename());
-    SetChmod("0744", PathHelper::Instance()->downScriptFilename());
-    SetChown(PathHelper::Instance()->downScriptFilename());
+    setChmod("0744", PathHelper::Instance()->upScriptFilename());
+    setChown(PathHelper::Instance()->upScriptFilename());
+    setChmod("0744", PathHelper::Instance()->downScriptFilename());
+    setChown(PathHelper::Instance()->downScriptFilename());
 
-    SetChmod("0755", PathHelper::Instance()->openvpnFilename());
-    SetChown(PathHelper::Instance()->openvpnFilename());
+    setChmod("0755", PathHelper::Instance()->openvpnFilename());
+    setChown(PathHelper::Instance()->openvpnFilename());
 
-    SetChmod("04555", PathHelper::Instance()->netDownFilename());
-    SetChown(PathHelper::Instance()->netDownFilename());
+    setChmod("04555", PathHelper::Instance()->netDownFilename());
+    setChown(PathHelper::Instance()->netDownFilename());
 
-    SetChmod("04555", PathHelper::Instance()->launchopenvpnFilename());
-    SetChown(PathHelper::Instance()->launchopenvpnFilename());
+    setChmod("04555", PathHelper::Instance()->launchopenvpnFilename());
+    setChown(PathHelper::Instance()->launchopenvpnFilename());
 
     system(QString("touch %1").arg(PathHelper::Instance()->openvpnLogFilename()).toStdString().c_str());
-    SetChmod("777", PathHelper::Instance()->openvpnLogFilename());
+    setChmod("777", PathHelper::Instance()->openvpnLogFilename());
 #endif		// Q_OS_MAC
 
 #ifdef Q_OS_LINUX
-    SetChown(PathHelper::Instance()->launchopenvpnFilename());
-    SetChmod("777", PathHelper::Instance()->launchopenvpnFilename());				// odrer is important
+    setChown(PathHelper::Instance()->launchopenvpnFilename());
+    setChmod("777", PathHelper::Instance()->launchopenvpnFilename());				// odrer is important
 
-    SetChown(PathHelper::Instance()->netDownFilename());
-    SetChmod("777", PathHelper::Instance()->netDownFilename());
+    setChown(PathHelper::Instance()->netDownFilename());
+    setChmod("777", PathHelper::Instance()->netDownFilename());
 #endif
 
     //ReleaseRights();
@@ -317,7 +315,7 @@ void OsSpecific::SetRights()
     QThread::msleep(200);		// HACK: -1 wait till file system changes become effective
 }
 
-void OsSpecific::SetChmod(const char * sflags, const QString & pfn)
+void OsSpecific::setChmod(const char * sflags, const QString & pfn)
 {
     struct stat st;		// QFileInfo fails often
     if (0 != stat(pfn.toStdString().c_str(), &st))
@@ -334,7 +332,7 @@ void OsSpecific::SetChmod(const char * sflags, const QString & pfn)
     if ((st.st_mode & flags8) != flags8) {
         QStringList args1;
         args1 << sflags << pfn;
-        ExecAsRoot("/bin/chmod", args1);				// mac, ubuntu
+        execAsRoot("/bin/chmod", args1);				// mac, ubuntu
 
 //		QStringList a;		// HACK: -1 wait till file system changes become effective
 //		a << pfn;
@@ -365,7 +363,7 @@ void OsSpecific::SetChmod(const char * sflags, const QString & pfn)
     */
 }
 
-void OsSpecific::SetChown(const QString & pfn)
+void OsSpecific::setChown(const QString & pfn)
 {
     QFileInfo fi(pfn);
     fi.refresh();
@@ -376,19 +374,19 @@ void OsSpecific::SetChown(const QString & pfn)
         {
             QStringList args;
             args << "wheel" << pfn;
-            ExecAsRoot("/usr/bin/chgrp", args);			// Mac
+            execAsRoot("/usr/bin/chgrp", args);			// Mac
         }
 
         {
             QStringList args1;
             args1 << "root" << pfn;
-            ExecAsRoot("/usr/sbin/chown", args1);		// Mac
+            execAsRoot("/usr/sbin/chown", args1);		// Mac
         }
 #else
         {
             QStringList args1;
             args1 << "0:0" << pfn;
-            ExecAsRoot("/bin/chown", args1);		// ubuntu
+            execAsRoot("/bin/chown", args1);		// ubuntu
         }
 #endif
         /*
@@ -404,12 +402,12 @@ void OsSpecific::SetChown(const QString & pfn)
     }
 }
 
-void OsSpecific::StartPing(QProcess & pr, const QString & adr)
+void OsSpecific::startPing(QProcess & pr, const QString & adr)
 {
-    pr.start(GetCmd(), FormatArgs(adr));
+    pr.start(pingCommand(), formatArguments(adr));
 }
 
-int OsSpecific::ExtractPing(QProcess & pr)
+int OsSpecific::extractPing(QProcess & pr)
 {
     int ping = -1;
     QByteArray ba = pr.readAllStandardOutput();
@@ -448,7 +446,7 @@ int OsSpecific::ExtractPing(QProcess & pr)
     return ping;
 }
 
-QStringList OsSpecific::FormatArgs(const QString & adr)
+QStringList OsSpecific::formatArguments(const QString & adr)
 {
     QStringList args;
     args
@@ -469,7 +467,7 @@ QStringList OsSpecific::FormatArgs(const QString & adr)
     return args;
 }
 
-const QString & OsSpecific::GetCmd()
+const QString & OsSpecific::pingCommand()
 {
 #ifdef  Q_OS_MAC
     static const QString cmd = "/sbin/ping";
@@ -481,24 +479,6 @@ const QString & OsSpecific::GetCmd()
 #endif
 #endif
     return cmd;
-}
-
-int OsSpecific::Ping(const QString & adr)
-{
-    int n = -1;
-#ifdef Q_OS_MAC
-    QProcess pr(LoginWindow::Instance());
-    pr.start(GetCmd(), FormatArgs(adr));
-    pr.waitForFinished(1500);		// ms
-    if (pr.state() == QProcess::NotRunning && pr.exitStatus() == QProcess::NormalExit) {
-        n = ExtractPing(pr);
-    } else {
-        pr.terminate();
-    }
-#endif
-    log::logt("ping " + adr + " " + QString::number(n));
-
-    return n;
 }
 
 const QString gs_icon = ":/icons/icon-tray.png";
@@ -517,7 +497,7 @@ const QString gs_icon_color = ":/icons/icon-tray-color.png";
 const QString gs_icon_cross_color = ":/icons/icon-tray-color-cross.png";
 const QString gs_icon_cycle_color = ":/icons/icon-tray-color-cycle.png";
 
-const QString OsSpecific::IconDisconnected() const
+const QString OsSpecific::disconnectedIcon() const
 {
 #ifdef Q_OS_MAC
     return isDark() ? gs_icon_cross_white : gs_icon_cross;
@@ -526,7 +506,7 @@ const QString OsSpecific::IconDisconnected() const
 #endif
 }
 
-const QString OsSpecific::IconConnecting() const
+const QString OsSpecific::connectingIcon() const
 {
 #ifdef Q_OS_MAC
     return isDark() ? gs_icon_cycle_white : gs_icon_cycle;
@@ -548,7 +528,7 @@ bool OsSpecific::isDark() const
 }
 #endif
 
-const QString OsSpecific::IconConnected() const
+const QString OsSpecific::connectedIcon() const
 {
 #ifdef Q_OS_MAC
     return isDark() ? gs_icon_white : gs_icon;
@@ -558,7 +538,7 @@ const QString OsSpecific::IconConnected() const
 }
 
 
-const QString OsSpecific::IconDisconnected_Selected() const
+const QString OsSpecific::disconnectedSelectedIcon() const
 {
 #ifdef Q_OS_MAC
     return gs_icon_cross_light;
@@ -567,7 +547,7 @@ const QString OsSpecific::IconDisconnected_Selected() const
 #endif
 }
 
-const QString OsSpecific::IconConnecting_Selected() const
+const QString OsSpecific::connectingSelectedIcon() const
 {
 #ifdef Q_OS_MAC
     return gs_icon_cycle_light;
@@ -576,7 +556,7 @@ const QString OsSpecific::IconConnecting_Selected() const
 #endif
 }
 
-const QString OsSpecific::IconConnected_Selected() const
+const QString OsSpecific::connectedSelectedIcon() const
 {
 #ifdef Q_OS_MAC
     return gs_icon_light;
@@ -592,6 +572,16 @@ const char *OsSpecific::isOpenvpnRunningCommand()
 #else
     return "ps -xa | grep open | grep vpn | grep safej";
 #endif
+}
+
+bool OsSpecific::isNetDown()
+{
+    return mNetDown;
+}
+
+void OsSpecific::setNetDown(bool b)
+{
+    mNetDown = b;
 }
 
 #ifdef Q_OS_WIN
@@ -613,7 +603,8 @@ static const QString gs_ns = "/usr/sbin/networksetup";
 static const char * gs_wifi = "Wi-Fi";
 static const char * gs_ether = "Ethernet";
 #endif
-void OsSpecific::SetIPv6(bool enable)
+
+void OsSpecific::setIPv6(bool enable)
 {
     bool curr, ok;
     try {
@@ -665,12 +656,12 @@ void OsSpecific::SetIPv6(bool enable)
         {
             QStringList a;
             a << ac << gs_wifi;
-            ExecAsRoot(gs_ns, a);
+            execAsRoot(gs_ns, a);
         }
         {
             QStringList a;
             a << ac << gs_ether;
-            ExecAsRoot(gs_ns, a);
+            execAsRoot(gs_ns, a);
         }
 #else
         // throw std::logic_error("OsSpecific::SetIPv6() Not implemented for this OS");
@@ -680,7 +671,7 @@ void OsSpecific::SetIPv6(bool enable)
 }
 
 #ifdef Q_OS_OSX
-bool AdapterHasIpv6(const char * adapter)
+bool adapterHasIpv6(const char * adapter)
 {
     bool has = true;
     QStringList a;
@@ -747,9 +738,9 @@ bool OsSpecific::IPv6()
     */
 #else
 #ifdef Q_OS_OSX
-    on =	AdapterHasIpv6(gs_wifi);
+    on =	adapterHasIpv6(gs_wifi);
     if (!on)
-        on =	AdapterHasIpv6(gs_ether);
+        on =	adapterHasIpv6(gs_ether);
 #else
     //throw std::logic_error("OsSpecific::IPv6() Not implemented for this OS");
 #endif
@@ -757,7 +748,7 @@ bool OsSpecific::IPv6()
     return on;
 }
 
-void OsSpecific::EnableTap()
+void OsSpecific::enableTap()
 {
 #ifdef Q_OS_WIN
     // https://airvpn.org/topic/12599-“air-vpn-hack-executed’/#entry21338
@@ -844,7 +835,7 @@ void delete_startup(QFile & f)
 }
 #endif
 
-void OsSpecific::SetStartup(bool b)
+void OsSpecific::setStartup(bool b)
 {
 #ifdef Q_OS_WIN
     {
@@ -952,14 +943,14 @@ void OsSpecific::SetStartup(bool b)
 
 }
 
-void OsSpecific::NetDown()
+void OsSpecific::netDown()
 {
     try {
 #ifndef Q_OS_WIN
-        SetRights();
+        setRights();
         log::logt("NetDown()");
-        QString ss = RunFastCmd(PathHelper::Instance()->netDownFilename());
-        _netdown = true;
+        QString ss = runCommandFast(PathHelper::Instance()->netDownFilename());
+        mNetDown = true;
         if (!ss.isEmpty())
             log::logt(ss);
 #else	// Q_OS_WIN
@@ -1015,12 +1006,12 @@ void OsSpecific::NetDown()
     }
 }
 
-QString OsSpecific::RunFastCmd(const QString & cmd, uint16_t ms /* = 500 */)
+QString OsSpecific::runCommandFast(const QString & cmd, uint16_t ms /* = 500 */)
 {
-    return RunFastCmd(cmd.toStdString().c_str(), ms);
+    return runCommandFast(cmd.toStdString().c_str(), ms);
 }
 
-QString OsSpecific::RunFastCmd(const char * cmd, uint16_t ms /* = 500 */)
+QString OsSpecific::runCommandFast(const char * cmd, uint16_t ms /* = 500 */)
 {
     std::auto_ptr<QProcess> pr(new QProcess());
     pr->start(cmd);
@@ -1041,13 +1032,13 @@ QString OsSpecific::RunFastCmd(const char * cmd, uint16_t ms /* = 500 */)
     return s0;
 }
 
-bool OsSpecific::HasInsecureWifi()
+bool OsSpecific::hasInsecureWifi()
 {
     bool has = false;
 
 #ifdef Q_OS_OSX
     std::vector<std::string> wifi_devices;
-    QString s0 = RunFastCmd("/usr/sbin/networksetup -listallhardwareports");
+    QString s0 = runCommandFast("/usr/sbin/networksetup -listallhardwareports");
     QStringList sl0 = s0.split(QString("Hardware Port:"), QString::SkipEmptyParts);
     for (int k = 0; k < sl0.length(); ++k) {
         const QString & rs = sl0.at(k);
@@ -1071,13 +1062,13 @@ bool OsSpecific::HasInsecureWifi()
     // 	get protocol for each wi-fi device
     for (size_t k = 0; !on && k < wifi_devices.size(); ++k) {
         std::string s = "/usr/sbin/networksetup -getairportpower " + wifi_devices.at(k);
-        QString s1 = RunFastCmd(s.c_str());
+        QString s1 = runCommandFast(s.c_str());
         if (s1.contains("on", Qt::CaseInsensitive))
             on = true;
     }
 
     if (on) {
-        QString s1 = RunFastCmd("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I");
+        QString s1 = runCommandFast("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I");
         int p1 = s1.indexOf("link auth:", 0, Qt::CaseInsensitive);
         if (p1 > -1) {
             int p2 = s1.indexOf('\n', p1 + 1, Qt::CaseInsensitive);
@@ -1093,7 +1084,7 @@ bool OsSpecific::HasInsecureWifi()
     return has;
 }
 
-void OsSpecific::FixDnsLeak()
+void OsSpecific::fixDnsLeak()
 {
 #ifdef Q_OS_WIN
     QSysInfo::WinVersion v = QSysInfo::windowsVersion();
@@ -1105,13 +1096,13 @@ void OsSpecific::FixDnsLeak()
 #endif
 }
 
-void OsSpecific::StopObfs()
+void OsSpecific::stopObfsproxy()
 {
     if (obfsproxyRunning()) {
-        if (_obfs.get()) {
-            _obfs->terminate();
-            _obfs->kill();
-            _obfs.release()->deleteLater();
+        if (mObfsproxy.get()) {
+            mObfsproxy->terminate();
+            mObfsproxy->kill();
+            mObfsproxy.release()->deleteLater();
         }
     }
 }
@@ -1122,9 +1113,9 @@ void OsSpecific::runObfsproxy(const QString &srv,
                               const QString & local_port)
 {
     log::logt("runObfsproxy called with server " + srv + " and type " + obfstype);
-    if (!IsObfsInstalled()) {
+    if (!obfsproxyInstalled()) {
 #ifndef Q_OS_WIN
-        InstallObfs();
+        installObfsproxy();
 #endif
     }
 
@@ -1145,20 +1136,20 @@ void OsSpecific::runObfsproxy(const QString &srv,
     //	"1050"
         const QString cmd = args.join(' ');
 
-        _obfs.reset(new QProcess());
-        connect(_obfs.get(), SIGNAL(finished(int,QProcess::ExitStatus)),
+        mObfsproxy.reset(new QProcess());
+        connect(mObfsproxy.get(), SIGNAL(finished(int,QProcess::ExitStatus)),
                 this, SLOT(obfsFinished(int,QProcess::ExitStatus)));
-        _obfs->setStandardErrorFile(PathHelper::Instance()->obfsproxyLogFilename());
-        _obfs->setStandardOutputFile(PathHelper::Instance()->obfsproxyLogFilename());
+        mObfsproxy->setStandardErrorFile(PathHelper::Instance()->obfsproxyLogFilename());
+        mObfsproxy->setStandardOutputFile(PathHelper::Instance()->obfsproxyLogFilename());
         log::logt("Executing obfsproxy with command " + cmd);
-        _obfs->start(cmd);
+        mObfsproxy->start(cmd);
         QThread::msleep(100);
         log::logt(QString("if (!IsObfsRunning()) ") + cmd);
     }
     log::logt("runObfsproxy() done");
 }
 
-void OsSpecific::InstallObfs()
+void OsSpecific::installObfsproxy()
 {
     log::logt("InstallObfs() in");
 #ifdef Q_OS_LINUX
@@ -1180,11 +1171,11 @@ void OsSpecific::InstallObfs()
 #ifdef Q_OS_MAC
     log::logt("Show notification");
     int ii = WndManager::Instance()->Confirmation("Installing OBFS proxy");
-    ExecAsRoot("/usr/bin/easy_install", QStringList() << "pip");
-    ExecAsRoot("/usr/local/bin/pip", QStringList() << "install" << "virtualenv");
-    ExecAsRoot(PathHelper::Instance()->installObfsproxyFilename(), QStringList());
+    execAsRoot("/usr/bin/easy_install", QStringList() << "pip");
+    execAsRoot("/usr/local/bin/pip", QStringList() << "install" << "virtualenv");
+    execAsRoot(PathHelper::Instance()->installObfsproxyFilename(), QStringList());
 
-    while (!IsObfsInstalled()) {
+    while (!obfsproxyInstalled()) {
         QThread::msleep(400);
     }
 #endif	// Q_OS_MAC
@@ -1196,9 +1187,10 @@ void OsSpecific::obfsFinished(int exitCode, QProcess::ExitStatus status)
 {
     log::logt("obfsFinished with code " + QString::number(exitCode) +
               " and status " + QString::number(status));
+    delete mObfsproxy.release();
 }
 
-bool OsSpecific::IsObfsInstalled()
+bool OsSpecific::obfsproxyInstalled()
 {
     bool b = true;
 #ifdef Q_OS_MAC
@@ -1224,7 +1216,7 @@ bool OsSpecific::obfsproxyRunning()
     }
 #else
     {
-        QString s1 = RunFastCmd("ps ax");
+        QString s1 = runCommandFast("ps ax");
         b = s1.contains("/obfsproxy");
         QString result = b ? "true" : "false";
         log::logt("IsObfsRunning result: " + result);

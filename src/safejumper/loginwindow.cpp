@@ -314,13 +314,13 @@ void LoginWindow::Timer_WifiWatcher()
         if (stopped) {
             if (!AuthManager::instance()->loggedIn()) {
                 if (Setting::instance()->autoconnect()) {	// log in only if checked Auto-connect when app starts
-                    if (OsSpecific::instance()->HasInsecureWifi()) {
+                    if (OsSpecific::instance()->hasInsecureWifi()) {
                         _ConnectAfterLogin = true;
                         on_loginButton_clicked();
                     }
                 }
             } else {
-                if (OsSpecific::instance()->HasInsecureWifi())
+                if (OsSpecific::instance()->hasInsecureWifi())
                     OpenvpnManager::instance()->start();
             }
         }
@@ -349,7 +349,7 @@ void LoginWindow::BlockOnDisconnect()
     }
 
     if (doblock) {
-        OsSpecific::instance()->NetDown();
+        OsSpecific::instance()->netDown();
     }
 }
 

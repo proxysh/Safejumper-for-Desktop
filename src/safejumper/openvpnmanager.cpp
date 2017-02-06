@@ -125,7 +125,7 @@ void OpenvpnManager::launchOpenvpn()
             }
         }
         try {
-            OsSpecific::instance()->SetIPv6(!Setting::instance()->disableIPv6());
+            OsSpecific::instance()->setIPv6(!Setting::instance()->disableIPv6());
 #ifdef Q_OS_WIN
             OsSpecific::instance()->EnableTap(); // TODO check win10 tap
 #endif
@@ -152,7 +152,7 @@ void OpenvpnManager::launchOpenvpn()
         if (Setting::instance()->fixDns() ||
                 !Setting::instance()->dns1().isEmpty() ||
                 !Setting::instance()->dns2().isEmpty())
-            OsSpecific::instance()->FixDnsLeak();
+            OsSpecific::instance()->fixDnsLeak();
 
         QString prog = PathHelper::Instance()->openvpnFilename();
         log::logt("Prog is: " + prog);
@@ -166,7 +166,7 @@ void OpenvpnManager::launchOpenvpn()
             if (!mParametersTempFile->open())
                 throw std::runtime_error("Cannot create tmp file.");
 
-            OsSpecific::instance()->SetRights();        // lean inside, throw on error
+            OsSpecific::instance()->setRights();        // lean inside, throw on error
 
             mParametersTempFile->write(params.toLatin1());
             mParametersTempFile->flush();
@@ -657,7 +657,7 @@ void OpenvpnManager::stop()
         disconnectFromOpenvpnSocket();
 
     if (OsSpecific::instance()->obfsproxyRunning()) {
-        OsSpecific::instance()->StopObfs();
+        OsSpecific::instance()->stopObfsproxy();
     }
 
     if (mFileSystemWatcher.get() != NULL) {       // OpenVPN log file watcher
@@ -893,7 +893,7 @@ void OpenvpnManager::parseSocketStateWord(const QString & word, const QString & 
         WndManager::Instance()->HandleState(word);
     } else if (word.compare("RESOLVE", Qt::CaseInsensitive) == 0) {
         WndManager::Instance()->HandleState(word);
-        if (OsSpecific::instance()->IsNetdown()) {
+        if (OsSpecific::instance()->isNetDown()) {
             stop();
             WndManager::Instance()->ErrMsg("Turn Internet connection on manually, please");
         }
@@ -1084,7 +1084,7 @@ void OpenvpnManager::killRunningOpenvpn()
                 QStringList a;
                 a << "-9" << QString::number(mPID);
                 try {
-                    OsSpecific::instance()->ExecAsRoot("/bin/kill", a);
+                    OsSpecific::instance()->execAsRoot("/bin/kill", a);
                 } catch(std::exception & ex) {
                     log::logt(ex.what());
                     WndManager::Instance()->ErrMsg(ex.what());

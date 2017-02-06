@@ -91,7 +91,7 @@ void TrayIconManager::createTrayIcon()
     createTrayIconMenu();
     QMenu *menu = mTrayIconMenu.get();
     mTrayIcon->setContextMenu(menu);
-    QIcon icon(OsSpecific::instance()->IconDisconnected());
+    QIcon icon(OsSpecific::instance()->disconnectedIcon());
     mTrayIcon->setIcon(icon);
     connect(mTrayIcon.get(), SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(actionActivated(QSystemTrayIcon::ActivationReason)));
@@ -246,13 +246,13 @@ void TrayIconManager::updateStateIcon(OpenvpnManager::OvState st)
     QString ic;
     switch (st) {
     case OpenvpnManager::ovsDisconnected:
-        ic = OsSpecific::instance()->IconDisconnected();
+        ic = OsSpecific::instance()->disconnectedIcon();
         break;
     case OpenvpnManager::ovsConnecting:
-        ic = OsSpecific::instance()->IconConnecting();
+        ic = OsSpecific::instance()->connectingIcon();
         break;
     case OpenvpnManager::ovsConnected:
-        ic = OsSpecific::instance()->IconConnected();
+        ic = OsSpecific::instance()->connectedIcon();
         mJumpAction->setEnabled(true);
         mSwitchCountryAction->setEnabled(true);
         break;
