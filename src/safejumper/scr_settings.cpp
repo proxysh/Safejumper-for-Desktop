@@ -237,9 +237,9 @@ void Scr_Settings::Toggle_cb_InsecureWiFi(bool v)
 {
     SaveCb("cb_InsecureWiFi", v);
     if (v)
-        LoginWindow::Instance()->StartWifiWatcher();
+        LoginWindow::Instance()->startWifiWatcher();
     else
-        LoginWindow::Instance()->StopWifiWatcher();
+        LoginWindow::Instance()->stopWifiWatcher();
 }
 
 void Scr_Settings::Toggle_cb_ShowNodes(bool v)

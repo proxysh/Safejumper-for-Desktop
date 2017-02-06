@@ -121,6 +121,8 @@ public slots:
 signals:
     void loginCompleted();
     void loginError(QString message);
+    void logoutCompleted();
+
     void untilLoaded(QString until);
     void amountLoaded(QString amount);
     void emailLoaded(QString email);

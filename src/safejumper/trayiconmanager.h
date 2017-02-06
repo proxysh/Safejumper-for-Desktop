@@ -40,8 +40,6 @@ public:
     void statusConnected();
     void statusDisconnected();
 
-    void disableActionsOnLogout();
-    void enableButtonsOnLogin();
     void updateActionsEnabled(bool connecting);
     void updateStateIcon(OpenvpnManager::OvState st);
 
@@ -52,6 +50,9 @@ signals:
     void quitApplication();
 
 public slots:
+    void disableActionsOnLogout();
+    void enableButtonsOnLogin();
+
     void focusChanged(QWidget*, QWidget*);
 //	void Finished_EccxorName();
 

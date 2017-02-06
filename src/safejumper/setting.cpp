@@ -28,6 +28,7 @@
 #include "authmanager.h"
 #include "loginwindow.h"
 #include "trayiconmanager.h"
+#include "log.h"
 
 
 //In future, we’ll add things such as “OpenVPN with XOR TCP 448” or “OpenVPN with TOR UDP 4044”.
@@ -375,8 +376,11 @@ void Setting::setServer(int ixsrv, const QString & newsrv)
 
 void Setting::loadServer()
 {
-    if (AuthManager::instance()->currentEncryptionServers().empty())
+    log::logt("Setting loadServer called");
+    if (AuthManager::instance()->currentEncryptionServers().empty()) {
+        log::logt("Returning because we don't have a server list");
         return;		// cannot select in empty list
+    }
 
     QSettings settings;
     int savedsrv = settings.value(LocationSettingsName(), -1).toInt();

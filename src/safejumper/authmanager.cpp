@@ -140,6 +140,8 @@ void AuthManager::logout()
     mVPNPassword.clear();
     mAccountLogin.clear();
     mAccountPassword.clear();            // TODO: -2 secure clear
+
+    emit logoutCompleted();
 }
 
 const QString &AuthManager::accountName()

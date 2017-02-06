@@ -57,6 +57,10 @@ TrayIconManager::TrayIconManager(QWidget *parent)
 
     connect(Setting::instance(), SIGNAL(showNodesChanged()),
             this, SLOT(constructConnectToMenu()));
+    connect(AuthManager::instance(), SIGNAL(loginCompleted()),
+            this, SLOT(enableButtonsOnLogin()));
+    connect(AuthManager::instance(), SIGNAL(logoutCompleted()),
+            this, SLOT(disableActionsOnLogout()));
 }
 
 bool TrayIconManager::exists()

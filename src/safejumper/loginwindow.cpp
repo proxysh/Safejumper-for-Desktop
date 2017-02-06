@@ -136,12 +136,14 @@ void LoginWindow::Timer_Constructed()
     }
 
     if (Setting::instance()->autoconnect()) {
+        log::logt("autoconnect set so logging in automatically");
         _ConnectAfterLogin = true;
         on_loginButton_clicked();
     }
 
     if (Setting::instance()->detectInsecureWifi()) {
-        StartWifiWatcher();
+        log::logt("autodetect insecure wifi is on, so starting wifi watcher");
+        startWifiWatcher();
     }
 }
 
@@ -155,7 +157,7 @@ LoginWindow::~LoginWindow()
         WndManager::Instance()->HideThis(this);
     WndManager::Instance()->SavePos();
     on_rememberMeButton_toggled(); // Save remember me setting
-    SaveCreds();
+    saveCredentials();
 
     TrayIconManager::cleanup();
     AuthManager::cleanup();
@@ -170,7 +172,7 @@ LoginWindow::~LoginWindow()
     delete ui;
 }
 
-void LoginWindow::SaveCreds()
+void LoginWindow::saveCredentials()
 {
     QSettings settings;
     if (ui->rememberMeButton->isChecked()) {
@@ -275,17 +277,17 @@ void LoginWindow::StatusDisconnected()
 }
 
 
-void LoginWindow::StartWifiWatcher()
+void LoginWindow::startWifiWatcher()
 {
     if (NULL == _timer_wifi.get()) {
         _wifi_processing = false;
         _timer_wifi.reset(new QTimer());
-        connect(_timer_wifi.get(), SIGNAL(timeout()), this, SLOT(Timer_WifiWatcher()));
+        connect(_timer_wifi.get(), SIGNAL(timeout()), this, SLOT(checkWifi()));
         _timer_wifi->start(5000);
     }
 }
 
-void LoginWindow::StopWifiWatcher()
+void LoginWindow::stopWifiWatcher()
 {
     if (NULL != _timer_wifi.get()) {
         QTimer * t = _timer_wifi.release();
@@ -294,27 +296,34 @@ void LoginWindow::StopWifiWatcher()
     }
 }
 
-void LoginWindow::Timer_WifiWatcher()
+void LoginWindow::checkWifi()
 {
     if (NULL != _timer_wifi.get() 		// if not terminating now
             && !_wifi_processing) {			// and not already in the body below
         _wifi_processing = true;
+        log::logt("Checking wifi");
         bool stopped = false;
         if (!AuthManager::exists()) {
+            log::logt("setting stopped because AuthManager doesn't exist");
             stopped = true;
         } else {
             if (!OpenvpnManager::exists()) {
+                log::logt("setting stopped because OpenvpnManager doesn't exist");
                 stopped = true;
             } else {
-                if (OpenvpnManager::instance()->state() == OpenvpnManager::ovsDisconnected)
+                if (OpenvpnManager::instance()->state() == OpenvpnManager::ovsDisconnected) {
+                    log::logt("setting stopped because openvpnmanager is disconnected");
                     stopped = true;
+                }
             }
         }
 
         if (stopped) {
             if (!AuthManager::instance()->loggedIn()) {
                 if (Setting::instance()->autoconnect()) {	// log in only if checked Auto-connect when app starts
+                    log::logt("Autoconnect is set, so logging in if hasInSecureWifi");
                     if (OsSpecific::instance()->hasInsecureWifi()) {
+                        log::logt("Logging in because hasInsecureWifi");
                         _ConnectAfterLogin = true;
                         on_loginButton_clicked();
                     }
@@ -355,7 +364,8 @@ void LoginWindow::BlockOnDisconnect()
 
 void LoginWindow::loggedIn()
 {
-    SaveCreds();
+    log::logt("LoginWindow loggedIn called");
+    saveCredentials();
 
     if (Setting::encryption() == ENCRYPTION_RSA)
         Setting::instance()->loadServer();
@@ -371,10 +381,11 @@ void LoginWindow::loggedIn()
 //			}
 //		}
     WndManager::Instance()->ToPrimary();
-    TrayIconManager::instance()->enableButtonsOnLogin();
     TrayIconManager::instance()->constructConnectToMenu();
-    if (_ConnectAfterLogin)
+    if (_ConnectAfterLogin) {
+        log::logt("Connect after login set, so launching openvpn");
         OpenvpnManager::instance()->start();
+    }
     enableButtons(true);
     _ConnectAfterLogin = false;
 }

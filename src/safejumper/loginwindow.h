@@ -52,8 +52,8 @@ public:
     void StatusConnected();
     void StatusDisconnected();
 
-    void StartWifiWatcher();
-    void StopWifiWatcher();
+    void startWifiWatcher();
+    void stopWifiWatcher();
     void BlockOnDisconnect();
 
 public slots:
@@ -75,7 +75,7 @@ private slots:
     void on_cancelButton_clicked();
 
     void Timer_Constructed();
-    void Timer_WifiWatcher();
+    void checkWifi();
 
 private:
     Ui::LoginWindow *ui;
@@ -85,7 +85,7 @@ private:
 
     bool _CancelLogin;
     bool _ConnectAfterLogin;
-    void SaveCreds();
+    void saveCredentials();
     void enableButtons(bool enabled);
 
     unsigned int _activatedcount;
