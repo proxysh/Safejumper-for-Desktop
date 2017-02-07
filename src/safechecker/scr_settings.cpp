@@ -21,7 +21,6 @@
 #include "scr_logs.h"
 #include "ui_scr_settings.h"
 #include "testdialog.h"
-#include "scr_map.h"
 #include "common.h"
 #include "loginwindow.h"
 #include "wndmanager.h"
@@ -120,7 +119,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
     }
 
     if (ui->cb_Startup->isEnabled())
-        OsSpecific::Instance()->SetStartup(ui->cb_Startup->isChecked());
+        OsSpecific::instance()->setStartup(ui->cb_Startup->isChecked());
 }
 
 void Scr_Settings::closeEvent(QCloseEvent * event)
@@ -218,7 +217,7 @@ void Scr_Settings::Toggle_cb_BlockOnDisconnect(bool v)
 void Scr_Settings::Toggle_cb_Startup(bool v)
 {
     SaveCb("cb_Startup", v);
-    OsSpecific::Instance()->SetStartup(v);
+    OsSpecific::instance()->setStartup(v);
 }
 
 void Scr_Settings::Toggle_cb_AutoConnect(bool v)
@@ -237,9 +236,9 @@ void Scr_Settings::Toggle_cb_InsecureWiFi(bool v)
 {
     SaveCb("cb_InsecureWiFi", v);
     if (v)
-        LoginWindow::Instance()->StartWifiWatcher();
+        LoginWindow::Instance()->startWifiWatcher();
     else
-        LoginWindow::Instance()->StopWifiWatcher();
+        LoginWindow::Instance()->stopWifiWatcher();
 }
 
 void Scr_Settings::Toggle_cb_ShowNodes(bool v)
@@ -251,7 +250,7 @@ void Scr_Settings::Toggle_cb_DisableIpv6(bool v)
 {
     SaveCb("cb_DisableIpv6", v);
     try {
-        OsSpecific::Instance()->SetIPv6(!v);
+        OsSpecific::instance()->setIPv6(!v);
     } catch(std::exception & ex) {
         log::logt(ex.what());
     }
@@ -319,11 +318,11 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
     if (_repopulation_inprogress)
         return;
 
-    if (ix == ENCRYPTION_OBFS_TOR && !OsSpecific::Instance()->IsObfsInstalled()) {
+    if (ix == ENCRYPTION_TOR_OBFS2 && !OsSpecific::instance()->obfsproxyInstalled()) {
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
         // Try to install first, then check if it's not installed again.
-        OsSpecific::Instance()->InstallObfs();
-        if (!OsSpecific::Instance()->IsObfsInstalled()) {
+        OsSpecific::instance()->installObfsproxy();
+        if (!OsSpecific::instance()->obfsproxyInstalled()) {
 #endif
             ErrorDialog dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
             dlg.exec();
@@ -335,13 +334,13 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
     QSettings settings;
     settings.setValue("dd_Encryption", ix);
 
-    if (Scr_Map::IsExists()) {
-        Scr_Map::Instance()->RePopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
-        Setting::instance()->loadProt();
-        Scr_Map::Instance()->RePopulateLocations(false); // Repopulate all locations
-    }
-    if (TestDialog::exists())
-        TestDialog::instance()->updateEncoding();
+//    if (Scr_Map::IsExists()) {
+//        Scr_Map::Instance()->RePopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
+//        Setting::instance()->loadProt();
+//        Scr_Map::Instance()->RePopulateLocations(false); // Repopulate all locations
+//    }
+//    if (TestDialog::exists())
+//        TestDialog::instance()->updateEncryption();
 }
 
 static const char * gs_sErrStyle =

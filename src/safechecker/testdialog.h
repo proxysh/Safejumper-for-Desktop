@@ -46,7 +46,6 @@ public:
     void setProtocol(int ix);   // -1 for none
     void setServer(int srv);	// -1 or id inside all servers
     void updateNewIP(const QString & s);
-    void updateEncoding();
 
     void setVPNName(const QString & vpnname);
 
@@ -74,6 +73,9 @@ private slots:
     void setAmount(const QString & s);
     void setUntil(const QString & date);
 
+    void updateServer(); // Slot for Setting::serverChanged
+    void updateEncryption(); // Slot for Setting::encryptionChanged
+    void updateProtocol(); // Slot for Setting::protocolChanged
 private:
     Ui::TestDialog *ui;
     static std::auto_ptr<TestDialog> mInstance;
@@ -81,7 +83,6 @@ private:
 
     void setFlag(int srv);
     void setNoServer();
-    void updateProtocol();
 
     // Record current encryption/server/protocol result and go to the next one
     void iterate();
@@ -104,8 +105,8 @@ private:
     int mCurrentServerId;
     int mCurrentProtocol;
     std::vector<size_t> mEncryptionTypes; // List of all encryption types to iterate over
-    std::vector<size_t> mServerIds; // List of current encryption type server ids
-    std::vector<int> mProtocols; // List of current encryption type protocols
+    QList<int> mServerIds; // List of current encryption type server ids
+    std::vector<QString> mProtocols; // List of current encryption type protocols
     QString mLogFolder; // Folder to keep failure logs
 };
 

@@ -20,7 +20,6 @@
 
 #include "ui_testdialog.h"
 #include "scr_settings.h"
-#include "scr_map.h"
 #include "loginwindow.h"
 #include "authmanager.h"
 #include "pathhelper.h"
@@ -81,10 +80,10 @@ TestDialog::TestDialog(QWidget *parent) :
     ui->L_OldIp->setText("");
 
     // Setting::Instance()->LoadServer();
-    Setting::instance()->loadProt();
+    Setting::instance()->loadProtocol();
 
     setOldIP(AuthManager::instance()->oldIP());
-    updateEncoding();
+    updateEncryption();
     updateProtocol();
 
     connect(AuthManager::instance(), SIGNAL(oldIpLoaded(QString)),
@@ -97,6 +96,13 @@ TestDialog::TestDialog(QWidget *parent) :
             this, SLOT(setAmount(QString)));
 
     qApp->installEventFilter(this);
+
+    connect(Setting::instance(), &Setting::serverChanged,
+            this, &TestDialog::updateServer);
+    connect(Setting::instance(), &Setting::encryptionChanged,
+            this, &TestDialog::updateEncryption);
+    connect(Setting::instance(), &Setting::protocolChanged,
+            this, &TestDialog::updateProtocol);
 }
 
 bool TestDialog::exists()
@@ -170,6 +176,11 @@ void TestDialog::setServer(int srv)
     }
 }
 
+void TestDialog::updateServer()
+{
+    setServer(Setting::instance()->serverID());
+}
+
 void TestDialog::updateNewIP(const QString & s)
 {
     static const QString self = "127.0.0.1";
@@ -179,9 +190,9 @@ void TestDialog::updateNewIP(const QString & s)
     }
 }
 
-void TestDialog::updateEncoding()
+void TestDialog::updateEncryption()
 {
-    int enc = Setting::encryption();
+    int enc = Setting::instance()->encryption();
     ui->encryptionLabel->setText(Setting::encryptionName(enc));
 }
 
@@ -240,7 +251,7 @@ void TestDialog::iterate()
 {
     // First see if we can just go to the next protocol
     if (++mCurrentProtocol < mProtocols.size()) {
-        Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
+        Setting::instance()->setProtocol(mCurrentProtocol);
         OpenvpnManager::instance()->start();
         return;
     }
@@ -251,9 +262,9 @@ void TestDialog::iterate()
         qDebug() << "Switching to server " << mServerIds.at(mCurrentServerId)
                  << " which is " << se.name
                  << " address: " << se.address;
-        setServer(mServerIds.at(mCurrentServerId));
+        Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
         mCurrentProtocol = 0;
-        Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
+        Setting::instance()->setProtocol(mCurrentProtocol);
         OpenvpnManager::instance()->start();
         return;
     }
@@ -266,12 +277,12 @@ void TestDialog::iterate()
         mServerIds = AuthManager::instance()->currentEncryptionServers();
         // Set server to first
         mCurrentServerId = 0;
-        setServer(mServerIds.at(mCurrentServerId));
+        Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
         // Get all protocols
-        mProtocols = Setting::instance()->allPorts();
+        mProtocols = Setting::instance()->currentEncryptionProtocols();
         // Set protocol to first
         mCurrentProtocol = 0;
-        Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
+        Setting::instance()->setProtocol(mCurrentProtocol);
         OpenvpnManager::instance()->start();
     }
     // Otherwise we finished checking all servers, all encryption types, all ports
@@ -409,7 +420,7 @@ void TestDialog::on_startButton_clicked()
     // Clear out previous results if any
     ui->tableWidget->setRowCount(0);
     // Get all encryption types
-    mEncryptionTypes = {ENCRYPTION_RSA, ENCRYPTION_OBFS_TOR, ENCRYPTION_ECC, ENCRYPTION_ECCXOR};
+    mEncryptionTypes = {ENCRYPTION_RSA, ENCRYPTION_TOR_OBFS2, ENCRYPTION_ECC, ENCRYPTION_ECCXOR};
     // Set encryption to type 0
     mCurrentEncryptionType = 0;
     setProtocol(mCurrentEncryptionType);
@@ -418,12 +429,12 @@ void TestDialog::on_startButton_clicked()
     mServerIds = AuthManager::instance()->currentEncryptionServers();
     // Set server to first
     mCurrentServerId = 0;
-    setServer(mServerIds.at(mCurrentServerId));
+    Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
     // Get all protocols
-    mProtocols = Setting::instance()->allPorts();
+    mProtocols = Setting::instance()->currentEncryptionProtocols();
     // Set protocol to first
     mCurrentProtocol = 0;
-    Scr_Map::Instance()->SetProtocol(mCurrentProtocol);
+    Setting::instance()->setProtocol(mCurrentProtocol);
     // Connect
     OpenvpnManager::instance()->start();
 }

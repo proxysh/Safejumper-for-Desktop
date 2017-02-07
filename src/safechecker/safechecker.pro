@@ -71,6 +71,7 @@ SOURCES += \
     ../safejumper/lvrowdelegateencryption.cpp \
     ../safejumper/lvrowdelegateprotocol.cpp \
     main.cpp \
+    ../safejumper/mapscreen.cpp \
     ../safejumper/ministun.c \
     ../safejumper/openvpnmanager.cpp \
     ../safejumper/osspecific.cpp \
@@ -79,12 +80,9 @@ SOURCES += \
     ../safejumper/portforwarder.cpp \
     scr_settings.cpp \
     scr_logs.cpp \
-    scr_map.cpp \
-    setting.cpp \
+    ../safejumper/setting.cpp \
     ../safejumper/stun.cpp \
     testdialog.cpp \
-    ../safejumper/thread_forwardports.cpp \
-    ../safejumper/thread_oldip.cpp \
     ../safejumper/trayiconmanager.cpp \
     wndmanager.cpp
 
@@ -101,6 +99,7 @@ HEADERS += \
     ../safejumper/lvrowdelegate.h \
     ../safejumper/lvrowdelegateencryption.h \
     ../safejumper/lvrowdelegateprotocol.h \
+    ../safejumper/mapscreen.h \
     ../safejumper/ministun.h \
     ../safejumper/openvpnmanager.h \
     ../safejumper/osspecific.h \
@@ -108,13 +107,10 @@ HEADERS += \
     ../safejumper/pingwaiter.h \
     ../safejumper/portforwarder.h \
     scr_logs.h \
-    scr_map.h \
     scr_settings.h \
-    setting.h \
+    ../safejumper/setting.h \
     ../safejumper/stun.h \
     testdialog.h \
-    ../safejumper/thread_forwardports.h \
-    ../safejumper/thread_oldip.h \
     ../safejumper/trayiconmanager.h \
     ../safejumper/version.h \
     wndmanager.h
@@ -124,8 +120,8 @@ FORMS += \
     ../safejumper/dlg_newnode.ui \
     ../safejumper/errordialog.ui \
     ../safejumper/loginwindow.ui \
+    ../safejumper/mapscreen.ui \
     scr_logs.ui \
-    scr_map.ui \
     scr_settings.ui \
     testdialog.ui
 
