@@ -129,7 +129,7 @@ void OsSpecific::setOwnerRoot(const QString & pfn)
         AuthorizationRef & ra = getMacAuthorization();
 //		QStringList args;
 //		args << "u+s" << pfn;
-//		ExecAsRoot("chmod", args);
+//		execAsRoot("chmod", args);
 
         //int	chmod(const char *, mode_t) __DARWIN_ALIAS(chmod);
         int r1 = chmod(pfn.toLatin1(), 04555);
@@ -154,7 +154,7 @@ void OsSpecific::setOwnerRoot(const QString & pfn)
                 args2
                         //<< "ls"
                       << "-l" << "/tmp";
-                ExecAsRoot("ls", args2);
+                execAsRoot("ls", args2);
             }
         */
         try {
@@ -231,7 +231,7 @@ static void execAsRootMac(const QString & cmd, char * const * argv)
 #endif	// Q_OS_MAC
 }
 
-static void ExecAsRootUbuntu(const QString & cmd, const QStringList & args)
+static void execAsRootUbuntu(const QString & cmd, const QStringList & args)
 {
     QStringList args1;
     args1 << cmd << args;
@@ -265,7 +265,7 @@ void OsSpecific::execAsRoot(const QString & cmd, const QStringList & args)
     execAsRootMac(cmd, (char * const *)&argv1[0]);
 #else		// Q_OS_MAC
 #ifdef Q_OS_LINUX
-    ExecAsRootUbuntu(cmd, args);
+    execAsRootUbuntu(cmd, args);
 #else
     throw std::runtime_error("non Mac, non Linux exec as root");
 #endif	//Q_OS_LINUX
@@ -273,7 +273,7 @@ void OsSpecific::execAsRoot(const QString & cmd, const QStringList & args)
     // bring our window back to front after OS password dialog
     WndManager::Instance()->ToFront();
 
-    log::logt("ExecAsRoot() success");
+    log::logt("execAsRoot() success");
 }
 
 void OsSpecific::setRights()
@@ -337,7 +337,7 @@ void OsSpecific::setChmod(const char * sflags, const QString & pfn)
 //		QStringList a;		// HACK: -1 wait till file system changes become effective
 //		a << pfn;
 //		//QProcess::execute("/usr/bin/touch", a);
-//		ExecAsRoot("/usr/bin/touch", a);
+//		execAsRoot("/usr/bin/touch", a);
 
         // HACK: wait till file system changes become effective
         int r2 = stat(pfn.toStdString().c_str(), &st);
@@ -1019,7 +1019,7 @@ QString OsSpecific::runCommandFast(const char * cmd, uint16_t ms /* = 500 */)
         // or if this QProcess is already finished)
         if (pr->exitStatus() != QProcess::NormalExit) {
             QString s1(pr->readAllStandardError());
-            log::logt("RunFastCmd(): Error: not NormalExit " + s1);
+            log::logt("runCommandFast(): Error: not NormalExit " + s1);
         }
         if (QProcess::NotRunning != pr->state()) {
             pr->terminate();
@@ -1156,17 +1156,17 @@ void OsSpecific::installObfsproxy()
 
 #ifndef Q_OS_REDHAT
     // debian/ubuntu
-    ExecAsRoot("apt-get", QStringList() << "update");
-    ExecAsRoot("apt-get",  QStringList() << "-y" << "install" << "python-dev");
-    ExecAsRoot("wget",  QStringList() <<  "https://bootstrap.pypa.io/get-pip.py" << "-O" << "/tmp/get-pip.py");
-    ExecAsRoot("python",  QStringList() <<  "/tmp/get-pip.py");
+    execAsRoot("apt-get", QStringList() << "update");
+    execAsRoot("apt-get",  QStringList() << "-y" << "install" << "python-dev");
+    execAsRoot("wget",  QStringList() <<  "https://bootstrap.pypa.io/get-pip.py" << "-O" << "/tmp/get-pip.py");
+    execAsRoot("python",  QStringList() <<  "/tmp/get-pip.py");
 #else
     // CentOS
-    ExecAsRoot("yum",  QStringList() <<  "-y" << "install" << "python-devel");
-    ExecAsRoot("/usr/bin/curl",  QStringList() <<  "https://bootstrap.pypa.io/get-pip.py" << "-o" << "/tmp/get-pip.py");
-    ExecAsRoot("python",  QStringList() <<  "/tmp/get-pip.py");
+    execAsRoot("yum",  QStringList() <<  "-y" << "install" << "python-devel");
+    execAsRoot("/usr/bin/curl",  QStringList() <<  "https://bootstrap.pypa.io/get-pip.py" << "-o" << "/tmp/get-pip.py");
+    execAsRoot("python",  QStringList() <<  "/tmp/get-pip.py");
 #endif
-    ExecAsRoot("pip",  QStringList() << "install" << "obfsproxy");
+    execAsRoot("pip",  QStringList() << "install" << "obfsproxy");
 #else
 #ifdef Q_OS_MAC
     log::logt("Show notification");
@@ -1198,7 +1198,7 @@ bool OsSpecific::obfsproxyInstalled()
     b = f.exists();
 #else
 #ifndef Q_OS_WIN
-    QString s = RunFastCmd("which obfsproxy", 1000);
+    QString s = runCommandFast("which obfsproxy", 1000);
     b = !s.isEmpty();
     log::logt("WHICH OBFS " + s + b);
 #endif

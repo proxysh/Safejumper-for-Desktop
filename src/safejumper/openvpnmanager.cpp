@@ -182,7 +182,7 @@ void OpenvpnManager::launchOpenvpn()
             log::logt("######  before exec ####");
 
 #ifdef Q_OS_LINUX
-            OsSpecific::Instance()->ExecAsRoot(PathHelper::Instance()->launchopenvpnFilename(), arg3);
+            OsSpecific::instance()->execAsRoot(PathHelper::Instance()->launchopenvpnFilename(), arg3);
 #else
 //#ifdef Q_OS_MAC
 //            OsSpecific::Instance()->ExecAsRoot(prog, args);     // force password dialog; without launcher
