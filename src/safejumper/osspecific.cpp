@@ -202,10 +202,10 @@ void OsSpecific::releaseRights()
     }
 }
 
+#ifdef Q_OS_MAC
 static void execAsRootMac(const QString & cmd, char * const * argv)
 {
     //execute
-#ifdef Q_OS_MAC
     AuthorizationRef & ra = getMacAuthorization();
     OSStatus res = AuthorizationExecuteWithPrivileges(ra,
                    cmd.toStdString().c_str()	//myToolPath
@@ -228,21 +228,24 @@ static void execAsRootMac(const QString & cmd, char * const * argv)
     if (res != errAuthorizationSuccess)
         throw std::runtime_error(("AuthorizationExecuteWithPrivileges() fails with result: "
                                   + QString::number(res) + " cmd = " + cmd).toStdString());
-#endif	// Q_OS_MAC
 }
+#endif	// Q_OS_MAC
 
-static void execAsRootUbuntu(const QString & cmd, const QStringList & args)
+#ifdef Q_OS_LINUX
+static void execAsRootLinux(const QString & cmd, const QStringList & args)
 {
     QStringList args1;
     args1 << cmd << args;
     int re = QProcess::execute("pkexec", args1);
     if (re != 0) {
-        QString s1 = "Exec as root fails. result code = " + QString::number(re);
+        QString s1 = "Unable to run command as root\n Result code is " + QString::number(re);
         if (re == 126)
-            s1 = " User declined auth";
+            s1 = "Unable to run command as root.\n User declined auth.";
+        s1 += "\nCommand: " + cmd;
         throw std::runtime_error(s1.toStdString());
     }
 }
+#endif // Q_OS_LINUX
 
 void OsSpecific::execAsRoot(const QString & cmd, const QStringList & args)
 {
@@ -265,7 +268,7 @@ void OsSpecific::execAsRoot(const QString & cmd, const QStringList & args)
     execAsRootMac(cmd, (char * const *)&argv1[0]);
 #else		// Q_OS_MAC
 #ifdef Q_OS_LINUX
-    execAsRootUbuntu(cmd, args);
+    execAsRootLinux(cmd, args);
 #else
     throw std::runtime_error("non Mac, non Linux exec as root");
 #endif	//Q_OS_LINUX
