@@ -106,9 +106,6 @@ LoginWindow::LoginWindow(QWidget *parent) :
 //	WndManager::DoShape(this);
 
     QTimer::singleShot(210, this, SLOT(Timer_Constructed()));
-
-    connect(AuthManager::instance(), SIGNAL(loginCompleted()), this, SLOT(loggedIn()));
-    connect(AuthManager::instance(), SIGNAL(loginError(QString)), this, SLOT(loginError(QString)));
 }
 
 void LoginWindow::on_rememberMeButton_toggled()
@@ -130,6 +127,10 @@ void LoginWindow::Timer_Constructed()
             OpenvpnManager::instance()->killRunningOpenvpn();
 
     AuthManager::instance()->getOldIP();
+    connect(AuthManager::instance(), SIGNAL(loginCompleted()),
+            this, SLOT(loggedIn()));
+    connect(AuthManager::instance(), SIGNAL(loginError(QString)),
+            this, SLOT(loginError(QString)));
 
     if (Setting::instance()->checkForUpdates()) {
         AuthManager::instance()->checkUpdates();

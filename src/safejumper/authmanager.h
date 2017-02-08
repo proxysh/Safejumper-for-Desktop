@@ -23,13 +23,14 @@
 #include <queue>
 #include <stdint.h>
 
-#include <QObject>
-#include <QString>
+#include <QList>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QUrl>
+#include <QObject>
 #include <QProcess>
+#include <QString>
+#include <QUrl>
 
 #include "common.h"
 #include "thread_oldip.h"
@@ -155,9 +156,9 @@ private:
     bool mSeeded;
     void seed();
 
-    std::vector<AServer> mServers;
+    QList<AServer> mServers;
     std::vector<size_t> mServerIds[ENCRYPTION_COUNT];		// IDs inside _servers available for each encryption
-    std::vector<AServer> mHubs;
+    QList<AServer> mHubs;
     std::vector<size_t> mHubIds[ENCRYPTION_COUNT];		// IDs of hubs inside _servers available for each encryption		// _hub_ids[0] the same as _HubToServer
     std::vector<std::pair<bool, int> > mLevel0;		// <is hub, hub id / srv id>
     std::map<int, std::vector<int> > mLevel1;		// <hub id, <srv ids, including srv id of hub entry> >
@@ -168,12 +169,6 @@ private:
     std::vector<size_t> mHubToServer;	   // id of hub inside _servers
     IIMap mServerIdToHubId;
     SIMap mServerNameToId;
-
-//	std::vector<QString> _obfs_names;	// U.S. California 3
-//	std::vector<int> _obfs_srv;				// id in _servers ; -1 if cannot find
-    //std::vector<int> _obfs_srv_available;	// id in _servers of servers available for this user (inside paid set)
-//	std::set<int> _obfs_enabled_srvs;		// for lookup
-    std::vector<QString> mObfsAddress;		// 64.110.129.100 ; or boost-sg.proxy.sh
 
     QString mAccountLogin;
     QString mAccountPassword;

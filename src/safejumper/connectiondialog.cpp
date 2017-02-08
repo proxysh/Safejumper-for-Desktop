@@ -113,10 +113,12 @@ void ConnectionDialog::setNoServer()
 
 void ConnectionDialog::setServer(int srv)
 {
+    log::logt("setServer called with server id " + QString::number(srv));
     if (srv < 0) {	// none
         setNoServer();
     } else {
         const AServer & se = AuthManager::instance()->getServer(srv);
+        log::logt("setServer server name is " + se.name);
         ui->L_Country->setText(se.name);
         ui->b_Flag->show();
         ui->b_FlagBox->show();

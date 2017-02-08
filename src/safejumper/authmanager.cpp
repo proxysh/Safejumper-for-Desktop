@@ -58,11 +58,10 @@ void AuthManager::cleanup()
 }
 
 AuthManager::AuthManager()
-    :
-    mLoggedIn(false)
-    , mSeeded(false)
-    , mCancellingLogin(false)
-    , mIPAttemptCount(0)
+    :mLoggedIn(false),
+    mCancellingLogin(false),
+    mSeeded(false),
+    mIPAttemptCount(0)
 {
     connect(OpenvpnManager::instance(), SIGNAL(gotNewIp(QString)),
             this, SLOT(setNewIp(QString)));
@@ -82,7 +81,7 @@ AuthManager::~AuthManager()
         if (mWorkers.at(k) != NULL) {
             if (mWorkers.at(k)->state() != QProcess::NotRunning)
                 mWorkers.at(k)->terminate();
-            delete mWorkers.at(k);
+            mWorkers.at(k)->deleteLater();
         }
         if (mWaiters.at(k) != NULL)
             delete mWaiters.at(k);
@@ -178,9 +177,10 @@ AServer AuthManager::getServer(int id)
 {
     AServer s;
     //assert(id > -1);
-    if (id > -1) {
-        if (id < mServers.size())
-            s = mServers.at(id);
+    if (id > -1 && id < mServers.size()) {
+        s = mServers.at(id);
+    } else {
+        log::logt("getServer called with id " + QString::number(id));
     }
     return s;
 }
@@ -210,10 +210,10 @@ const std::vector<size_t> & AuthManager::currentEncryptionServers()
 
 const std::vector<size_t> & AuthManager::currentEncryptionHubs()
 {
-    if (!mServers.empty() && mHubs.empty()) {
-        for (size_t k = 0; k < mServers.size(); ++k) {
-            if (mServers[k].name.contains("Hub", Qt::CaseInsensitive)) {
-                mHubs.push_back(mServers[k]);
+    if (!mServers.isEmpty() && mHubs.empty()) {
+        for (int k = 0; k < mServers.size(); ++k) {
+            if (mServers.at(k).name.contains("Hub", Qt::CaseInsensitive)) {
+                mHubs.append(mServers.at(k));
                 mHubToServer.push_back(k);                      // the same as _hub_ids[0]
                 mHubIds[0].push_back(k);
                 mServerIdToHubId.insert(IIMap::value_type(k, mHubs.size() - 1));
@@ -229,11 +229,15 @@ const std::vector<size_t> & AuthManager::currentEncryptionHubs()
 int AuthManager::hubidForServerNode(size_t srv)
 {
     int hub = -1;
-    AServer & rs = mServers.at(srv);
-    std::string cleared = flag::ClearName(rs.name).toStdString();       // QString cleared = flag::ClearName(rs.name);
-    std::map<std::string, size_t>::iterator it = mHubClearedId.find(cleared);
-    if (it != mHubClearedId.end())
-        hub = (int)(*it).second;
+    if (srv > -1 && srv < mServers.size()) {
+        const AServer & rs = mServers.at(srv);
+        std::string cleared = flag::ClearName(rs.name).toStdString();       // QString cleared = flag::ClearName(rs.name);
+        std::map<std::string, size_t>::iterator it = mHubClearedId.find(cleared);
+        if (it != mHubClearedId.end())
+            hub = (int)(*it).second;
+    } else {
+        log::logt("Hub ID For Server Node " + QString::number(srv) + " requested but out of bounds");
+    }
     return hub;
 }
 
@@ -245,8 +249,9 @@ const std::vector<std::pair<bool, int> > & AuthManager::getLevel0()
 
 void AuthManager::prepareLevels()
 {
+    log::logt("prepareLevels called");
     // TODO: -1 special hub for boost
-    if (!mServers.empty() && mLevel0.empty()) {
+    if (!mServers.isEmpty() && mLevel0.empty()) {
         const std::vector<size_t> & h = currentEncryptionHubs();
         std::set<int> hub_srvids;
         for (size_t k =0; k < h.size(); ++k) {
@@ -291,7 +296,9 @@ const std::vector<int> & AuthManager::getLevel1(size_t hub)
 
 size_t AuthManager::serverIdFromHubId(size_t ixHub)
 {
-    return mHubToServer.at(ixHub);
+    if (ixHub > -1 && ixHub < mHubToServer.size())
+        return mHubToServer.at(ixHub);
+    return -1;
 }
 
 int AuthManager::hubIxFromServerName(const QString & srv)
@@ -329,7 +336,7 @@ int AuthManager::hubIdFromServerId(int ixsrv)
 int AuthManager::serverIxFromName(const QString & srv)
 {
     int ix = -1;
-    if (mServerNameToId.empty() && !mServers.empty()) {
+    if (mServerNameToId.empty() && !mServers.isEmpty()) {
         for (size_t k = 0, sz = mServers.size(); k < sz; ++k)
             mServerNameToId.insert(SIMap::value_type(mServers.at(k).name.toStdString(), k));
     }
@@ -926,7 +933,7 @@ QString AuthManager::processServersXml()
                 s2.address = adr.text();
                 s2.name = loc.text();
                 s2.load = load.text();
-                mServers.push_back(s2);
+                mServers.append(s2);
                 mServerIds[0].push_back(mServers.size() - 1);
             }
             mVPNLogin = login;
@@ -954,6 +961,7 @@ QString AuthManager::processServersXml()
 
 void AuthManager::pingAllServers()
 {
+    log::logt("pingAllServers called");
     // Fill _pinks with as many -1 entries as there are servers
     if (mPings.empty())
         mPings.assign(mServers.size(), -1);
@@ -981,6 +989,7 @@ void AuthManager::pingAllServers()
 
 void AuthManager::startWorker(size_t id)
 {
+    log::logt("startWorker called with id " + QString::number(id));
     if (!mToPing.empty()) {
         size_t srv = mToPing.front();
         mToPing.pop();
@@ -999,7 +1008,7 @@ void AuthManager::startWorker(size_t id)
                 mWorkers.at(id)->terminate();
         }
         std::auto_ptr<QProcess> raii(mWorkers.at(id));          // force delete if any
-        mWorkers.at(id) = new QProcess(m);
+        mWorkers[id] = new QProcess(m);
         m->connect(mWorkers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)), mWaiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
         m->connect(mWorkers.at(id), SIGNAL(error(QProcess::ProcessError)), mWaiters.at(id), SLOT(PingError(QProcess::ProcessError)));
         OsSpecific::instance()->startPing(*mWorkers.at(id), mServers.at(srv).address);
@@ -1016,6 +1025,7 @@ void AuthManager::startWorker(size_t id)
 
 void AuthManager::pingComplete(size_t idWaiter)
 {
+    log::logt("pingComplete called with id " + QString::number(idWaiter));
     mTimers.at(idWaiter)->stop();
     int p = OsSpecific::instance()->extractPing(*mWorkers.at(idWaiter));
 //      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " Got ping " + QString::number(p));
@@ -1025,6 +1035,7 @@ void AuthManager::pingComplete(size_t idWaiter)
 
 void AuthManager::pingError(size_t idWaiter)
 {
+    log::logt("pingError called with id " + QString::number(idWaiter));
     mTimers.at(idWaiter)->stop();
     int p = OsSpecific::instance()->extractPing(*mWorkers.at(idWaiter));
 //      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process error, extracted ping: " + QString::number(p));
@@ -1034,6 +1045,7 @@ void AuthManager::pingError(size_t idWaiter)
 
 void AuthManager::pingTerminated(size_t idWaiter)
 {
+    log::logt("pingTerminated called with id " + QString::number(idWaiter));
     mWorkers.at(idWaiter)->terminate();
     int p = OsSpecific::instance()->extractPing(*mWorkers.at(idWaiter));
 //      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process terminated, extracted ping: " + QString::number(p));
@@ -1075,63 +1087,70 @@ static bool PCmp(const IUPair & a, const IUPair & b)
 
 int AuthManager::getServerToJump()
 {
+    log::logt("getServerToJump called");
+    if (mServers.isEmpty()) {
+        log::logt("Server list not loaded, so using -1");
+        return -1;
+    }
     int srv = -1;
-    if (!mServers.empty()) {
-        int prev = Scr_Map::Instance()->CurrSrv();
-        std::vector<size_t> toping;     // ix inside _servers
-        if (Setting::instance()->showNodes()) {
-            // jump to server
-            for (size_t k = 0; k < mServers.size(); ++k) {
-                if (k != prev)
-                    toping.push_back(k);
-            }
-        } else {
-            // jump to hub
-            int prevhub = hubIxFromServerName(getServer(prev).name);
-            for (size_t k = 0; k < mHubs.size(); ++k) {
-                int ixsrv = serverIdFromHubId(k);
-                if (ixsrv != prev) {
-                    if (prevhub < 0)
+    int prev = Scr_Map::Instance()->CurrSrv();
+    log::logt("Previous server is " + QString::number(prev));
+    std::vector<size_t> toping;     // ix inside mServers
+    int enc = Setting::instance()->encryption();
+    if (Setting::instance()->showNodes()) {
+        log::logt("showNodes is set, so getting pings of all servers");
+        // jump to server
+        for (size_t k = 0; k < mServerIds[enc].size(); ++k) {
+            if (mServerIds[enc].at(k) != prev)
+                toping.push_back(mServerIds[enc].at(k));
+        }
+    } else {
+        // jump to hub
+        int prevhub = hubIxFromServerName(getServer(prev).name);
+        for (size_t k = 0; k < mHubIds[enc].size(); ++k) {
+            int ixsrv = serverIdFromHubId(mHubIds[enc].at(k));
+            if (ixsrv != prev) {
+                if (prevhub < 0)
+                    toping.push_back(ixsrv);
+                else {
+                    if (prevhub != k)
                         toping.push_back(ixsrv);
-                    else {
-                        if (prevhub != k)
-                            toping.push_back(ixsrv);
-                    }
                 }
             }
         }
+    }
+    log::logt("getServerToJump pings list is " + QString::number(toping.size()));
 
-        std::vector<int> pings = getPings(toping);      // from cache; do not wait for pings; return vec of the same size
+    std::vector<int> pings = getPings(toping);      // from cache; do not wait for pings; return vec of the same size
 
-        IUVec ping_ix;
-        for (size_t k = 0; k < toping.size(); ++k) {
-            if (pings.at(k) > -1)
-                ping_ix.push_back(IUPair(pings.at(k), toping.at(k)));
-        }
+    IUVec ping_ix;
+    for (size_t k = 0; k < toping.size(); ++k) {
+        if (pings.at(k) > -1)
+            ping_ix.push_back(IUPair(pings.at(k), toping.at(k)));
+    }
 
-        if (!ping_ix.empty()) {
-            std::sort(ping_ix.begin(), ping_ix.end(), PCmp);
-            int num = Setting::instance()->showNodes() ? 20 : 6;      // pick this many from the top
-            if (num >= ping_ix.size())
-                num = ping_ix.size();
-            int offset = rand() % num;
-            srv = ping_ix.at(offset).second;
-        }
+    if (!ping_ix.empty()) {
+        std::sort(ping_ix.begin(), ping_ix.end(), PCmp);
+        int num = Setting::instance()->showNodes() ? 20 : 6;      // pick this many from the top
+        if (num >= ping_ix.size())
+            num = ping_ix.size();
+        int offset = rand() % num;
+        srv = ping_ix.at(offset).second;
+    }
 
-        // pings can be unavailable
-        if (srv < 0) {
-            // just pick random
-            if (!toping.empty()) {
-                srv = toping.at(rand() % toping.size());
+    // pings can be unavailable
+    if (srv < 0) {
+        // just pick random
+        if (!toping.empty()) {
+            srv = toping.at(rand() % toping.size());
+        } else {
+            if (Setting::instance()->showNodes()) {
+                if (!mServers.isEmpty())
+                    srv = rand() % mServers.size();
             } else {
-                if (Setting::instance()->showNodes()) {
-                    if (!mServers.empty())
-                        srv = rand() % mServers.size();
-                } else {
-                    if (!mHubs.empty()) {
-                        int h = rand() % mHubs.size();
-                        srv = serverIdFromHubId(h);
-                    }
+                if (!mHubs.empty()) {
+                    int h = rand() % mHubs.size();
+                    srv = serverIdFromHubId(h);
                 }
             }
         }
@@ -1226,6 +1245,7 @@ void AuthManager::forwardPorts()
 void AuthManager::loginFinished()
 {
     QString message = processServersXml();
+    log::logt("loginFinished called message is " + message);
     if (message.isEmpty())
         emit loginCompleted();
     else

@@ -385,6 +385,8 @@ void Setting::loadServer()
     QSettings settings;
     int savedsrv = settings.value(LocationSettingsName(), -1).toInt();
     QString savedname = settings.value(LocationSettingsStrName(), "undefined").toString();
+    log::logt("In Setting::loadServer previously saved server name is " + savedname);
+    log::logt("Previously saved server index is " + QString::number(savedsrv));
 
     int ixsrv = -1;
     // verify that the sever exists
@@ -393,22 +395,26 @@ void Setting::loadServer()
         if (!sr1.name.isEmpty()) {
             if (sr1.name == savedname)
                 ixsrv = savedsrv;
-            else if (savedname != "undefined")
+            else if (savedname != "undefined") {
                 ixsrv = AuthManager::instance()->serverIxFromName(savedname);
+                log::logt("Server names didn't match their indexes, server index is " + QString::number(ixsrv));
+            }
         } else {
-            if (savedname != "undefined")
+            if (savedname != "undefined") {
                 ixsrv = AuthManager::instance()->serverIxFromName(savedname);
+                log::logt("Server names didn't match their indexes, server index is " + QString::number(ixsrv));
+            }
         }
     }
 
     if (ixsrv < 0)
         ixsrv = AuthManager::instance()->getServerToJump();
 
+    log::logt("Setting::loadServer server index to set is " + QString::number(ixsrv));
     Scr_Map * sm = Scr_Map::Instance(); // initiate population of the Location drop-down; will call Setting::IsShowNodes() which will initiate scr_settings and load checkboxes
 
     sm->SetServer(ixsrv);   // will trigger if differs
-    if (ixsrv < 0)					// force update - handle case when not differs
-        ConnectionDialog::instance()->setServer(ixsrv);
+    ConnectionDialog::instance()->setServer(ixsrv);
 }
 
 QString Setting::serverAddress()
