@@ -56,7 +56,9 @@ public:
     void fixDnsLeak();
     void netDown();
 
+#ifdef Q_OS_WIN
     void enableTap();	// for Windows enumerate interfaces and for all TAP force call Enable
+#endif
 
     const QString disconnectedIcon() const;
     const QString connectingIcon() const;

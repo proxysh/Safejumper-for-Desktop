@@ -33,7 +33,6 @@
 #include <QUrl>
 
 #include "common.h"
-#include "thread_oldip.h"
 #include "pingwaiter.h"
 #include "portforwarder.h"
 
@@ -207,8 +206,6 @@ private:
     void getEccServerNames();
 
     void forceRepopulation(int enc);
-
-    std::auto_ptr<Thread_OldIp> mOldIPThread;
     std::auto_ptr<PortForwarder> mPortForwarderThread;
 };
 

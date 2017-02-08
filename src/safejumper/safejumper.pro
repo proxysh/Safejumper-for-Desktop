@@ -81,8 +81,6 @@ SOURCES += \
     scr_settings.cpp \
     setting.cpp \
     stun.cpp \
-    thread_oldip.cpp \
-    thread_forwardports.cpp \
     trayiconmanager.cpp \
     wndmanager.cpp \
     errordialog.cpp
@@ -111,8 +109,6 @@ HEADERS += \
     scr_settings.h \
     setting.h \
     stun.h \
-    thread_forwardports.h \
-    thread_oldip.h \
     trayiconmanager.h \
     update.h \
     version.h \

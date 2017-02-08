@@ -86,18 +86,6 @@ AuthManager::~AuthManager()
         if (mWaiters.at(k) != NULL)
             delete mWaiters.at(k);
     }
-
-    if (mOldIPThread.get() != NULL) {
-        if (mOldIPThread->isRunning())
-            mOldIPThread->terminate();
-        delete mOldIPThread.get();
-    }
-
-    if (mPortForwarderThread.get() != NULL) {
-        // TODO: -1 terminate connections; disconnect signals
-        delete mPortForwarderThread.release();
-    }
-
     // TODO: -0 terminate Network Manager
 //      _nam
 }
@@ -350,7 +338,7 @@ int AuthManager::pingFromServerIx(int srv)
 {
     int pn = -1;
     if (srv > -1 && srv < mPings.size())
-        pn =mPings.at(srv);
+        pn = mPings.at(srv);
     return pn;
 }
 
@@ -993,8 +981,7 @@ void AuthManager::startWorker(size_t id)
     if (!mToPing.empty()) {
         size_t srv = mToPing.front();
         mToPing.pop();
-
-        //log::logt(QString("Pop srv ") + QString::number(srv));
+        log::logt("startWorker will ping server number " + QString::number(srv));
 
         mInProgress.at(id) = srv;
         LoginWindow * m = LoginWindow::Instance();
@@ -1009,8 +996,10 @@ void AuthManager::startWorker(size_t id)
         }
         std::auto_ptr<QProcess> raii(mWorkers.at(id));          // force delete if any
         mWorkers[id] = new QProcess(m);
-        m->connect(mWorkers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)), mWaiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
-        m->connect(mWorkers.at(id), SIGNAL(error(QProcess::ProcessError)), mWaiters.at(id), SLOT(PingError(QProcess::ProcessError)));
+        m->connect(mWorkers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)),
+                   mWaiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
+        m->connect(mWorkers.at(id), SIGNAL(error(QProcess::ProcessError)),
+                   mWaiters.at(id), SLOT(PingError(QProcess::ProcessError)));
         OsSpecific::instance()->startPing(*mWorkers.at(id), mServers.at(srv).address);
         m->connect(mTimers.at(id), SIGNAL(timeout()), mWaiters.at(id), SLOT(Timer_Terminate()));
         mTimers.at(id)->setSingleShot(true);
@@ -1029,7 +1018,7 @@ void AuthManager::pingComplete(size_t idWaiter)
     mTimers.at(idWaiter)->stop();
     int p = OsSpecific::instance()->extractPing(*mWorkers.at(idWaiter));
 //      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " Got ping " + QString::number(p));
-    mPings.at(mInProgress.at(idWaiter)) = p;
+    mPings[mInProgress.at(idWaiter)] = p;
     startWorker(idWaiter);
 }
 
@@ -1039,7 +1028,7 @@ void AuthManager::pingError(size_t idWaiter)
     mTimers.at(idWaiter)->stop();
     int p = OsSpecific::instance()->extractPing(*mWorkers.at(idWaiter));
 //      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process error, extracted ping: " + QString::number(p));
-    mPings.at(mInProgress.at(idWaiter)) = p;
+    mPings[mInProgress.at(idWaiter)] = p;
     startWorker(idWaiter);
 }
 
@@ -1049,7 +1038,7 @@ void AuthManager::pingTerminated(size_t idWaiter)
     mWorkers.at(idWaiter)->terminate();
     int p = OsSpecific::instance()->extractPing(*mWorkers.at(idWaiter));
 //      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process terminated, extracted ping: " + QString::number(p));
-    mPings.at(mInProgress.at(idWaiter)) = p;
+    mPings[mInProgress.at(idWaiter)] = p;
     startWorker(idWaiter);
 }
 

@@ -751,9 +751,9 @@ bool OsSpecific::IPv6()
     return on;
 }
 
+#ifdef Q_OS_WIN
 void OsSpecific::enableTap()
 {
-#ifdef Q_OS_WIN
     // https://airvpn.org/topic/12599-“air-vpn-hack-executed’/#entry21338
 
     // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365915(v=vs.85).aspx
@@ -788,8 +788,8 @@ void OsSpecific::enableTap()
             }
         }
     }
-#endif	// Q_OS_WIN
 }
+#endif	// Q_OS_WIN
 
 #ifdef Q_OS_LINUX
 

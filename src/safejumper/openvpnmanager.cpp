@@ -20,6 +20,7 @@
 
 #include <QFile>
 #include <QDir>
+#include <QThread>
 #include <stdexcept>
 
 #include "authmanager.h"
