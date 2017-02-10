@@ -432,7 +432,7 @@ void TrayIconManager::constructConnectToMenu()
             qDebug() << "Logged in so making actions";
             clearConnectToMenu();
 
-            const std::vector<size_t> & hubs = am->currentEncryptionHubs();
+            const QList<int> & hubs = am->currentEncryptionHubs();
             if (mConnectToMenu.get() == NULL) {	// one time during entire program run
                 mConnectToMenu.reset(mTrayIconMenu->addMenu("Connect to ..."));
                 mTrayIconMenu->removeAction(mConnectToAction.get());

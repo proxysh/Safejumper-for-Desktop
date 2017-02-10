@@ -190,20 +190,20 @@ void AuthManager::setNewIp(const QString & ip)
     }
 }
 
-const std::vector<size_t> & AuthManager::currentEncryptionServers()
+const QList<int> &AuthManager::currentEncryptionServers()
 {
     int enc = Setting::encryption();
     return mServerIds[enc];
 }
 
-const std::vector<size_t> & AuthManager::currentEncryptionHubs()
+const QList<int> &AuthManager::currentEncryptionHubs()
 {
     if (!mServers.isEmpty() && mHubs.empty()) {
         for (int k = 0; k < mServers.size(); ++k) {
             if (mServers.at(k).name.contains("Hub", Qt::CaseInsensitive)) {
                 mHubs.append(mServers.at(k));
                 mHubToServer.push_back(k);                      // the same as _hub_ids[0]
-                mHubIds[0].push_back(k);
+                mHubIds[0].append(k);
                 mServerIdToHubId.insert(IIMap::value_type(k, mHubs.size() - 1));
                 std::string cleared = flag::ClearName(mServers[k].name).toStdString();          // QString cleared = flag::ClearName(_servers[k].name);
                 mHubClearedId.insert(std::make_pair(cleared, mHubs.size() - 1));
@@ -214,7 +214,7 @@ const std::vector<size_t> & AuthManager::currentEncryptionHubs()
     return mHubIds[enc];
 }
 
-int AuthManager::hubidForServerNode(size_t srv)
+int AuthManager::hubidForServerNode(int srv)
 {
     int hub = -1;
     if (srv > -1 && srv < mServers.size()) {
@@ -240,19 +240,19 @@ void AuthManager::prepareLevels()
     log::logt("prepareLevels called");
     // TODO: -1 special hub for boost
     if (!mServers.isEmpty() && mLevel0.empty()) {
-        const std::vector<size_t> & h = currentEncryptionHubs();
+        const QList<int> & hubs = currentEncryptionHubs();
         std::set<int> hub_srvids;
-        for (size_t k =0; k < h.size(); ++k) {
-            int srv = h.at(k);  //ServerIdFromHubId(k);
+        for (int k =0; k < hubs.size(); ++k) {
+            int srv = hubs.at(k);  //ServerIdFromHubId(k);
             hub_srvids.insert(srv);
             std::vector<int> v;
             v.push_back(srv);
             mLevel1.insert(std::make_pair(k, v));
         }
 
-        const std::vector<size_t> & sr = currentEncryptionServers();
-        for (size_t k = 0; k < sr.size(); ++k) {
-            int srv = sr.at(k);
+        const QList<int> & servers = currentEncryptionServers();
+        for (int k = 0; k < servers.size(); ++k) {
+            int srv = servers.at(k);
             std::set<int>::iterator it = hub_srvids.find(srv);
             if (it != hub_srvids.end()) {
                 mLevel0.push_back(std::make_pair(true, hubIdFromServerId(*it)));        // aready at lvl 1
@@ -388,7 +388,7 @@ void AuthManager::processEccServerNamesXml()
         // clone ECC nodes into ECC+XOR
         // TODO: -2 is there a specific for ECC+XOR  API page?
         mServerIds[ENCRYPTION_ECCXOR].clear();
-        mServerIds[ENCRYPTION_ECCXOR].assign(mServerIds[ENCRYPTION_ECC].begin(), mServerIds[ENCRYPTION_ECC].end());
+        mServerIds[ENCRYPTION_ECCXOR] = mServerIds[ENCRYPTION_ECC];
         forceRepopulation(ENCRYPTION_ECC);
         forceRepopulation(ENCRYPTION_ECCXOR);
         if (Setting::encryption() != ENCRYPTION_RSA)
@@ -415,9 +415,9 @@ void AuthManager::processObfsServerNamesXml()
         // clone ECC nodes into ECC+XOR
         // TODO: -2 is there a specific for ECC+XOR  API page?
         mServerIds[ENCRYPTION_TOR_OBFS3].clear();
-        mServerIds[ENCRYPTION_TOR_OBFS3].assign(mServerIds[ENCRYPTION_TOR_OBFS2].begin(), mServerIds[ENCRYPTION_TOR_OBFS2].end());
+        mServerIds[ENCRYPTION_TOR_OBFS3] = mServerIds[ENCRYPTION_TOR_OBFS2];
         mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].clear();
-        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].assign(mServerIds[ENCRYPTION_TOR_OBFS2].begin(), mServerIds[ENCRYPTION_TOR_OBFS2].end());
+        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT] = mServerIds[ENCRYPTION_TOR_OBFS2];
         forceRepopulation(ENCRYPTION_TOR_OBFS2);
         forceRepopulation(ENCRYPTION_TOR_OBFS3);
         forceRepopulation(ENCRYPTION_TOR_SCRAMBLESUIT);
@@ -856,16 +856,16 @@ QStringList AuthManager::extractNames(QString & out_msg)
 }
 
 
-void AuthManager::populateServerIdsFromNames(QStringList names, std::vector<size_t> & found)
+void AuthManager::populateServerIdsFromNames(QStringList names, QList<int> &serverList)
 {
-    std::vector<size_t> paid;
-    for (size_t j = 0, ses = mServers.size(); j < ses; ++j) {
+    QList<int> ids;
+    for (int j = 0; j < mServers.size(); ++j) {
         if (names.contains(mServers.at(j).name)) {
-            paid.push_back(j);
+            ids.append(j);
         }
     }
-    std::sort(paid.begin(), paid.end());
-    found.swap(paid);
+    qSort(ids.begin(), ids.end());
+    serverList = ids;
 }
 
 QString AuthManager::processServersXml()
@@ -922,7 +922,7 @@ QString AuthManager::processServersXml()
                 s2.name = loc.text();
                 s2.load = load.text();
                 mServers.append(s2);
-                mServerIds[0].push_back(mServers.size() - 1);
+                mServerIds[0].append(mServers.size() - 1);
             }
             mVPNLogin = login;
             mVPNPassword = psw;
@@ -934,8 +934,8 @@ QString AuthManager::processServersXml()
     }
 
     // force hubs
-    const std::vector<size_t> & hr = AuthManager::currentEncryptionHubs();
-    if (hr.empty())
+    const QList<int> & hubs = AuthManager::currentEncryptionHubs();
+    if (hubs.isEmpty())
         log::logt("Cannot parse hubs");
 
     getObfsServerNames();
@@ -950,13 +950,9 @@ QString AuthManager::processServersXml()
 void AuthManager::pingAllServers()
 {
     log::logt("pingAllServers called");
-    // Fill _pinks with as many -1 entries as there are servers
-    if (mPings.empty())
-        mPings.assign(mServers.size(), -1);
-    if (mPings.size() < mServers.size()) {
-        for (size_t k = 0, n = mServers.size() - mPings.size(); k < n; ++k)
-            mPings.push_back(-1);
-    }
+    // Fill mPings with as many -1 entries as there are servers
+    while (mPings.size() < mServers.size())
+        mPings.append(-1);
     for (size_t k = 0; k < mServers.size(); ++k)
         mToPing.push(k);
 

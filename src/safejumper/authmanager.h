@@ -85,8 +85,8 @@ public:
     const QString & newIP();
     const QString & oldIP();
 
-    const std::vector<size_t> & currentEncryptionServers();		// return IDs of servers inside _servers available for this encryption
-    const std::vector<size_t> & currentEncryptionHubs();					// return IDs of habs inside _servers
+    const QList<int> & currentEncryptionServers();		// return IDs of servers inside _servers available for this encryption
+    const QList<int> & currentEncryptionHubs();					// return IDs of habs inside _servers
 
     const std::vector<std::pair<bool, int> > & getLevel0();		// <is hub, hub id / srv id>
     const std::vector<int> & getLevel1(size_t hub);					// for given hub id all the server ids, including hub entry itself
@@ -143,7 +143,7 @@ private:
     AuthManager();
     QString processServersXml();	// true = ok, empty msg on ok
     bool processServerNamesForEncryptionType(int enc, QString & out_msg);
-    void populateServerIdsFromNames(QStringList names, std::vector<size_t> & found);		// for _obfs_names lookup respective server ix in _servers
+    void populateServerIdsFromNames(QStringList names, QList<int> &serverList);		// for _obfs_names lookup respective server ix in _servers
     QStringList extractNames(QString & out_msg);
     void pingAllServers();
 
@@ -156,14 +156,14 @@ private:
     void seed();
 
     QList<AServer> mServers;
-    std::vector<size_t> mServerIds[ENCRYPTION_COUNT];		// IDs inside _servers available for each encryption
+    QList<int> mServerIds[ENCRYPTION_COUNT];		// IDs inside _servers available for each encryption
     QList<AServer> mHubs;
-    std::vector<size_t> mHubIds[ENCRYPTION_COUNT];		// IDs of hubs inside _servers available for each encryption		// _hub_ids[0] the same as _HubToServer
+    QList<int> mHubIds[ENCRYPTION_COUNT];		// IDs of hubs inside _servers available for each encryption		// _hub_ids[0] the same as _HubToServer
     std::vector<std::pair<bool, int> > mLevel0;		// <is hub, hub id / srv id>
     std::map<int, std::vector<int> > mLevel1;		// <hub id, <srv ids, including srv id of hub entry> >
     std::vector<int> mFake;
     void prepareLevels();
-    int hubidForServerNode(size_t srv);					// -1 if cannot find hub for this srv
+    int hubidForServerNode(int srv);					// -1 if cannot find hub for this srv
     std::map<std::string, size_t> mHubClearedId;	//std::map<QString, size_t> _HubClearedId;		// <hub cleared name (w/o ' Hub'), its hub id>
     std::vector<size_t> mHubToServer;	   // id of hub inside _servers
     IIMap mServerIdToHubId;
@@ -188,7 +188,7 @@ private:
     void clearReply();
     std::auto_ptr<QNetworkReply> mUpdateReply;
 
-    std::vector<int> mPings;		// ping for each server; -1 on err
+    QList<int> mPings;		// ping for each server; -1 on err
     std::vector<int> getPings(const std::vector<size_t> & toping);	// from _pings; do not wait for pings; return vec of the same size
     std::queue<size_t> mToPing;				// id inside _servers
     bool mPingsLoaded;

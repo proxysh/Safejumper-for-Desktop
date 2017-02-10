@@ -157,7 +157,7 @@ void Scr_Map::RePopulateLocations(bool random)
 
     SetRowStyle(_UseSrvColl);
 
-    const std::vector<size_t> & coll = (
+    const QList<int> & coll = (
                                            _UseSrvColl ?
                                            AuthManager::instance()->currentEncryptionServers() :
                                            AuthManager::instance()->currentEncryptionHubs() );
@@ -423,7 +423,7 @@ void Scr_Map::DisplayMark(const QString & name)
 void Scr_Map::SetServer(int ixsrv)
 {
     int toselect = 0;
-    const std::vector<size_t> & srvs = AuthManager::instance()->currentEncryptionServers();
+    const QList<int> & srvs = AuthManager::instance()->currentEncryptionServers();
     if (ixsrv > -1) {
         if (_Encryption == ENCRYPTION_RSA) {
             if (_IsShowNodes)
@@ -431,7 +431,7 @@ void Scr_Map::SetServer(int ixsrv)
             else
                 toselect = AuthManager::instance()->hubIdFromServerId(ixsrv) + 1;
         } else {
-            if (!srvs.empty()) {
+            if (!srvs.isEmpty()) {
                 for (size_t k = 0; k < srvs.size(); ++k) {
                     if (srvs[k] == ixsrv) {
                         toselect = k + 1;

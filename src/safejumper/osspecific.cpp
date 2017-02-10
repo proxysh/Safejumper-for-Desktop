@@ -998,7 +998,7 @@ void OsSpecific::netDown()
                         log::logt("Cannot ShellExecute hi = " + QString::number((int)hi) + " err code = " + QString::number(GetLastError()));
                     else {
                         log::logt("ShellExecute OK");
-                        _netdown = true;
+                        mNetDown = true;
                     }
                 }
             }
@@ -1214,7 +1214,7 @@ bool OsSpecific::obfsproxyRunning()
 {
     bool b = false;
 #ifdef Q_OS_WIN
-    if (_obfs.get() != NULL) {
+    if (mObfsproxy.get() != NULL) {
         b = true;		// TODO: -1 actual check
     }
 #else

@@ -128,7 +128,7 @@ void OpenvpnManager::launchOpenvpn()
         try {
             OsSpecific::instance()->setIPv6(!Setting::instance()->disableIPv6());
 #ifdef Q_OS_WIN
-            OsSpecific::instance()->EnableTap(); // TODO check win10 tap
+            OsSpecific::instance()->enableTap(); // TODO check win10 tap
 #endif
         } catch(std::exception & ex) {
             log::logt(ex.what());
