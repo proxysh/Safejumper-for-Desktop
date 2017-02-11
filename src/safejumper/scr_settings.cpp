@@ -21,7 +21,7 @@
 #include "scr_logs.h"
 #include "ui_scr_settings.h"
 #include "connectiondialog.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 #include "common.h"
 #include "loginwindow.h"
 #include "wndmanager.h"
@@ -258,10 +258,10 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
 
     Setting::instance()->setEncryption(ix);
 
-    if (Scr_Map::IsExists()) {
-        Scr_Map::Instance()->RePopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
+    if (MapScreen::exists()) {
+        MapScreen::instance()->repopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
         Setting::instance()->loadProtocol();
-        Scr_Map::Instance()->RePopulateLocations(false); // Repopulate all locations
+        MapScreen::instance()->repopulateLocations(false); // Repopulate all locations
     }
 }
 

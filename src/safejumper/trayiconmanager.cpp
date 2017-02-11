@@ -24,7 +24,7 @@
 
 #include "scr_settings.h"
 #include "scr_logs.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 #include "errordialog.h"
 #include "confirmationdialog.h"
 
@@ -299,7 +299,7 @@ void TrayIconManager::connectToTriggered()
         if (AuthManager::instance()->loggedIn()) {
             size_t serverId = action->data().toInt();
 
-            Scr_Map::Instance()->SetServer(serverId);
+            MapScreen::instance()->setServer(serverId);
             OpenvpnManager::instance()->start();
         } else {
             emit login();

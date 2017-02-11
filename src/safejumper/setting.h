@@ -90,8 +90,8 @@ public:
     QString defaultDNS1();
     QString defaultDNS2();
 
-    const std::vector<QString> & allProtocols();
-    const std::vector<int> & allPorts();
+    const std::vector<QString> & currentEncryptionProtocols();
+    const std::vector<int> & currentEncryptionPorts();
     const QString & protocolName(int ix);
     const QString & currentProtocolName();
 
@@ -114,6 +114,7 @@ signals:
     void showNodesChanged();
     void detectInsecureWifiChanged();
     void encryptionChanged();
+    void protocolChanged();
 
 private:
     Setting();

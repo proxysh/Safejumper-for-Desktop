@@ -28,7 +28,7 @@
 #include "pingwaiter.h"
 #include "setting.h"
 #include "openvpnmanager.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 #include "loginwindow.h"
 #include "osspecific.h"
 #include "log.h"
@@ -802,8 +802,8 @@ void AuthManager::forceRepopulation(int enc)
 {
     // force update of locations: if needed, previously empy
     if (Setting::instance()->encryption() == enc) {
-        if (Setting::exists() && Scr_Map::IsExists()) {
-            Scr_Map::Instance()->RePopulateLocations();
+        if (Setting::exists() && MapScreen::exists()) {
+            MapScreen::instance()->repopulateLocations();
             // TODO: -0 LoadServer()
         }
     }
@@ -1003,7 +1003,7 @@ void AuthManager::startWorker(size_t id)
     } else {
         if (!mPingsLoaded) {
             mPingsLoaded = true;
-            Scr_Map::Instance()->RePopulateLocations();         // load pings
+            MapScreen::instance()->repopulateLocations();         // load pings
         }
     }
 }
@@ -1078,7 +1078,7 @@ int AuthManager::getServerToJump()
         return -1;
     }
     int srv = -1;
-    int prev = Scr_Map::Instance()->CurrSrv();
+    int prev = MapScreen::instance()->currentServerId();
     log::logt("Previous server is " + QString::number(prev));
     std::vector<size_t> toping;     // ix inside mServers
     int enc = Setting::instance()->encryption();
@@ -1150,7 +1150,7 @@ void AuthManager::jump()
     int srv = getServerToJump();              // except current srv/hub
     if (srv > -1) {
 // TODO: -0             SetNewIp("");
-        Scr_Map::Instance()->SetServer(srv);
+        MapScreen::instance()->setServer(srv);
         OpenvpnManager::instance()->start();               // contains stop
     }
 }

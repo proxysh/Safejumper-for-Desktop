@@ -68,7 +68,6 @@ private:
 
     void setFlag(int srv);
     void setNoServer();
-    void updateProtocol();
     void enableButtons(bool enabled);
 
     static void initializeStateWords();
@@ -86,6 +85,7 @@ private slots:
     void showMapWindow();
     void showPackageUrl();
     void updateEncryption();
+    void updateProtocol();
 
 protected:
     virtual void closeEvent(QCloseEvent * event);

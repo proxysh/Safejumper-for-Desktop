@@ -21,7 +21,7 @@
 #include <stdexcept>
 
 #include "connectiondialog.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 #include "common.h"
 #include "authmanager.h"
 #include "osspecific.h"
@@ -70,7 +70,7 @@ void Setting::PopulateColls(std::vector<QString> & v_strs, std::vector<int> & v_
     }
 }
 
-const std::vector<QString> & Setting::allProtocols()
+const std::vector<QString> & Setting::currentEncryptionProtocols()
 {
     int enc = encryption();
     if (mProtocols[enc].empty()) {
@@ -169,9 +169,9 @@ const std::vector<QString> & Setting::allProtocols()
     return mProtocols[enc];
 }
 
-const std::vector<int> & Setting::allPorts()
+const std::vector<int> & Setting::currentEncryptionPorts()
 {
-    const std::vector<QString> & pr = allProtocols();		// force init
+    const std::vector<QString> & pr = currentEncryptionProtocols();		// force init
     if (!pr.empty()) {
         int enc = encryption();
         return mPorts[enc];
@@ -363,12 +363,12 @@ void Setting::setProtocol(int ix)
 {
     if (_loading_protocol)
         return;
-    QSettings settings;
-    settings.setValue(ProtocolSettingsName(), ix);
+    mSettings.setValue(ProtocolSettingsName(), ix);
     QString s;
-    if (ix > -1 && ix < (int)allProtocols().size())
-        s = allProtocols().at(ix);
-    settings.setValue(ProtocolSettingsStrName(), s);
+    if (ix > -1 && ix < (int)currentEncryptionProtocols().size())
+        s = currentEncryptionProtocols().at(ix);
+    mSettings.setValue(ProtocolSettingsStrName(), s);
+    emit protocolChanged();
 }
 
 void Setting::loadProtocol()
@@ -377,20 +377,18 @@ void Setting::loadProtocol()
     QSettings settings;
     int ix = settings.value(ProtocolSettingsName(), -1).toInt();
     if (ix > -1) {
-        if (ix >= (int)allProtocols().size())
+        if (ix >= (int)currentEncryptionProtocols().size())
             ix = -1;
         else {
             QString s = settings.value(ProtocolSettingsStrName(), "").toString();
-            if (s != allProtocols().at(ix))
+            if (s != currentEncryptionProtocols().at(ix))
                 ix = -1;
         }
     }
     if (ix < 0) {
-        ix = rand() % allProtocols().size();
+        ix = rand() % currentEncryptionProtocols().size();
     }
-    Scr_Map::Instance()->SetProtocol(ix);   // will trigger if differs
-    if (ix < 0)		 // forse update - handle case when not differs
-        ConnectionDialog::instance()->setProtocol(ix);
+    setProtocol(ix);
 
     _loading_protocol = false;
 }
@@ -399,7 +397,7 @@ static QString gs_Empty = "";
 const QString & Setting::protocolName(int ix)
 {
     if (ix > -1)
-        return allProtocols().at(ix);
+        return currentEncryptionProtocols().at(ix);
     else
         return gs_Empty;
 }
@@ -416,8 +414,7 @@ const QString Setting::forwardPortsString()
 
 int Setting::currentProtocol()
 {
-    // TODO: -2 from saved settings when Scr_Map unavailable
-    return Scr_Map::Instance()->CurrProto();
+    return mSettings.value(ProtocolSettingsName(), -1).toInt();
 }
 
 void Setting::setServer(int ixsrv, const QString & newsrv)
@@ -466,16 +463,16 @@ void Setting::loadServer()
     log::logt("Setting::loadServer server index to set is " + QString::number(ixsrv));
     // initiate population of the Location drop-down;
     // will call Setting::IsShowNodes() which will initiate scr_settings and load checkboxes
-    Scr_Map * sm = Scr_Map::Instance();
+    MapScreen * sm = MapScreen::instance();
 
-    sm->SetServer(ixsrv);   // will trigger if differs
+    sm->setServer(ixsrv);   // will trigger if differs
     ConnectionDialog::instance()->setServer(ixsrv);
 }
 
 QString Setting::serverAddress()
 {
     QString s;
-    int ix = Scr_Map::Instance()->CurrSrv();
+    int ix = MapScreen::instance()->currentServerId();
     if (ix > -1)
         s = AuthManager::instance()->getServer(ix).address;
     return s;
@@ -483,69 +480,25 @@ QString Setting::serverAddress()
 
 int Setting::serverID()
 {
-    return Scr_Map::Instance()->CurrSrv();
+    return MapScreen::instance()->currentServerId();
 }
 
 QString Setting::port()
 {
-    int ix = Scr_Map::Instance()->CurrProto();
+    int ix = currentProtocol();
     int p = 80;
     int enc = encryption();
-    if (enc < 0 || enc > ENCRYPTION_COUNT)
-        throw std::runtime_error("invalid encryption index");
     std::vector<int> & v_ports = mPorts[enc];
     if (ix > -1 && ix < (int)v_ports.size())
-        p = v_ports[ix];
+        p = v_ports.at(ix);
     return QString::number(p);
 }
 
-#ifdef MONITOR_TOOL
-void Setting::InitLoop()
-{
-    _ixStartPort = Scr_Map::Instance()->CurrProto();
-    if (_ixStartPort < 0) {
-        _ixStartPort = 0;
-        Scr_Map::Instance()->SetProtocol(_ixStartPort);
-    }
-
-    _idStartNode = Scr_Map::Instance()->CurrSrv();		// -1 if not selected
-    if (_idStartNode < 0) {
-        const std::vector<size_t> & srvs = AuthManager::Instance()->GetAllServers();
-        if (!srvs.empty()) {
-            _idStartNode = srvs.front();
-            Scr_Map::Instance()->SetServer(_idStartNode);
-        }
-    }
-}
-
-bool Setting::SwitchToNext()
-{
-    bool NotAllProcessed = true;
-    int ix = DetermineNextPort();
-    if (ix != _ixStartPort) {
-        Scr_Map::Instance()->SetProtocol(ix);
-    } else {
-        _ixStartPort = 0;
-        Scr_Map::Instance()->SetProtocol(_ixStartPort);
-        Scr_Map::Instance()->SwitchToNextNode();
-
-        int idSrv = Scr_Map::Instance()->CurrSrv();		// -1 if not selected
-        if (_idStartNode == idSrv) {
-            // TODO: -1 change encryption
-            NotAllProcessed = false;
-        }
-    }
-    return NotAllProcessed;
-}
-#endif	// MONITOR_TOOL
-
 int Setting::determineNextPort()
 {
-    int ix = Scr_Map::Instance()->CurrProto();
+    int ix = currentProtocol();
     ++ix;
     int enc = encryption();
-    if (enc < 0 || enc > ENCRYPTION_COUNT)
-        throw std::runtime_error("invalid encryption index");
     std::vector<int> & v_ports = mPorts[enc];
     if (ix >= (int)v_ports.size())
         ix = 0;
@@ -555,12 +508,12 @@ int Setting::determineNextPort()
 void Setting::switchToNextPort()
 {
     int ix = determineNextPort();
-    Scr_Map::Instance()->SetProtocol(ix);
+    setProtocol(ix);
 }
 
 void Setting::switchToNextNode()
 {
-    Scr_Map::Instance()->SwitchToNextNode();
+    MapScreen::instance()->switchToNextNode();
 }
 
 QString Setting::localPort()
@@ -580,7 +533,7 @@ void Setting::setLocalPort(QString port)
 
 QString Setting::tcpOrUdp()
 {
-    QString description = protocolName(Scr_Map::Instance()->CurrProto());
+    QString description = protocolName(currentProtocol());
     if (description.contains("udp", Qt::CaseInsensitive))
         return "udp";
     else

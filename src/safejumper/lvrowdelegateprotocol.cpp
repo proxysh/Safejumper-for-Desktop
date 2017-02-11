@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "lvrowdelegateprotocol.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 #include "setting.h"
 
 #include <QPen>
@@ -33,8 +33,8 @@ void LvRowDelegateProtocol::paint(QPainter * painter, const QStyleOptionViewItem
     int id = index.row() - 1;
     bool selected = option.state & QStyle::State_Selected;
     bool checked = !(option.state & QStyle::State_Selected);
-    if (Scr_Map::IsExists())
-        checked = checked && (Scr_Map::Instance()->CurrProto() == id);
+    if (MapScreen::exists())
+        checked = checked && (MapScreen::instance()->currentProtocol() == id);
 
     if (checked && !selected && id > -1) {
         static QPixmap pm(":/imgs/dd-selectionrow.png");
@@ -44,7 +44,7 @@ void LvRowDelegateProtocol::paint(QPainter * painter, const QStyleOptionViewItem
         static int margin_left = 5;		// padding-left: 10px;
         QRect L = option.rect.adjusted(margin_left, 0, 0, 0);
         painter->setPen(white);
-        painter->drawText(L, Qt::AlignLeft | Qt::AlignVCenter, id < 0 ? PROTOCOL_SELECTION_STR : Setting::instance()->allProtocols().at(id));
+        painter->drawText(L, Qt::AlignLeft | Qt::AlignVCenter, id < 0 ? PROTOCOL_SELECTION_STR : Setting::instance()->currentEncryptionProtocols().at(id));
     }
 
     painter->restore();

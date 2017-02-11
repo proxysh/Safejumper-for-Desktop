@@ -20,7 +20,7 @@
 
 #include "ui_connectiondialog.h"
 #include "scr_settings.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 #include "loginwindow.h"
 #include "authmanager.h"
 #include "common.h"
@@ -91,6 +91,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 
     connect(Setting::instance(), SIGNAL(encryptionChanged()),
             this, SLOT(updateEncryption()));
+    connect(Setting::instance(), SIGNAL(protocolChanged()),
+            this, SLOT(updateProtocol()));
 }
 
 bool ConnectionDialog::exists()

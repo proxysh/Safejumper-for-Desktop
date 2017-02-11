@@ -16,14 +16,14 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include "scr_map.h"
+#include "mapscreen.h"
 
 #include <QListView>
 #include <QItemDelegate>
 #include <QStandardItemModel>
 
 #include "setting.h"
-#include "ui_scr_map.h"
+#include "ui_mapscreen.h"
 #include "connectiondialog.h"
 #include "scr_settings.h"
 #include "wndmanager.h"
@@ -37,14 +37,14 @@
 #include "fonthelper.h"
 #include "loginwindow.h"
 
-Scr_Map::Scr_Map(QWidget *parent) :
+MapScreen::MapScreen(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Scr_Map)
-    , _moving(false)
-    , _repopulation_inprogress(false)
-    , _UseSrvColl(true)
-    , _IsShowNodes(true)
-    , _Encryption(0)
+    ui(new Ui::MapScreen)
+    , mMoving(false)
+    , mRepopulationInProgress(false)
+    , mUseServerColumn(true)
+    , mShowingNodes(true)
+    , mEncryption(0)
 {
     ui->setupUi(this);
     this->setFixedSize(this->size());
@@ -56,39 +56,28 @@ Scr_Map::Scr_Map(QWidget *parent) :
     ui->lv_Location->setMinimumWidth(300);
     ui->lv_Location->setMinimumHeight(400);
 #endif
-    _default = ui->L_Mark->pos();
-    /*
-        ui->b_Tmp->move(0,0);
-        ui->b_Tmp->resize(ui->L_Map->width(), ui->L_Map->height());
-    */
-    ui->e_x->hide();
-    ui->e_y->hide();
-    ui->b_Tmp->hide();
+    mDefaultPoint = ui->L_Mark->pos();
+    repopulateLocations();
+    repopulateProtocols();
 
-    RePopulateLocations();
-    RePopulateProtocols();
-
-//	QPoint p0 = _WndStart = pos();
-//	WndManager::DoShape(this);
-//	QPoint p1 = pos();
-//		move(p0);
     qApp->installEventFilter(this);
 
-
-    ui->dd_Location->setView(ui->lv_Location);
-    ui->dd_Protocol->setView(ui->lv_Protocol);
-    ui->dd_Protocol->setItemDelegate(new LvRowDelegateProtocol(this));
-    ui->dd_Location->setItemDelegate(new LvRowDelegate(this));
+    ui->locationComboBox->setView(ui->lv_Location);
+    ui->protocolComboBox->setView(ui->lv_Protocol);
+    ui->protocolComboBox->setItemDelegate(new LvRowDelegateProtocol(this));
+    ui->locationComboBox->setItemDelegate(new LvRowDelegate(this));
 
 //	setMouseTracking(true); // E.g. set in your constructor of your widget.
     connect(Setting::instance(), SIGNAL(showNodesChanged()),
             this, SLOT(repopulateLocations()));
+    connect(Setting::instance(), SIGNAL(protocolChanged()),
+            this, SLOT(protocolChanged()));
 }
 
 
 static const QString gs_Individual = "QListView\n{\nbackground: solid #f7f7f7;\n}\nQListView::item\n{\n/*color: #202020;*/\ncolor: #f7f7f7;	/*invisible*/\nheight: 24;\nborder-image: url(:/imgs/dd-row.png);\nbackground: solid #f7f7f7;\n}\nQListView::item:selected\n{\nborder-image: url(:/imgs/dd-selectionrow-322.png);\n}\n\n";
 static const QString gs_Hubs = "QListView\n{\nbackground: solid #f7f7f7;\n}\nQListView::item\n{\n/*color: #202020;*/\ncolor: #f7f7f7;	/*invisible*/\nheight: 24;\nborder-image: url(:/imgs/dd-row.png);\nbackground: solid #f7f7f7;\n}\nQListView::item:selected\n{\nborder-image: url(:/imgs/dd-selectionrow-244.png);\n}\n\n";
-void Scr_Map::SetRowStyle(bool show_nodes)
+void MapScreen::setRowStyle(bool show_nodes)
 {
     if (show_nodes)
         ui->lv_Location->setStyleSheet(gs_Individual);
@@ -96,81 +85,72 @@ void Scr_Map::SetRowStyle(bool show_nodes)
         ui->lv_Location->setStyleSheet(gs_Hubs);
 }
 
-void Scr_Map::Changed_xy()
+void MapScreen::repopulateProtocols()
 {
-    /*
-        int x = ui->e_x->text().toInt();
-        int y = ui->e_y->text().toInt();
-        ui->L_Mark->move(x, y);
-    */
-}
+    mRepopulationInProgress = true;
 
-void Scr_Map::RePopulateProtocols()
-{
-    _repopulation_inprogress = true;
-
-    const std::vector<QString> & v = Setting::instance()->allProtocols();
-    ui->dd_Protocol->clear();
-    ui->dd_Protocol->addItem(PROTOCOL_SELECTION_STR);
+    const std::vector<QString> & v = Setting::instance()->currentEncryptionProtocols();
+    ui->protocolComboBox->clear();
+    ui->protocolComboBox->addItem(PROTOCOL_SELECTION_STR);
     for (size_t k = 0; k < v.size(); ++k)
-        ui->dd_Protocol->addItem(v.at(k));
+        ui->protocolComboBox->addItem(v.at(k));
 
-    _repopulation_inprogress = false;
+    mRepopulationInProgress = false;
     if (v.size() == 1) {
-        SetProtocol(0);
-        ui->dd_Protocol->setEnabled(false);
+        setProtocol(0);
+        ui->protocolComboBox->setEnabled(false);
     } else {
-        ui->dd_Protocol->setEnabled(true);
+        ui->protocolComboBox->setEnabled(true);
     }
 }
 
-void Scr_Map::RePopulateLocations(bool random)
+void MapScreen::repopulateLocations(bool random)
 {
     if (random) {
         int srv = qrand() % 30 + 1;
-        ui->dd_Location->setCurrentIndex(srv);
+        ui->locationComboBox->setCurrentIndex(srv);
         return;
     }
 
     // store previously chosen id
-    int oldN = ui->dd_Location->count();
+    int oldN = ui->locationComboBox->count();
     int ixoldsrv = -1;
     QString oldsrv;
-    bool oldShownodes = _IsShowNodes;
-    bool oldUsesrvcoll = _UseSrvColl;
-    int oldEnc = _Encryption;
+    bool oldShownodes = mShowingNodes;
+    bool oldUsesrvcoll = mUseServerColumn;
+    int oldEnc = mEncryption;
     if (oldN > 1) {
-        ixoldsrv = CurrSrv();
+        ixoldsrv = currentServerId();
         if (ixoldsrv > -1) {
             oldsrv = AuthManager::instance()->getServer(ixoldsrv).name;
         }
         // and clear the list
-        ui->dd_Location->setCurrentIndex(0);
+        ui->locationComboBox->setCurrentIndex(0);
         for (int k = oldN; k > 0; --k)
-            ui->dd_Location->removeItem(k);
+            ui->locationComboBox->removeItem(k);
     }
 
     // populate with the actual servers
-    _IsShowNodes = Setting::instance()->showNodes();
-    _Encryption = Setting::instance()->encryption();
-    _UseSrvColl = ((_Encryption == ENCRYPTION_RSA) && _IsShowNodes) || (_Encryption > ENCRYPTION_RSA);
+    mShowingNodes = Setting::instance()->showNodes();
+    mEncryption = Setting::instance()->encryption();
+    mUseServerColumn = ((mEncryption == ENCRYPTION_RSA) && mShowingNodes) || (mEncryption > ENCRYPTION_RSA);
 
-    SetRowStyle(_UseSrvColl);
+    setRowStyle(mUseServerColumn);
 
     const QList<int> & coll = (
-                                           _UseSrvColl ?
+                                           mUseServerColumn ?
                                            AuthManager::instance()->currentEncryptionServers() :
                                            AuthManager::instance()->currentEncryptionHubs() );
 
     // populate server ids to show
-    _srvIds.clear();
-    _srvIds.assign(coll.begin(), coll.end());
+    mServerIds.clear();
+    mServerIds.assign(coll.begin(), coll.end());
 
     // for each server id create a line
-    for (size_t j = 0, sz = _srvIds.size(); j < sz; ++j) {
+    for (size_t j = 0, sz = mServerIds.size(); j < sz; ++j) {
         // add individual srv / hub node item
         // TODO: -1 format the line
-        int ix = _srvIds.at(j);
+        int ix = mServerIds.at(j);
         AServer srv = AuthManager::instance()->getServer(ix);
         int ping = AuthManager::instance()->pingFromServerIx(ix);
         QString s0 = srv.name;
@@ -181,7 +161,7 @@ void Scr_Map::RePopulateLocations(bool random)
         if (ping > -1)
             s1 += " / " + QString::number(ping) + "ms";
         s0 += "\t\t";				// HACK: override width
-        ui->dd_Location->addItem(s0);
+        ui->locationComboBox->addItem(s0);
     }
 
 // TODO: -0 for other encryptions does not work
@@ -213,10 +193,10 @@ void Scr_Map::RePopulateLocations(bool random)
                         }
             */
             int new_row = -1;
-            for (size_t k = 0; k < _srvIds.size(); ++k) {
-                if (_srvIds.at(k) == ixoldsrv) {
+            for (size_t k = 0; k < mServerIds.size(); ++k) {
+                if (mServerIds.at(k) == ixoldsrv) {
                     // srv id match: ensure this is the same server after list updated
-                    if (oldsrv == AuthManager::instance()->getServer(_srvIds.at(k)).name) {
+                    if (oldsrv == AuthManager::instance()->getServer(mServerIds.at(k)).name) {
                         new_row = k;
                         break;
                     }
@@ -227,8 +207,8 @@ void Scr_Map::RePopulateLocations(bool random)
                 // lookup by name
                 int ixnew = AuthManager::instance()->serverIxFromName(oldsrv);
                 if (ixnew > -1) {
-                    for (size_t k = 0; k < _srvIds.size(); ++k) {
-                        if (_srvIds.at(k) == ixnew) {
+                    for (size_t k = 0; k < mServerIds.size(); ++k) {
+                        if (mServerIds.at(k) == ixnew) {
                             new_row = k;
                             break;
                         }
@@ -238,12 +218,12 @@ void Scr_Map::RePopulateLocations(bool random)
 
             if (new_row == -1) {
                 // lookup by name
-                if (!_IsShowNodes && oldShownodes) {
+                if (!mShowingNodes && oldShownodes) {
                     // all -->> hubs
                     int newhubix = AuthManager::instance()->hubIxFromServerName(oldsrv);
                     if (newhubix > -1) {
-                        for (size_t k = 0; k < _srvIds.size(); ++k) {
-                            if (_srvIds.at(k) == newhubix) {
+                        for (size_t k = 0; k < mServerIds.size(); ++k) {
+                            if (mServerIds.at(k) == newhubix) {
                                 new_row = k;
                                 break;
                             }
@@ -254,47 +234,63 @@ void Scr_Map::RePopulateLocations(bool random)
             if (new_row != -1)
                 toselect = new_row + 1;
             else
-                toselect = qrand() % ui->dd_Location->count() + 1;
+                toselect = qrand() % ui->locationComboBox->count() + 1;
         }
     }
-    ui->dd_Location->setCurrentIndex(toselect);
+    ui->locationComboBox->setCurrentIndex(toselect);
 }
 
-int Scr_Map::SrvIxFromLineIx(int row_id)
+int MapScreen::serverIndexFromLineIndex(int row_id)
 {
     int ixsrv = -1;
-    if (row_id > -1 && row_id < _srvIds.size())
-        ixsrv = _srvIds.at(row_id);
+    if (row_id > -1 && row_id < mServerIds.size())
+        ixsrv = mServerIds.at(row_id);
     return ixsrv;
 }
 
-void Scr_Map::closeEvent(QCloseEvent * event)
+bool MapScreen::useServerColumn()
+{
+    return mUseServerColumn;
+}
+
+void MapScreen::closeEvent(QCloseEvent * event)
 {
     event->ignore();
     WndManager::Instance()->HideThis(this);
 }
 
-Scr_Map::~Scr_Map()
+MapScreen::~MapScreen()
 {
     delete ui;
 }
 
-std::auto_ptr<Scr_Map> Scr_Map::_inst;
-Scr_Map * Scr_Map::Instance()
+std::auto_ptr<MapScreen> MapScreen::mInstance;
+MapScreen * MapScreen::instance()
 {
-    if (!_inst.get())
-        _inst.reset(new Scr_Map());
-    return _inst.get();
+    if (!mInstance.get())
+        mInstance.reset(new MapScreen());
+    return mInstance.get();
 }
 
-int Scr_Map::CurrSrv()
+bool MapScreen::exists()
+{
+    return (mInstance.get() != NULL);
+}
+
+void MapScreen::cleanup()
+{
+    if (mInstance.get() != NULL)
+        delete mInstance.release();
+}
+
+int MapScreen::currentServerId()
 {
     int srv = -1;
-    int ix = ui->dd_Location->currentIndex();
+    int ix = ui->locationComboBox->currentIndex();
     if(ix > 0) {
         size_t id = ix -1;
-        if (!_srvIds.empty() && id < _srvIds.size()) {
-            srv = _srvIds.at(id);
+        if (!mServerIds.empty() && id < mServerIds.size()) {
+            srv = mServerIds.at(id);
         }
         /*
         if (_IsShowNodes)
@@ -306,56 +302,43 @@ int Scr_Map::CurrSrv()
     return srv;
 }
 
-void Scr_Map::SwitchToNextNode()
+void MapScreen::switchToNextNode()
 {
-    int ix = ui->dd_Location->currentIndex();
+    int ix = ui->locationComboBox->currentIndex();
     if(ix > 0) {
         ++ix;
-        if (ix >= ui->dd_Location->count())
+        if (ix >= ui->locationComboBox->count())
             ix = 1;
-        ui->dd_Location->setCurrentIndex(ix);
+        ui->locationComboBox->setCurrentIndex(ix);
     }
 }
 
-void Scr_Map::repopulateLocations()
+void MapScreen::repopulateLocations()
 {
-    RePopulateLocations();
+    repopulateLocations(false);
 }
 
-void Scr_Map::ToScr_Connect()
+void MapScreen::on_backButton_clicked()
 {
-    int srv = CurrSrv();
+    int srv = currentServerId();
     ConnectionDialog::instance()->setServer(srv);
-    ConnectionDialog::instance()->setProtocol(ui->dd_Protocol->currentIndex() - 1);
+    ConnectionDialog::instance()->setProtocol(ui->protocolComboBox->currentIndex() - 1);
     WndManager::Instance()->ToPrimary();
 }
 
-void Scr_Map::ToScr_Settings()
+void MapScreen::on_settingsButton_clicked()
 {
     WndManager::Instance()->ToSettings();
 }
 
-void Scr_Map::Clicked_b_Connect()
+void MapScreen::on_connectButton_clicked()
 {
     OpenvpnManager::instance()->start();
 }
 
-void Scr_Map::Clicked_b_Tmp()
+void MapScreen::protocolChanged()
 {
-//	QString s;
-//	 int x = ui->e_x->text().toInt();
-//	 int y = ui->e_y->text().toInt();
-//	 //s.sprintf("%u, %u", _curr.x(), _curr.y());
-//	 s.sprintf("%u, %u", x, y);
-//	 qDebug() << s;
-}
-
-void Scr_Map::mouseMoveEvent(QMouseEvent *event)
-{
-//   _curr = event->pos();
-//	QString s;
-//   s.sprintf("%u, %u", _curr.x(), _curr.y());
-//	this->setWindowTitle(s);
+    ui->protocolComboBox->setCurrentIndex(Setting::instance()->currentProtocol());
 }
 
 static const char * const gs_stIcon1 = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-1.png);\n}";
@@ -363,20 +346,20 @@ static const char * const gs_stIcon2 = "QLabel\n{\n	border:0px;\n	color: #ffffff
 static const char * const gs_stIcon2inact = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-2-inactive.png);\n}";
 static const char * const gs_stIconV = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-v.png);\n}";
 
-void Scr_Map::Changed_dd_Protocol(int ix)
+void MapScreen::on_protocolComboBox_currentIndexChanged(int ix)
 {
-    if (_repopulation_inprogress)
+    if (mRepopulationInProgress)
         return;
 
     if (ix > 0) {
-        ui->dd_Location->setEnabled(true);
+        ui->locationComboBox->setEnabled(true);
         ui->L_1->setStyleSheet(gs_stIconV);
-        if (ui->dd_Location->currentIndex() > 0)
+        if (ui->locationComboBox->currentIndex() > 0)
             ui->L_2->setStyleSheet(gs_stIconV);
         else
             ui->L_2->setStyleSheet(gs_stIcon2);
     } else {
-        ui->dd_Location->setEnabled(false);
+        ui->locationComboBox->setEnabled(false);
         ui->L_1->setStyleSheet(gs_stIcon1);
         ui->L_2->setStyleSheet(gs_stIcon2inact);
     }
@@ -385,7 +368,7 @@ void Scr_Map::Changed_dd_Protocol(int ix)
     Setting::instance()->setProtocol(ix - 1);
 }
 
-void Scr_Map::Changed_dd_Sever(int ix)
+void MapScreen::on_locationComboBox_currentIndexChanged(int ix)
 {
     int ixsrv = -1;
     if (ix > 0) {
@@ -395,7 +378,7 @@ void Scr_Map::Changed_dd_Sever(int ix)
 //				ixsrv = ix - 1;
 //			else
 //				ixsrv = AuthManager::Instance()->ServerIdFromHubId(ix - 1);
-            ixsrv = CurrSrv();
+            ixsrv = currentServerId();
         }
         AuthManager::instance()->setNewIp("");
     } else {
@@ -403,30 +386,30 @@ void Scr_Map::Changed_dd_Sever(int ix)
     }
     AServer se = AuthManager::instance()->getServer(ixsrv);
     QString newsrv = se.name;
-    //= ui->dd_Location->currentText();
+    //= ui->locationComboBox->currentText();
     if (ConnectionDialog::exists())
         ConnectionDialog::instance()->setServer(ixsrv);
     Setting::instance()->setServer(ixsrv, newsrv);
 
-    DisplayMark(se.name);
+    displayMark(se.name);
 }
 
-void Scr_Map::DisplayMark(const QString & name)
+void MapScreen::displayMark(const QString & name)
 {
     QPoint p = flag::CoordsFromSrvName(name);
     if (p.x() == 0 && p.y() == 0)
-        p = _default;
+        p = mDefaultPoint;
     ui->L_Mark->move(p);
     ui->L_Mark->setText(flag::ShortName(name));
 }
 
-void Scr_Map::SetServer(int ixsrv)
+void MapScreen::setServer(int ixsrv)
 {
     int toselect = 0;
     const QList<int> & srvs = AuthManager::instance()->currentEncryptionServers();
     if (ixsrv > -1) {
-        if (_Encryption == ENCRYPTION_RSA) {
-            if (_IsShowNodes)
+        if (mEncryption == ENCRYPTION_RSA) {
+            if (mShowingNodes)
                 toselect = ixsrv + 1;
             else
                 toselect = AuthManager::instance()->hubIdFromServerId(ixsrv) + 1;
@@ -442,80 +425,37 @@ void Scr_Map::SetServer(int ixsrv)
         }
     }
     if (!srvs.empty())
-        ui->dd_Location->setCurrentIndex(toselect);
+        ui->locationComboBox->setCurrentIndex(toselect);
 }
 
-void Scr_Map::SetProtocol(int ix)
+void MapScreen::setProtocol(int ix)
 {
-    ui->dd_Protocol->setCurrentIndex(ix + 1);
+    ui->protocolComboBox->setCurrentIndex(ix + 1);
 }
 
-int Scr_Map::CurrProto()
+int MapScreen::currentProtocol()
 {
-    return ui->dd_Protocol->currentIndex() - 1;
+    return ui->protocolComboBox->currentIndex() - 1;
 }
 
-void Scr_Map::StatusConnecting()
+void MapScreen::statusConnecting()
 {
-    ui->b_Connect->setEnabled(false);
+    ui->connectButton->setEnabled(false);
     // TODO: -1 CANCEL button
 }
 
-void Scr_Map::StatusConnected()
+void MapScreen::statusConnected()
 {
     ;
 }
 
-void Scr_Map::StatusDisconnected()
+void MapScreen::statusDisconnected()
 {
-    ui->b_Connect->setEnabled(true);
+    ui->connectButton->setEnabled(true);
 }
 
-void Scr_Map::keyPressEvent(QKeyEvent * e)
+void MapScreen::keyPressEvent(QKeyEvent * e)
 {
     if(e->key() != Qt::Key_Escape)
         QDialog::keyPressEvent(e);
 }
-
-
-bool Scr_Map::eventFilter(QObject *obj, QEvent *event)
-{
-    switch (event->type()) {
-    case QEvent::MouseMove: {
-        if (_moving) {
-            QPoint d = QCursor::pos() - _CursorStart;
-            if (d.x() != 0 || d.y() != 0) {
-                QPoint NewAbs = _WndStart + d;
-                this->move(NewAbs);
-            }
-        }
-        return false;
-    }
-    case QEvent::MouseButtonRelease: {
-        _moving = false;
-//			_WndStart = pos();
-        return false;
-    }
-    default:
-        return QDialog::eventFilter(obj, event);
-    }
-}
-
-void Scr_Map::Pressed_Head()
-{
-    _WndStart = this->pos();
-    _CursorStart = QCursor::pos();
-    _moving = true;
-}
-
-void Scr_Map::Clicked_Min()
-{
-    WndManager::Instance()->HideThis(this);
-}
-
-void Scr_Map::Clicked_Cross()
-{
-    LoginWindow::Instance()->quitApplication();
-}
-
-

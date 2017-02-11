@@ -25,7 +25,7 @@
 #include "log.h"
 #include "authmanager.h"
 #include "setting.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 
 void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option,
                           const QModelIndex & index) const
@@ -40,8 +40,8 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
 //	bool nodes = Setting::Instance()->IsShowNodes();
 //	if (id > -1)
 //		idsrv = nodes ? id : AuthManager::Instance()->ServerIdFromHubId(id);
-    if (Scr_Map::IsExists() && id > -1) {
-        idsrv = Scr_Map::Instance()->SrvIxFromLineIx(id);
+    if (MapScreen::exists() && id > -1) {
+        idsrv = MapScreen::instance()->serverIndexFromLineIndex(id);
     }
     AServer sr = AuthManager::instance()->getServer(idsrv);	//AServer sr = nodes ? 	AuthManager::Instance()->GetSrv(id) : AuthManager::Instance()->GetHub(id);
 
@@ -54,13 +54,13 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
 
     bool selected = option.state & QStyle::State_Selected;
     bool checked = !(option.state & QStyle::State_Selected);
-    if (Scr_Map::IsExists())
-        checked = checked && (Scr_Map::Instance()->CurrSrv() == idsrv);
+    if (MapScreen::exists())
+        checked = checked && (MapScreen::instance()->currentServerId() == idsrv);
 
     if (checked && !selected && id > -1) {
         static QString sthubs = ":/imgs/dd-selectionrow-244.png";
         static QString stsrvs = ":/imgs/dd-selectionrow-322.png";
-        QPixmap pm(Scr_Map::Instance()->UseSrvColl() ? stsrvs : sthubs);
+        QPixmap pm(MapScreen::instance()->useServerColumn() ? stsrvs : sthubs);
         painter->drawPixmap(option.rect, pm);
     }
 

@@ -24,7 +24,7 @@
 
 #include "scr_settings.h"
 #include "loginwindow.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 #include "scr_logs.h"
 #include "connectiondialog.h"
 
@@ -95,7 +95,7 @@ void WndManager::ToLogs()
 void WndManager::ToMap()
 {
     if (AuthManager::instance()->loggedIn())
-        trans(ScrVisible(), Scr_Map::Instance());
+        trans(ScrVisible(), MapScreen::instance());
     else
         ToLogin();
 }
@@ -168,9 +168,9 @@ void WndManager::CloseAll()
             SaveAndHide(Scr_Logs::Instance());
             ++visible;
         }
-    if (Scr_Map::IsExists())
-        if (Scr_Map::Instance()->isVisible()) {
-            SaveAndHide(Scr_Map::Instance());
+    if (MapScreen::exists())
+        if (MapScreen::instance()->isVisible()) {
+            SaveAndHide(MapScreen::instance());
             ++visible;
         }
     if (Scr_Settings::IsExists())
@@ -245,9 +245,9 @@ QWidget * WndManager::ScrVisible()
             w = Scr_Logs::Instance();
             ++visible;
         }
-    if (Scr_Map::IsExists())
-        if (Scr_Map::Instance()->isVisible()) {
-            w = Scr_Map::Instance();
+    if (MapScreen::exists())
+        if (MapScreen::instance()->isVisible()) {
+            w = MapScreen::instance();
             ++visible;
         }
     if (Scr_Settings::IsExists())
@@ -264,8 +264,8 @@ void WndManager::HandleConnecting()
     // disable buttons
     // change status label to connecting
     ConnectionDialog::instance()->statusConnecting();
-    if (Scr_Map::IsExists())
-        Scr_Map::Instance()->StatusConnecting();
+    if (MapScreen::exists())
+        MapScreen::instance()->statusConnecting();
     LoginWindow::Instance()->StatusConnecting();
 
     // if any form visible
@@ -288,8 +288,8 @@ void WndManager::HandleConnected()
 void WndManager::HandleDisconnected()
 {
     ConnectionDialog::instance()->statusDisconnected();
-    if (Scr_Map::IsExists())
-        Scr_Map::Instance()->StatusDisconnected();
+    if (MapScreen::exists())
+        MapScreen::instance()->statusDisconnected();
     LoginWindow::Instance()->StatusDisconnected();
     // TODO: -0
 }

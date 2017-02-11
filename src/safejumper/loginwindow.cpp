@@ -24,7 +24,7 @@
 #include "ui_loginwindow.h"
 #include "scr_settings.h"
 #include "scr_logs.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 #include "errordialog.h"
 #include "confirmationdialog.h"
 #include "trayiconmanager.h"
@@ -168,7 +168,7 @@ LoginWindow::~LoginWindow()
     OpenvpnManager::cleanup();
     OsSpecific::cleanup();
     Scr_Logs::Cleanup();
-    Scr_Map::Cleanup();
+    MapScreen::cleanup();
     Scr_Settings::Cleanup();
     Setting::cleanup();
     WndManager::Cleanup();

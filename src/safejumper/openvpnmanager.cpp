@@ -25,7 +25,7 @@
 
 #include "authmanager.h"
 #include "osspecific.h"
-#include "scr_map.h"
+#include "mapscreen.h"
 #include "wndmanager.h"
 #include "setting.h"
 #include "log.h"
@@ -72,7 +72,7 @@ OpenvpnManager * OpenvpnManager::instance()
 
 void OpenvpnManager::startWithServer(size_t srv)
 {
-    Scr_Map::Instance()->SetServer(srv);
+    MapScreen::instance()->setServer(srv);
     start();
 }
 
