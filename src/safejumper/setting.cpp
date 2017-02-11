@@ -20,8 +20,6 @@
 
 #include <stdexcept>
 
-#include "connectiondialog.h"
-#include "mapscreen.h"
 #include "common.h"
 #include "authmanager.h"
 #include "osspecific.h"
@@ -374,13 +372,12 @@ void Setting::setProtocol(int ix)
 void Setting::loadProtocol()
 {
     _loading_protocol = true;
-    QSettings settings;
-    int ix = settings.value(ProtocolSettingsName(), -1).toInt();
+    int ix = mSettings.value(ProtocolSettingsName(), -1).toInt();
     if (ix > -1) {
         if (ix >= (int)currentEncryptionProtocols().size())
             ix = -1;
         else {
-            QString s = settings.value(ProtocolSettingsStrName(), "").toString();
+            QString s = mSettings.value(ProtocolSettingsStrName(), "").toString();
             if (s != currentEncryptionProtocols().at(ix))
                 ix = -1;
         }
@@ -417,11 +414,13 @@ int Setting::currentProtocol()
     return mSettings.value(ProtocolSettingsName(), -1).toInt();
 }
 
-void Setting::setServer(int ixsrv, const QString & newsrv)
+void Setting::setServer(int ixsrv)
 {
-    QSettings settings;
-    settings.setValue(LocationSettingsName(), ixsrv);
-    settings.setValue(LocationSettingsStrName(), newsrv);
+    AServer se = AuthManager::instance()->getServer(ixsrv);
+    QString newsrv = se.name;
+    mSettings.setValue(LocationSettingsName(), ixsrv);
+    mSettings.setValue(LocationSettingsStrName(), newsrv);
+    emit serverChanged();
 }
 
 void Setting::loadServer()
@@ -432,9 +431,8 @@ void Setting::loadServer()
         return;		// cannot select in empty list
     }
 
-    QSettings settings;
-    int savedsrv = settings.value(LocationSettingsName(), -1).toInt();
-    QString savedname = settings.value(LocationSettingsStrName(), "undefined").toString();
+    int savedsrv = mSettings.value(LocationSettingsName(), -1).toInt();
+    QString savedname = mSettings.value(LocationSettingsStrName(), "undefined").toString();
     log::logt("In Setting::loadServer previously saved server name is " + savedname);
     log::logt("Previously saved server index is " + QString::number(savedsrv));
 
@@ -463,16 +461,13 @@ void Setting::loadServer()
     log::logt("Setting::loadServer server index to set is " + QString::number(ixsrv));
     // initiate population of the Location drop-down;
     // will call Setting::IsShowNodes() which will initiate scr_settings and load checkboxes
-    MapScreen * sm = MapScreen::instance();
-
-    sm->setServer(ixsrv);   // will trigger if differs
-    ConnectionDialog::instance()->setServer(ixsrv);
+    setServer(ixsrv);
 }
 
 QString Setting::serverAddress()
 {
     QString s;
-    int ix = MapScreen::instance()->currentServerId();
+    int ix = serverID();
     if (ix > -1)
         s = AuthManager::instance()->getServer(ix).address;
     return s;
@@ -480,7 +475,7 @@ QString Setting::serverAddress()
 
 int Setting::serverID()
 {
-    return MapScreen::instance()->currentServerId();
+    return mSettings.value(LocationSettingsName()).toInt();
 }
 
 QString Setting::port()
@@ -513,7 +508,14 @@ void Setting::switchToNextPort()
 
 void Setting::switchToNextNode()
 {
-    MapScreen::instance()->switchToNextNode();
+    // Get the current encryption server ids list
+    QList<int> ids = AuthManager::instance()->currentEncryptionServers();
+    // Find the current server
+    int ix = serverID();
+    // Go to the next one
+    int which = ids.indexOf(ix);
+    if (which != -1 && which + 1 < ids.size())
+        setServer(ids.at(which + 1));
 }
 
 QString Setting::localPort()
@@ -589,8 +591,7 @@ static const char * gs_undefined = "undefined";
 bool Setting::checkForUpdates()
 {
     bool is = true;
-    QSettings settings;
-    QString saved = settings.value(gs_upd_name, gs_undefined).toString();
+    QString saved = mSettings.value(gs_upd_name, gs_undefined).toString();
     if (saved != gs_undefined) {
         uint curr = QDateTime::currentDateTimeUtc().toTime_t();
         bool ok;
@@ -607,9 +608,8 @@ bool Setting::checkForUpdates()
 
 void Setting::updateMessageShown()
 {
-    QSettings settings;
     uint t = QDateTime::currentDateTimeUtc().toTime_t();
-    settings.setValue(gs_upd_name, QString::number(t));
+    mSettings.setValue(gs_upd_name, QString::number(t));
 }
 
 

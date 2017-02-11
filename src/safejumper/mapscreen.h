@@ -72,7 +72,8 @@ private slots:
     void on_settingsButton_clicked();
     void on_connectButton_clicked();
 
-    void protocolChanged(); // slot for reacting to Setting protocolChanged signal
+    void updateProtocol(); // slot for reacting to Setting protocolChanged signal
+    void updateLocation(); // slot for reacting to Setting locationChanged signal
 private:
     void setRowStyle(bool show_nodes);
     void displayMark(const QString & name);
@@ -85,12 +86,7 @@ private:
     bool mUseServerColumn;
     std::vector<int> mServerIds;
     QPoint mDefaultPoint;
-    bool mMoving;
-    QPoint mWindowStartPoint;
-    QPoint mCursorStartPoint;
     bool mRepopulationInProgress;
-    QPoint mCurrentPoint;
-
 };
 
 #endif // MAPSCREEN_H

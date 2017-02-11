@@ -39,12 +39,11 @@
 
 MapScreen::MapScreen(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::MapScreen)
-    , mMoving(false)
-    , mRepopulationInProgress(false)
-    , mUseServerColumn(true)
-    , mShowingNodes(true)
-    , mEncryption(0)
+    ui(new Ui::MapScreen),
+    mRepopulationInProgress(false),
+    mUseServerColumn(true),
+    mShowingNodes(true),
+    mEncryption(0)
 {
     ui->setupUi(this);
     this->setFixedSize(this->size());
@@ -68,10 +67,12 @@ MapScreen::MapScreen(QWidget *parent) :
     ui->locationComboBox->setItemDelegate(new LvRowDelegate(this));
 
 //	setMouseTracking(true); // E.g. set in your constructor of your widget.
-    connect(Setting::instance(), SIGNAL(showNodesChanged()),
-            this, SLOT(repopulateLocations()));
-    connect(Setting::instance(), SIGNAL(protocolChanged()),
-            this, SLOT(protocolChanged()));
+    connect(Setting::instance(), &Setting::showNodesChanged,
+            this, &MapScreen::repopulateProtocols);
+    connect(Setting::instance(), &Setting::protocolChanged,
+            this, &MapScreen::updateProtocol);
+    connect(Setting::instance(), &Setting::serverChanged,
+            this, &MapScreen::updateLocation);
 }
 
 
@@ -336,9 +337,14 @@ void MapScreen::on_connectButton_clicked()
     OpenvpnManager::instance()->start();
 }
 
-void MapScreen::protocolChanged()
+void MapScreen::updateProtocol()
 {
-    ui->protocolComboBox->setCurrentIndex(Setting::instance()->currentProtocol());
+    ui->protocolComboBox->setCurrentIndex(Setting::instance()->currentProtocol() + 1);
+}
+
+void MapScreen::updateLocation()
+{
+    setServer(Setting::instance()->serverID());
 }
 
 static const char * const gs_stIcon1 = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-1.png);\n}";
@@ -373,23 +379,14 @@ void MapScreen::on_locationComboBox_currentIndexChanged(int ix)
     int ixsrv = -1;
     if (ix > 0) {
         ui->L_2->setStyleSheet(gs_stIconV);
-        if (ConnectionDialog::exists()) {
-//			if (_IsShowNodes)
-//				ixsrv = ix - 1;
-//			else
-//				ixsrv = AuthManager::Instance()->ServerIdFromHubId(ix - 1);
-            ixsrv = currentServerId();
-        }
+        ixsrv = currentServerId();
         AuthManager::instance()->setNewIp("");
     } else {
         ui->L_2->setStyleSheet(gs_stIcon2);
     }
     AServer se = AuthManager::instance()->getServer(ixsrv);
     QString newsrv = se.name;
-    //= ui->locationComboBox->currentText();
-    if (ConnectionDialog::exists())
-        ConnectionDialog::instance()->setServer(ixsrv);
-    Setting::instance()->setServer(ixsrv, newsrv);
+    Setting::instance()->setServer(ixsrv);
 
     displayMark(se.name);
 }

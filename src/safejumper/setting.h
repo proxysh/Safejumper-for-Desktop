@@ -65,7 +65,7 @@ public:
     bool testing();
     void setTesting(bool value);
 
-    void setServer(int ixsrv, const QString & newsrv);
+    void setServer(int ixsrv);
     void loadServer();
 
     void setProtocol(int ix);  // -1 for not selected
@@ -115,6 +115,7 @@ signals:
     void detectInsecureWifiChanged();
     void encryptionChanged();
     void protocolChanged();
+    void serverChanged();
 
 private:
     Setting();
