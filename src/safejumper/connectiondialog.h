@@ -45,8 +45,6 @@ public:
 
     void setServer(int srv);	// -1 or id inside all servers
     void updateNewIP(const QString & s);
-    void updateEncoding();
-
 
     void setVPNName(const QString & vpnname);
     void statusConnecting();
@@ -87,6 +85,7 @@ private slots:
     void showLoginWindow();
     void showMapWindow();
     void showPackageUrl();
+    void updateEncryption();
 
 protected:
     virtual void closeEvent(QCloseEvent * event);

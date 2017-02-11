@@ -20,14 +20,11 @@
 
 #include <stdexcept>
 
-#include "scr_settings.h"
-#include "scr_map.h"
 #include "connectiondialog.h"
 #include "scr_map.h"
 #include "common.h"
 #include "authmanager.h"
-#include "loginwindow.h"
-#include "trayiconmanager.h"
+#include "osspecific.h"
 #include "log.h"
 
 
@@ -215,7 +212,17 @@ void Setting::setShowNodes(bool v)
 
 bool Setting::disableIPv6()
 {
-    return Scr_Settings::Instance()->Is_cb_DisableIpv6();
+    return mSettings.value("cb_DisableIpv6", true).toBool();
+}
+
+void Setting::setDisableIPv6(bool v)
+{
+    mSettings.setValue("cb_DisableIpv6", v);
+    try {
+        OsSpecific::instance()->setIPv6(!v);
+    } catch(std::exception & ex) {
+        log::logt(ex.what());
+    }
 }
 
 bool Setting::autoconnect()
@@ -223,19 +230,40 @@ bool Setting::autoconnect()
     return mSettings.value("cb_AutoConnect", false).toBool();
 }
 
+void Setting::setAutoconnect(bool v)
+{
+    mSettings.setValue("cb_AutoConnect", v);
+}
+
 bool Setting::detectInsecureWifi()
 {
-    return Scr_Settings::Instance()->Is_cb_InsecureWiFi();
+    return mSettings.value("cb_InsecureWiFi", false).toBool();
+}
+
+void Setting::setDetectInsecureWifi(bool v)
+{
+    mSettings.setValue("cb_InsecureWiFi", v);
+    emit detectInsecureWifiChanged(); // Send signal so login window can start wifi watcher timer
 }
 
 bool Setting::blockOnDisconnect()
 {
-    return Scr_Settings::Instance()->Is_cb_BlockOnDisconnect();
+    return mSettings.value("cb_BlockOnDisconnect", false).toBool();
+}
+
+void Setting::setBlockOnDisconnect(bool v)
+{
+    mSettings.setValue("cb_BlockOnDisconnect", v);
 }
 
 bool Setting::fixDns()
 {
-    return Scr_Settings::Instance()->Is_cb_FixDnsLeak();
+    return mSettings.value("cb_FixDnsLeak", true).toBool();
+}
+
+void Setting::setFixDns(bool v)
+{
+    mSettings.setValue("cb_FixDnsLeak", v);
 }
 
 bool Setting::testing()
@@ -250,20 +278,40 @@ void Setting::setTesting(bool value)
 
 bool Setting::startup()
 {
-    return Scr_Settings::Instance()->Is_cb_Startup();
+    return mSettings.value("cb_Startup", true).toBool();
+}
+
+void Setting::setStartup(bool v)
+{
+    mSettings.setValue("cb_Startup", v);
+    // Do the OsSpecific stuff to make it happen
+    OsSpecific::instance()->setStartup(v);
 }
 
 bool Setting::reconnect()
 {
-    return Scr_Settings::Instance()->Is_cb_Reconnect();
+    return mSettings.value("cb_Reconnect", true).toBool();
+}
+
+void Setting::setReconnect(bool v)
+{
+    mSettings.setValue("cb_Reconnect", v);
 }
 
 int Setting::encryption()
 {
-    int encryption = Scr_Settings::Instance()->Encryption();
-    if (encryption < 0 || encryption >= ENCRYPTION_COUNT)
-        throw std::runtime_error("invalid encryption index");
-    return encryption;
+    int enc = mSettings.value("dd_Encryption", 0).toInt();
+    if (enc < 0 || enc >= ENCRYPTION_COUNT)
+        enc = 0;
+    return enc;
+}
+
+void Setting::setEncryption(int enc)
+{
+    if (enc > 0 && enc < ENCRYPTION_COUNT && enc != mSettings.value("dd_Encryption", 0).toInt()) {
+        mSettings.setValue("dd_Encryption", enc);
+        emit encryptionChanged();
+    }
 }
 
 const char * Setting::encryptionName(size_t enc)
@@ -361,6 +409,11 @@ const QString & Setting::currentProtocolName()
     return protocolName(currentProtocol());
 }
 
+const QString Setting::forwardPortsString()
+{
+    return mSettings.value("e_Ports", "").toString();
+}
+
 int Setting::currentProtocol()
 {
     // TODO: -2 from saved settings when Scr_Map unavailable
@@ -411,7 +464,9 @@ void Setting::loadServer()
         ixsrv = AuthManager::instance()->getServerToJump();
 
     log::logt("Setting::loadServer server index to set is " + QString::number(ixsrv));
-    Scr_Map * sm = Scr_Map::Instance(); // initiate population of the Location drop-down; will call Setting::IsShowNodes() which will initiate scr_settings and load checkboxes
+    // initiate population of the Location drop-down;
+    // will call Setting::IsShowNodes() which will initiate scr_settings and load checkboxes
+    Scr_Map * sm = Scr_Map::Instance();
 
     sm->SetServer(ixsrv);   // will trigger if differs
     ConnectionDialog::instance()->setServer(ixsrv);
@@ -435,10 +490,10 @@ QString Setting::port()
 {
     int ix = Scr_Map::Instance()->CurrProto();
     int p = 80;
-    int encryption = Scr_Settings::Instance()->Encryption();
-    if (encryption < 0 || encryption > ENCRYPTION_COUNT)
+    int enc = encryption();
+    if (enc < 0 || enc > ENCRYPTION_COUNT)
         throw std::runtime_error("invalid encryption index");
-    std::vector<int> & v_ports = mPorts[encryption];
+    std::vector<int> & v_ports = mPorts[enc];
     if (ix > -1 && ix < (int)v_ports.size())
         p = v_ports[ix];
     return QString::number(p);
@@ -488,10 +543,10 @@ int Setting::determineNextPort()
 {
     int ix = Scr_Map::Instance()->CurrProto();
     ++ix;
-    int encryption = Scr_Settings::Instance()->Encryption();
-    if (encryption < 0 || encryption > ENCRYPTION_COUNT)
+    int enc = encryption();
+    if (enc < 0 || enc > ENCRYPTION_COUNT)
         throw std::runtime_error("invalid encryption index");
-    std::vector<int> & v_ports = mPorts[encryption];
+    std::vector<int> & v_ports = mPorts[enc];
     if (ix >= (int)v_ports.size())
         ix = 0;
     return ix;
@@ -510,10 +565,17 @@ void Setting::switchToNextNode()
 
 QString Setting::localPort()
 {
-    QString p = Scr_Settings::Instance()->LocalPort();
+    QString p = mSettings.value("e_LocalPort", "9090").toString();
     if (p.isEmpty())
         p = "6842";
     return p;
+}
+
+void Setting::setLocalPort(QString port)
+{
+    if (IsValidPort(port)) {
+        mSettings.setValue("e_LocalPort", port);
+    }
 }
 
 QString Setting::tcpOrUdp()
@@ -527,20 +589,46 @@ QString Setting::tcpOrUdp()
 
 QString Setting::dns1()
 {
-    return Scr_Settings::Instance()->Dns1();
+    return mSettings.value("e_PrimaryDns", "").toString();
+}
+
+void Setting::setDNS1(QString value)
+{
+    mSettings.setValue("e_PrimaryDns", value);
 }
 
 QString Setting::dns2()
 {
-    return Scr_Settings::Instance()->Dns2();
+    return mSettings.value("e_SecondaryDns", "").toString();
+}
+
+void Setting::setDNS2(QString value)
+{
+    mSettings.setValue("e_SecondaryDns", value);
 }
 
 UVec Setting::forwardPorts()
 {
-    USet s = Scr_Settings::Instance()->Ports();
-    UVec v(s.begin(), s.end());
+    QString portsString = forwardPortsString();
+    bool valid = true;
+    UVec v;
+    QStringList pp = portsString.split(",");
+    for (int k = 0; k < pp.length() && valid; ++k) {
+        if (!IsValidPort(pp[k])) {
+            valid = false;
+            v.clear();
+        } else {
+            v.push_back(pp[k].toInt());
+        }
+    }
+
     std::sort(v.begin(), v.end());
     return v;
+}
+
+void Setting::setForwardPorts(QString portsString)
+{
+    mSettings.setValue("e_Ports", portsString);
 }
 
 static const char * gs_upd_name = "LastUpdMsg";

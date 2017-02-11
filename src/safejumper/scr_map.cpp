@@ -109,7 +109,7 @@ void Scr_Map::RePopulateProtocols()
 {
     _repopulation_inprogress = true;
 
-    const std::vector<QString> & v = Setting::allProtocols();
+    const std::vector<QString> & v = Setting::instance()->allProtocols();
     ui->dd_Protocol->clear();
     ui->dd_Protocol->addItem(PROTOCOL_SELECTION_STR);
     for (size_t k = 0; k < v.size(); ++k)

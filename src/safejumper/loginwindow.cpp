@@ -106,6 +106,9 @@ LoginWindow::LoginWindow(QWidget *parent) :
 //	WndManager::DoShape(this);
 
     QTimer::singleShot(210, this, SLOT(Timer_Constructed()));
+
+    connect(Setting::instance(), SIGNAL(detectInsecureWifiChanged()),
+            this, SLOT(detectInsecureWifiChanged()));
 }
 
 void LoginWindow::on_rememberMeButton_toggled()
@@ -338,6 +341,14 @@ void LoginWindow::checkWifi()
     }
 }
 
+void LoginWindow::detectInsecureWifiChanged()
+{
+    if (Setting::instance()->detectInsecureWifi())
+        LoginWindow::Instance()->startWifiWatcher();
+    else
+        LoginWindow::Instance()->stopWifiWatcher();
+}
+
 void LoginWindow::BlockOnDisconnect()
 {
     // implementation is the same as in the old Safejumper
@@ -368,7 +379,7 @@ void LoginWindow::loggedIn()
     log::logt("LoginWindow loggedIn called");
     saveCredentials();
 
-    if (Setting::encryption() == ENCRYPTION_RSA)
+    if (Setting::instance()->encryption() == ENCRYPTION_RSA)
         Setting::instance()->loadServer();
 
     // TODO: -0

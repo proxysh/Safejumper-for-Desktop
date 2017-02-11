@@ -44,7 +44,7 @@ void LvRowDelegateProtocol::paint(QPainter * painter, const QStyleOptionViewItem
         static int margin_left = 5;		// padding-left: 10px;
         QRect L = option.rect.adjusted(margin_left, 0, 0, 0);
         painter->setPen(white);
-        painter->drawText(L, Qt::AlignLeft | Qt::AlignVCenter, id < 0 ? PROTOCOL_SELECTION_STR : Setting::allProtocols().at(id));
+        painter->drawText(L, Qt::AlignLeft | Qt::AlignVCenter, id < 0 ? PROTOCOL_SELECTION_STR : Setting::instance()->allProtocols().at(id));
     }
 
     painter->restore();

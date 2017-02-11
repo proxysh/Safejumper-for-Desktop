@@ -42,13 +42,26 @@ public:
     void setShowNodes(bool v);
 
     bool disableIPv6();
+    void setDisableIPv6(bool v);
 
     bool autoconnect();
+    void setAutoconnect(bool v);
+
     bool startup();
+    void setStartup(bool v);
+
     bool reconnect();
+    void setReconnect(bool v);
+
     bool detectInsecureWifi();
+    void setDetectInsecureWifi(bool v);
+
     bool blockOnDisconnect();
+    void setBlockOnDisconnect(bool v);
+
     bool fixDns();
+    void setFixDns(bool v);
+
     bool testing();
     void setTesting(bool value);
 
@@ -62,22 +75,29 @@ public:
     QString serverAddress();			// "" if none
     int serverID();				// -1 if none selected
     QString port();				// "" if none
+
     QString localPort();
+    void setLocalPort(QString port);
+
     QString tcpOrUdp();			// "tcp" : "udp"
 
     QString dns1();				// empty string if none / not valid
+    void setDNS1(QString value);
     QString dns2();				//
+    void setDNS2(QString value);
 
     void setDefaultDNS(const QString & dns1, const QString & dns2);
     QString defaultDNS1();
     QString defaultDNS2();
 
-    static const std::vector<QString> & allProtocols();
-    static const std::vector<int> & allPorts();
-    static const QString & protocolName(int ix);
+    const std::vector<QString> & allProtocols();
+    const std::vector<int> & allPorts();
+    const QString & protocolName(int ix);
     const QString & currentProtocolName();
 
+    const QString forwardPortsString();
     UVec forwardPorts();		// load from the GUI; parse errors skipped - GUI should handle errors; empty vector if none
+    void setForwardPorts(QString portsString);
 
     bool checkForUpdates();
     void updateMessageShown();
@@ -85,12 +105,16 @@ public:
     void switchToNextPort();
     void switchToNextNode();
 
-    static int encryption();
+    int encryption();
+    void setEncryption(int enc);
 
     static const char * encryptionName(size_t enc);
 
 signals:
     void showNodesChanged();
+    void detectInsecureWifiChanged();
+    void encryptionChanged();
+
 private:
     Setting();
     static std::auto_ptr<Setting> mInstance;

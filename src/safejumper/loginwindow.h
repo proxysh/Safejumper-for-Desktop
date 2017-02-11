@@ -77,6 +77,7 @@ private slots:
     void Timer_Constructed();
     void checkWifi();
 
+    void detectInsecureWifiChanged();
 private:
     Ui::LoginWindow *ui;
     explicit LoginWindow(QWidget *parent = 0);

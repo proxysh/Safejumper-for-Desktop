@@ -98,7 +98,7 @@ void OpenvpnManager::launchOpenvpn()
             QFile::remove(PathHelper::Instance()->safejumperLogFilename());
         }
         setState(ovsConnecting);
-        int enc = Setting::encryption();
+        int enc = Setting::instance()->encryption();
         bool obfs = (enc == ENCRYPTION_TOR_OBFS2 ||
                      enc == ENCRYPTION_TOR_OBFS3 ||
                      enc == ENCRYPTION_TOR_SCRAMBLESUIT);
@@ -265,7 +265,7 @@ void OpenvpnManager::processStarted()
 
 bool OpenvpnManager::writeConfigFile()
 {
-    int enc = Setting::encryption();
+    int enc = Setting::instance()->encryption();
     bool obfs = (enc == ENCRYPTION_TOR_OBFS2 ||
                  enc == ENCRYPTION_TOR_OBFS3 ||
                  enc == ENCRYPTION_TOR_SCRAMBLESUIT);
@@ -374,7 +374,7 @@ bool OpenvpnManager::writeConfigFile()
 QStringList OpenvpnManager::getOpenvpnArgs()
 {
     QStringList args;
-    int enc = Setting::encryption();
+    int enc = Setting::instance()->encryption();
 //          << "--auth-nocache"
 #ifndef NO_PARAMFILE
     args << "--config" << PathHelper::Instance()->openvpnConfigFilename(); // /tmp/proxysh.ovpn
@@ -574,7 +574,7 @@ void OpenvpnManager::gotConnected(const QString & s)
     if (p > -1) {
         int p1 = s.indexOf(',', p + 1);
         QString ip = p1 > -1 ? s.mid(p + 1, p1 - p - 1) : s.mid(p + 1);
-        int enc = Setting::encryption();
+        int enc = Setting::instance()->encryption();
         if ((enc != ENCRYPTION_TOR_OBFS2) &&
                 enc != ENCRYPTION_TOR_OBFS3 &&
                 enc != ENCRYPTION_TOR_SCRAMBLESUIT) // for proxy it shows 127.0.0.1

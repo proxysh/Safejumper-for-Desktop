@@ -86,8 +86,11 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->L_Until->setText("active until\n-");
     ui->L_Amount->setText("-");
     setOldIP(AuthManager::instance()->oldIP());
-    updateEncoding();
+    updateEncryption();
     updateProtocol();
+
+    connect(Setting::instance(), SIGNAL(encryptionChanged()),
+            this, SLOT(updateEncryption()));
 }
 
 bool ConnectionDialog::exists()
@@ -149,9 +152,9 @@ void ConnectionDialog::updateNewIP(const QString & s)
     }
 }
 
-void ConnectionDialog::updateEncoding()
+void ConnectionDialog::updateEncryption()
 {
-    int enc = Setting::encryption();
+    int enc = Setting::instance()->encryption();
     ui->L_Encryption->setText(Setting::encryptionName(enc));
 }
 

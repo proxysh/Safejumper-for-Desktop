@@ -192,7 +192,7 @@ void AuthManager::setNewIp(const QString & ip)
 
 const QList<int> &AuthManager::currentEncryptionServers()
 {
-    int enc = Setting::encryption();
+    int enc = Setting::instance()->encryption();
     return mServerIds[enc];
 }
 
@@ -210,7 +210,7 @@ const QList<int> &AuthManager::currentEncryptionHubs()
             }
         }
     }
-    int enc = Setting::encryption();
+    int enc = Setting::instance()->encryption();
     return mHubIds[enc];
 }
 
@@ -391,7 +391,7 @@ void AuthManager::processEccServerNamesXml()
         mServerIds[ENCRYPTION_ECCXOR] = mServerIds[ENCRYPTION_ECC];
         forceRepopulation(ENCRYPTION_ECC);
         forceRepopulation(ENCRYPTION_ECCXOR);
-        if (Setting::encryption() != ENCRYPTION_RSA)
+        if (Setting::instance()->encryption() != ENCRYPTION_RSA)
             Setting::instance()->loadServer();
     }
 }
@@ -421,7 +421,7 @@ void AuthManager::processObfsServerNamesXml()
         forceRepopulation(ENCRYPTION_TOR_OBFS2);
         forceRepopulation(ENCRYPTION_TOR_OBFS3);
         forceRepopulation(ENCRYPTION_TOR_SCRAMBLESUIT);
-        if (Setting::encryption() != ENCRYPTION_RSA)
+        if (Setting::instance()->encryption() != ENCRYPTION_RSA)
             Setting::instance()->loadServer();
     }
 
@@ -801,7 +801,7 @@ bool AuthManager::processServerNamesForEncryptionType(int enc, QString & out_msg
 void AuthManager::forceRepopulation(int enc)
 {
     // force update of locations: if needed, previously empy
-    if (Setting::encryption() == enc) {
+    if (Setting::instance()->encryption() == enc) {
         if (Setting::exists() && Scr_Map::IsExists()) {
             Scr_Map::Instance()->RePopulateLocations();
             // TODO: -0 LoadServer()

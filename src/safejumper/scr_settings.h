@@ -50,19 +50,7 @@ public:
         if (_inst.get() != NULL) delete _inst.release();
     }
 
-    bool Is_cb_BlockOnDisconnect();
-    bool Is_cb_Startup();
-    bool Is_cb_Reconnect();
-    bool Is_cb_InsecureWiFi();
-    bool Is_cb_DisableIpv6();
-    bool Is_cb_FixDnsLeak();
-
-    QString Dns1();	 // "" if invalid
-    QString Dns2();	 // "" if invalid
-    QString LocalPort();	 // "" if invalid
     USet Ports();
-
-    int Encryption();		// 0 = usual RSA, 1 = obfs proxy, 2 =
 
 private:
     Ui::Scr_Settings * ui;
@@ -70,7 +58,6 @@ private:
     bool Vlidate_e_ip(QLineEdit * eb);
     bool IsPortsValid(USet * out_ports = NULL);
     void SaveDns(QLineEdit * dns, const char * name, QSettings & settings);
-    QString GetDns(QLineEdit * dns);
     bool _moving;
     QPoint _WndStart;
     QPoint _CursorStart;
