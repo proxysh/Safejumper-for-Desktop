@@ -77,13 +77,13 @@ SOURCES += \
     pingwaiter.cpp \
     portforwarder.cpp \
     scr_logs.cpp \
-    scr_map.cpp \
     scr_settings.cpp \
     setting.cpp \
     stun.cpp \
     trayiconmanager.cpp \
     wndmanager.cpp \
-    errordialog.cpp
+    errordialog.cpp \
+    mapscreen.cpp
 
 HEADERS += \
     authmanager.h \
@@ -105,7 +105,6 @@ HEADERS += \
     pingwaiter.h \
     portforwarder.h \
     scr_logs.h \
-    scr_map.h \
     scr_settings.h \
     setting.h \
     stun.h \
@@ -113,7 +112,8 @@ HEADERS += \
     update.h \
     version.h \
     wndmanager.h \
-    errordialog.h
+    errordialog.h \
+    mapscreen.h
 
 FORMS += \
     confirmationdialog.ui \
@@ -122,8 +122,8 @@ FORMS += \
     errordialog.ui \
     loginwindow.ui \
     scr_logs.ui \
-    scr_map.ui \
-    scr_settings.ui
+    scr_settings.ui \
+    mapscreen.ui
 
 RESOURCES += \
     imgs.qrc

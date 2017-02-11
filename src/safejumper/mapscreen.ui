@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Scr_Map</class>
- <widget class="QDialog" name="Scr_Map">
+ <class>MapScreen</class>
+ <widget class="QDialog" name="MapScreen">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -151,7 +151,7 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="b_LogoBack">
+   <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
       <x>6</x>
@@ -225,7 +225,7 @@ border-image: url(:/imgs/l-2-inactive.png);
      <string/>
     </property>
    </widget>
-   <widget class="QComboBox" name="dd_Protocol">
+   <widget class="QComboBox" name="protocolComboBox">
     <property name="geometry">
      <rect>
       <x>155</x>
@@ -298,7 +298,7 @@ QComboBox::drop-down
      </property>
     </item>
    </widget>
-   <widget class="QComboBox" name="dd_Location">
+   <widget class="QComboBox" name="locationComboBox">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -443,32 +443,6 @@ QListView::item:selected
 color: #FFFFFF;
 border-image: url(:/imgs/dd-selectionrow.png);
 }</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="e_x">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>0</y>
-      <width>113</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="e_y">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>30</y>
-      <width>113</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
     </property>
    </widget>
   </widget>
@@ -656,7 +630,7 @@ border-image: url(:/imgs/dd-selectionrow.png);
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="b_Settings">
+   <widget class="QPushButton" name="settingsButton">
     <property name="geometry">
      <rect>
       <x>195</x>
@@ -697,7 +671,7 @@ QPushButton:pressed
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="b_Connect">
+   <widget class="QPushButton" name="connectButton">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -785,344 +759,8 @@ padding-bottom: 7px;
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="b_Tmp">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>110</y>
-      <width>115</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton
-{
-	border:0px;
-	border-image: url(:/imgs/cb-empty.png);
-}</string>
-    </property>
-    <property name="text">
-     <string>PushButton</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QFrame" name="frameHead">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>500</y>
-     <width>375</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QFrame
-{
-	background-color: #ffffff;
-	border: 0;
-}</string>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-   <widget class="QLabel" name="line_5">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>21</y>
-      <width>375</width>
-      <height>2</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QLabel
-{
-	border:0px;
-	border-image: url(:/imgs/h-line-mb.png);
-}</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="L_Caption">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>3</y>
-      <width>100</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Helvetica Neue</family>
-      <pointsize>14</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Safejumper</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="b_Head">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>375</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton
-{
-	border:0px;
-	border-image: url(:/imgs/cb-empty.png);
-}</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="b_Minimize">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>6</y>
-      <width>10</width>
-      <height>10</height>
-     </rect>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton
-{
-	border:0px;
-	border-image: url(:/imgs/b-min.png);
-}</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="b_Cross">
-    <property name="geometry">
-     <rect>
-      <x>355</x>
-      <y>6</y>
-      <width>10</width>
-      <height>10</height>
-     </rect>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton
-{
-	border:0px;
-	border-image: url(:/imgs/b-cross.png);
-}</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
   </widget>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>b_LogoBack</sender>
-   <signal>clicked()</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>ToScr_Connect()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>41</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Settings</sender>
-   <signal>clicked()</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>ToScr_Settings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>249</x>
-     <y>309</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dd_Protocol</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>Changed_dd_Protocol(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>25</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dd_Location</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>Changed_dd_Sever(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>259</x>
-     <y>62</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Connect</sender>
-   <signal>clicked()</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>Clicked_b_Connect()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>124</x>
-     <y>309</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Tmp</sender>
-   <signal>pressed()</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>Clicked_b_Tmp()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>237</x>
-     <y>214</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>e_x</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>Changed_xy()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>e_y</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>Changed_xy()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>40</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Head</sender>
-   <signal>pressed()</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>Pressed_Head()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>187</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>179</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Minimize</sender>
-   <signal>clicked()</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>Clicked_Min()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>344</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>179</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Cross</sender>
-   <signal>clicked()</signal>
-   <receiver>Scr_Map</receiver>
-   <slot>Clicked_Cross()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>359</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>179</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
