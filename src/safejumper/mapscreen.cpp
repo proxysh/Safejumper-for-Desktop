@@ -24,11 +24,9 @@
 
 #include "setting.h"
 #include "ui_mapscreen.h"
-#include "connectiondialog.h"
 #include "scr_settings.h"
 #include "wndmanager.h"
 #include "authmanager.h"
-#include "connectiondialog.h"
 #include "openvpnmanager.h"
 #include "log.h"
 #include "flag.h"
@@ -321,9 +319,6 @@ void MapScreen::repopulateLocations()
 
 void MapScreen::on_backButton_clicked()
 {
-    int srv = currentServerId();
-    ConnectionDialog::instance()->setServer(srv);
-    ConnectionDialog::instance()->setProtocol(ui->protocolComboBox->currentIndex() - 1);
     WndManager::Instance()->ToPrimary();
 }
 
@@ -369,8 +364,6 @@ void MapScreen::on_protocolComboBox_currentIndexChanged(int ix)
         ui->L_1->setStyleSheet(gs_stIcon1);
         ui->L_2->setStyleSheet(gs_stIcon2inact);
     }
-    if (ConnectionDialog::exists())
-        ConnectionDialog::instance()->setProtocol(ix - 1);
     Setting::instance()->setProtocol(ix - 1);
 }
 
