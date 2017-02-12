@@ -76,10 +76,6 @@ SectionIn RO
 
   Label_0x30:
         ExecWait '$INSTDIR\vcredist_x86.exe /install /passive /norestart'
-		IfErrors Label_0x31 Label_0x33
-		
-  Label_0x31:
-        MessageBox  MB_OK 'Cannot install Visual C++ redistributable' /SD IDOK
 
   Label_0x33:
        Delete  $OUTDIR\argparse-1.4.0-py2.py3-none-any.whl
