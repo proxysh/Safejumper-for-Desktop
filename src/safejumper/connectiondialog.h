@@ -86,6 +86,7 @@ private slots:
     void showPackageUrl();
     void updateEncryption();
     void updateProtocol();
+    void updateServer();
 
 protected:
     virtual void closeEvent(QCloseEvent * event);

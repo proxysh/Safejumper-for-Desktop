@@ -89,10 +89,12 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     updateEncryption();
     updateProtocol();
 
-    connect(Setting::instance(), SIGNAL(encryptionChanged()),
-            this, SLOT(updateEncryption()));
-    connect(Setting::instance(), SIGNAL(protocolChanged()),
-            this, SLOT(updateProtocol()));
+    connect(Setting::instance(), &Setting::encryptionChanged,
+            this, &ConnectionDialog::updateEncryption);
+    connect(Setting::instance(), &Setting::protocolChanged,
+            this, &ConnectionDialog::updateProtocol);
+    connect(Setting::instance(), &Setting::serverChanged,
+            this, &ConnectionDialog::updateServer);
 }
 
 bool ConnectionDialog::exists()
@@ -209,6 +211,11 @@ void ConnectionDialog::setProtocol(int ix)
 void ConnectionDialog::updateProtocol()
 {
     setProtocol(Setting::instance()->currentProtocol());
+}
+
+void ConnectionDialog::updateServer()
+{
+    setServer(Setting::instance()->serverID());
 }
 
 ConnectionDialog::~ConnectionDialog()
