@@ -33,7 +33,9 @@ public:
     ~PathHelper();
 
     QString openvpnFilename();
+#ifdef Q_OS_DARWIN
     QString openvpnRelativeFilename();
+#endif
     QString openvpnLogFilename();
     QString openvpnConfigFilename();
     QString proxyshCaCertFilename();

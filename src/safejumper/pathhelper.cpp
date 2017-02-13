@@ -66,14 +66,12 @@ QString PathHelper::openvpnFilename()
 #endif
 }
 
+#ifdef Q_OS_DARWIN
 QString PathHelper::openvpnRelativeFilename()
 {
-#ifdef Q_OS_MAC
-    return "/openvpn/openvpn-2.3.13/openvpn-executable";
-#else
-    return "";
-#endif
+    return "/openvpn/openvpn-2.4.0/openvpn-executable";
 }
+#endif
 
 QString PathHelper::resourcesPath()
 {
