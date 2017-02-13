@@ -1,7 +1,7 @@
 #!/bin/bash
 
 install safejumper.icns safejumper/Safejumper.app/Contents/Resources/
-cp -R Resources/* safejumper/Safejumper.app/Contents/Resources/
+sudo cp -R Resources/* safejumper/Safejumper.app/Contents/Resources/
 /usr/libexec/PlistBuddy -c "Set :CFBundleIconFile safejumper.icns" safejumper/Safejumper.app/Contents/Info.plist
 # macdeployqt Safejumper.app -verbose=1 
 macdeployqt safejumper/Safejumper.app -verbose=1 -codesign="Developer ID Application: Three Monkeys International Inc." $1
