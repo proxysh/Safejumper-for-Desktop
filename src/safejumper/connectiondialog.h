@@ -35,7 +35,6 @@ class ConnectionDialog;
 class ConnectionDialog : public QDialog
 {
     Q_OBJECT
-
 public:
 
     ~ConnectionDialog();
@@ -43,55 +42,53 @@ public:
     static ConnectionDialog *instance();
     static void cleanup();
 
-    void setServer(int srv);	// -1 or id inside all servers
-    void updateNewIP(const QString & s);
-
-    void setVPNName(const QString & vpnname);
     void statusConnecting();
     void statusConnecting(const QString & word);
     void statusConnected();
     void statusDisconnected();
 
 public slots:
-    void setOldIP(const QString & ip);
     void setAccountName(const QString & s);
+    void portDialogResult(int action);
+
+protected:
+    virtual void closeEvent(QCloseEvent * event);
+    virtual void keyPressEvent(QKeyEvent * event);
+
+private slots:
+    void on_connectButton_clicked();
+    void on_cancelButton_clicked();
+    void on_jumpButton_clicked();
+    void on_settingsButton_clicked();
+
+    void showMapWindow();
+    void showPackageUrl();
+
+    void updateEncryption();
+    void updateProtocol();
+    void updateServer();
+
+    void setOldIP(const QString & ip);
     void setEmail(const QString & s);
     void setAmount(const QString & s);
     void setUntil(const QString & date);
+    void setNewIP(const QString & s);
 
-    void setProtocol(int ix);   // -1 for none
-    void portDialogResult(int action);
 private:
     Ui::ConnectionDialog *ui;
     static std::auto_ptr<ConnectionDialog> mInstance;
     explicit ConnectionDialog(QWidget *parent = 0);
 
     void setFlag(int srv);
+    void setServer(int srv);	// -1 or id inside all servers
     void setNoServer();
+    void setProtocol(int ix);   // -1 for none
     void enableButtons(bool enabled);
 
     static void initializeStateWords();
     typedef QHash<QString, const char *> HmWords;
     static HmWords mStateWordImages;
-
-private slots:
-    void on_connectButton_clicked();
-    void on_cancelButton_clicked();
-    void on_jumpButton_clicked();
-
-    void on_settingsButton_clicked();
-    void showMainWindow();
-    void showLoginWindow();
-    void showMapWindow();
-    void showPackageUrl();
-    void updateEncryption();
-    void updateProtocol();
-    void updateServer();
-
-protected:
-    virtual void closeEvent(QCloseEvent * event);
-    virtual void keyPressEvent(QKeyEvent * event);
 };
 
 
-#endif // SCR_CONNECT_H
+#endif // CONNECTIONDIALOG_H

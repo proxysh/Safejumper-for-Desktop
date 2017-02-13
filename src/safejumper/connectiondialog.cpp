@@ -70,14 +70,16 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->L_Amount->setText("-");
     ui->L_OldIp->setText("");
 
-    connect(AuthManager::instance(), SIGNAL(oldIpLoaded(QString)),
-            this, SLOT(setOldIP(QString)));
-    connect(AuthManager::instance(), SIGNAL(emailLoaded(QString)),
-            this, SLOT(setEmail(QString)));
-    connect(AuthManager::instance(), SIGNAL(untilLoaded(QString)),
-            this, SLOT(setUntil(QString)));
-    connect(AuthManager::instance(), SIGNAL(amountLoaded(QString)),
-            this, SLOT(setAmount(QString)));
+    connect(AuthManager::instance(), &AuthManager::oldIpLoaded,
+            this, &ConnectionDialog::setOldIP);
+    connect(AuthManager::instance(), &AuthManager::emailLoaded,
+            this, &ConnectionDialog::setEmail);
+    connect(AuthManager::instance(), &AuthManager::untilLoaded,
+            this, &ConnectionDialog::setUntil);
+    connect(AuthManager::instance(), &AuthManager::amountLoaded,
+            this, &ConnectionDialog::setAmount);
+    connect(AuthManager::instance(), &AuthManager::newIpLoaded,
+            this, &ConnectionDialog::setNewIP);
 
     // Setting::Instance()->LoadServer();
     Setting::instance()->loadProtocol();
@@ -147,7 +149,7 @@ void ConnectionDialog::setServer(int srv)
     }
 }
 
-void ConnectionDialog::updateNewIP(const QString & s)
+void ConnectionDialog::setNewIP(const QString & s)
 {
     static const QString self = "127.0.0.1";
     if (s != self) {
@@ -331,16 +333,6 @@ ConnectionDialog * ConnectionDialog::instance()
 void ConnectionDialog::on_settingsButton_clicked()
 {
     WndManager::Instance()->ToSettings();
-}
-
-void ConnectionDialog::showMainWindow()
-{
-    WndManager::Instance()->ToPrimary();
-}
-
-void ConnectionDialog::showLoginWindow()
-{
-    WndManager::Instance()->ToPrimary();
 }
 
 void ConnectionDialog::showMapWindow()
