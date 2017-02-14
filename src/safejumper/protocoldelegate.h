@@ -16,36 +16,20 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include "lvrowdelegateprotocol.h"
-#include "mapscreen.h"
-#include "setting.h"
+#ifndef PROTOCOLDELEGATE_H
+#define PROTOCOLDELEGATE_H
 
-#include <QPen>
-#include <QPainter>
-#include <QPicture>
+#include <QStyledItemDelegate>
 
-void LvRowDelegateProtocol::paint(QPainter * painter, const QStyleOptionViewItem & option,
-                                  const QModelIndex & index) const
+class ProtocolDelegate : public QStyledItemDelegate
 {
-    QStyledItemDelegate::paint(painter, option, index);
-    painter->save();
+    Q_OBJECT
+public:
+    explicit ProtocolDelegate(QObject *parent = 0) : QStyledItemDelegate(parent) {}
 
-    int id = index.row() - 1;
-    bool selected = option.state & QStyle::State_Selected;
-    bool checked = !(option.state & QStyle::State_Selected);
-    if (MapScreen::exists())
-        checked = checked && (MapScreen::instance()->currentProtocol() == id);
+    void paint(QPainter *painter,
+               const QStyleOptionViewItem &option,
+               const QModelIndex &index) const Q_DECL_OVERRIDE;
+};
 
-    if (checked && !selected && id > -1) {
-        static QPixmap pm(":/imgs/dd-selectionrow.png");
-        painter->drawPixmap(option.rect, pm);
-
-        static QPen white(QColor("#FFFFFF"));
-        static int margin_left = 5;		// padding-left: 10px;
-        QRect L = option.rect.adjusted(margin_left, 0, 0, 0);
-        painter->setPen(white);
-        painter->drawText(L, Qt::AlignLeft | Qt::AlignVCenter, id < 0 ? PROTOCOL_SELECTION_STR : Setting::instance()->currentEncryptionProtocols().at(id));
-    }
-
-    painter->restore();
-}
+#endif // PROTOCOLDELEGATE_H

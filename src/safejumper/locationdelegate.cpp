@@ -16,7 +16,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include "lvrowdelegate.h"
+#include "locationdelegate.h"
 
 #include <QPen>
 #include <QPainter>
@@ -27,7 +27,12 @@
 #include "setting.h"
 #include "mapscreen.h"
 
-void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option,
+const int kCheckMarkWidth = 25;
+const int kLeftMargin = 5;
+const int kPingWidth = 55;
+const int kLoadWidth = 40;
+
+void LocationDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option,
                           const QModelIndex & index) const
 {
     QStyledItemDelegate::paint(painter, option, index);
@@ -37,26 +42,18 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
     int id = index.row() - 1;
 
     int idsrv = -1;
-//	bool nodes = Setting::Instance()->IsShowNodes();
-//	if (id > -1)
-//		idsrv = nodes ? id : AuthManager::Instance()->ServerIdFromHubId(id);
     if (MapScreen::exists() && id > -1) {
         idsrv = MapScreen::instance()->serverIndexFromLineIndex(id);
     }
-    AServer sr = AuthManager::instance()->getServer(idsrv);	//AServer sr = nodes ? 	AuthManager::Instance()->GetSrv(id) : AuthManager::Instance()->GetHub(id);
+    AServer sr = AuthManager::instance()->getServer(idsrv);
 
     painter->setRenderHint(QPainter::Antialiasing, true);
 
-    static int w_checkmark = 25;
-    static int margin_left = 5;		// padding-left: 10px;
-    int w_ping = 55;
-    int w_load = 40;
-
     bool selected = option.state & QStyle::State_Selected;
-    bool checked = !(option.state & QStyle::State_Selected);
-    if (MapScreen::exists())
-        checked = checked && (MapScreen::instance()->currentServerId() == idsrv);
+    bool checked = !(option.state & QStyle::State_Selected) &&
+        (Setting::instance()->serverID() == idsrv);
 
+    // Checked but not selected
     if (checked && !selected && id > -1) {
         static QString sthubs = ":/imgs/dd-selectionrow-244.png";
         static QString stsrvs = ":/imgs/dd-selectionrow-322.png";
@@ -64,9 +61,10 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
         painter->drawPixmap(option.rect, pm);
     }
 
+    // Not selected
     static QPen white(QColor("#FFFFFF"));
     if (!selected) {
-        QRect L = option.rect.adjusted(margin_left, 0, -1 * (w_ping + w_load + w_checkmark), 0);
+        QRect L = option.rect.adjusted(kLeftMargin, 0, -1 * (kPingWidth + kLoadWidth + kCheckMarkWidth), 0);
         if (checked && id > -1)
             painter->setPen(white);
         painter->drawText(L, Qt::AlignLeft | Qt::AlignVCenter, id < 0 ? "-- Select location --": sr.name);
@@ -79,21 +77,20 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
         if (selected || checked)
             painter->setPen(white);
         else
-            SetColor(painter, load, 25, 75);
+            setColor(painter, load, 25, 75);
 
-        QRect R = option.rect.adjusted(0, 0, -1 * w_checkmark, 0);
-        R.setLeft(R.right() - w_load);
+        QRect R = option.rect.adjusted(0, 0, -1 * kCheckMarkWidth, 0);
+        R.setLeft(R.right() - kLoadWidth);
         painter->drawText(R, Qt::AlignRight | Qt::AlignVCenter, sload);
-
 
         int ping = AuthManager::instance()->pingFromServerIx(idsrv);
         if (ping > -1) {
             if (selected || checked)
                 painter->setPen(white);
             else
-                SetColor(painter, ping, 100, 300);
-            QRect R2 = option.rect.adjusted(0, 0, -1 * (w_checkmark + w_load), 0);
-            R.setLeft(R.right() - w_ping);
+                setColor(painter, ping, 100, 300);
+            QRect R2 = option.rect.adjusted(0, 0, -1 * (kCheckMarkWidth + kLoadWidth), 0);
+            R.setLeft(R.right() - kPingWidth);
             QString sping = QString::number(ping) + " ms";
             painter->drawText(R2, Qt::AlignRight | Qt::AlignVCenter, sping);
         }
@@ -103,7 +100,7 @@ void LvRowDelegate::paint(QPainter * painter, const QStyleOptionViewItem & optio
 }
 
 
-QSize LvRowDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize LocationDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QSize sz = QStyledItemDelegate::sizeHint(option, index);
     if (sz.width() < 300)
@@ -111,7 +108,7 @@ QSize LvRowDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIn
     return sz;
 }
 
-void LvRowDelegate::SetColor(QPainter * painter, int value, int threshold1, int threshold2) const
+void LocationDelegate::setColor(QPainter * painter, int value, int threshold1, int threshold2) const
 {
     static QPen green(QColor("#67ba52"));		// 009-UI-Kit-v1.psd
     static QPen red(QColor("#ee5b34"));

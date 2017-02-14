@@ -306,8 +306,9 @@ int Setting::encryption()
 
 void Setting::setEncryption(int enc)
 {
-    if (enc > 0 && enc < ENCRYPTION_COUNT && enc != mSettings.value("dd_Encryption", 0).toInt()) {
+    if (enc > -1 && enc < ENCRYPTION_COUNT && enc != mSettings.value("dd_Encryption", 0).toInt()) {
         mSettings.setValue("dd_Encryption", enc);
+        loadProtocol(); // When encryption changes, we need to load protocols
         emit encryptionChanged();
     }
 }

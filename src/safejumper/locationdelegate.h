@@ -16,22 +16,25 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#ifndef LVROWDELEGATEENCRYPTION_H
-#define LVROWDELEGATEENCRYPTION_H
+#ifndef LOCATIONDELEGATE_H
+#define LOCATIONDELEGATE_H
 
 #include <QStyledItemDelegate>
 
-class LvRowDelegateEncryption : public QStyledItemDelegate
+class LocationDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    explicit LvRowDelegateEncryption(QObject *parent = 0) : QStyledItemDelegate(parent) {}
+    explicit LocationDelegate(QObject *parent = 0) : QStyledItemDelegate(parent) {}
 
     void paint(QPainter *painter,
                const QStyleOptionViewItem &option,
                const QModelIndex &index) const Q_DECL_OVERRIDE;
-
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const Q_DECL_OVERRIDE;
+
+private:
+    void setColor(QPainter * painter, int value, int threshold1, int threshold2) const;
 };
 
-#endif // LVROWDELEGATEENCRYPTION_H
+
+#endif // LOCATIONDELEGATE_H

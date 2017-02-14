@@ -62,28 +62,28 @@ SOURCES += \
     confirmationdialog.cpp \
     connectiondialog.cpp \
     dlg_newnode.cpp \
+    encryptiondelegate.cpp \
+    errordialog.cpp \
     flag.cpp \
     fonthelper.cpp \
+    locationdelegate.cpp \
     log.cpp \
     loginwindow.cpp \
-    lvrowdelegate.cpp \
-    lvrowdelegateencryption.cpp \
-    lvrowdelegateprotocol.cpp \
     main.cpp \
+    mapscreen.cpp \
     ministun.c \
     openvpnmanager.cpp \
     osspecific.cpp \
     pathhelper.cpp \
     pingwaiter.cpp \
     portforwarder.cpp \
+    protocoldelegate.cpp \
     scr_logs.cpp \
     scr_settings.cpp \
     setting.cpp \
     stun.cpp \
     trayiconmanager.cpp \
-    wndmanager.cpp \
-    errordialog.cpp \
-    mapscreen.cpp
+    wndmanager.cpp
 
 HEADERS += \
     authmanager.h \
@@ -91,19 +91,21 @@ HEADERS += \
     confirmationdialog.h \
     connectiondialog.h \
     dlg_newnode.h \
+    encryptiondelegate.h \
+    errordialog.h \
     flag.h \
     fonthelper.h \
+    locationdelegate.h \
     log.h \
     loginwindow.h \
-    lvrowdelegate.h \
-    lvrowdelegateencryption.h \
-    lvrowdelegateprotocol.h \
+    mapscreen.h \
     ministun.h \
     openvpnmanager.h \
     osspecific.h \
     pathhelper.h \
     pingwaiter.h \
     portforwarder.h \
+    protocoldelegate.h \
     scr_logs.h \
     scr_settings.h \
     setting.h \
@@ -111,9 +113,7 @@ HEADERS += \
     trayiconmanager.h \
     update.h \
     version.h \
-    wndmanager.h \
-    errordialog.h \
-    mapscreen.h
+    wndmanager.h
 
 FORMS += \
     confirmationdialog.ui \
@@ -121,9 +121,9 @@ FORMS += \
     dlg_newnode.ui \
     errordialog.ui \
     loginwindow.ui \
+    mapscreen.ui \
     scr_logs.ui \
-    scr_settings.ui \
-    mapscreen.ui
+    scr_settings.ui
 
 RESOURCES += \
     imgs.qrc

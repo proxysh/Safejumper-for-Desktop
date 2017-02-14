@@ -29,7 +29,7 @@
 #include "fonthelper.h"
 #include "osspecific.h"
 #include "log.h"
-#include "lvrowdelegateencryption.h"
+#include "encryptiondelegate.h"
 #include "errordialog.h"
 #include "pathhelper.h"
 
@@ -66,7 +66,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
     for (int k = 0; k < ENCRYPTION_COUNT; ++k)
         ui->dd_Encryption->addItem(Setting::encryptionName(k));
     ui->dd_Encryption->setView(ui->lv_Encryption);
-    ui->dd_Encryption->setItemDelegate(new LvRowDelegateEncryption(this));
+    ui->dd_Encryption->setItemDelegate(new EncryptionDelegate(this));
     _repopulation_inprogress = false;
 
 //	QPoint p0 = _WndStart = pos();
@@ -257,12 +257,6 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
     }
 
     Setting::instance()->setEncryption(ix);
-
-    if (MapScreen::exists()) {
-        MapScreen::instance()->repopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
-        Setting::instance()->loadProtocol();
-        MapScreen::instance()->repopulateLocations(false); // Repopulate all locations
-    }
 }
 
 static const char * gs_sErrStyle =

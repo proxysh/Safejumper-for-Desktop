@@ -389,9 +389,8 @@ void AuthManager::processEccServerNamesXml()
         // TODO: -2 is there a specific for ECC+XOR  API page?
         mServerIds[ENCRYPTION_ECCXOR].clear();
         mServerIds[ENCRYPTION_ECCXOR] = mServerIds[ENCRYPTION_ECC];
-        forceRepopulation(ENCRYPTION_ECC);
-        forceRepopulation(ENCRYPTION_ECCXOR);
-        if (Setting::instance()->encryption() != ENCRYPTION_RSA)
+        int enc = Setting::instance()->encryption();
+        if (enc == ENCRYPTION_ECC || enc == ENCRYPTION_ECCXOR)
             Setting::instance()->loadServer();
     }
 }
@@ -418,18 +417,14 @@ void AuthManager::processObfsServerNamesXml()
         mServerIds[ENCRYPTION_TOR_OBFS3] = mServerIds[ENCRYPTION_TOR_OBFS2];
         mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].clear();
         mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT] = mServerIds[ENCRYPTION_TOR_OBFS2];
-        forceRepopulation(ENCRYPTION_TOR_OBFS2);
-        forceRepopulation(ENCRYPTION_TOR_OBFS3);
-        forceRepopulation(ENCRYPTION_TOR_SCRAMBLESUIT);
-        if (Setting::instance()->encryption() != ENCRYPTION_RSA)
+        int enc = Setting::instance()->encryption();
+        if (enc == ENCRYPTION_TOR_OBFS2 || enc == ENCRYPTION_TOR_OBFS3 ||
+                enc == ENCRYPTION_TOR_SCRAMBLESUIT)
             Setting::instance()->loadServer();
     }
 
     // do not get obfs addresses: proceed
     getEccServerNames();
-
-    if (!err)
-        forceRepopulation(ENCRYPTION_TOR_OBFS2);
 
     return;
 
@@ -798,17 +793,6 @@ bool AuthManager::processServerNamesForEncryptionType(int enc, QString & out_msg
     return !out_msg.isEmpty();
 }
 
-void AuthManager::forceRepopulation(int enc)
-{
-    // force update of locations: if needed, previously empy
-    if (Setting::instance()->encryption() == enc) {
-        if (Setting::exists() && MapScreen::exists()) {
-            MapScreen::instance()->repopulateLocations();
-            // TODO: -0 LoadServer()
-        }
-    }
-}
-
 QStringList AuthManager::extractNames(QString & out_msg)
 {
     QStringList names;
@@ -1003,7 +987,6 @@ void AuthManager::startWorker(size_t id)
     } else {
         if (!mPingsLoaded) {
             mPingsLoaded = true;
-            MapScreen::instance()->repopulateLocations();         // load pings
         }
     }
 }
@@ -1078,7 +1061,7 @@ int AuthManager::getServerToJump()
         return -1;
     }
     int srv = -1;
-    int prev = MapScreen::instance()->currentServerId();
+    int prev = Setting::instance()->serverID();
     log::logt("Previous server is " + QString::number(prev));
     std::vector<size_t> toping;     // ix inside mServers
     int enc = Setting::instance()->encryption();
@@ -1150,7 +1133,7 @@ void AuthManager::jump()
     int srv = getServerToJump();              // except current srv/hub
     if (srv > -1) {
 // TODO: -0             SetNewIp("");
-        MapScreen::instance()->setServer(srv);
+        Setting::instance()->setServer(srv);
         OpenvpnManager::instance()->start();               // contains stop
     }
 }

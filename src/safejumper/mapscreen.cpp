@@ -30,18 +30,18 @@
 #include "openvpnmanager.h"
 #include "log.h"
 #include "flag.h"
-#include "lvrowdelegate.h"
-#include "lvrowdelegateprotocol.h"
+#include "locationdelegate.h"
+#include "protocoldelegate.h"
 #include "fonthelper.h"
 #include "loginwindow.h"
 
 MapScreen::MapScreen(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MapScreen),
-    mRepopulationInProgress(false),
-    mUseServerColumn(true),
     mShowingNodes(true),
-    mEncryption(0)
+    mEncryption(0),
+    mUseServerColumn(true),
+    mRepopulationInProgress(false)
 {
     ui->setupUi(this);
     this->setFixedSize(this->size());
@@ -54,19 +54,20 @@ MapScreen::MapScreen(QWidget *parent) :
     ui->lv_Location->setMinimumHeight(400);
 #endif
     mDefaultPoint = ui->L_Mark->pos();
-    repopulateLocations();
-    repopulateProtocols();
-
-    qApp->installEventFilter(this);
 
     ui->locationComboBox->setView(ui->lv_Location);
     ui->protocolComboBox->setView(ui->lv_Protocol);
-    ui->protocolComboBox->setItemDelegate(new LvRowDelegateProtocol(this));
-    ui->locationComboBox->setItemDelegate(new LvRowDelegate(this));
+    ui->protocolComboBox->setItemDelegate(new ProtocolDelegate(this));
+    ui->locationComboBox->setItemDelegate(new LocationDelegate(this));
+
+    repopulate();
 
 //	setMouseTracking(true); // E.g. set in your constructor of your widget.
     connect(Setting::instance(), &Setting::showNodesChanged,
-            this, &MapScreen::repopulateProtocols);
+            this, &MapScreen::repopulateLocations);
+
+    connect(Setting::instance(), &Setting::encryptionChanged,
+            this, &MapScreen::repopulate);
     connect(Setting::instance(), &Setting::protocolChanged,
             this, &MapScreen::updateProtocol);
     connect(Setting::instance(), &Setting::serverChanged,
@@ -95,29 +96,28 @@ void MapScreen::repopulateProtocols()
         ui->protocolComboBox->addItem(v.at(k));
 
     mRepopulationInProgress = false;
+
     if (v.size() == 1) {
-        setProtocol(0);
+        ui->protocolComboBox->setCurrentIndex(1);
         ui->protocolComboBox->setEnabled(false);
     } else {
         ui->protocolComboBox->setEnabled(true);
     }
+
+    updateProtocol();
 }
 
-void MapScreen::repopulateLocations(bool random)
+void MapScreen::repopulateLocations()
 {
-    if (random) {
-        int srv = qrand() % 30 + 1;
-        ui->locationComboBox->setCurrentIndex(srv);
-        return;
-    }
+    mRepopulationInProgress = true;
 
     // store previously chosen id
     int oldN = ui->locationComboBox->count();
     int ixoldsrv = -1;
     QString oldsrv;
     bool oldShownodes = mShowingNodes;
-    bool oldUsesrvcoll = mUseServerColumn;
-    int oldEnc = mEncryption;
+//    bool oldUsesrvcoll = mUseServerColumn;
+//    int oldEnc = mEncryption;
     if (oldN > 1) {
         ixoldsrv = currentServerId();
         if (ixoldsrv > -1) {
@@ -125,6 +125,7 @@ void MapScreen::repopulateLocations(bool random)
         }
         // and clear the list
         ui->locationComboBox->setCurrentIndex(0);
+        // Remove all items except "--Select Location--"
         for (int k = oldN; k > 0; --k)
             ui->locationComboBox->removeItem(k);
     }
@@ -136,17 +137,15 @@ void MapScreen::repopulateLocations(bool random)
 
     setRowStyle(mUseServerColumn);
 
-    const QList<int> & coll = (
-                                           mUseServerColumn ?
-                                           AuthManager::instance()->currentEncryptionServers() :
-                                           AuthManager::instance()->currentEncryptionHubs() );
+    const QList<int> & coll = (mUseServerColumn ?
+                               AuthManager::instance()->currentEncryptionServers() :
+                               AuthManager::instance()->currentEncryptionHubs() );
 
     // populate server ids to show
-    mServerIds.clear();
-    mServerIds.assign(coll.begin(), coll.end());
+    mServerIds = coll;
 
     // for each server id create a line
-    for (size_t j = 0, sz = mServerIds.size(); j < sz; ++j) {
+    for (int j = 0; j < mServerIds.size(); ++j) {
         // add individual srv / hub node item
         // TODO: -1 format the line
         int ix = mServerIds.at(j);
@@ -166,33 +165,11 @@ void MapScreen::repopulateLocations(bool random)
 // TODO: -0 for other encryptions does not work
     // try to reselect the chosen server
     int toselect = 0;
-    if (oldN > 1) {
-        if (ixoldsrv > -1) {
+    if (oldN > 1) { // Used to have some servers
+        if (ixoldsrv > -1) { // Used to have a selected server
             QString newname;
-            /*			if (_IsShowNodes)
-                        {   // hubs -->> all
-                            newname = AuthManager::Instance()->GetAllServers().at(ixoldsrv).name;
-                            if (newname == oldsrv)
-                                toselect = ixoldsrv + 1;	// hub item in the same location
-                            else
-                            {
-                                int hubnewix = AuthManager::Instance()->SrvIxFromName(oldsrv);
-                                if (hubnewix > -1)
-                                    toselect = hubnewix + 1;
-                                else
-                                    // does not exist anymore
-                                    ;   // TODO: -2 closest
-                            }
-                        }
-                        else
-                        {   // all -->> hubs
-                            int newhubix = AuthManager::Instance()->HubIxFromSrvName(oldsrv);
-                            if (newhubix > -1)
-                                toselect = newhubix + 1;
-                        }
-            */
             int new_row = -1;
-            for (size_t k = 0; k < mServerIds.size(); ++k) {
+            for (int k = 0; k < mServerIds.size(); ++k) {
                 if (mServerIds.at(k) == ixoldsrv) {
                     // srv id match: ensure this is the same server after list updated
                     if (oldsrv == AuthManager::instance()->getServer(mServerIds.at(k)).name) {
@@ -206,7 +183,7 @@ void MapScreen::repopulateLocations(bool random)
                 // lookup by name
                 int ixnew = AuthManager::instance()->serverIxFromName(oldsrv);
                 if (ixnew > -1) {
-                    for (size_t k = 0; k < mServerIds.size(); ++k) {
+                    for (int k = 0; k < mServerIds.size(); ++k) {
                         if (mServerIds.at(k) == ixnew) {
                             new_row = k;
                             break;
@@ -221,7 +198,7 @@ void MapScreen::repopulateLocations(bool random)
                     // all -->> hubs
                     int newhubix = AuthManager::instance()->hubIxFromServerName(oldsrv);
                     if (newhubix > -1) {
-                        for (size_t k = 0; k < mServerIds.size(); ++k) {
+                        for (int k = 0; k < mServerIds.size(); ++k) {
                             if (mServerIds.at(k) == newhubix) {
                                 new_row = k;
                                 break;
@@ -236,7 +213,10 @@ void MapScreen::repopulateLocations(bool random)
                 toselect = qrand() % ui->locationComboBox->count() + 1;
         }
     }
+    mRepopulationInProgress = false;
+
     ui->locationComboBox->setCurrentIndex(toselect);
+    updateLocation();
 }
 
 int MapScreen::serverIndexFromLineIndex(int row_id)
@@ -287,7 +267,7 @@ int MapScreen::currentServerId()
     int srv = -1;
     int ix = ui->locationComboBox->currentIndex();
     if(ix > 0) {
-        size_t id = ix -1;
+        int id = ix -1;
         if (!mServerIds.empty() && id < mServerIds.size()) {
             srv = mServerIds.at(id);
         }
@@ -299,22 +279,6 @@ int MapScreen::currentServerId()
         */
     }
     return srv;
-}
-
-void MapScreen::switchToNextNode()
-{
-    int ix = ui->locationComboBox->currentIndex();
-    if(ix > 0) {
-        ++ix;
-        if (ix >= ui->locationComboBox->count())
-            ix = 1;
-        ui->locationComboBox->setCurrentIndex(ix);
-    }
-}
-
-void MapScreen::repopulateLocations()
-{
-    repopulateLocations(false);
 }
 
 void MapScreen::on_backButton_clicked()
@@ -332,6 +296,14 @@ void MapScreen::on_connectButton_clicked()
     OpenvpnManager::instance()->start();
 }
 
+void MapScreen::repopulate()
+{
+    // Repopulate protocols
+    repopulateProtocols();
+    // Repopulate locations
+    repopulateLocations();
+}
+
 void MapScreen::updateProtocol()
 {
     ui->protocolComboBox->setCurrentIndex(Setting::instance()->currentProtocol() + 1);
@@ -339,7 +311,28 @@ void MapScreen::updateProtocol()
 
 void MapScreen::updateLocation()
 {
-    setServer(Setting::instance()->serverID());
+    int ixsrv = Setting::instance()->serverID();
+    int toselect = 0;
+    const QList<int> & srvs = AuthManager::instance()->currentEncryptionServers();
+    if (ixsrv > -1) {
+        if (mEncryption == ENCRYPTION_RSA) {
+            if (mShowingNodes)
+                toselect = ixsrv + 1;
+            else
+                toselect = AuthManager::instance()->hubIdFromServerId(ixsrv) + 1;
+        } else {
+            if (!srvs.isEmpty()) {
+                for (int k = 0; k < srvs.size(); ++k) {
+                    if (srvs[k] == ixsrv) {
+                        toselect = k + 1;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if (!srvs.empty())
+        ui->locationComboBox->setCurrentIndex(toselect);
 }
 
 static const char * const gs_stIcon1 = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-1.png);\n}";
@@ -369,6 +362,9 @@ void MapScreen::on_protocolComboBox_currentIndexChanged(int ix)
 
 void MapScreen::on_locationComboBox_currentIndexChanged(int ix)
 {
+    if (mRepopulationInProgress)
+        return;
+
     int ixsrv = -1;
     if (ix > 0) {
         ui->L_2->setStyleSheet(gs_stIconV);
@@ -391,41 +387,6 @@ void MapScreen::displayMark(const QString & name)
         p = mDefaultPoint;
     ui->L_Mark->move(p);
     ui->L_Mark->setText(flag::ShortName(name));
-}
-
-void MapScreen::setServer(int ixsrv)
-{
-    int toselect = 0;
-    const QList<int> & srvs = AuthManager::instance()->currentEncryptionServers();
-    if (ixsrv > -1) {
-        if (mEncryption == ENCRYPTION_RSA) {
-            if (mShowingNodes)
-                toselect = ixsrv + 1;
-            else
-                toselect = AuthManager::instance()->hubIdFromServerId(ixsrv) + 1;
-        } else {
-            if (!srvs.isEmpty()) {
-                for (size_t k = 0; k < srvs.size(); ++k) {
-                    if (srvs[k] == ixsrv) {
-                        toselect = k + 1;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    if (!srvs.empty())
-        ui->locationComboBox->setCurrentIndex(toselect);
-}
-
-void MapScreen::setProtocol(int ix)
-{
-    ui->protocolComboBox->setCurrentIndex(ix + 1);
-}
-
-int MapScreen::currentProtocol()
-{
-    return ui->protocolComboBox->currentIndex() - 1;
 }
 
 void MapScreen::statusConnecting()

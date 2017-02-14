@@ -16,7 +16,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include "lvrowdelegateencryption.h"
+#include "encryptiondelegate.h"
 
 #include <QPen>
 #include <QPainter>
@@ -24,7 +24,7 @@
 
 #include "setting.h"
 
-void LvRowDelegateEncryption::paint(QPainter * painter, const QStyleOptionViewItem & option,
+void EncryptionDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option,
                                     const QModelIndex & index) const
 {
     QStyledItemDelegate::paint(painter, option, index);
@@ -50,7 +50,7 @@ void LvRowDelegateEncryption::paint(QPainter * painter, const QStyleOptionViewIt
     painter->restore();
 }
 
-QSize LvRowDelegateEncryption::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize EncryptionDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QSize sz = QStyledItemDelegate::sizeHint(option, index);
 //	if (sz.width() < 210)

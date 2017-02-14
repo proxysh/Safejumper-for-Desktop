@@ -205,7 +205,6 @@ private:
     void getObfsServerNames();
     void getEccServerNames();
 
-    void forceRepopulation(int enc);
     std::auto_ptr<PortForwarder> mPortForwarderThread;
 };
 

@@ -41,23 +41,12 @@ public:
     static void cleanup();
     ~MapScreen();
 
-    int currentServerId();	  // -1 if not selected, otherwise [0-...] id of server inside auth manager
     int serverIndexFromLineIndex(int row_id);		// [0, size()) , omit first row ' -- select location -- '
     bool useServerColumn();
-    int currentProtocol();	// -1 if not selected, otherwise [0-...] id of protocol inside Settings
 
-    void repopulateProtocols();
-    void setServer(int ixsrv);
-    void setProtocol(int ix);
     void statusConnecting();
     void statusConnected();
     void statusDisconnected();
-
-    void switchToNextNode();
-
-public slots:
-    void repopulateLocations();
-    void repopulateLocations(bool random);		// TODO: -1 methods to update particular row with new ping/load%
 
 protected:
     virtual void closeEvent(QCloseEvent * event);
@@ -72,9 +61,14 @@ private slots:
     void on_settingsButton_clicked();
     void on_connectButton_clicked();
 
+    void repopulate(); // Slot for when encryption changes so both location and protocol need to be repopulated
+    void repopulateProtocols();
+    void repopulateLocations();
+
     void updateProtocol(); // slot for reacting to Setting protocolChanged signal
     void updateLocation(); // slot for reacting to Setting locationChanged signal
 private:
+    int currentServerId();	  // -1 if not selected, otherwise [0-...] id of server inside auth manager
     void setRowStyle(bool show_nodes);
     void displayMark(const QString & name);
 
@@ -84,7 +78,7 @@ private:
     bool mShowingNodes;		// remember for which srv/hub the list was populated; in settings maybe inadequate due to refill during settings change
     int mEncryption;				// remember encryption when list was populated
     bool mUseServerColumn;
-    std::vector<int> mServerIds;
+    QList<int> mServerIds;
     QPoint mDefaultPoint;
     bool mRepopulationInProgress;
 };

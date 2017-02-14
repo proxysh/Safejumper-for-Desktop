@@ -90,6 +90,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     setOldIP(AuthManager::instance()->oldIP());
     updateEncryption();
     updateProtocol();
+    updateServer();
 
     connect(Setting::instance(), &Setting::encryptionChanged,
             this, &ConnectionDialog::updateEncryption);

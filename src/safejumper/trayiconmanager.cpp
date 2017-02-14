@@ -299,7 +299,7 @@ void TrayIconManager::connectToTriggered()
         if (AuthManager::instance()->loggedIn()) {
             size_t serverId = action->data().toInt();
 
-            MapScreen::instance()->setServer(serverId);
+            Setting::instance()->setServer(serverId);
             OpenvpnManager::instance()->start();
         } else {
             emit login();

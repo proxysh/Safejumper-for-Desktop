@@ -72,7 +72,7 @@ OpenvpnManager * OpenvpnManager::instance()
 
 void OpenvpnManager::startWithServer(size_t srv)
 {
-    MapScreen::instance()->setServer(srv);
+    Setting::instance()->setServer(srv);
     start();
 }
 
