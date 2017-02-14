@@ -1,0 +1,485 @@
+From 2124d479965be9096ddfa42f8fc01a9d8a1df3cb Mon Sep 17 00:00:00 2001
+From: Jeremy Whiting <jpwhiting@kde.org>
+Date: Tue, 14 Feb 2017 14:52:44 -0700
+Subject: [PATCH] Patches and variables to build proxy.sh version 2.4.0 of
+ OpenVPN
+
+Uses Tunnelblick Openvpn 2.4.0 patches for xor option
+Removed 64 bit version from openvpn installer script to always get 32 bit.
+Added patch to change Package name to ProxySHOpenVPN for windows registry keys.
+---
+ generic/build.vars                     |   2 +-
+ generic/patches/openvpn-2.4.0-01.patch |  11 ++++
+ generic/patches/openvpn-2.4.0-02.patch |  26 ++++++++
+ generic/patches/openvpn-2.4.0-03.patch |  79 +++++++++++++++++++++++
+ generic/patches/openvpn-2.4.0-04.patch |  12 ++++
+ generic/patches/openvpn-2.4.0-05.patch |  59 ++++++++++++++++++
+ generic/patches/openvpn-2.4.0-06.patch | 110 +++++++++++++++++++++++++++++++++
+ windows-nsis/openvpn.nsi               |  51 +++------------
+ 8 files changed, 307 insertions(+), 43 deletions(-)
+ create mode 100644 generic/patches/openvpn-2.4.0-01.patch
+ create mode 100644 generic/patches/openvpn-2.4.0-02.patch
+ create mode 100644 generic/patches/openvpn-2.4.0-03.patch
+ create mode 100644 generic/patches/openvpn-2.4.0-04.patch
+ create mode 100644 generic/patches/openvpn-2.4.0-05.patch
+ create mode 100644 generic/patches/openvpn-2.4.0-06.patch
+
+diff --git a/generic/build.vars b/generic/build.vars
+index 93ed2a7..a42fc2f 100644
+--- a/generic/build.vars
++++ b/generic/build.vars
+@@ -39,6 +39,6 @@ fi
+ EXTRA_OPENSSL_CONFIG="${EXTRA_OPENSSL_CONFIG:--static-libgcc}" # uncomment if openvpn.exe fails to start with missing libgcc_s_sjlj-1.dll (win32)
+ #EXTRA_LZO_CONFIG
+ #EXTRA_PKCS11_HELPER_CONFIG
+-#EXTRA_OPENVPN_CONFIG
++EXTRA_OPENVPN_CONFIG="--enable-static=yes"
+ 
+ TARGET_ROOT="${TARGET_ROOT:-/}"
+diff --git a/generic/patches/openvpn-2.4.0-01.patch b/generic/patches/openvpn-2.4.0-01.patch
+new file mode 100644
+index 0000000..05c909d
+--- /dev/null
++++ b/generic/patches/openvpn-2.4.0-01.patch
+@@ -0,0 +1,11 @@
++--- openvpn/configure	2016-12-20 16:07:51.393788785 -0700
+++++ configure	2017-02-14 14:30:11.469556377 -0700
++@@ -588,7 +588,7 @@
++ MAKEFLAGS=
++ 
++ # Identity of this package.
++-PACKAGE_NAME='OpenVPN'
+++PACKAGE_NAME='ProxySHOpenVPN'
++ PACKAGE_TARNAME='openvpn'
++ PACKAGE_VERSION='2.4_beta2'
++ PACKAGE_STRING='OpenVPN 2.4_beta2'
+diff --git a/generic/patches/openvpn-2.4.0-02.patch b/generic/patches/openvpn-2.4.0-02.patch
+new file mode 100644
+index 0000000..c396c8e
+--- /dev/null
++++ b/generic/patches/openvpn-2.4.0-02.patch
+@@ -0,0 +1,26 @@
++--- openvpn-2.3_git_1f004b2/src/openvpn/forward.c	2016-12-15 07:49:06.000000000 -0500
+++++ openvpn-2.3_git_1f004b2_patched/src/openvpn/forward.c	2016-12-15 17:07:51.000000000 -0500
++@@ -730,7 +730,10 @@
++ 
++     status = link_socket_read(c->c2.link_socket,
++                               &c->c2.buf,
++-                              &c->c2.from);
+++			                  &c->c2.from,
+++			                  c->options.ce.xormethod,
+++			                  c->options.ce.xormask,
+++			                  c->options.ce.xormasklen);
++ 
++     if (socket_connection_reset(c->c2.link_socket, status))
++     {
++@@ -1368,7 +1371,10 @@
++                 /* Send packet */
++                 size = link_socket_write(c->c2.link_socket,
++                                          &c->c2.to_link,
++-                                         to_addr);
+++                                         to_addr,
+++				                         c->options.ce.xormethod,
+++				                         c->options.ce.xormask,
+++				                         c->options.ce.xormasklen);
++ 
++                 /* Undo effect of prepend */
++                 link_socket_write_post_size_adjust(&size, size_delta, &c->c2.to_link);
+diff --git a/generic/patches/openvpn-2.4.0-03.patch b/generic/patches/openvpn-2.4.0-03.patch
+new file mode 100644
+index 0000000..27a1e7f
+--- /dev/null
++++ b/generic/patches/openvpn-2.4.0-03.patch
+@@ -0,0 +1,79 @@
++--- openvpn-2.3_git_1f004b2/src/openvpn/options.c	2016-12-15 07:49:06.000000000 -0500
+++++ openvpn-2.3_git_1f004b2_/src/openvpn/options.c	2016-12-15 17:30:08.000000000 -0500
++@@ -811,6 +811,9 @@
++     o->resolve_retry_seconds = RESOLV_RETRY_INFINITE;
++     o->resolve_in_advance = false;
++     o->proto_force = -1;
+++    o->ce.xormethod = 0;
+++    o->ce.xormask = "\0";
+++    o->ce.xormasklen = 0;
++ #ifdef ENABLE_OCC
++     o->occ = true;
++ #endif
++@@ -972,6 +975,9 @@
++     setenv_str_i(es, "local_port", e->local_port, i);
++     setenv_str_i(es, "remote", e->remote, i);
++     setenv_str_i(es, "remote_port", e->remote_port, i);
+++    setenv_int_i(es, "xormethod", e->xormethod, i);
+++    setenv_str_i(es, "xormask", e->xormask, i);
+++    setenv_int_i(es, "xormasklen", e->xormasklen, i);
++ 
++     if (e->http_proxy_options)
++     {
++@@ -1474,6 +1480,9 @@
++     SHOW_BOOL(bind_ipv6_only);
++     SHOW_INT(connect_retry_seconds);
++     SHOW_INT(connect_timeout);
+++    SHOW_INT (xormethod);
+++    SHOW_STR (xormask);
+++    SHOW_INT (xormasklen);
++ 
++     if (o->http_proxy_options)
++     {
++@@ -5915,6 +5924,46 @@
++         }
++         options->proto_force = proto_force;
++     }
+++    else if (streq (p[0], "scramble") && p[1])
+++    {
+++        VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
+++        if (streq (p[1], "xormask") && p[2] && (!p[3]))
+++        {
+++            options->ce.xormethod = 1;
+++            options->ce.xormask = p[2];
+++            options->ce.xormasklen = strlen(options->ce.xormask);
+++        }
+++        else if (streq (p[1], "xorptrpos") && (!p[2]))
+++        {
+++            options->ce.xormethod = 2;
+++            options->ce.xormask = NULL;
+++            options->ce.xormasklen = 0;
+++        }
+++        else if (streq (p[1], "reverse") && (!p[2]))
+++        {
+++            options->ce.xormethod = 3;
+++            options->ce.xormask = NULL;
+++            options->ce.xormasklen = 0;
+++        }
+++        else if (streq (p[1], "obfuscate") && p[2] && (!p[3]))
+++        {
+++            options->ce.xormethod = 4;
+++            options->ce.xormask = p[2];
+++            options->ce.xormasklen = strlen(options->ce.xormask);
+++        }
+++        else if (!p[2])
+++        {
+++            msg (M_WARN, "WARNING: No recognized 'scramble' method specified; using 'scramble xormask \"%s\"'", p[1]);
+++            options->ce.xormethod = 1;
+++            options->ce.xormask = p[1];
+++            options->ce.xormasklen = strlen(options->ce.xormask);
+++        }
+++        else
+++        {
+++            msg (msglevel, "No recognized 'scramble' method specified or extra parameters for 'scramble'");
+++            goto err;
+++        }
+++    }
++     else if (streq(p[0], "http-proxy") && p[1] && !p[5])
++     {
++         struct http_proxy_options *ho;
+diff --git a/generic/patches/openvpn-2.4.0-04.patch b/generic/patches/openvpn-2.4.0-04.patch
+new file mode 100644
+index 0000000..7866799
+--- /dev/null
++++ b/generic/patches/openvpn-2.4.0-04.patch
+@@ -0,0 +1,12 @@
++--- openvpn-2.3_git_1f004b2/src/openvpn/options.h	2016-12-15 07:49:06.000000000 -0500
+++++ openvpn-2.3_git_1f004b2_/src/openvpn/options.h	2016-12-15 17:33:28.000000000 -0500
++@@ -98,6 +98,9 @@
++     int connect_retry_seconds;
++     int connect_retry_seconds_max;
++     int connect_timeout;
+++    int xormethod;
+++    const char *xormask;
+++    int xormasklen;
++     struct http_proxy_options *http_proxy_options;
++     const char *socks_proxy_server;
++     const char *socks_proxy_port;
+diff --git a/generic/patches/openvpn-2.4.0-05.patch b/generic/patches/openvpn-2.4.0-05.patch
+new file mode 100644
+index 0000000..b7dd9aa
+--- /dev/null
++++ b/generic/patches/openvpn-2.4.0-05.patch
+@@ -0,0 +1,59 @@
++--- openvpn-2.3_git_1f004b2/src/openvpn/socket.c	2016-12-15 07:49:06.000000000 -0500
+++++ openvpn-2.3_git_1f004b2_/src/openvpn/socket.c	2016-12-15 17:41:06.000000000 -0500
++@@ -55,6 +55,56 @@
++     IPv6_TCP_HEADER_SIZE,
++ };
++ 
+++int buffer_mask(struct buffer *buf, const char *mask, int xormasklen)
+++{
+++    int i;
+++    uint8_t *b;
+++    if (  xormasklen > 0  ) {
+++        for (i = 0, b = BPTR (buf); i < BLEN(buf); i++, b++) {
+++            *b = *b ^ mask[i % xormasklen];
+++        }
+++    }
+++    return BLEN (buf);
+++}
+++
+++int buffer_xorptrpos(struct buffer *buf)
+++{
+++    int i;
+++    uint8_t *b;
+++    for (i = 0, b = BPTR (buf); i < BLEN(buf); i++, b++) {
+++        *b = *b ^ i+1;
+++    }
+++    return BLEN (buf);
+++}
+++
+++int buffer_reverse(struct buffer *buf)
+++{
+++/* This function has been rewritten for Tunnelblick. The buffer_reverse function at
+++ * https://github.com/clayface/openvpn_xorpatch
+++ * makes a copy of the buffer and it writes to the byte **after** the
+++ * buffer contents, so if the buffer is full then it writes outside of the buffer.
+++ * This rewritten version does neither.
+++ *
+++ * For interoperability, this rewritten version preserves the behavior of the original
+++ * function: it does not modify the first character of the buffer. So it does not
+++ * actually reverse the contents of the buffer. Instead, it changes 'abcde' to 'aedcb'.
+++ * (Of course, the actual buffer contents are bytes, and not necessarily characters.)
+++ */
+++    int len = BLEN(buf);
+++    if (  len > 2  ) {                           /* Leave '', 'a', and 'ab' alone */
+++        int i;
+++        uint8_t *b_start = BPTR (buf) + 1;            /* point to first byte to swap */
+++        uint8_t *b_end   = BPTR (buf) + (len - 1); /* point to last byte to swap */
+++        uint8_t tmp;
+++        for (i = 0; i < (len-1)/2; i++, b_start++, b_end--) {
+++            tmp = *b_start;
+++            *b_start = *b_end;
+++            *b_end = tmp;
+++        }
+++    }
+++    return len;
+++}
+++
++ /*
++  * Convert sockflags/getaddr_flags into getaddr_flags
++  */
+diff --git a/generic/patches/openvpn-2.4.0-06.patch b/generic/patches/openvpn-2.4.0-06.patch
+new file mode 100644
+index 0000000..c9077c6
+--- /dev/null
++++ b/generic/patches/openvpn-2.4.0-06.patch
+@@ -0,0 +1,110 @@
++--- openvpn-2.3_git_1f004b2/src/openvpn/socket.h	2016-12-15 07:49:06.000000000 -0500
+++++ openvpn-2.3_git_1f004b2_/src/openvpn/socket.h	2016-12-15 17:55:51.000000000 -0500
++@@ -249,6 +249,10 @@
++ #endif
++ };
++ 
+++int buffer_mask(struct buffer *buf, const char *xormask, int xormasklen);
+++int buffer_xorptrpos(struct buffer *buf);
+++int buffer_reverse(struct buffer *buf);
+++
++ /*
++  * Some Posix/Win32 differences.
++  */
++@@ -1046,30 +1050,56 @@
++ static inline int
++ link_socket_read(struct link_socket *sock,
++                  struct buffer *buf,
++-                 struct link_socket_actual *from)
+++                 struct link_socket_actual *from,
+++                 int xormethod,
+++                 const char *xormask,
+++                 int xormasklen)
++ {
+++    int res;
++     if (proto_is_udp(sock->info.proto)) /* unified UDPv4 and UDPv6 */
++     {
++-        int res;
++ 
++ #ifdef _WIN32
++         res = link_socket_read_udp_win32(sock, buf, from);
++ #else
++         res = link_socket_read_udp_posix(sock, buf, from);
++ #endif
++-        return res;
++     }
++     else if (proto_is_tcp(sock->info.proto)) /* unified TCPv4 and TCPv6 */
++     {
++         /* from address was returned by accept */
++         addr_copy_sa(&from->dest, &sock->info.lsa->actual.dest);
++-        return link_socket_read_tcp(sock, buf);
+++        res = link_socket_read_tcp(sock, buf);
++     }
++     else
++     {
++         ASSERT(0);
++         return -1; /* NOTREACHED */
++     }
+++    switch(xormethod)
+++    {
+++        case 0:
+++            break;
+++        case 1:
+++            buffer_mask(buf,xormask,xormasklen);
+++            break;
+++        case 2:
+++            buffer_xorptrpos(buf);
+++            break;
+++        case 3:
+++            buffer_reverse(buf);
+++            break;
+++        case 4:
+++            buffer_mask(buf,xormask,xormasklen);
+++            buffer_xorptrpos(buf);
+++            buffer_reverse(buf);
+++            buffer_xorptrpos(buf);
+++            break;
+++        default:
+++            ASSERT (0);
+++            return -1; /* NOTREACHED */
+++    }
+++    return res;
++ }
++ 
++ /*
++@@ -1159,8 +1189,34 @@
++ static inline int
++ link_socket_write(struct link_socket *sock,
++                   struct buffer *buf,
++-                  struct link_socket_actual *to)
+++                  struct link_socket_actual *to,
+++                  int xormethod,
+++                  const char *xormask,
+++                  int xormasklen)
++ {
+++    switch(xormethod)
+++    {
+++        case 0:
+++            break;
+++        case 1:
+++            buffer_mask(buf,xormask,xormasklen);
+++            break;
+++        case 2:
+++            buffer_xorptrpos(buf);
+++            break;
+++        case 3:
+++            buffer_reverse(buf);
+++            break;
+++        case 4:
+++            buffer_xorptrpos(buf);
+++            buffer_reverse(buf);
+++            buffer_xorptrpos(buf);
+++            buffer_mask(buf,xormask,xormasklen);
+++            break;
+++        default:
+++            ASSERT (0);
+++            return -1; /* NOTREACHED */
+++    }
++     if (proto_is_udp(sock->info.proto)) /* unified UDPv4 and UDPv6 */
++     {
++         return link_socket_write_udp(sock, buf, to);
+diff --git a/windows-nsis/openvpn.nsi b/windows-nsis/openvpn.nsi
+index 815e1c2..c3a61db 100755
+--- a/windows-nsis/openvpn.nsi
++++ b/windows-nsis/openvpn.nsi
+@@ -308,11 +308,7 @@ Section "${PACKAGE_NAME} User-Space Components" SecOpenVPNUserSpace
+ 	SetOverwrite on
+ 
+ 	SetOutPath "$INSTDIR\bin"
+-	${If} ${RunningX64}
+-		File "${OPENVPN_ROOT_X86_64}\bin\openvpn.exe"
+-	${Else}
+-		File "${OPENVPN_ROOT_I686}\bin\openvpn.exe"
+-	${EndIf}
++	File "${OPENVPN_ROOT_I686}\bin\openvpn.exe"
+ 
+ 	SetOutPath "$INSTDIR\doc"
+ 	File "INSTALL-win32.txt"
+@@ -350,11 +346,7 @@ Function CoreSetup
+ 
+ 	SetOutPath "$INSTDIR\bin"
+ 	; Copy openvpnserv.exe for interactive service
+-	${If} ${RunningX64}
+-		File "${OPENVPN_ROOT_X86_64}\bin\openvpnserv.exe"
+-	${Else}
+-		File "${OPENVPN_ROOT_I686}\bin\openvpnserv.exe"
+-	${EndIf}
++	File "${OPENVPN_ROOT_I686}\bin\openvpnserv.exe"
+ 
+ 	SetOutPath "$INSTDIR\config"
+ 
+@@ -436,11 +428,7 @@ Section /o "${PACKAGE_NAME} GUI" SecOpenVPNGUI
+ 	SetOverwrite on
+ 	SetOutPath "$INSTDIR\bin"
+ 
+-	${If} ${RunningX64}
+-		File "${OPENVPN_ROOT_X86_64}\bin\openvpn-gui.exe"
+-	${Else}
+-		File "${OPENVPN_ROOT_I686}\bin\openvpn-gui.exe"
+-	${EndIf}
++	File "${OPENVPN_ROOT_I686}\bin\openvpn-gui.exe"
+ 
+ 	${If} ${SectionIsSelected} ${SecAddShortcutsWorkaround}
+ 		CreateDirectory "$SMPROGRAMS\${PACKAGE_NAME}"
+@@ -468,11 +456,7 @@ Section "-OpenSSL Utilities" SecOpenSSLUtilities
+ 
+ 	SetOverwrite on
+ 	SetOutPath "$INSTDIR\bin"
+-	${If} ${RunningX64}
+-		File "${OPENVPN_ROOT_X86_64}\bin\openssl.exe"
+-	${Else}
+-		File "${OPENVPN_ROOT_I686}\bin\openssl.exe"
+-	${EndIf}
++	File "${OPENVPN_ROOT_I686}\bin\openssl.exe"
+ 
+ SectionEnd
+ 
+@@ -541,13 +525,8 @@ Section "-OpenSSL DLLs" SecOpenSSLDLLs
+ 
+ 	SetOverwrite on
+ 	SetOutPath "$INSTDIR\bin"
+-	${If} ${RunningX64}
+-		File "${OPENVPN_ROOT_X86_64}\bin\libeay32.dll"
+-		File "${OPENVPN_ROOT_X86_64}\bin\ssleay32.dll"
+-	${Else}
+-		File "${OPENVPN_ROOT_I686}\bin\libeay32.dll"
+-		File "${OPENVPN_ROOT_I686}\bin\ssleay32.dll"
+-	${EndIf}
++	File "${OPENVPN_ROOT_I686}\bin\libeay32.dll"
++	File "${OPENVPN_ROOT_I686}\bin\ssleay32.dll"
+ 
+ SectionEnd
+ 
+@@ -555,11 +534,7 @@ Section "-LZO DLLs" SecLZODLLs
+ 
+ 	SetOverwrite on
+ 	SetOutPath "$INSTDIR\bin"
+-	${If} ${RunningX64}
+-		File "${OPENVPN_ROOT_X86_64}\bin\liblzo2-2.dll"
+-	${Else}
+-		File "${OPENVPN_ROOT_I686}\bin\liblzo2-2.dll"
+-	${EndIf}
++	File "${OPENVPN_ROOT_I686}\bin\liblzo2-2.dll"
+ 
+ SectionEnd
+ 
+@@ -567,11 +542,7 @@ Section "-PKCS#11 DLLs" SecPKCS11DLLs
+ 
+ 	SetOverwrite on
+ 	SetOutPath "$INSTDIR\bin"
+-	${If} ${RunningX64}
+-		File "${OPENVPN_ROOT_X86_64}\bin\libpkcs11-helper-1.dll"
+-	${Else}
+-		File "${OPENVPN_ROOT_I686}\bin\libpkcs11-helper-1.dll"
+-	${EndIf}
++	File "${OPENVPN_ROOT_I686}\bin\libpkcs11-helper-1.dll"
+ 
+ SectionEnd
+ 
+@@ -592,11 +563,7 @@ ${IfNot} ${AtLeastWinVista}
+ 
+ 	DownloadForWinXP:
+ 	DetailPrint "Downloading the latest WinXP build ..."
+-	${If} ${RunningX64}
+-		ExecShell "open" "https://build.openvpn.net/downloads/releases/latest/openvpn-install-latest-winxp-x86_64.exe" 
+-	${Else}
+-		ExecShell "open" "https://build.openvpn.net/downloads/releases/latest/openvpn-install-latest-winxp-i686.exe"
+-	${EndIf}
++	ExecShell "open" "https://build.openvpn.net/downloads/releases/latest/openvpn-install-latest-winxp-i686.exe"
+ 
+ 	Quit
+ 
+-- 
+2.11.0
+
