@@ -602,9 +602,9 @@ QPushButton:pressed
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>247</red>
+           <green>247</green>
+           <blue>247</blue>
           </color>
          </brush>
         </colorrole>
@@ -674,18 +674,18 @@ QPushButton:pressed
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>247</red>
+           <green>247</green>
+           <blue>247</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>247</red>
+           <green>247</green>
+           <blue>247</blue>
           </color>
          </brush>
         </colorrole>
@@ -739,9 +739,9 @@ QPushButton:pressed
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>247</red>
+           <green>247</green>
+           <blue>247</blue>
           </color>
          </brush>
         </colorrole>
@@ -811,18 +811,18 @@ QPushButton:pressed
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>247</red>
+           <green>247</green>
+           <blue>247</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>247</red>
+           <green>247</green>
+           <blue>247</blue>
           </color>
          </brush>
         </colorrole>
@@ -876,9 +876,9 @@ QPushButton:pressed
         <colorrole role="Button">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>247</red>
+           <green>247</green>
+           <blue>247</blue>
           </color>
          </brush>
         </colorrole>
@@ -948,18 +948,18 @@ QPushButton:pressed
         <colorrole role="Base">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>247</red>
+           <green>247</green>
+           <blue>247</blue>
           </color>
          </brush>
         </colorrole>
         <colorrole role="Window">
          <brush brushstyle="SolidPattern">
           <color alpha="255">
-           <red>255</red>
-           <green>255</green>
-           <blue>255</blue>
+           <red>247</red>
+           <green>247</green>
+           <blue>247</blue>
           </color>
          </brush>
         </colorrole>
@@ -1414,6 +1414,9 @@ color: #818181;
          </property>
          <item row="1" column="1">
           <widget class="QPushButton" name="saveCSVButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Save CSV File...</string>
            </property>
@@ -1434,6 +1437,18 @@ color: #818181;
          </item>
          <item row="0" column="0" colspan="2">
           <widget class="QTableWidget" name="tableWidget">
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::NoSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
            <column>
             <property name="text">
              <string>Server</string>
@@ -1441,7 +1456,7 @@ color: #818181;
            </column>
            <column>
             <property name="text">
-             <string>Protocol</string>
+             <string>Encryption</string>
             </property>
            </column>
            <column>
@@ -1457,7 +1472,6 @@ color: #818181;
           </widget>
          </item>
         </layout>
-        <zorder>tableWidget</zorder>
         <zorder>tableWidget</zorder>
         <zorder>saveCSVButton</zorder>
         <zorder>horizontalSpacer</zorder>

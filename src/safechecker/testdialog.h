@@ -43,12 +43,6 @@ public:
     static TestDialog * instance();
     static void cleanup();
 
-    void setProtocol(int ix);   // -1 for none
-    void setServer(int srv);	// -1 or id inside all servers
-    void updateNewIP(const QString & s);
-
-    void setVPNName(const QString & vpnname);
-
 public slots:
     void PortDlgAction(int action);
     void setAccountName(const QString & s);
@@ -61,7 +55,6 @@ public slots:
 protected:
     virtual void closeEvent(QCloseEvent * event);
     virtual void keyPressEvent(QKeyEvent * event);
-    virtual bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
     void on_startButton_clicked();
@@ -72,6 +65,7 @@ private slots:
     void setEmail(const QString & s);
     void setAmount(const QString & s);
     void setUntil(const QString & date);
+    void setNewIP(const QString & s);
 
     void updateServer(); // Slot for Setting::serverChanged
     void updateEncryption(); // Slot for Setting::encryptionChanged
@@ -82,7 +76,9 @@ private:
     explicit TestDialog(QWidget *parent = 0);
 
     void setFlag(int srv);
+    void setServer(int srv);	// -1 or id inside all servers
     void setNoServer();
+    void setProtocol(int ix);   // -1 for none
 
     // Record current encryption/server/protocol result and go to the next one
     void iterate();
@@ -93,10 +89,6 @@ private:
     void addError(QString message);
 
     bool saveCSV(QString filename);
-
-    bool mMoving;
-    QPoint mStartPosition;
-    QPoint mCursorStartPosition;
 
     static void initializeStateWords();
     static QHash<QString, const char*> mStateWordImages;

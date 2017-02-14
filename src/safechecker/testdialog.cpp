@@ -41,7 +41,6 @@ QHash<QString, const char*> TestDialog::mStateWordImages;
 TestDialog::TestDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::TestDialog)
-    , mMoving(false)
 {
     ui->setupUi(this);
 
@@ -86,16 +85,16 @@ TestDialog::TestDialog(QWidget *parent) :
     updateEncryption();
     updateProtocol();
 
-    connect(AuthManager::instance(), SIGNAL(oldIpLoaded(QString)),
-            this, SLOT(setOldIP(QString)));
-    connect(AuthManager::instance(), SIGNAL(emailLoaded(QString)),
-            this, SLOT(setEmail(QString)));
-    connect(AuthManager::instance(), SIGNAL(untilLoaded(QString)),
-            this, SLOT(setUntil(QString)));
-    connect(AuthManager::instance(), SIGNAL(amountLoaded(QString)),
-            this, SLOT(setAmount(QString)));
-
-    qApp->installEventFilter(this);
+    connect(AuthManager::instance(), &AuthManager::oldIpLoaded,
+            this, &TestDialog::setOldIP);
+    connect(AuthManager::instance(), &AuthManager::emailLoaded,
+            this, &TestDialog::setEmail);
+    connect(AuthManager::instance(), &AuthManager::untilLoaded,
+            this, &TestDialog::setUntil);
+    connect(AuthManager::instance(), &AuthManager::amountLoaded,
+            this, &TestDialog::setAmount);
+    connect(AuthManager::instance(), &AuthManager::newIpLoaded,
+            this, &TestDialog::setNewIP);
 
     connect(Setting::instance(), &Setting::serverChanged,
             this, &TestDialog::updateServer);
@@ -114,29 +113,6 @@ void TestDialog::cleanup()
 {
     if (mInstance.get() != NULL)
         delete mInstance.release();
-}
-
-bool TestDialog::eventFilter(QObject *obj, QEvent *event)
-{
-    switch (event->type()) {
-    case QEvent::MouseMove: {
-        if (mMoving) {
-            QPoint d = QCursor::pos() - mCursorStartPosition;
-            if (d.x() != 0 || d.y() != 0) {
-                QPoint NewAbs = mStartPosition + d;
-                this->move(NewAbs);
-            }
-        }
-        return false;
-    }
-    case QEvent::MouseButtonRelease: {
-        mMoving = false;
-//			_WndStart = pos();
-        return false;
-    }
-    default:
-        return QDialog::eventFilter(obj, event);
-    }
 }
 
 void TestDialog::setNoServer()
@@ -181,7 +157,7 @@ void TestDialog::updateServer()
     setServer(Setting::instance()->serverID());
 }
 
-void TestDialog::updateNewIP(const QString & s)
+void TestDialog::setNewIP(const QString & s)
 {
     static const QString self = "127.0.0.1";
     if (s != self) {
@@ -271,7 +247,6 @@ void TestDialog::iterate()
     // Got to the end of the list of servers, so switch to the next encryption
     // type and start over
     if (++mCurrentEncryptionType < mEncryptionTypes.size()) {
-        setProtocol(mCurrentEncryptionType);
         Setting::instance()->setProtocol(mCurrentEncryptionType);
         // Get all servers
         mServerIds = AuthManager::instance()->currentEncryptionServers();
@@ -285,8 +260,12 @@ void TestDialog::iterate()
         Setting::instance()->setProtocol(mCurrentProtocol);
         OpenvpnManager::instance()->start();
     }
+
     // Otherwise we finished checking all servers, all encryption types, all ports
     // Ask to save table widget to pipe separated values file.
+    ui->saveCSVButton->setEnabled(true);
+    ui->cancelButton->hide();
+    ui->startButton->show();
 }
 
 int TestDialog::addRow()
@@ -308,7 +287,7 @@ void TestDialog::addConnected()
 {
     int row = addRow();
     QTableWidgetItem *resultItem = new QTableWidgetItem(tr("success"));
-    resultItem->setForeground(Qt::green);
+    resultItem->setForeground(Qt::darkGreen);
     resultItem->setToolTip(ui->L_NewIp->text());
     ui->tableWidget->setItem(row, 3, resultItem);
 }
@@ -329,34 +308,71 @@ bool TestDialog::saveCSV(QString filename)
         return false;
     }
 
+    // Create a folder with the same name as the filename but with .logs extension
+    QString logfolder = filename + ".logs";
+    QDir logDir(logfolder);
+
+    if (!logDir.exists())
+        logDir.mkdir(logfolder);
+    else if (!logDir.entryList(QDir::NoDotAndDotDot).isEmpty()) {
+        // Clean out the log folder
+        QStringList filenames = logDir.entryList(QDir::NoDotAndDotDot);
+        foreach(QString filename, filenames)
+            logDir.remove(filename);
+    }
+
     // Iterate over the rows of the table
     for (int i=0; i < ui->tableWidget->rowCount(); ++i) {
         // Write server name and ip address from the widget item
-        file.write(ui->tableWidget->item(i, 0)->text().toLatin1());
+        QString serverName = ui->tableWidget->item(i, 0)->text();
+        QString encryptionName = ui->tableWidget->item(i, 1)->text();
+        QString protocolName = ui->tableWidget->item(i, 2)->text();
+        file.write(serverName.toLatin1());
         file.write("|");
         file.write(ui->tableWidget->item(i, 0)->toolTip().toLatin1());
         file.write("|");
         // Write the port number
-        file.write(ui->tableWidget->item(i, 2)->text().toLatin1());
+        file.write(protocolName.toLatin1());
         file.write("|");
         // Write the encryption type
-        file.write(ui->tableWidget->item(i, 1)->text().toLatin1());
+        file.write(encryptionName.toLatin1());
         file.write("|");
         // Write the result
         file.write(ui->tableWidget->item(i, 3)->text().toLatin1());
         file.write("|");
-        // Write the debug file name
-        file.write("null");
-        file.write("|");
-        // Write the log file name
-        file.write("null");
-        file.write("|");
-        // Write the new ip address
+        // Write the debug file name if it failed
         QString newIp = ui->tableWidget->item(i, 3)->toolTip();
-        if (newIp.isEmpty())
+        if (newIp.isEmpty()) {
+            // Copy logs
+            QString logFilename = QString("%1-%2-%3-%4").arg(serverName)
+                    .arg(encryptionName).arg(protocolName).arg("openvpn.log");
+            QString debugFilename = QString("%1-%2-%3-%4").arg(serverName)
+                    .arg(encryptionName).arg(protocolName).arg("debug.log");
+            QFile::rename(mLogFolder + "/" + logFilename, logfolder + "/" + logFilename);
+            QFile::rename(mLogFolder + "/" + debugFilename, logfolder + "/" + debugFilename);
+
+            // Failure, write the debug and log filenames (and copy the files)
+            file.write(logfolder.toLatin1());
+            file.write("/");
+            file.write(debugFilename.toLatin1());
+            file.write("|");
+            // Write the log file name if it failed
+            file.write(logfolder.toLatin1());
+            file.write("/");
+            file.write(logFilename.toLatin1());
+            file.write("|");
+            // Write null for the new ip address because it's a failure
             file.write("null");
-        else
+        } else {
+            // Success, write null for filenames and write new ip
+            file.write("null");
+            file.write("|");
+            // Write the log file name if it failed
+            file.write("null");
+            file.write("|");
+            // Write the new ip address
             file.write(newIp.toLatin1());
+        }
         // Write a newline
         file.write("\n");
     }
@@ -409,7 +425,7 @@ void TestDialog::on_startButton_clicked()
     QDir dir(mLogFolder);
     if (!dir.exists())
         dir.mkdir(mLogFolder);
-    if (!dir.entryList(QDir::NoDotAndDotDot).isEmpty()) {
+    else if (!dir.entryList(QDir::NoDotAndDotDot).isEmpty()) {
         QStringList filenames = dir.entryList(QDir::NoDotAndDotDot);
         foreach(QString filename, filenames)
             dir.remove(filename);
@@ -417,13 +433,14 @@ void TestDialog::on_startButton_clicked()
 
     ui->startButton->hide();
     ui->cancelButton->show();
+    ui->saveCSVButton->setEnabled(false);
+
     // Clear out previous results if any
     ui->tableWidget->setRowCount(0);
     // Get all encryption types
     mEncryptionTypes = {ENCRYPTION_RSA, ENCRYPTION_TOR_OBFS2, ENCRYPTION_ECC, ENCRYPTION_ECCXOR};
     // Set encryption to type 0
     mCurrentEncryptionType = 0;
-    setProtocol(mCurrentEncryptionType);
     Setting::instance()->setProtocol(mCurrentEncryptionType);
     // Get all servers
     mServerIds = AuthManager::instance()->currentEncryptionServers();
@@ -443,6 +460,8 @@ void TestDialog::on_cancelButton_clicked()
 {
     ui->cancelButton->hide();
     ui->startButton->show();
+    ui->saveCSVButton->setEnabled(true);
+
     OpenvpnManager::instance()->stop();
     setStatusDisconnected();
 }
@@ -513,7 +532,7 @@ void TestDialog::setError(const QString &message)
     // Copy logs
     QString serverName = ui->countryLabel->text();
     QString encryptionName = ui->encryptionLabel->text();
-    QString protocolName = ui->L_Protocol->text();
+    QString protocolName = Setting::instance()->port();
     QFile::copy(PathHelper::Instance()->openvpnLogFilename(),
                 QString("%1/%2-%3-%4-%5").arg(mLogFolder).arg(serverName).arg(encryptionName)
                 .arg(protocolName).arg("openvpn.log"));
