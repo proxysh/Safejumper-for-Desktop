@@ -30,7 +30,7 @@ SectionIn RO
        SetOutPath $TEMP
        File  openvpn-proxysh.exe
        Push $0
-       ExecWait '$OUTDIR\openvpn-proxysh.exe /S /D=C:\Program Files\OpenVPN' $0
+       ExecWait '$OUTDIR\openvpn-proxysh.exe /S /SELECT_OPENVPNGUI=0 /D=$INSTDIR\OpenVPN' $0
        IfErrors Label_0x19 Label_0x1A
 
   Label_0x19:
@@ -116,9 +116,9 @@ Section "uninstall"
    Delete  $DESKTOP\Safejumper.lnk
    Delete  $STARTMENU\Safejumper\Safejumper.lnk
    Delete  $STARTMENU\Safejumper\Uninstall.lnk
+   ExecWait '$INSTDIR\OpenVPN\Uninstall.exe /S'  $0
    RMDir /r $INSTDIR\*.*
    RMDir $INSTDIR
-   ExecWait 'C:\Program Files\OpenVPN\Uninstall.exe /S'  $0
 
 # uninstaller section end
 SectionEnd
