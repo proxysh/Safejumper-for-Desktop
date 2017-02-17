@@ -176,8 +176,9 @@ AServer AuthManager::getServer(int id)
 AServer AuthManager::getHub(int idhub)
 {
     int idsrv = -1;
-    if (idhub > -1 && idhub < mHubs.size())
+    if (idhub > -1 && idhub < mHubs.size()) {
         idsrv = serverIdFromHubId(idhub);
+    }
     return getServer(idsrv);
 }
 
@@ -198,7 +199,7 @@ const QList<int> &AuthManager::currentEncryptionServers()
 
 const QList<int> &AuthManager::currentEncryptionHubs()
 {
-    if (!mServers.isEmpty() && mHubs.empty()) {
+    if (!mServers.isEmpty() && mHubs.isEmpty()) {
         for (int k = 0; k < mServers.size(); ++k) {
             if (mServers.at(k).name.contains("Hub", Qt::CaseInsensitive)) {
                 mHubs.append(mServers.at(k));
@@ -294,7 +295,7 @@ const std::vector<int> & AuthManager::getLevel1(size_t hub)
 
 size_t AuthManager::serverIdFromHubId(size_t ixHub)
 {
-    if (ixHub > -1 && ixHub < mHubToServer.size())
+    if (ixHub < mHubToServer.size())
         return mHubToServer.at(ixHub);
     return -1;
 }
@@ -949,7 +950,7 @@ void AuthManager::pingAllServers()
     // Fill mPings with as many -1 entries as there are servers
     while (mPings.size() < mServers.size())
         mPings.append(-1);
-    for (size_t k = 0; k < mServers.size(); ++k)
+    for (int k = 0; k < mServers.size(); ++k)
         mToPing.push(k);
 
     if (mWorkers.empty()) {
@@ -1082,14 +1083,14 @@ int AuthManager::getServerToJump()
     if (Setting::instance()->showNodes()) {
         log::logt("showNodes is set, so getting pings of all servers");
         // jump to server
-        for (size_t k = 0; k < mServerIds[enc].size(); ++k) {
+        for (int k = 0; k < mServerIds[enc].size(); ++k) {
             if (mServerIds[enc].at(k) != prev)
                 toping.push_back(mServerIds[enc].at(k));
         }
     } else {
         // jump to hub
         int prevhub = hubIxFromServerName(getServer(prev).name);
-        for (size_t k = 0; k < mHubIds[enc].size(); ++k) {
+        for (int k = 0; k < mHubIds[enc].size(); ++k) {
             int ixsrv = serverIdFromHubId(mHubIds[enc].at(k));
             if (ixsrv != prev) {
                 if (prevhub < 0)
