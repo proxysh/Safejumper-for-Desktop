@@ -62,14 +62,13 @@ SOURCES += \
     ../safejumper/common.cpp \
     ../safejumper/confirmationdialog.cpp \
     ../safejumper/dlg_newnode.cpp \
+    ../safejumper/encryptiondelegate.cpp \
     ../safejumper/errordialog.cpp \
     ../safejumper/flag.cpp \
     ../safejumper/fonthelper.cpp \
+    ../safejumper/locationdelegate.cpp \
     ../safejumper/log.cpp \
     ../safejumper/loginwindow.cpp \
-    ../safejumper/lvrowdelegate.cpp \
-    ../safejumper/lvrowdelegateencryption.cpp \
-    ../safejumper/lvrowdelegateprotocol.cpp \
     main.cpp \
     ../safejumper/mapscreen.cpp \
     ../safejumper/ministun.c \
@@ -78,6 +77,7 @@ SOURCES += \
     ../safejumper/pathhelper.cpp \
     ../safejumper/pingwaiter.cpp \
     ../safejumper/portforwarder.cpp \
+    ../safejumper/protocoldelegate.cpp \
     scr_settings.cpp \
     scr_logs.cpp \
     ../safejumper/setting.cpp \
@@ -91,14 +91,13 @@ HEADERS += \
     ../safejumper/common.h \
     ../safejumper/confirmationdialog.h \
     ../safejumper/dlg_newnode.h \
+    ../safejumper/encryptiondelegate.h \
     ../safejumper/errordialog.h \
     ../safejumper/flag.h \
     ../safejumper/fonthelper.h \
+    ../safejumper/locationdelegate.h \
     ../safejumper/log.h \
     ../safejumper/loginwindow.h \
-    ../safejumper/lvrowdelegate.h \
-    ../safejumper/lvrowdelegateencryption.h \
-    ../safejumper/lvrowdelegateprotocol.h \
     ../safejumper/mapscreen.h \
     ../safejumper/ministun.h \
     ../safejumper/openvpnmanager.h \
@@ -106,6 +105,7 @@ HEADERS += \
     ../safejumper/pathhelper.h \
     ../safejumper/pingwaiter.h \
     ../safejumper/portforwarder.h \
+    ../safejumper/protocoldelegate.h \
     scr_logs.h \
     scr_settings.h \
     ../safejumper/setting.h \

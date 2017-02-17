@@ -28,7 +28,7 @@
 #include "fonthelper.h"
 #include "osspecific.h"
 #include "log.h"
-#include "lvrowdelegateencryption.h"
+#include "encryptiondelegate.h"
 #include "errordialog.h"
 #include "pathhelper.h"
 
@@ -65,7 +65,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
     for (int k = 0; k < ENCRYPTION_COUNT; ++k)
         ui->dd_Encryption->addItem(Setting::encryptionName(k));
     ui->dd_Encryption->setView(ui->lv_Encryption);
-    ui->dd_Encryption->setItemDelegate(new LvRowDelegateEncryption(this));
+    ui->dd_Encryption->setItemDelegate(new EncryptionDelegate(this));
     _repopulation_inprogress = false;
 
 //	QPoint p0 = _WndStart = pos();
