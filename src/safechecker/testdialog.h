@@ -82,6 +82,7 @@ private:
 
     // Record current encryption/server/protocol result and go to the next one
     void iterate();
+    void nextServer(); // Iterate to the next server that doesn't have "Hub" in it's name
     // Add a row to the table widget
     int addRow();
     // Add a "connected" line to the table widget

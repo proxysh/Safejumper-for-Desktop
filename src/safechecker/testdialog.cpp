@@ -231,7 +231,8 @@ void TestDialog::iterate()
         OpenvpnManager::instance()->start();
         return;
     }
-    if (++mCurrentServerId < mServerIds.size()) {
+    nextServer();
+    if (mCurrentServerId < mServerIds.size()) {
         // Got to the end of the list of protocols, so go to the next server
         // and start over at the top of the list of protocols
         const AServer & se = AuthManager::instance()->getServer(mServerIds.at(mCurrentServerId));
@@ -266,6 +267,16 @@ void TestDialog::iterate()
     ui->saveCSVButton->setEnabled(true);
     ui->cancelButton->hide();
     ui->startButton->show();
+}
+
+void TestDialog::nextServer()
+{
+    AServer server;
+    do {
+        ++mCurrentServerId;
+        server = AuthManager::instance()->getServer(mServerIds.at(mCurrentServerId));
+    } while (mCurrentServerId < mServerIds.size() &&
+           server.name.contains("Hub"));
 }
 
 int TestDialog::addRow()
@@ -445,7 +456,8 @@ void TestDialog::on_startButton_clicked()
     // Get all servers
     mServerIds = AuthManager::instance()->currentEncryptionServers();
     // Set server to first
-    mCurrentServerId = 0;
+    mCurrentServerId = -1;
+    nextServer();
     Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
     // Get all protocols
     mProtocols = Setting::instance()->currentEncryptionProtocols();
