@@ -210,7 +210,17 @@ const QList<int> &AuthManager::currentEncryptionHubs()
             }
         }
     }
+
     int enc = Setting::instance()->encryption();
+    // Now get all the hub ids for the current encryption
+    if (mHubIds[enc].isEmpty()) {
+        for (int k = 0; k < mServerIds[enc].size(); ++k) {
+            int serverId = mServerIds[enc].at(k);
+            if (mServers.at(serverId).name.contains("Hub", Qt::CaseInsensitive)) {
+                mHubIds[enc].append(serverId);
+            }
+        }
+    }
     return mHubIds[enc];
 }
 
@@ -974,10 +984,11 @@ void AuthManager::startWorker(size_t id)
                           mWaiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
             m->disconnect(mWorkers.at(id), SIGNAL(error(QProcess::ProcessError)),
                           mWaiters.at(id), SLOT(PingError(QProcess::ProcessError)));
-            if (mWorkers.at(id)->state() != QProcess::NotRunning)
+            if (mWorkers.at(id)->state() != QProcess::NotRunning) {
                 mWorkers.at(id)->terminate();
+                mWorkers.at(id)->deleteLater();
+            }
         }
-        std::auto_ptr<QProcess> raii(mWorkers.at(id));          // force delete if any
         mWorkers[id] = new QProcess(m);
         m->connect(mWorkers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)),
                    mWaiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
