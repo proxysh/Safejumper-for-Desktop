@@ -38,13 +38,24 @@
 #include <string>
 #include <vector>
 
-#define ENCRYPTION_RSA 0
-#define ENCRYPTION_TOR_OBFS2 1
-#define ENCRYPTION_TOR_OBFS3 2
-#define ENCRYPTION_TOR_SCRAMBLESUIT 3
-#define ENCRYPTION_ECC 4
-#define ENCRYPTION_ECCXOR 5
-#define ENCRYPTION_COUNT 6
+enum EncryptionType {
+    ENCRYPTION_RSA = 0,
+    ENCRYPTION_TOR_OBFS2,
+//    ENCRYPTION_TOR_OBFS3,
+//    ENCRYPTION_TOR_SCRAMBLESUIT,
+    ENCRYPTION_ECC,
+    ENCRYPTION_ECCXOR,
+    ENCRYPTION_COUNT
+};
+
+const QList<QString> encryptionNames = {
+    "RSA 4096-bit",
+    "RSA + TOR (obfs2)",
+//    "RSA + TOR (obfs3)",
+//    "RSA + TOR (scramblesuit)",
+    "ECC (secp384r1)",
+    "ECC + XOR",
+};
 
 #define PORT_FORWARD_MAX 5
 

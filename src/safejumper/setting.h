@@ -108,7 +108,7 @@ public:
     int encryption();
     void setEncryption(int enc);
 
-    static const char * encryptionName(size_t enc);
+    static QString encryptionName(int enc);
 
 signals:
     void showNodesChanged();

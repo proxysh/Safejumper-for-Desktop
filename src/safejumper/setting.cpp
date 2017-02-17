@@ -116,28 +116,28 @@ const std::vector<QString> & Setting::currentEncryptionProtocols()
             PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
             break;
         }
-        case ENCRYPTION_TOR_OBFS3: {
-            static const char *gs_protocols1 [] = {
-                "TCP 898 (RSA+TOR)"
-            };
-            static const int gs_ports1 [] = {
-                898
-            };
-            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
-            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
-            break;
-        }
-        case ENCRYPTION_TOR_SCRAMBLESUIT: {
-            static const char *gs_protocols1 [] = {
-                "TCP 988 (RSA+TOR)"
-            };
-            static const int gs_ports1 [] = {
-                988
-            };
-            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
-            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
-            break;
-        }
+//        case ENCRYPTION_TOR_OBFS3: {
+//            static const char *gs_protocols1 [] = {
+//                "TCP 898 (RSA+TOR)"
+//            };
+//            static const int gs_ports1 [] = {
+//                898
+//            };
+//            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
+//            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
+//            break;
+//        }
+//        case ENCRYPTION_TOR_SCRAMBLESUIT: {
+//            static const char *gs_protocols1 [] = {
+//                "TCP 988 (RSA+TOR)"
+//            };
+//            static const int gs_ports1 [] = {
+//                988
+//            };
+//            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
+//            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
+//            break;
+//        }
         case ENCRYPTION_ECC: {
             static const char * gs_protocols2 [] = {
                 "TCP 465 (ECC)"
@@ -313,19 +313,11 @@ void Setting::setEncryption(int enc)
     }
 }
 
-const char * Setting::encryptionName(size_t enc)
+QString Setting::encryptionName(int enc)
 {
-    static const char * g_ar [] = {
-        "RSA 4096-bit",
-        "RSA + TOR (obfs2)",
-        "RSA + TOR (obfs3)",
-        "RSA + TOR (scramblesuit)",
-        "ECC (secp384r1)",
-        "ECC + XOR",
-    };
-    if (enc >= ENCRYPTION_COUNT || enc >= (sizeof(g_ar)/sizeof(g_ar[0])))
+    if (enc >= ENCRYPTION_COUNT || enc >= encryptionNames.size())
         enc = ENCRYPTION_RSA;
-    return g_ar[enc];
+    return encryptionNames.at(enc);
 }
 
 QString Setting::EncryptionIx()

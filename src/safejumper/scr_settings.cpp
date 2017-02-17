@@ -241,9 +241,10 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
     if (_repopulation_inprogress)
         return;
 
-    if ((ix == ENCRYPTION_TOR_OBFS2 ||
-         ix == ENCRYPTION_TOR_OBFS3 ||
-         ix == ENCRYPTION_TOR_SCRAMBLESUIT) && !OsSpecific::instance()->obfsproxyInstalled()) {
+    if ((ix == ENCRYPTION_TOR_OBFS2
+//         || ix == ENCRYPTION_TOR_OBFS3
+//         || ix == ENCRYPTION_TOR_SCRAMBLESUIT
+         ) && !OsSpecific::instance()->obfsproxyInstalled()) {
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
         // Try to install first, then check if it's not installed again.
         OsSpecific::instance()->installObfsproxy();

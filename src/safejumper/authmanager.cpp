@@ -413,13 +413,15 @@ void AuthManager::processObfsServerNamesXml()
     if (!err) {
         // clone ECC nodes into ECC+XOR
         // TODO: -2 is there a specific for ECC+XOR  API page?
-        mServerIds[ENCRYPTION_TOR_OBFS3].clear();
-        mServerIds[ENCRYPTION_TOR_OBFS3] = mServerIds[ENCRYPTION_TOR_OBFS2];
-        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].clear();
-        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT] = mServerIds[ENCRYPTION_TOR_OBFS2];
+//        mServerIds[ENCRYPTION_TOR_OBFS3].clear();
+//        mServerIds[ENCRYPTION_TOR_OBFS3] = mServerIds[ENCRYPTION_TOR_OBFS2];
+//        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].clear();
+//        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT] = mServerIds[ENCRYPTION_TOR_OBFS2];
         int enc = Setting::instance()->encryption();
-        if (enc == ENCRYPTION_TOR_OBFS2 || enc == ENCRYPTION_TOR_OBFS3 ||
-                enc == ENCRYPTION_TOR_SCRAMBLESUIT)
+        if (enc == ENCRYPTION_TOR_OBFS2
+//                || enc == ENCRYPTION_TOR_OBFS3
+//                || enc == ENCRYPTION_TOR_SCRAMBLESUIT
+                )
             Setting::instance()->loadServer();
     }
 
@@ -967,6 +969,7 @@ void AuthManager::startWorker(size_t id)
         LoginWindow * m = LoginWindow::Instance();
 
         if (mWorkers.at(id) !=NULL) {
+            log::logt("Workers at " + QString::number(id) + " not null, so disconnecting and terminating");
             m->disconnect(mWorkers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)),
                           mWaiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
             m->disconnect(mWorkers.at(id), SIGNAL(error(QProcess::ProcessError)),
