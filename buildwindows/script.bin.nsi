@@ -23,14 +23,15 @@ SectionIn RO
        File  vcredist_x86.exe
        File  proxysh.crt
        File  ssleay32.dll
-	   SetOutPath $INSTDIR\platforms
+       File  safejumper.ico
+       SetOutPath $INSTDIR\platforms
        File  platforms\qwindows.dll
-	   SetOutPath $INSTDIR
+       SetOutPath $INSTDIR
        File  safejumper.exe
        SetOutPath $TEMP
        File  openvpn-proxysh.exe
        Push $0
-       ExecWait '$OUTDIR\openvpn-proxysh.exe /S /SELECT_OPENVPNGUI=0 /D=$INSTDIR\OpenVPN' $0
+       ExecWait '$OUTDIR\openvpn-proxysh.exe /S /SELECT_OPENVPNGUI=0 /SELECT_SHORTCUTS=0 /D=$INSTDIR\OpenVPN' $0
        IfErrors Label_0x19 Label_0x1A
 
   Label_0x19:
@@ -75,7 +76,7 @@ SectionIn RO
        MessageBox  MB_OK 'Cannot install pip-8.1.2' /SD IDOK
 
   Label_0x30:
-        ExecWait '$INSTDIR\vcredist_x86.exe /install /passive /norestart'
+        ExecWait '$INSTDIR\vcredist_x86.exe /install /quiet /norestart'
 
   Label_0x33:
        Delete  $OUTDIR\argparse-1.4.0-py2.py3-none-any.whl
@@ -104,21 +105,36 @@ SectionIn RO
     # create a shortcut named "new shortcut" in the start menu programs directory
     # point the new shortcut at the program uninstaller
 
-    CreateShortCut "$DESKTOP\Safejumper for Windows.lnk" "$INSTDIR\safejumper.exe"
-    CreateShortCut "$STARTMENU\Safejumper\Safejumper.lnk" "$INSTDIR\safejumper.exe"
-    CreateShortCut "$SMPROGRAMS\Safejumper\Uninstall.lnk" "$INSTDIR\uninstall.exe"
+    CreateShortCut  "$DESKTOP\Safejumper for Windows.lnk" "$INSTDIR\safejumper.exe"
+    CreateDirectory "$SMPROGRAMS\Safejumper"
+    CreateShortCut  "$SMPROGRAMS\Safejumper\Safejumper.lnk" "$INSTDIR\safejumper.exe"
+    CreateShortCut  "$SMPROGRAMS\Safejumper\Uninstall.lnk" "$INSTDIR\uninstall.exe"
 
+    # Add uninstaller to registry for easy uninstallation
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
+            "DisplayName" "Safejumper"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
+            "DisplayIcon" "$INSTDIR\safejumper.ico"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
+            "Publisher" "Proxy.sh"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
+            "DisplayVersion" "3.2 alpha build 73"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
+            "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
+            "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
 SectionEnd
 
 # uninstaller section start
 Section "uninstall"
 
-   Delete  $DESKTOP\Safejumper.lnk
-   Delete  $STARTMENU\Safejumper\Safejumper.lnk
-   Delete  $STARTMENU\Safejumper\Uninstall.lnk
-   ExecWait '$INSTDIR\OpenVPN\Uninstall.exe /S'  $0
-   RMDir /r $INSTDIR\*.*
-   RMDir $INSTDIR
+    Delete  $DESKTOP\Safejumper.lnk
+    Delete  $SMPROGRAMS\Safejumper\Safejumper.lnk
+    Delete  $SMPROGRAMS\Safejumper\Uninstall.lnk
+    ExecWait '$INSTDIR\OpenVPN\Uninstall.exe /S'  $0
+    RMDir /r $INSTDIR\*.*
+    RMDir $INSTDIR
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper"
 
 # uninstaller section end
 SectionEnd
