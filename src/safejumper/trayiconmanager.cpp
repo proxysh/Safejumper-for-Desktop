@@ -55,12 +55,14 @@ TrayIconManager::TrayIconManager(QWidget *parent)
 
     disableActionsOnLogout();
 
-    connect(Setting::instance(), SIGNAL(showNodesChanged()),
-            this, SLOT(constructConnectToMenu()));
-    connect(AuthManager::instance(), SIGNAL(loginCompleted()),
-            this, SLOT(enableButtonsOnLogin()));
-    connect(AuthManager::instance(), SIGNAL(logoutCompleted()),
-            this, SLOT(disableActionsOnLogout()));
+    connect(Setting::instance(), &Setting::showNodesChanged,
+            this, &TrayIconManager::constructConnectToMenu);
+    connect(Setting::instance(), &Setting::encryptionChanged,
+            this, &TrayIconManager::constructConnectToMenu);
+    connect(AuthManager::instance(), &AuthManager::loginCompleted,
+            this, &TrayIconManager::enableButtonsOnLogin);
+    connect(AuthManager::instance(), &AuthManager::logoutCompleted,
+            this, &TrayIconManager::disableActionsOnLogout);
 }
 
 bool TrayIconManager::exists()
