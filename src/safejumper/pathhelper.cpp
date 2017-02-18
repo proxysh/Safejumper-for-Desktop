@@ -132,7 +132,7 @@ QString PathHelper::obfsproxyFilename()
 #else
 #ifdef Q_OS_LINUX
 #ifdef Q_OS_REDHAT
-    "/usr/bin/obfsproxy " +
+    return "/usr/bin/obfsproxy";
 #else
     return "/usr/local/bin/obfsproxy";
 #endif
