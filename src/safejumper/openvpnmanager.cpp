@@ -210,6 +210,8 @@ void OpenvpnManager::launchOpenvpn()
 //#endif
 #endif
 
+            // Wait 1 seconds to let openvpn open the socket we connect to
+            sleep(1);
             log::logt("before attaching to OpenVPN");
             connectToOpenvpnSocket();   // TODO: -1 wait for slow starting cases
             setupFileWatcher();
