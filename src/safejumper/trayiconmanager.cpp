@@ -45,8 +45,8 @@
 
 TrayIconManager::TrayIconManager(QWidget *parent)
     :mFixed(false),
-    mActivatedCount(0),
-    mParent(parent)
+     mActivatedCount(0),
+     mParent(parent)
 {
     createTrayIcon();
     mTrayIcon->show();
@@ -146,68 +146,73 @@ void TrayIconManager::createTrayIconMenu()
 void TrayIconManager::createMenuActions()
 {
     mConnectAction.reset(new QAction(//QIcon(":/icons-tm/connect-red.png"),
-                          tr("&Connect"), this));
+                             tr("&Connect"), this));
     connect(mConnectAction.get(), SIGNAL(triggered()), this, SLOT(connectTriggered()));
 
     mConnectToAction.reset(new QAction(//QIcon(":/icons-tm/connect-grey.png"),
-                            tr("&Connect to ..."), this));
+                               tr("&Connect to ..."), this));
     mConnectToAction->setEnabled(false);
     //connect(_ac_ConnectTo.get(), SIGNAL(triggered()), this, SLOT(ac_ConnectTo()));
 
     mDisconnectAction.reset(new QAction(//QIcon(":/icons-tm/disconnect-grey.png"),
-                             tr("&Disconnect"), this));
+                                tr("&Disconnect"), this));
     connect(mDisconnectAction.get(), SIGNAL(triggered()), this, SLOT(disconnectTriggered()));
 
     mStatusAction.reset(new QAction(//QIcon(":/icons-tm/status-red.png"),
-                         tr("&Status"), this));
+                            tr("&Status"), this));
     connect(mStatusAction.get(), SIGNAL(triggered()), this, SLOT(statusTriggered()));
 
     mJumpAction.reset(new QAction(//QIcon(":/icons-tm/status-grey.png"),
-                       tr("&Jump to Faster"), this));
+                          tr("&Jump to Faster"), this));
     connect(mJumpAction.get(), SIGNAL(triggered()), this, SLOT(jumpTriggered()));
 
     mSwitchCountryAction.reset(new QAction(//QIcon(":/icons-tm/country-grey.png"),
-                                tr("Switch Country"), this));
+                                   tr("Switch Country"), this));
     connect(mSwitchCountryAction.get(), SIGNAL(triggered()), this, SLOT(switchCountryTriggered()));
 
     mSettingsAction.reset(new QAction(//QIcon(":/icons-tm/settings-red.png"),
-                           tr("Se&ttings"), this));
+                              tr("Se&ttings"), this));
     connect(mSettingsAction.get(), SIGNAL(triggered()), this, SLOT(settingsTriggered()));
 
     mLogsAction.reset(new QAction(//QIcon(":/icons-tm/logs-red.png"),
-                       tr("&Logs"), this));
+                          tr("&Logs"), this));
     connect(mLogsAction.get(), SIGNAL(triggered()), this, SLOT(logsTriggered()));
 
     mWebManageAction.reset(new QAction(//QIcon(":/icons-tm/webmanag-red.png"),
-                           tr("&Web Management"), this));
+                               tr("&Web Management"), this));
     connect(mWebManageAction.get(), SIGNAL(triggered()), this, SLOT(webManagTriggered()));
 
     mSupportAction.reset(new QAction(//QIcon(":/icons-tm/support-red.png"),
-                          tr("&Feedback/Support"), this));
+                             tr("&Feedback/Support"), this));
     connect(mSupportAction.get(), SIGNAL(triggered()), this, SLOT(supportTriggered()));
 
     mBugAction.reset(new QAction(//QIcon(":/icons-tm/bug-red.png"),
-                      tr("&Report Bug"), this));
+                         tr("&Report Bug"), this));
     connect(mBugAction.get(), SIGNAL(triggered()), this, SLOT(bugTriggered()));
 
     mEarnAction.reset(new QAction(//QIcon(":/icons-tm/earn-red.png"),
-                       tr("&Earn Money"), this));
+                          tr("&Earn Money"), this));
     connect(mEarnAction.get(), SIGNAL(triggered()), this, SLOT(earnTriggered()));
 
     //_ac_About.reset(new QAction(tr("&About"), this));
     //connect(_ac_About.get(), SIGNAL(triggered()), this, SLOT(ac_About()));
 
     mLogoutAction.reset(new QAction(//QIcon(":/icons-tm/close-grey.png"),
-                         tr("Logout"), this));
+                            tr("Logout"), this));
     connect(mLogoutAction.get(), SIGNAL(triggered()), this, SLOT(logoutTriggered()));
 
     mCloseAction.reset(new QAction(//QIcon(":/icons-tm/close-red.png"),
-                        tr("Close"), this));
+                           tr("Close"), this));
     connect(mCloseAction.get(), SIGNAL(triggered()), this, SLOT(closeTriggered()));
 }
 
-void TrayIconManager::actionActivated(QSystemTrayIcon::ActivationReason )
+void TrayIconManager::actionActivated(QSystemTrayIcon::ActivationReason reason)
 {
+    if (reason == QSystemTrayIcon::DoubleClick)
+        statusTriggered();
+    else if (reason == QSystemTrayIcon::Trigger)
+        mTrayIconMenu->exec();
+
     ++mActivatedCount;
     if (mActivatedCount == 1 && !mFixed) {
         connect(g_pTheApp, SIGNAL(focusChanged(QWidget*, QWidget*)),
@@ -228,8 +233,6 @@ void TrayIconManager::actionActivated(QSystemTrayIcon::ActivationReason )
 void TrayIconManager::disconnectIconWatcher()
 {
     mFixed = true;
-    disconnect(mTrayIcon.get(), SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-               this, SLOT(actionActivated(QSystemTrayIcon::ActivationReason)));
     disconnect(g_pTheApp, SIGNAL(focusChanged(QWidget*, QWidget*)),
                this, SLOT(focusChanged(QWidget*, QWidget*)));
     if (mIconTimer.get() != NULL)
