@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo cp launchopenvpn/launchopenvpn Resources/
+sudo cp netdown/netdown Resources/
 install safejumper.icns safejumper/Safejumper.app/Contents/Resources/
 sudo cp -R Resources/* safejumper/Safejumper.app/Contents/Resources/
 /usr/libexec/PlistBuddy -c "Set :CFBundleIconFile safejumper.icns" safejumper/Safejumper.app/Contents/Info.plist
