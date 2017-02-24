@@ -102,8 +102,8 @@ void TrayIconManager::createTrayIcon()
     mTrayIcon->setContextMenu(menu);
     QIcon icon(OsSpecific::instance()->disconnectedIcon());
     mTrayIcon->setIcon(icon);
-    connect(mTrayIcon.get(), SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this, SLOT(actionActivated(QSystemTrayIcon::ActivationReason)));
+    connect(mTrayIcon.get(), &QSystemTrayIcon::activated,
+            this, &TrayIconManager::actionActivated);
 }
 
 void TrayIconManager::createTrayIconMenu()
@@ -208,10 +208,12 @@ void TrayIconManager::createMenuActions()
 
 void TrayIconManager::actionActivated(QSystemTrayIcon::ActivationReason reason)
 {
+#ifdef Q_OS_WIN
     if (reason == QSystemTrayIcon::DoubleClick)
         statusTriggered();
-    else if (reason == QSystemTrayIcon::Trigger)
+    else if (reason == QSystemTrayIcon::Trigger && !mTrayIconMenu->isVisible())
         mTrayIconMenu->exec();
+#endif
 
     ++mActivatedCount;
     if (mActivatedCount == 1 && !mFixed) {
