@@ -58,7 +58,7 @@
 #include "loginwindow.h"
 #include "wndmanager.h"
 #include "pathhelper.h"
-
+#include "openvpnmanager.h"
 
 
 std::auto_ptr<OsSpecific> OsSpecific::mInstance;
@@ -1106,6 +1106,9 @@ void OsSpecific::stopObfsproxy()
             mObfsproxy->terminate();
             mObfsproxy->kill();
             mObfsproxy.release()->deleteLater();
+            while (obfsproxyRunning()) { // Make sure it stopped so it will start
+                QThread::sleep(100);
+            }
         }
     }
 }
@@ -1191,6 +1194,7 @@ void OsSpecific::obfsFinished(int exitCode, QProcess::ExitStatus status)
     log::logt("obfsFinished with code " + QString::number(exitCode) +
               " and status " + QString::number(status));
     delete mObfsproxy.release();
+    emit obfsproxyFinished();
 }
 
 bool OsSpecific::obfsproxyInstalled()

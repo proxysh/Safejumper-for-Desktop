@@ -73,6 +73,7 @@ private slots:
     void reconnectTimeout();
     void openvpnLogfileChanged(const QString & pfn);		// OpenVpn log file
     void checkState();		// timer calls it
+    void obfsproxyFinished(); // If obfsproxy process ends while we are connecting, try again
 
     void processError(QProcess::ProcessError error);
     void processStarted();
@@ -93,6 +94,7 @@ private:
     void gotTunErr(const QString & s);
     void showErrorMessageCleanup(QString msg);
     void launchOpenvpn();
+    void launchObfsproxy(); // Executes obfsproxy with current settings
     bool writeConfigFile(); // Write openvpn options to ovpn file
     QStringList getOpenvpnArgs(); // Arguments to pass to openvpn
     void tryNextPort();

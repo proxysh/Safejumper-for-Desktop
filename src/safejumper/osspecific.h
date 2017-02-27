@@ -89,6 +89,10 @@ public:
 #ifdef Q_OS_MAC
     bool isDark() const;
 #endif
+
+signals:
+    void obfsproxyFinished();
+
 private slots:
     void obfsFinished(int exitCode, QProcess::ExitStatus status);
 private:

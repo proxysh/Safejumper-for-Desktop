@@ -39,7 +39,10 @@ OpenvpnManager::OpenvpnManager()
       mPID(0),
       mSocket(0),
       mStateTimer(NULL)
-{}
+{
+    connect(OsSpecific::instance(), &OsSpecific::obfsproxyFinished,
+            this, &OpenvpnManager::obfsproxyFinished);
+}
 
 OpenvpnManager::~OpenvpnManager()
 {
@@ -99,33 +102,9 @@ void OpenvpnManager::launchOpenvpn()
         }
         setState(ovsConnecting);
         int enc = Setting::instance()->encryption();
-        bool obfs = (enc == ENCRYPTION_TOR_OBFS2
-//                   || enc == ENCRYPTION_TOR_OBFS3
-//                   ||  enc == ENCRYPTION_TOR_SCRAMBLESUIT
-                     );
+        launchObfsproxy(); // Only launches if we are using obfs protocols
         QString server = Setting::instance()->serverAddress();
         QString port = Setting::instance()->port();
-        if (server.isEmpty() || port.isEmpty()) {
-            QString message = "Server or port is empty, select a location";
-            log::logt(message);
-            WndManager::Instance()->ErrMsg(message);
-            return;
-        }
-        if (obfs) {
-            QString obfstype;
-            if (enc == ENCRYPTION_TOR_OBFS2)
-                obfstype = "obfs2";
-//            else if (enc == ENCRYPTION_TOR_OBFS3)
-//                obfstype = "obfs3";
-//            else
-//                obfstype = "scramblesuit";
-            OsSpecific::instance()->runObfsproxy(server, port, obfstype, "1050");
-            if (!OsSpecific::instance()->obfsproxyRunning()) {
-                log::logt("Cannot run Obfsproxy");
-                WndManager::Instance()->ErrMsg("Cannot run Obfsproxy");
-                return;
-            }
-        }
         try {
             OsSpecific::instance()->setIPv6(!Setting::instance()->disableIPv6());
 #ifdef Q_OS_WIN
@@ -253,6 +232,38 @@ void OpenvpnManager::launchOpenvpn()
     }
     log::logt("launchopenvpn done");
 #undef NO_PARAMFILE
+}
+
+void OpenvpnManager::launchObfsproxy()
+{
+    int enc = Setting::instance()->encryption();
+    bool obfs = (enc == ENCRYPTION_TOR_OBFS2
+//                   || enc == ENCRYPTION_TOR_OBFS3
+//                   ||  enc == ENCRYPTION_TOR_SCRAMBLESUIT
+                 );
+    QString server = Setting::instance()->serverAddress();
+    QString port = Setting::instance()->port();
+    if (server.isEmpty() || port.isEmpty()) {
+        QString message = "Server or port is empty, select a location";
+        log::logt(message);
+        WndManager::Instance()->ErrMsg(message);
+        return;
+    }
+    if (obfs) {
+        QString obfstype;
+        if (enc == ENCRYPTION_TOR_OBFS2)
+            obfstype = "obfs2";
+//            else if (enc == ENCRYPTION_TOR_OBFS3)
+//                obfstype = "obfs3";
+//            else
+//                obfstype = "scramblesuit";
+        OsSpecific::instance()->runObfsproxy(server, port, obfstype, "1050");
+        if (!OsSpecific::instance()->obfsproxyRunning()) {
+            log::logt("Cannot run Obfsproxy");
+            WndManager::Instance()->ErrMsg("Cannot run Obfsproxy");
+            return;
+        }
+    }
 }
 
 void OpenvpnManager::processError(QProcess::ProcessError error)
@@ -491,6 +502,12 @@ void OpenvpnManager::checkState()
         }
     }
     log::logt("checkState done");
+}
+
+void OpenvpnManager::obfsproxyFinished()
+{
+    if (mState == ovsConnecting)
+        launchObfsproxy();
 }
 
 void OpenvpnManager::openvpnLogfileChanged(const QString & pfn)
