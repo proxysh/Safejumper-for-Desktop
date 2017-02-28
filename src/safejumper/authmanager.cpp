@@ -425,8 +425,8 @@ void AuthManager::processObfsServerNamesXml()
     if (!err) {
         // clone ECC nodes into ECC+XOR
         // TODO: -2 is there a specific for ECC+XOR  API page?
-//        mServerIds[ENCRYPTION_TOR_OBFS3].clear();
-//        mServerIds[ENCRYPTION_TOR_OBFS3] = mServerIds[ENCRYPTION_TOR_OBFS2];
+        mServerIds[ENCRYPTION_TOR_OBFS3].clear();
+        mServerIds[ENCRYPTION_TOR_OBFS3] = mServerIds[ENCRYPTION_TOR_OBFS2];
 //        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].clear();
 //        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT] = mServerIds[ENCRYPTION_TOR_OBFS2];
         int enc = Setting::instance()->encryption();

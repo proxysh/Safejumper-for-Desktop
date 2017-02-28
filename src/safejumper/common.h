@@ -41,7 +41,7 @@
 enum EncryptionType {
     ENCRYPTION_RSA = 0,
     ENCRYPTION_TOR_OBFS2,
-//    ENCRYPTION_TOR_OBFS3,
+    ENCRYPTION_TOR_OBFS3,
 //    ENCRYPTION_TOR_SCRAMBLESUIT,
     ENCRYPTION_ECC,
     ENCRYPTION_ECCXOR,
@@ -51,7 +51,7 @@ enum EncryptionType {
 const QList<QString> encryptionNames = {
     "RSA 4096-bit",
     "RSA + TOR (obfs2)",
-//    "RSA + TOR (obfs3)",
+    "RSA + TOR (obfs3)",
 //    "RSA + TOR (scramblesuit)",
     "ECC (secp384r1)",
     "ECC + XOR",

@@ -238,7 +238,7 @@ void OpenvpnManager::launchObfsproxy()
 {
     int enc = Setting::instance()->encryption();
     bool obfs = (enc == ENCRYPTION_TOR_OBFS2
-//                   || enc == ENCRYPTION_TOR_OBFS3
+                   || enc == ENCRYPTION_TOR_OBFS3
 //                   ||  enc == ENCRYPTION_TOR_SCRAMBLESUIT
                  );
     QString server = Setting::instance()->serverAddress();
@@ -253,8 +253,8 @@ void OpenvpnManager::launchObfsproxy()
         QString obfstype;
         if (enc == ENCRYPTION_TOR_OBFS2)
             obfstype = "obfs2";
-//            else if (enc == ENCRYPTION_TOR_OBFS3)
-//                obfstype = "obfs3";
+        else if (enc == ENCRYPTION_TOR_OBFS3)
+            obfstype = "obfs3";
 //            else
 //                obfstype = "scramblesuit";
         OsSpecific::instance()->runObfsproxy(server, port, obfstype, "1050");
@@ -281,7 +281,7 @@ bool OpenvpnManager::writeConfigFile()
 {
     int enc = Setting::instance()->encryption();
     bool obfs = (enc == ENCRYPTION_TOR_OBFS2
-//                 || enc == ENCRYPTION_TOR_OBFS3
+                 || enc == ENCRYPTION_TOR_OBFS3
 //                 || enc == ENCRYPTION_TOR_SCRAMBLESUIT
                  );
     QFile ff(PathHelper::Instance()->openvpnConfigFilename());
@@ -597,7 +597,7 @@ void OpenvpnManager::gotConnected(const QString & s)
         QString ip = p1 > -1 ? s.mid(p + 1, p1 - p - 1) : s.mid(p + 1);
         int enc = Setting::instance()->encryption();
         if ((enc != ENCRYPTION_TOR_OBFS2)
-//                && enc != ENCRYPTION_TOR_OBFS3
+              && enc != ENCRYPTION_TOR_OBFS3
 //                && enc != ENCRYPTION_TOR_SCRAMBLESUIT
                 ) // for proxy it shows 127.0.0.1
             emit gotNewIp(ip);
