@@ -63,8 +63,8 @@ AuthManager::AuthManager()
     mSeeded(false),
     mIPAttemptCount(0)
 {
-    connect(OpenvpnManager::instance(), SIGNAL(gotNewIp(QString)),
-            this, SLOT(setNewIp(QString)));
+    connect(OpenvpnManager::instance(), &OpenvpnManager::gotNewIp,
+            this, &AuthManager::setNewIp);
 }
 
 AuthManager::~AuthManager()
@@ -108,7 +108,8 @@ void AuthManager::login(const QString & name, const QString & password)
     log::logt("Starting login with name '" + QUrl::toPercentEncoding(name, "", "") + "'");
 
     mReply.reset(mNAM.get(BuildRequest(QUrl("https://proxy.sh/access.php?u=" + QUrl::toPercentEncoding(name, "", "") + "&p=" + QUrl::toPercentEncoding(password, "", "")))));
-    connect(mReply.get(), SIGNAL(finished()), this, SLOT(loginFinished()));
+    connect(mReply.get(), &QNetworkReply::finished,
+            this, &AuthManager::loginFinished);
 }
 
 void AuthManager::cancel()
@@ -380,8 +381,8 @@ void AuthManager::getEccServerNames()
     // https://api.proxy.sh/safejumper/get_ecc/name
     mReply.reset(AuthManager::instance()->mNAM.get(BuildRequest(
                      QUrl("https://api.proxy.sh/safejumper/get_ecc/name"))));
-    connect(mReply.get(), SIGNAL(finished()),
-            this, SLOT(processEccServerNamesXml()));
+    connect(mReply.get(), &QNetworkReply::finished,
+            this, &AuthManager::processEccServerNamesXml);
 }
 
 void AuthManager::processEccServerNamesXml()
@@ -412,8 +413,8 @@ void AuthManager::getObfsServerNames()
     // https://api.proxy.sh/safejumper/get_obfs/name
     mReply.reset(AuthManager::instance()->mNAM.get(BuildRequest(
                      QUrl("https://api.proxy.sh/safejumper/get_obfs/name"))));
-    connect(mReply.get(), SIGNAL(finished()),
-            this, SLOT(processObfsServerNamesXml()));
+    connect(mReply.get(), &QNetworkReply::finished,
+            this, &AuthManager::processObfsServerNamesXml);
 }
 
 void AuthManager::processObfsServerNamesXml()
@@ -430,7 +431,7 @@ void AuthManager::processObfsServerNamesXml()
 //        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT] = mServerIds[ENCRYPTION_TOR_OBFS2];
         int enc = Setting::instance()->encryption();
         if (enc == ENCRYPTION_TOR_OBFS2
-//                || enc == ENCRYPTION_TOR_OBFS3
+                || enc == ENCRYPTION_TOR_OBFS3
 //                || enc == ENCRYPTION_TOR_SCRAMBLESUIT
                 )
             Setting::instance()->loadServer();
@@ -552,8 +553,8 @@ void AuthManager::getAccountType()
                      QUrl("https://api.proxy.sh/safejumper/account_type/"
                           + QUrl::toPercentEncoding(AuthManager::instance()->VPNName(), "", "")
                           + "/" + QUrl::toPercentEncoding(AuthManager::instance()->VPNPassword(), "", "")))));
-    connect(mReply.get(), SIGNAL(finished()),
-            this, SLOT(processAccountTypeXml()));
+    connect(mReply.get(), &QNetworkReply::finished,
+            this, &AuthManager::processAccountTypeXml);
 }
 
 void AuthManager::getExpirationDate()
@@ -564,8 +565,8 @@ void AuthManager::getExpirationDate()
                      QUrl("https://api.proxy.sh/safejumper/expire_date/"
                           + QUrl::toPercentEncoding(AuthManager::instance()->VPNName(), "", "")
                           + "/" + QUrl::toPercentEncoding(AuthManager::instance()->VPNPassword(), "", "")))));
-    connect(mReply.get(), SIGNAL(finished()),
-            this, SLOT(processExpirationXml()));
+    connect(mReply.get(), &QNetworkReply::finished,
+            this, &AuthManager::processExpirationXml);
 }
 
 void AuthManager::checkUpdates()
@@ -573,8 +574,8 @@ void AuthManager::checkUpdates()
     QString us(SJ_UPDATE_URL);
     if (!us.isEmpty()) {
         mUpdateReply.reset(AuthManager::instance()->mNAM.get(BuildRequest(QUrl(us))));
-        connect(mUpdateReply.get(), SIGNAL(finished()),
-                this, SLOT(processUpdatesXml()));
+        connect(mUpdateReply.get(), &QNetworkReply::finished,
+                this, &AuthManager::processUpdatesXml);
     }
 }
 
@@ -584,8 +585,8 @@ void AuthManager::getOldIP()
     log::logt("StartDwnl_OldIp() attempt " + QString::number(mIPAttemptCount));
     static const QString us = "https://proxy.sh/ip.php";
     mIPReply.reset(AuthManager::instance()->mNAM.get(BuildRequest(QUrl(us))));
-    connect(mIPReply.get(), SIGNAL(finished()),
-            this, SLOT(processOldIP()));
+    connect(mIPReply.get(), &QNetworkReply::finished,
+            this, &AuthManager::processOldIP);
 }
 
 void AuthManager::getDns()
@@ -599,8 +600,8 @@ void AuthManager::getDns()
     //</root>
     mReply.reset(AuthManager::instance()->mNAM.get(BuildRequest(
                      QUrl("https://api.proxy.sh/safejumper/get_dns"))));
-    connect(mReply.get(), SIGNAL(finished()),
-            this, SLOT(processDnsXml()));
+    connect(mReply.get(), &QNetworkReply::finished,
+            this, &AuthManager::processDnsXml);
 }
 
 void AuthManager::processAccountTypeXml()
@@ -981,22 +982,23 @@ void AuthManager::startWorker(size_t id)
 
         if (mWorkers.at(id) !=NULL) {
             log::logt("Workers at " + QString::number(id) + " not null, so disconnecting and terminating");
-            m->disconnect(mWorkers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)),
-                          mWaiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
-            m->disconnect(mWorkers.at(id), SIGNAL(error(QProcess::ProcessError)),
-                          mWaiters.at(id), SLOT(PingError(QProcess::ProcessError)));
+            disconnect(mWorkers.at(id), static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                       mWaiters.at(id), &PingWaiter::PingFinished);
+            disconnect(mWorkers.at(id), &QProcess::errorOccurred,
+                       mWaiters.at(id), &PingWaiter::PingError);
             if (mWorkers.at(id)->state() != QProcess::NotRunning) {
                 mWorkers.at(id)->terminate();
                 mWorkers.at(id)->deleteLater();
             }
         }
         mWorkers[id] = new QProcess(m);
-        m->connect(mWorkers.at(id), SIGNAL(finished(int,QProcess::ExitStatus)),
-                   mWaiters.at(id), SLOT(PingFinished(int,QProcess::ExitStatus)));
-        m->connect(mWorkers.at(id), SIGNAL(error(QProcess::ProcessError)),
-                   mWaiters.at(id), SLOT(PingError(QProcess::ProcessError)));
+        connect(mWorkers.at(id), static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                mWaiters.at(id), &PingWaiter::PingFinished);
+        connect(mWorkers.at(id), &QProcess::errorOccurred,
+                mWaiters.at(id), &PingWaiter::PingError);
         OsSpecific::instance()->startPing(*mWorkers.at(id), mServers.at(srv).address);
-        m->connect(mTimers.at(id), SIGNAL(timeout()), mWaiters.at(id), SLOT(Timer_Terminate()));
+        connect(mTimers.at(id), &QTimer::timeout,
+                mWaiters.at(id), &PingWaiter::Timer_Terminate);
         mTimers.at(id)->setSingleShot(true);
         mTimers.at(id)->start(PINGWORKER_MAX_TIMEOUT);
     } else {
