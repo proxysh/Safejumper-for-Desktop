@@ -1136,6 +1136,9 @@ void OsSpecific::runObfsproxy(const QString &srv,
         args << "--data-dir /tmp";
 #endif
         args << obfstype;
+        if (obfstype.compare("scramblesuit", Qt::CaseInsensitive) == 0) {
+            args << "--password JNI3L3K2VZM3UY37WEA2JQ442V5YVZZS";
+        }
         args << "--dest " + srv + ":" + port;
     //	"185.47.202.158:888 "
         args << "socks 127.0.0.1:" + local_port;

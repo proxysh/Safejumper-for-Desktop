@@ -427,12 +427,12 @@ void AuthManager::processObfsServerNamesXml()
         // TODO: -2 is there a specific for ECC+XOR  API page?
         mServerIds[ENCRYPTION_TOR_OBFS3].clear();
         mServerIds[ENCRYPTION_TOR_OBFS3] = mServerIds[ENCRYPTION_TOR_OBFS2];
-//        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].clear();
-//        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT] = mServerIds[ENCRYPTION_TOR_OBFS2];
+        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT].clear();
+        mServerIds[ENCRYPTION_TOR_SCRAMBLESUIT] = mServerIds[ENCRYPTION_TOR_OBFS2];
         int enc = Setting::instance()->encryption();
         if (enc == ENCRYPTION_TOR_OBFS2
                 || enc == ENCRYPTION_TOR_OBFS3
-//                || enc == ENCRYPTION_TOR_SCRAMBLESUIT
+                || enc == ENCRYPTION_TOR_SCRAMBLESUIT
                 )
             Setting::instance()->loadServer();
     }

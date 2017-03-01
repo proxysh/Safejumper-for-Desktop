@@ -127,17 +127,17 @@ const std::vector<QString> & Setting::currentEncryptionProtocols()
             PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
             break;
         }
-//        case ENCRYPTION_TOR_SCRAMBLESUIT: {
-//            static const char *gs_protocols1 [] = {
-//                "TCP 988 (RSA+TOR)"
-//            };
-//            static const int gs_ports1 [] = {
-//                988
-//            };
-//            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
-//            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
-//            break;
-//        }
+        case ENCRYPTION_TOR_SCRAMBLESUIT: {
+            static const char *gs_protocols1 [] = {
+                "TCP 988 (RSA+TOR)"
+            };
+            static const int gs_ports1 [] = {
+                988
+            };
+            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
+            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
+            break;
+        }
         case ENCRYPTION_ECC: {
             static const char * gs_protocols2 [] = {
                 "TCP 465 (ECC)"
