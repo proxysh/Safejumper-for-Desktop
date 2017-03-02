@@ -58,6 +58,7 @@ protected:
 
 private slots:
     void on_startButton_clicked();
+    void on_pauseButton_clicked();
     void on_cancelButton_clicked();
     void on_saveCSVButton_clicked();
 

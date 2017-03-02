@@ -525,6 +525,47 @@ QPushButton:pressed
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pauseButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>110</width>
+         <height>41</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Helvetica Neue</family>
+         <pointsize>13</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	border:0px;
+	color: #ffffff;
+	border-image: url(:/imgs/button-normal.png);
+}
+QPushButton:hover:!pressed
+{
+	border-image: url(:/imgs/button-hover.png);
+}
+QPushButton:pressed
+{
+	border-image: url(:/imgs/button-pressed.png);
+}</string>
+       </property>
+       <property name="text">
+        <string>Pause</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="settingsButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">

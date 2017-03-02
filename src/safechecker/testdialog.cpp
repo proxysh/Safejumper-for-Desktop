@@ -37,6 +37,7 @@
 const QString kLastFilenameKey = "lastFilename";
 
 QHash<QString, const char*> TestDialog::mStateWordImages;
+std::auto_ptr<TestDialog> TestDialog::mInstance;
 
 TestDialog::TestDialog(QWidget *parent) :
     QDialog(parent),
@@ -73,6 +74,7 @@ TestDialog::TestDialog(QWidget *parent) :
     setStatusDisconnected();
 
     ui->cancelButton->hide();
+    ui->pauseButton->hide();
 
     ui->L_Until->setText("active until\n-");
     ui->L_Amount->setText("-");
@@ -266,6 +268,7 @@ void TestDialog::iterate()
     // Ask to save table widget to pipe separated values file.
     ui->saveCSVButton->setEnabled(true);
     ui->cancelButton->hide();
+    ui->pauseButton->hide();
     ui->startButton->show();
 }
 
@@ -444,6 +447,7 @@ void TestDialog::on_startButton_clicked()
 
     ui->startButton->hide();
     ui->cancelButton->show();
+    ui->pauseButton->show();
     ui->saveCSVButton->setEnabled(false);
 
     // Clear out previous results if any
@@ -468,9 +472,21 @@ void TestDialog::on_startButton_clicked()
     OpenvpnManager::instance()->start();
 }
 
+void TestDialog::on_pauseButton_clicked()
+{
+    if (ui->pauseButton->text().compare("Pause") == 0) {
+        ui->pauseButton->setText("Resume");
+        OpenvpnManager::instance()->stop();
+    } else {
+        ui->pauseButton->setText("Pause");
+        OpenvpnManager::instance()->start();
+    }
+}
+
 void TestDialog::on_cancelButton_clicked()
 {
     ui->cancelButton->hide();
+    ui->pauseButton->hide();
     ui->startButton->show();
     ui->saveCSVButton->setEnabled(true);
 
@@ -554,7 +570,6 @@ void TestDialog::setError(const QString &message)
     iterate();
 }
 
-std::auto_ptr<TestDialog> TestDialog::mInstance;
 TestDialog * TestDialog::instance()
 {
     if (!mInstance.get()) {
