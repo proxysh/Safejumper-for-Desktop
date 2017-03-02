@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2017.01.20
+VERSION=2017.03.02
 QTVERSION=5.7.0
 OLDPATH=$PATH
 export PATH=../../qt-$QTVERSION-32bit/qtbase/bin:$OLDPATH
