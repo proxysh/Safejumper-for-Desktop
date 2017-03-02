@@ -31,7 +31,7 @@ SectionIn RO
        SetOutPath $TEMP
        File  openvpn-proxysh.exe
        Push $0
-       ExecWait '$OUTDIR\openvpn-proxysh.exe /S /SELECT_OPENVPNGUI=0 /SELECT_SHORTCUTS=0 /D=$INSTDIR\OpenVPN' $0
+       ExecWait '$OUTDIR\openvpn-proxysh.exe /S /SELECT_PATH=0 /SELECT_OPENVPNGUI=0 /SELECT_SHORTCUTS=0 /D=$INSTDIR\OpenVPN' $0
        IfErrors Label_0x19 Label_0x1A
 
   Label_0x19:
