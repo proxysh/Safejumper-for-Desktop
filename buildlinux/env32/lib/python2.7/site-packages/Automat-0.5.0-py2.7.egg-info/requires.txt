@@ -1,0 +1,6 @@
+attrs
+six
+
+[visualize]
+graphviz>0.5.1
+Twisted>=16.1.1

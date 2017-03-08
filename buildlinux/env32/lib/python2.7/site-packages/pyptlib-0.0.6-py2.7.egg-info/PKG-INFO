@@ -1,0 +1,20 @@
+Metadata-Version: 1.1
+Name: pyptlib
+Version: 0.0.6
+Summary: A python implementation of the Pluggable Transports for Circumvention specification for Tor
+Home-page: UNKNOWN
+Author: asn, Brandon Wiley
+Author-email: asn@torproject.org, brandon@blanu.net
+License: BSD
+Description: A python implementation of the Pluggable Transports for Circumvention specification for Tor
+Keywords: cryptography privacy internet
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: No Input/Output (Daemon)
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Internet
+Classifier: Topic :: Security :: Cryptography
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
