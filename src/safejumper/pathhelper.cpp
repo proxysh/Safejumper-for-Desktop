@@ -131,11 +131,7 @@ QString PathHelper::obfsproxyFilename()
     return resourcesPath() + "/env/bin/obfsproxy";
 #else
 #ifdef Q_OS_LINUX
-#ifdef Q_OS_REDHAT
-    return "/usr/bin/obfsproxy";
-#else
-    return "/usr/local/bin/obfsproxy";
-#endif
+    return "/opt/safejumper/env/bin/obfsproxy";
 #else		// Win
     return         "cmd /k c:\\python27\\Scripts\\obfsproxy.exe";
 #endif	// linux
