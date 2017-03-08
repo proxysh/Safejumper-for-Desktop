@@ -6,6 +6,7 @@ cp safejumper/safejumper linuxfiles
 cp launchopenvpn/launchopenvpn linuxfiles
 cp netdown/netdown linuxfiles
 cp openvpn64 linuxfiles/openvpn
+rm -fR linuxfiles/env
 cp -r env64 linuxfiles/env
 
 # Then the content of linuxfiles mostly goes into /opt/safejumper/.

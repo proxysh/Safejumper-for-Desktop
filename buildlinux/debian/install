@@ -17,3 +17,4 @@ icons/32x32/apps/safejumper.png /usr/share/icons/hicolor/32x32/apps
 icons/512x512/apps/safejumper.png /usr/share/icons/hicolor/512x512/apps
 icons/64x64/apps/safejumper.png /usr/share/icons/hicolor/64x64/apps
 icons/72x72/apps/safejumper.png /usr/share/icons/hicolor/72x72/apps
+env /opt/safejumper
