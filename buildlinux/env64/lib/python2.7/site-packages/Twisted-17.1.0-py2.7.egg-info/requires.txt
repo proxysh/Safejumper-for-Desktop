@@ -1,0 +1,72 @@
+zope.interface >= 3.6.0
+constantly >= 15.1
+incremental >= 16.10.1
+Automat >= 0.3.0
+
+[all_non_platform]
+pyopenssl >= 16.0.0
+service_identity
+idna >= 0.6
+pyasn1
+cryptography >= 0.9.1
+appdirs >= 1.4.0
+soappy
+pyserial
+h2 >= 2.5.0, < 3.0
+priority >= 1.1.0, < 2.0
+
+[conch]
+pyasn1
+cryptography >= 0.9.1
+appdirs >= 1.4.0
+
+[dev]
+pyflakes >= 1.0.0
+twisted-dev-tools >= 0.0.2
+python-subunit
+sphinx >= 1.3.1
+twistedchecker >= 0.4.0
+pydoctor >= 16.2.0
+
+[http2]
+h2 >= 2.5.0, < 3.0
+priority >= 1.1.0, < 2.0
+
+[osx_platform]
+pyobjc-core
+pyobjc-framework-CFNetwork
+pyobjc-framework-Cocoa
+pyopenssl >= 16.0.0
+service_identity
+idna >= 0.6
+pyasn1
+cryptography >= 0.9.1
+appdirs >= 1.4.0
+soappy
+pyserial
+h2 >= 2.5.0, < 3.0
+priority >= 1.1.0, < 2.0
+
+[serial]
+pyserial
+
+[soap]
+soappy
+
+[tls]
+pyopenssl >= 16.0.0
+service_identity
+idna >= 0.6
+
+[windows_platform]
+pypiwin32
+pyopenssl >= 16.0.0
+service_identity
+idna >= 0.6
+pyasn1
+cryptography >= 0.9.1
+appdirs >= 1.4.0
+soappy
+pyserial
+h2 >= 2.5.0, < 3.0
+priority >= 1.1.0, < 2.0

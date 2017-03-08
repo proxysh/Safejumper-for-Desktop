@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: obfsproxy
+Version: 0.2.13
+Summary: A pluggable transport proxy written in Python
+Home-page: UNKNOWN
+Author: asn
+Author-email: asn@torproject.org
+License: BSD
+Description: UNKNOWN
+Keywords: tor,obfuscation,twisted
+Platform: UNKNOWN
