@@ -1,11 +1,3 @@
-/opt/safejumper/safejumper.sh
-/opt/safejumper/client.up.safejumper.sh
-/opt/safejumper/safejumper
-/opt/safejumper/launchopenvpn
-/opt/safejumper/openvpn
-/opt/safejumper/netdown
-/opt/safejumper/client.down.safejumper.sh
-/opt/safejumper/proxysh.crt
 /usr/share/icons/hicolor/22x22/apps/safejumper.png
 /usr/share/icons/hicolor/128x128/apps/safejumper.png
 /usr/share/icons/hicolor/512x512/apps/safejumper.png
