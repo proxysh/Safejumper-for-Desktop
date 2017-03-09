@@ -1,7 +1,6 @@
 #!/bin/bash
 rm -fR launchopenvpn safejumper netdown
-#rm -fR ../linuxfiles
-#rm -fR ../*.tar.gz
+rm -fR ../linuxfiles
 rm -fR linuxfiles/env
 rm linuxfiles/launchopenvpn
 rm linuxfiles/safejumper
