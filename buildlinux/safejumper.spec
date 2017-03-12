@@ -16,7 +16,7 @@ Name:           safejumper
 Summary:        The Open Build Service -- Server Component
 License:        GPL-2.0 and GPL-3.0
 Group:          Productivity/Networking/Web/Utilities
-Version:        2017.02.17
+Version:        2017.03.02
 Release:        0
 Url:            http://proxy.sh
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -24,6 +24,10 @@ Source:         safejumper-%version.tar.gz
 Conflicts:      safejumper < %version-%release
 Requires:	net-tools
 Requires:	redhat-rpm-config
+
+# Do not check any files in env for requires
+%global __requires_exclude_from ^/opt/safejumper/env/.*$
+%global __requires_exclude ^/opt/safejumper/env/.*$
 
 %description
 VPN client for proxy.sh.
@@ -42,7 +46,6 @@ Authors:
 #
 # First install all dist files
 #
-# configure lighttpd web service (default until OBS 2.1)
 mkdir -p $RPM_BUILD_ROOT/opt/safejumper/
 install -m 0755 safejumper                $RPM_BUILD_ROOT/opt/safejumper/safejumper
 install -m 0755 launchopenvpn             $RPM_BUILD_ROOT/opt/safejumper/launchopenvpn
@@ -51,6 +54,8 @@ install -m 0755 openvpn                   $RPM_BUILD_ROOT/opt/safejumper/openvpn
 install -m 0744 client.down.safejumper.sh $RPM_BUILD_ROOT/opt/safejumper/client.down.safejumper.sh
 install -m 0744 client.up.safejumper.sh   $RPM_BUILD_ROOT/opt/safejumper/client.up.safejumper.sh
 install -m 0644 proxysh.crt               $RPM_BUILD_ROOT/opt/safejumper/proxysh.crt
+install -d 0644 env                       $RPM_BUILD_ROOT/opt/safejumper/env
+cp      -avr env/*                        $RPM_BUILD_ROOT/opt/safejumper/env/
 
 %pre
 
@@ -76,5 +81,6 @@ rm -rf $RPM_BUILD_ROOT
 /opt/safejumper/client.down.safejumper.sh
 /opt/safejumper/client.up.safejumper.sh
 /opt/safejumper/proxysh.crt
+/opt/safejumper/env
 
 %changelog
