@@ -294,7 +294,7 @@ bool Scr_Settings::Vlidate_e_ip(QLineEdit * eb)
     else
         eb->setStyleSheet(gs_sNormStyle);
 
-    return error;
+    return !error;
 }
 
 static const char * gs_sPortsNorm =
