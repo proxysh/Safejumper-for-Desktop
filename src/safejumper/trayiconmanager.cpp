@@ -57,6 +57,8 @@ TrayIconManager::TrayIconManager(QWidget *parent)
             this, &TrayIconManager::constructConnectToMenu);
     connect(Setting::instance(), &Setting::encryptionChanged,
             this, &TrayIconManager::constructConnectToMenu);
+    connect(AuthManager::instance(), &AuthManager::serverListsLoaded,
+            this, &TrayIconManager::constructConnectToMenu);
     connect(AuthManager::instance(), &AuthManager::loginCompleted,
             this, &TrayIconManager::enableButtonsOnLogin);
     connect(AuthManager::instance(), &AuthManager::logoutCompleted,
@@ -387,11 +389,9 @@ void TrayIconManager::constructConnectToMenu()
     if (Setting::instance()->testing())
         return;
 
-    qDebug() << "creating connect to menu";
     if (AuthManager::exists()) {
         AuthManager * am = AuthManager::instance();
         if (am->loggedIn()) {
-            qDebug() << "Logged in so making actions";
             clearConnectToMenu();
 
             const QList<int> & hubs = am->currentEncryptionHubs();
@@ -404,14 +404,12 @@ void TrayIconManager::constructConnectToMenu()
             //_ct_menu->setIcon(QIcon(":/icons-tm/connect-red.png"));
 
             if (!Setting::instance()->showNodes()) {
-                qDebug() << "showNodes is off, so using hubs of size " << hubs.size();
                 for (size_t k = 0; k < hubs.size(); ++k) {
                     AServer sr = am->getServer(hubs[k]);
                     createMenuItem(mConnectToMenu.get(), sr.name, hubs[k]);//am->ServerIdFromHubId(k));
                 }
             } else {
                 const std::vector<std::pair<bool, int> > & L0 = am->getLevel0();
-                qDebug() << "showNodes is on, so using servers level 0 size is " << L0.size();
                 for (size_t k = 0; k < L0.size(); ++k) {
                     if (L0[k].first) {
                         // hub - add submenu

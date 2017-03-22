@@ -123,6 +123,9 @@ signals:
     void loginError(QString message);
     void logoutCompleted();
 
+    // Emitted when all server lists have been loaded
+    void serverListsLoaded();
+
     void untilLoaded(QString until);
     void amountLoaded(QString amount);
     void emailLoaded(QString email);
