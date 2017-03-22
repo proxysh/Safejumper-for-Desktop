@@ -44,9 +44,7 @@
 #include "log.h"
 
 TrayIconManager::TrayIconManager(QWidget *parent)
-    :mFixed(false),
-     mActivatedCount(0),
-     mParent(parent)
+    :mParent(parent)
 {
     createTrayIcon();
     mTrayIcon->show();
@@ -63,6 +61,18 @@ TrayIconManager::TrayIconManager(QWidget *parent)
             this, &TrayIconManager::enableButtonsOnLogin);
     connect(AuthManager::instance(), &AuthManager::logoutCompleted,
             this, &TrayIconManager::disableActionsOnLogout);
+
+    // On OSX check update the state icon every 3 seconds so we can change
+    // from dark to light icons as the theme changes
+    // TODO: Get notified by the os when this user setting changes instead
+#ifdef Q_OS_DARWIN
+    if (mIconTimer.get() == NULL) {
+        mIconTimer.reset(new QTimer(this));
+        connect(mIconTimer.get(), SIGNAL(timeout()),
+                this, SLOT(updateStateIcon()));
+        mIconTimer->start(3000);
+    }
+#endif
 }
 
 bool TrayIconManager::exists()
@@ -214,37 +224,6 @@ void TrayIconManager::actionActivated(QSystemTrayIcon::ActivationReason reason)
     else if (reason == QSystemTrayIcon::Trigger && !mTrayIconMenu->isVisible())
         mTrayIconMenu->exec();
 #endif
-
-    ++mActivatedCount;
-    if (mActivatedCount == 1 && !mFixed) {
-        connect(g_pTheApp, SIGNAL(focusChanged(QWidget*, QWidget*)),
-                this, SLOT(focusChanged(QWidget*, QWidget*)));
-        if (mIconTimer.get() == NULL) {
-            mIconTimer.reset(new QTimer(this));
-            connect(mIconTimer.get(), SIGNAL(timeout()),
-                    this, SLOT(updateStateIcon()));
-            mIconTimer->start(210);
-        }
-        updateStateIcon();
-    } else {
-        disconnectIconWatcher();
-        updateStateIcon();
-    }
-}
-
-void TrayIconManager::disconnectIconWatcher()
-{
-    mFixed = true;
-    disconnect(g_pTheApp, SIGNAL(focusChanged(QWidget*, QWidget*)),
-               this, SLOT(focusChanged(QWidget*, QWidget*)));
-    if (mIconTimer.get() != NULL)
-        mIconTimer->stop();
-}
-
-void TrayIconManager::focusChanged(QWidget*, QWidget*)
-{
-    disconnectIconWatcher();
-    updateStateIcon();
 }
 
 void TrayIconManager::updateStateIcon()
@@ -277,18 +256,8 @@ void TrayIconManager::updateStateIcon(OpenvpnManager::OvState st)
     mTrayIcon->setIcon(icon);
 }
 
-void TrayIconManager::fixIcon()
-{
-    if (!mFixed) {
-        mFixed = true;
-        disconnectIconWatcher();
-        updateStateIcon();
-    }
-}
-
 void TrayIconManager::connectTriggered()
 {
-    fixIcon();
     if (!AuthManager::instance()->loggedIn()) {
         emit login();
     } else {
@@ -298,7 +267,6 @@ void TrayIconManager::connectTriggered()
 
 void TrayIconManager::connectToTriggered()
 {
-    fixIcon();
     // Get the action from the sender
     QAction *action = qobject_cast<QAction*>(sender());
     if (action != NULL) {
@@ -316,84 +284,71 @@ void TrayIconManager::connectToTriggered()
 
 void TrayIconManager::disconnectTriggered()
 {
-    fixIcon();
     OpenvpnManager::instance()->stop();
 }
 
 void TrayIconManager::statusTriggered()
 {
-    fixIcon();
     WndManager::Instance()->ToPrimary();
 }
 
 void TrayIconManager::jumpTriggered()
 {
-    fixIcon();
     WndManager::Instance()->ToPrimary();
     AuthManager::instance()->jump();
 }
 
 void TrayIconManager::switchCountryTriggered()
 {
-    fixIcon();
     WndManager::Instance()->ToMap();
 }
 
 void TrayIconManager::settingsTriggered()
 {
-    fixIcon();
     WndManager::Instance()->ToSettings();
 }
 
 void TrayIconManager::logsTriggered()
 {
-    fixIcon();
     WndManager::Instance()->ToLogs();
 }
 
 void TrayIconManager::webManagTriggered()
 {
-    fixIcon();
     WndManager::Instance()->CloseAll();
     OpenUrl_Panel();
 }
 
 void TrayIconManager::supportTriggered()
 {
-    fixIcon();
     WndManager::Instance()->CloseAll();
     OpenUrl_Support();
 }
 
 void TrayIconManager::bugTriggered()
 {
-    fixIcon();
     WndManager::Instance()->CloseAll();
     OpenUrl_Bug();
 }
 
 void TrayIconManager::earnTriggered()
 {
-    fixIcon();
     WndManager::Instance()->CloseAll();
     OpenUrl_Earn();
 }
 
 void TrayIconManager::aboutTriggered()
 {
-    fixIcon();
     WndManager::Instance()->ToPrimary();
 }
 
 void TrayIconManager::closeTriggered()
 {
-    fixIcon();
     emit quitApplication();
 }
 
 void TrayIconManager::logoutTriggered()
 {
-    fixIcon();
     if (OpenvpnManager::exists())
         OpenvpnManager::instance()->stop();
     if (AuthManager::exists())

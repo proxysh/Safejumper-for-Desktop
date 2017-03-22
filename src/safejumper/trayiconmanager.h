@@ -53,9 +53,6 @@ public slots:
     void disableActionsOnLogout();
     void enableButtonsOnLogin();
 
-    void focusChanged(QWidget*, QWidget*);
-//	void Finished_EccxorName();
-
     void constructConnectToMenu();
 
     void connectTriggered();
@@ -86,8 +83,6 @@ private:
     void createTrayIconMenu();
     void createMenuActions();
     void createTrayIcon();
-    void disconnectIconWatcher();
-    void fixIcon();
     void clearConnectToMenu();
     void createMenuItem(QMenu * m, const QString & name, size_t srv);
 
@@ -110,9 +105,9 @@ private:
     std::auto_ptr<QAction> mLogoutAction;
     std::auto_ptr<QAction> mCloseAction;
 
-    bool mFixed;
-    unsigned int mActivatedCount;
+#ifdef Q_OS_DARWIN
     std::auto_ptr<QTimer> mIconTimer;
+#endif
 
     std::auto_ptr<QMenu> mConnectToMenu;
     std::vector<QMenu *> mHubMenus;

@@ -55,7 +55,7 @@ PathHelper::~PathHelper()
 
 QString PathHelper::openvpnFilename()
 {
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
     return resourcesPath() + openvpnRelativeFilename();
 #else
 #ifdef Q_OS_WIN
@@ -75,7 +75,7 @@ QString PathHelper::openvpnRelativeFilename()
 
 QString PathHelper::resourcesPath()
 {
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
     QDir d(g_pTheApp->applicationDirPath());
     d.cdUp();
     d.cd("Resources");
@@ -127,7 +127,7 @@ QString PathHelper::launchopenvpnFilename()
 
 QString PathHelper::obfsproxyFilename()
 {
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
     return resourcesPath() + "/env/bin/obfsproxy";
 #else
 #ifdef Q_OS_LINUX
@@ -135,7 +135,7 @@ QString PathHelper::obfsproxyFilename()
 #else		// Win
     return         "cmd /k c:\\python27\\Scripts\\obfsproxy.exe";
 #endif	// linux
-#endif	// 	Q_OS_MAC
+#endif	// 	Q_OS_DARWIN
 }
 
 QString PathHelper::obfsproxyLogFilename()

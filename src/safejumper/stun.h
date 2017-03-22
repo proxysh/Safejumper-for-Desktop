@@ -60,7 +60,7 @@ typedef	uint32_t	in_addr_t;
 
 #endif
 
-//#ifdef Q_OS_MAC
+//#ifdef Q_OS_DARWIN
 //struct in_addr {
 //	in_addr_t s_addr;
 //};
@@ -69,7 +69,7 @@ typedef	uint32_t	in_addr_t;
 /*
  * Socket address, internet style.
  */
-//#ifdef Q_OS_MAC
+//#ifdef Q_OS_DARWIN
 //struct sockaddr_in {
 //	uint8_t	sin_len;
 //	sa_family_t	sin_family;

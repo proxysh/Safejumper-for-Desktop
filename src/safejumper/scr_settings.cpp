@@ -45,7 +45,7 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
     ui->setupUi(this);
     this->setFixedSize(this->size());
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
     ui->e_LocalPort->setAttribute(Qt::WA_MacShowFocusRect, 0);
     ui->e_PrimaryDns->setAttribute(Qt::WA_MacShowFocusRect, 0);
     ui->e_SecondaryDns->setAttribute(Qt::WA_MacShowFocusRect, 0);
@@ -245,14 +245,14 @@ void Scr_Settings::Changed_dd_Encryption(int ix)
          || ix == ENCRYPTION_TOR_OBFS3
          || ix == ENCRYPTION_TOR_SCRAMBLESUIT
          ) && !OsSpecific::instance()->obfsproxyInstalled()) {
-#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+#if defined(Q_OS_DARWIN) || defined(Q_OS_LINUX)
         // Try to install first, then check if it's not installed again.
         OsSpecific::instance()->installObfsproxy();
         if (!OsSpecific::instance()->obfsproxyInstalled()) {
 #endif
             ErrorDialog dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
             dlg.exec();
-#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+#if defined(Q_OS_DARWIN) || defined(Q_OS_LINUX)
         }
 #endif
     }

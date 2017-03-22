@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     QStringList commands;
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
     commands << "/sbin/ifconfig en0 down" <<
         "/sbin/ifconfig en1 down" <<
         "/usr/sbin/networksetup -setairportpower Wi-Fi off";

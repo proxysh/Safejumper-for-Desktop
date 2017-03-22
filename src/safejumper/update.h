@@ -21,7 +21,7 @@
 
 #include <QString>
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
 #define SJ_UPDATE_URL "https://proxy.sh/safejumper_mac.xml"
 #endif
 

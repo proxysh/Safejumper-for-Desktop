@@ -64,7 +64,7 @@ LoginWindow::LoginWindow(QWidget *parent) :
         ui->optionsButton->hide();
     }
 
-#ifndef Q_OS_MAC
+#ifndef Q_OS_DARWIN
     FontHelper::SetFont(this);
     ui->eLogin->setFont(FontHelper::pt(14));
     ui->ePsw->setFont(FontHelper::pt(14));

@@ -73,8 +73,8 @@ public:
     bool isNetDown();
     void setNetDown(bool b);
 
-    QString runCommandFast(const char * cmd, uint16_t ms = 500);			// returns stdout
-    QString runCommandFast(const QString & cmd, uint16_t ms = 500);
+    QString runCommandFast(const char * cmd, uint16_t ms = 500) const;			// returns stdout
+    QString runCommandFast(const QString & cmd, uint16_t ms = 500) const;
 
     void runObfsproxy(const QString &srv,
                       const QString &port,
@@ -86,7 +86,7 @@ public:
 
     void installObfsproxy();
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
     bool isDark() const;
 #endif
 

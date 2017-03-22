@@ -1,6 +1,6 @@
 #include "common.h"
 #include <sys/unistd.h>
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
 #include <unistd.h>
 #endif
 #include <vector>

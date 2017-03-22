@@ -26,7 +26,7 @@ Dlg_newnode::Dlg_newnode(const QString & msg, QWidget *parent) :
     ui(new Ui::Dlg_newnode)
 {
     ui->setupUi(this);
-#ifndef Q_OS_MAC
+#ifndef Q_OS_DARWIN
     FontHelper::SetFont(this);
 #endif
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);

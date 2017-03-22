@@ -47,7 +47,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     setNoServer();
 
     setWindowFlags(Qt::Dialog);
-#ifndef Q_OS_MAC
+#ifndef Q_OS_DARWIN
     FontHelper::SetFont(this);
 #ifdef Q_OS_WIN
     setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);

@@ -27,7 +27,7 @@ ConfirmationDialog::ConfirmationDialog(const QString & message, QWidget *parent)
     ui(new Ui::ConfirmationDialog)
 {
     ui->setupUi(this);
-#ifndef Q_OS_MAC
+#ifndef Q_OS_DARWIN
     FontHelper::SetFont(this);
 #endif
     this->setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);

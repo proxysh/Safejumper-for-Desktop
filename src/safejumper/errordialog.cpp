@@ -29,7 +29,7 @@ ErrorDialog::ErrorDialog(const QString & msg, const QString & caption, QWidget *
     ui(new Ui::ErrorDialog)
 {
     ui->setupUi(this);
-#ifndef Q_OS_MAC
+#ifndef Q_OS_DARWIN
     FontHelper::SetFont(this);
 #endif
     WndManager::DoShape(this);

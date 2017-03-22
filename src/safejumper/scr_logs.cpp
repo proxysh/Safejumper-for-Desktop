@@ -39,7 +39,7 @@ Scr_Logs::Scr_Logs(QWidget *parent) :
 
     ui->setupUi(this);
     this->setFixedSize(this->size());
-#ifndef Q_OS_MAC
+#ifndef Q_OS_DARWIN
     FontHelper::SetFont(this);
 #endif
 

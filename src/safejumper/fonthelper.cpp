@@ -55,7 +55,7 @@ void FontHelper::Init()
 {
     // _f and _bold must be initialized here
     if (!_f.get()) {
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
         ;			// TODO: -2 test - not using custom font on Mac
 #else
         //int id =
@@ -76,7 +76,7 @@ void FontHelper::Init()
 
 void FontHelper::SetFont(QWidget * w)
 {
-#ifndef Q_OS_MAC
+#ifndef Q_OS_DARWIN
     QObjectList widgetList = w->children();
     for (int k = 0, sz = widgetList.size(); k < sz; ++k) {
         QWidget * tw = dynamic_cast<QWidget*>(widgetList[k]);
@@ -87,5 +87,5 @@ void FontHelper::SetFont(QWidget * w)
             SetFont(tw);
         }
     }
-#endif		// Q_OS_MAC
+#endif		// Q_OS_DARWIN
 }

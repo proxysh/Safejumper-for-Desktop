@@ -156,7 +156,7 @@ void OpenvpnManager::launchOpenvpn()
             arg3 << mParametersTempFile->fileName();
             mParametersTempFile->close();
 
-//#ifdef Q_OS_MAC
+//#ifdef Q_OS_DARWIN
 //          log::logt("######  touch launcher ####");
 //          OsSpecific::Instance()->RunFastCmd("touch -a " + PathHelper::Instance()->LauncherPfn());
 //#endif
@@ -165,7 +165,7 @@ void OpenvpnManager::launchOpenvpn()
 #ifdef Q_OS_LINUX
             OsSpecific::instance()->execAsRoot(PathHelper::Instance()->launchopenvpnFilename(), arg3);
 #else
-//#ifdef Q_OS_MAC
+//#ifdef Q_OS_DARWIN
 //            OsSpecific::Instance()->ExecAsRoot(prog, args);     // force password dialog; without launcher
 //#else
             int r3 = QProcess::execute(PathHelper::Instance()->launchopenvpnFilename(), arg3);    // 30ms block internally
