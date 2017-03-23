@@ -13,10 +13,10 @@
 # published by the Open Source Initiative.
 
 Name:           safejumper
-Summary:        The Open Build Service -- Server Component
+Summary:        VPN client for proxy_sh.
 License:        GPL-2.0 and GPL-3.0
 Group:          Productivity/Networking/Web/Utilities
-Version:        2017.03.02
+Version:        2017.03.22
 Release:        0
 Url:            http://proxy.sh
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -47,6 +47,17 @@ Authors:
 # First install all dist files
 #
 mkdir -p $RPM_BUILD_ROOT/opt/safejumper/
+mkdir -p $RPM_BUILD_ROOT/usr/share/applications/
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/128x128/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/16x16/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/192x192/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/22x22/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/24x24/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/256x256/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/32x32/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/64x64/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/512x512/apps
+mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/72x72/apps
 install -m 0755 safejumper                $RPM_BUILD_ROOT/opt/safejumper/safejumper
 install -m 0755 launchopenvpn             $RPM_BUILD_ROOT/opt/safejumper/launchopenvpn
 install -m 0755 netdown                   $RPM_BUILD_ROOT/opt/safejumper/netdown
@@ -55,6 +66,17 @@ install -m 0744 client.down.safejumper.sh $RPM_BUILD_ROOT/opt/safejumper/client.
 install -m 0744 client.up.safejumper.sh   $RPM_BUILD_ROOT/opt/safejumper/client.up.safejumper.sh
 install -m 0644 proxysh.crt               $RPM_BUILD_ROOT/opt/safejumper/proxysh.crt
 install -d 0644 env                       $RPM_BUILD_ROOT/opt/safejumper/env
+install -m 0755 safejumper.desktop        $RPM_BUILD_ROOT/usr/share/applications
+install -m 0744 icons/128x128/apps/safejumper.png   $RPM_BUILD_ROOT/usr/share/icons/hicolor/128x128/apps
+install -m 0744 icons/16x16/apps/safejumper.png     $RPM_BUILD_ROOT/usr/share/icons/hicolor/16x16/apps
+install -m 0744 icons/192x192/apps/safejumper.png   $RPM_BUILD_ROOT/usr/share/icons/hicolor/192x192/apps
+install -m 0744 icons/22x22/apps/safejumper.png     $RPM_BUILD_ROOT/usr/share/icons/hicolor/22x22/apps
+install -m 0744 icons/24x24/apps/safejumper.png     $RPM_BUILD_ROOT/usr/share/icons/hicolor/24x24/apps
+install -m 0744 icons/256x256/apps/safejumper.png   $RPM_BUILD_ROOT/usr/share/icons/hicolor/256x256/apps
+install -m 0744 icons/32x32/apps/safejumper.png     $RPM_BUILD_ROOT/usr/share/icons/hicolor/32x32/apps
+install -m 0744 icons/512x512/apps/safejumper.png   $RPM_BUILD_ROOT/usr/share/icons/hicolor/512x512/apps
+install -m 0744 icons/64x64/apps/safejumper.png     $RPM_BUILD_ROOT/usr/share/icons/hicolor/64x64/apps
+install -m 0744 icons/72x72/apps/safejumper.png     $RPM_BUILD_ROOT/usr/share/icons/hicolor/72x72/apps
 cp      -avr env/*                        $RPM_BUILD_ROOT/opt/safejumper/env/
 
 %pre
@@ -82,5 +104,16 @@ rm -rf $RPM_BUILD_ROOT
 /opt/safejumper/client.up.safejumper.sh
 /opt/safejumper/proxysh.crt
 /opt/safejumper/env
+/usr/share/applications/safejumper.desktop
+/usr/share/icons/hicolor/128x128/apps/safejumper.png
+/usr/share/icons/hicolor/16x16/apps/safejumper.png
+/usr/share/icons/hicolor/192x192/apps/safejumper.png
+/usr/share/icons/hicolor/22x22/apps/safejumper.png
+/usr/share/icons/hicolor/24x24/apps/safejumper.png
+/usr/share/icons/hicolor/256x256/apps/safejumper.png
+/usr/share/icons/hicolor/32x32/apps/safejumper.png
+/usr/share/icons/hicolor/512x512/apps/safejumper.png
+/usr/share/icons/hicolor/64x64/apps/safejumper.png
+/usr/share/icons/hicolor/72x72/apps/safejumper.png
 
 %changelog

@@ -13,5 +13,5 @@ cp -r env64 linuxfiles/env
 # To package debian/ubuntu do the following:
 
 tar --transform "s/^linuxfiles/safejumper-$1/" -zcpvf ~/rpmbuild/SOURCES/safejumper-$1.tar.gz linuxfiles
-rpmbuild -ba -v --target=i686 ./safejumper.spec
+rpmbuild --define "debug_package %{nil}" -ba --sign -v --target=i686 ./safejumper.spec
 
