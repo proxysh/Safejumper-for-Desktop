@@ -3,6 +3,7 @@ moc_*.cpp
 moc_*.h
 ui_*.h
 *.app
+*.dmg
 *.pro.user
 Makefile
 .DS_Store
@@ -11,6 +12,7 @@ safejumper.dmg
 Safejumper.app
 qrc_*.cpp
 uic_wrapper.sh
+buildmac/Resources/env
 buildwindows/Qt5*.dll
 buildwindows/Safejumper_install.exe
 buildwindows/bearer

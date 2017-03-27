@@ -36,9 +36,9 @@ const QString kLocalAddress = "127.0.0.1";
 
 OpenvpnManager::OpenvpnManager()
     : mState(ovsDisconnected),
+      mStateTimer(NULL),
       mPID(0),
-      mSocket(0),
-      mStateTimer(NULL)
+      mSocket(0)
 {
     connect(OsSpecific::instance(), &OsSpecific::obfsproxyFinished,
             this, &OpenvpnManager::obfsproxyFinished);
@@ -101,7 +101,6 @@ void OpenvpnManager::launchOpenvpn()
             QFile::remove(PathHelper::Instance()->safejumperLogFilename());
         }
         setState(ovsConnecting);
-        int enc = Setting::instance()->encryption();
         launchObfsproxy(); // Only launches if we are using obfs protocols
         QString server = Setting::instance()->serverAddress();
         QString port = Setting::instance()->port();
@@ -606,7 +605,7 @@ void OpenvpnManager::gotConnected(const QString & s)
     AuthManager::instance()->forwardPorts();
 }
 
-void OpenvpnManager::gotTunErr(const QString & s)
+void OpenvpnManager::gotTunErr(const QString & /* s */)
 {
     if (!mTunError && !mError) {
         mTunError = true;

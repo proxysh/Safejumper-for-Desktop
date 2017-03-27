@@ -225,6 +225,8 @@ void TrayIconManager::actionActivated(QSystemTrayIcon::ActivationReason reason)
         statusTriggered();
     else if (reason == QSystemTrayIcon::Trigger && !mTrayIconMenu->isVisible())
         mTrayIconMenu->exec();
+#else
+    Q_UNUSED(reason);
 #endif
 }
 
@@ -404,7 +406,7 @@ void TrayIconManager::constructConnectToMenu()
             //_ct_menu->setIcon(QIcon(":/icons-tm/connect-red.png"));
 
             if (!Setting::instance()->showNodes()) {
-                for (size_t k = 0; k < hubs.size(); ++k) {
+                for (int k = 0; k < hubs.size(); ++k) {
                     AServer sr = am->getServer(hubs[k]);
                     createMenuItem(mConnectToMenu.get(), sr.name, hubs[k]);//am->ServerIdFromHubId(k));
                 }
@@ -471,7 +473,7 @@ void TrayIconManager::statusDisconnected()
     updateStateIcon(OpenvpnManager::ovsDisconnected);
 }
 
-static void s_set_enabled(QAction * ac, bool enabled, const char * icon_word)
+static void s_set_enabled(QAction * ac, bool enabled, const char * /*icon_word */)
 {
     if (!ac)
         return;

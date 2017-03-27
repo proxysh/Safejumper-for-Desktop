@@ -87,5 +87,7 @@ void FontHelper::SetFont(QWidget * w)
             SetFont(tw);
         }
     }
+#else
+    Q_UNUSED(w);
 #endif		// Q_OS_DARWIN
 }

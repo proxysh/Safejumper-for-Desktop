@@ -126,7 +126,7 @@ void OsSpecific::setOwnerRoot(const QString & pfn)
 #error SetOwnerRoot() Not implemented
         throw std::runtime_error("SetOwnerRoot() Not implemented");
 #endif
-        AuthorizationRef & ra = getMacAuthorization();
+//        AuthorizationRef & ra = getMacAuthorization();
 //		QStringList args;
 //		args << "u+s" << pfn;
 //		execAsRoot("chmod", args);
@@ -176,7 +176,9 @@ OsSpecific::~OsSpecific()
 {
     if (_auth) {
 #ifdef Q_OS_DARWIN
-        OSStatus res = AuthorizationFree(_AuthorizationRef, kAuthorizationFlagDefaults);
+        /* OSStatus res = */
+        AuthorizationFree(_AuthorizationRef, kAuthorizationFlagDefaults);
+        // TODO: Check result variable
 #endif
         _auth = false;
     }
@@ -1177,12 +1179,14 @@ void OsSpecific::installObfsproxy()
 #ifdef Q_OS_DARWIN
     log::logt("Show notification");
     int ii = WndManager::Instance()->Confirmation("Installing OBFS proxy");
-    execAsRoot("/usr/bin/easy_install", QStringList() << "pip");
-    execAsRoot("/usr/local/bin/pip", QStringList() << "install" << "virtualenv");
-    execAsRoot(PathHelper::Instance()->installObfsproxyFilename(), QStringList());
+    if (ii == QDialog::Accepted) {
+        execAsRoot("/usr/bin/easy_install", QStringList() << "pip");
+        execAsRoot("/usr/local/bin/pip", QStringList() << "install" << "virtualenv");
+        execAsRoot(PathHelper::Instance()->installObfsproxyFilename(), QStringList());
 
-    while (!obfsproxyInstalled()) {
-        QThread::msleep(400);
+        while (!obfsproxyInstalled()) {
+            QThread::msleep(400);
+        }
     }
 #endif	// Q_OS_DARWIN
 #endif	// Q_OS_LINUX

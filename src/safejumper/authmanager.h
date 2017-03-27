@@ -191,7 +191,7 @@ private:
     void clearReply();
     std::auto_ptr<QNetworkReply> mUpdateReply;
 
-    QList<int> mPings;		// ping for each server; -1 on err
+    QList<size_t> mPings;		// ping for each server; -1 on err
     std::vector<int> getPings(const std::vector<size_t> & toping);	// from _pings; do not wait for pings; return vec of the same size
     std::queue<size_t> mToPing;				// id inside _servers
     bool mPingsLoaded;

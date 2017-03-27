@@ -1057,7 +1057,7 @@ std::vector<int> AuthManager::getPings(const std::vector<size_t> & toping)
         log::logt("GetPings(): Empty pings collection");
     else {
         for (size_t k = 0; k < toping.size(); ++k) {
-            if (toping.at(k) >= mPings.size())
+            if (toping.at(k) >= (size_t)mPings.size())
                 log::logt("GetPings(): Server id greater than size of pings coll");
             else
                 v.at(k) = mPings.at(toping.at(k));
@@ -1119,7 +1119,7 @@ int AuthManager::getServerToJump()
 
     if (!ping_ix.empty()) {
         std::sort(ping_ix.begin(), ping_ix.end(), PCmp);
-        int num = Setting::instance()->showNodes() ? 20 : 6;      // pick this many from the top
+        unsigned int num = Setting::instance()->showNodes() ? 20 : 6;      // pick this many from the top
         if (num >= ping_ix.size())
             num = ping_ix.size();
         int offset = rand() % num;

@@ -91,7 +91,7 @@ private:
     void parseOpenvpnLogLine(const QString & s);
     void parseNewIp(const QString & s);
     void gotConnected(const QString & s);
-    void gotTunErr(const QString & s);
+    void gotTunErr(const QString &);
     void showErrorMessageCleanup(QString msg);
     void launchOpenvpn();
     void launchObfsproxy(); // Executes obfsproxy with current settings

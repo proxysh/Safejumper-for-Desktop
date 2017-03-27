@@ -198,7 +198,7 @@ void WndManager::SaveCoords(QWidget * from)
         return;
     if (!from->isVisible())
         return;
-    int tw = from->width();
+//    int tw = from->width();
     //assert(tw > 0);
     int px = from->x() + (from->width() / 2);
     _x = px - 187;  // 187 int = width of primary / 2
@@ -207,7 +207,7 @@ void WndManager::SaveCoords(QWidget * from)
 
 void WndManager::ApplyCoords(QWidget * to)
 {
-    int tw = to->width();
+//    int tw = to->width();
     //assert(tw > 0);
     int nx = _x + 187 - (to->width() / 2);
 
