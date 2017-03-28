@@ -20,7 +20,7 @@ macx: {
     resources.path = /Applications/Safechecker.app/Contents/Resources
     resources.files = ./resources/*
     INSTALLS = target resources
-    ICON = Safejumper.icns
+    ICON = ./safechecker.icns
 }
 
 win32: {
@@ -28,7 +28,7 @@ win32: {
     WIN_PWD = $$replace(PWD, /, \\)
     OUT_PWD_WIN = $$replace(OUT_PWD, /, \\)
     QMAKE_POST_LINK = "$$quote($$OUT_PWD_WIN\\..\\fixbinary.bat) $$quote($$OUT_PWD_WIN\\..\\safechecker.exe) $$quote($$WIN_PWD\\..\\safejumper\\safejumper.manifest)"
-    RC_FILE = ../safejumper/safejumper.rc
+    RC_FILE = safechecker.rc
     LIBS += -lws2_32 -lIphlpapi
     DESTDIR = ../../buildwindows/
     MOC_DIR = ../.obj/

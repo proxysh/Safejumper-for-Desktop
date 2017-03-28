@@ -20,6 +20,6 @@ scripts/pkg-dmg \
     --sourcefile \
     --format UDRW \
     --target safechecker.dmg \
-    --icon safejumper.icns  \
+    --icon safechecker.icns  \
     --mkdir .background \
     --symlink  /Applications:Applications \

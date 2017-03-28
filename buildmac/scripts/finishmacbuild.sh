@@ -3,10 +3,11 @@
 sudo cp launchopenvpn/launchopenvpn Resources/
 sudo cp netdown/netdown Resources/
 install safejumper.icns safejumper/Safejumper.app/Contents/Resources/
+install safechecker.icns safechecker/Safechecker.app/Contents/Resources/
 sudo cp -R Resources/* safejumper/Safejumper.app/Contents/Resources/
 sudo cp -R Resources/* safechecker/Safechecker.app/Contents/Resources/
 /usr/libexec/PlistBuddy -c "Set :CFBundleIconFile safejumper.icns" safejumper/Safejumper.app/Contents/Info.plist
-/usr/libexec/PlistBuddy -c "Set :CFBundleIconFile safejumper.icns" safechecker/Safechecker.app/Contents/Info.plist
+/usr/libexec/PlistBuddy -c "Set :CFBundleIconFile safechecker.icns" safechecker/Safechecker.app/Contents/Info.plist
 # macdeployqt Safejumper.app -verbose=1 
 macdeployqt safejumper/Safejumper.app -verbose=1 -codesign="Developer ID Application: Three Monkeys International Inc." $1
 codesign -f -o library -s "Developer ID Application: Three Monkeys International Inc." safejumper/Safejumper.app

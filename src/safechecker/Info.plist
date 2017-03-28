@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Safechecker</string>
 	<key>CFBundleIconFile</key>
-	<string>safejumper.icns</string>
+	<string>safechecker.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>sh.proxy.Safechecker</string>
 	<key>CFBundlePackageType</key>
