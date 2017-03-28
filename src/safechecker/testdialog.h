@@ -82,7 +82,7 @@ private:
     void setProtocol(int ix);   // -1 for none
 
     // Record current encryption/server/protocol result and go to the next one
-    void iterate();
+    void iterate(bool skipPorts = false);
     void nextServer(); // Iterate to the next server that doesn't have "Hub" in it's name
     // Add a row to the table widget
     int addRow();

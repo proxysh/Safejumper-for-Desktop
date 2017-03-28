@@ -225,10 +225,10 @@ void TestDialog::updateProtocol()
     setProtocol(Setting::instance()->currentProtocol());
 }
 
-void TestDialog::iterate()
+void TestDialog::iterate(bool skipPorts)
 {
     // First see if we can just go to the next protocol
-    if (++mCurrentProtocol < mProtocols.size()) {
+    if (!skipPorts && ++mCurrentProtocol < mProtocols.size()) {
         Setting::instance()->setProtocol(mCurrentProtocol);
         OpenvpnManager::instance()->start();
         return;
@@ -543,7 +543,7 @@ void TestDialog::setStatusConnected()
     addConnected();
 
     OpenvpnManager::instance()->stop();
-    iterate();
+    iterate(false);
 }
 
 void TestDialog::setStatusDisconnected()
@@ -567,7 +567,7 @@ void TestDialog::setError(const QString &message)
     QFile::copy(PathHelper::Instance()->safejumperLogFilename(),
                 QString("%1/%2-%3-%4-%5").arg(mLogFolder).arg(serverName).arg(encryptionName)
                 .arg(protocolName).arg("debug.log"));
-    iterate();
+    iterate(true);
 }
 
 TestDialog * TestDialog::instance()
