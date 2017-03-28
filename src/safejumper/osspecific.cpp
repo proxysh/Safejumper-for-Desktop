@@ -59,6 +59,7 @@
 #include "wndmanager.h"
 #include "pathhelper.h"
 #include "openvpnmanager.h"
+#include "setting.h"
 
 
 std::auto_ptr<OsSpecific> OsSpecific::mInstance;
@@ -91,7 +92,7 @@ AuthorizationRef & getMacAuthorization()
 {
     if (!_auth) {
         OSStatus res;
-        QString msg = "Safejumper requires to make some modifications to your network settings.\n\n";
+        QString msg = QApplication::applicationName() + " requires to make some modifications to your network settings.\n\n";
         QByteArray ba = msg.toUtf8();
         AuthorizationItem environmentItems[] = {
             {kAuthorizationEnvironmentPrompt, (size_t)ba.size(), (void*)ba.data(), 0},
@@ -304,7 +305,10 @@ void OsSpecific::setRights()
     setChown(PathHelper::Instance()->launchopenvpnFilename());
 
     system(QString("touch %1").arg(PathHelper::Instance()->openvpnLogFilename()).toStdString().c_str());
-    setChmod("777", PathHelper::Instance()->openvpnLogFilename());
+    // Don't chmod the openvpn log file when running safechecker
+    // Prevents prompt for authorization after every error
+    if (!Setting::instance()->testing())
+        setChmod("777", PathHelper::Instance()->openvpnLogFilename());
 #endif		// Q_OS_DARWIN
 
 #ifdef Q_OS_LINUX
