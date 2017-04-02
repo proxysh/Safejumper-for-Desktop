@@ -57,16 +57,14 @@ protected:
     virtual void keyPressEvent(QKeyEvent * event);
 
 private slots:
+    void on_quickTestButton_clicked();
     void on_startButton_clicked();
     void on_pauseButton_clicked();
-    void on_cancelButton_clicked();
     void on_saveCSVButton_clicked();
 
-    void setOldIP(const QString & ip);
     void setEmail(const QString & s);
     void setAmount(const QString & s);
     void setUntil(const QString & date);
-    void setNewIP(const QString & s);
 
     void updateServer(); // Slot for Setting::serverChanged
     void updateEncryption(); // Slot for Setting::encryptionChanged
@@ -76,7 +74,7 @@ private:
     static std::auto_ptr<TestDialog> mInstance;
     explicit TestDialog(QWidget *parent = 0);
 
-    void setFlag(int srv);
+    void startTest();
     void setServer(int srv);	// -1 or id inside all servers
     void setNoServer();
     void setProtocol(int ix);   // -1 for none
@@ -102,6 +100,7 @@ private:
     QList<int> mServerIds; // List of current encryption type server ids
     std::vector<QString> mProtocols; // List of current encryption type protocols
     QString mLogFolder; // Folder to keep failure logs
+    bool mQuickTest; // True when in quick test mode
 };
 
 

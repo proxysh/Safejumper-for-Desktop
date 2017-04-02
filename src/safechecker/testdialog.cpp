@@ -36,20 +36,26 @@
 
 const QString kLastFilenameKey = "lastFilename";
 
+static const QString kPauseText = "PAUSE TEST";
+static const QString kResumeText = "RESUME TEST";
+static const QString kStartText = "FULL TEST";
+static const QString kResetText = "RESET TEST";
+
 QHash<QString, const char*> TestDialog::mStateWordImages;
 std::auto_ptr<TestDialog> TestDialog::mInstance;
 
 TestDialog::TestDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::TestDialog)
+    ui(new Ui::TestDialog),
+    mQuickTest(false)
 {
     ui->setupUi(this);
 
     ui->countryLabel->setText("");
     ui->L_Percent->setText("0%");
-    ui->L_OldIp->setText("");
-    ui->L_NewIp->setText("");
-    ui->settingsButton->hide();
+
+    ui->pauseButton->hide();
+
     setNoServer();
 
     mLogFolder = QDir::homePath() + "/.safecheckerlogs";
@@ -73,30 +79,21 @@ TestDialog::TestDialog(QWidget *parent) :
 
     setStatusDisconnected();
 
-    ui->cancelButton->hide();
-    ui->pauseButton->hide();
-
     ui->L_Until->setText("active until\n-");
     ui->L_Amount->setText("-");
-    ui->L_OldIp->setText("");
 
     // Setting::Instance()->LoadServer();
     Setting::instance()->loadProtocol();
 
-    setOldIP(AuthManager::instance()->oldIP());
     updateEncryption();
     updateProtocol();
 
-    connect(AuthManager::instance(), &AuthManager::oldIpLoaded,
-            this, &TestDialog::setOldIP);
     connect(AuthManager::instance(), &AuthManager::emailLoaded,
             this, &TestDialog::setEmail);
     connect(AuthManager::instance(), &AuthManager::untilLoaded,
             this, &TestDialog::setUntil);
     connect(AuthManager::instance(), &AuthManager::amountLoaded,
             this, &TestDialog::setAmount);
-    connect(AuthManager::instance(), &AuthManager::newIpLoaded,
-            this, &TestDialog::setNewIP);
 
     connect(Setting::instance(), &Setting::serverChanged,
             this, &TestDialog::updateServer);
@@ -104,6 +101,45 @@ TestDialog::TestDialog(QWidget *parent) :
             this, &TestDialog::updateEncryption);
     connect(Setting::instance(), &Setting::protocolChanged,
             this, &TestDialog::updateProtocol);
+}
+
+void TestDialog::startTest()
+{
+    // Make and clean out log folder
+    QDir dir(mLogFolder);
+    if (!dir.exists())
+        dir.mkdir(mLogFolder);
+    else if (!dir.entryList(QDir::NoDotAndDotDot).isEmpty()) {
+        QStringList filenames = dir.entryList(QDir::NoDotAndDotDot);
+        foreach(QString filename, filenames)
+            dir.remove(filename);
+    }
+
+    ui->startButton->setText(kResetText);
+    ui->pauseButton->show();
+    ui->quickTestButton->hide();
+    ui->saveCSVButton->setEnabled(false);
+
+    // Clear out previous results if any
+    ui->tableWidget->setRowCount(0);
+    // Get all encryption types
+    mEncryptionTypes = {ENCRYPTION_RSA, ENCRYPTION_TOR_OBFS2, ENCRYPTION_ECC, ENCRYPTION_ECCXOR};
+    // Set encryption to type 0
+    mCurrentEncryptionType = 0;
+    Setting::instance()->setProtocol(mCurrentEncryptionType);
+    // Get all servers
+    mServerIds = AuthManager::instance()->currentEncryptionServers();
+    // Set server to first
+    mCurrentServerId = -1;
+    nextServer();
+    Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
+    // Get all protocols
+    mProtocols = Setting::instance()->currentEncryptionProtocols();
+    // Set protocol to first
+    mCurrentProtocol = 0;
+    Setting::instance()->setProtocol(mCurrentProtocol);
+    // Connect
+    OpenvpnManager::instance()->start();
 }
 
 bool TestDialog::exists()
@@ -122,8 +158,6 @@ void TestDialog::setNoServer()
     ui->L_Percent->hide();
     ui->L_Percent->setText("0%");
     ui->L_LOAD->hide();
-    ui->flagLabel->hide();
-    ui->L_NewIp->hide();
     ui->countryLabel->setText("No location specified.");
 }
 
@@ -134,14 +168,10 @@ void TestDialog::setServer(int srv)
     } else {
         const AServer & se = AuthManager::instance()->getServer(srv);
         ui->countryLabel->setText(se.name);
-        ui->serverIpLabel->setText(se.address);
-        ui->flagLabel->show();
 
         QString nip = AuthManager::instance()->newIP();
         if (nip.isEmpty())
             nip = se.address;
-        ui->L_NewIp->setText(nip);
-        ui->L_NewIp->show();
 
         double d = se.load.toDouble();
         int i = se.load.toInt();
@@ -150,7 +180,6 @@ void TestDialog::setServer(int srv)
         ui->L_Percent->setText(QString::number(i) + "%");
         ui->L_Percent->show();
         ui->L_LOAD->show();
-        setFlag(srv);
     }
 }
 
@@ -159,25 +188,10 @@ void TestDialog::updateServer()
     setServer(Setting::instance()->serverID());
 }
 
-void TestDialog::setNewIP(const QString & s)
-{
-    static const QString self = "127.0.0.1";
-    if (s != self) {
-        ui->L_NewIp->setText(s);
-        ui->L_NewIp->show();
-    }
-}
-
 void TestDialog::updateEncryption()
 {
     int enc = Setting::instance()->encryption();
     ui->encryptionLabel->setText(Setting::encryptionName(enc));
-}
-
-void TestDialog::setOldIP(const QString & s)
-{
-    ui->L_OldIp->setText(s);
-    ui->L_OldIp->show();
 }
 
 void TestDialog::setAccountName(const QString & s)
@@ -205,13 +219,6 @@ void TestDialog::setUntil(const QString & date)
     ui->L_Until->show();
 }
 
-void TestDialog::setFlag(int srv)
-{
-    QString n = AuthManager::instance()->getServer(srv).name;
-    QString fl = flag::IconFromSrvName(n);
-    ui->flagLabel->setPixmap(QPixmap(":/flags/" + fl + ".png"));
-}
-
 void TestDialog::setProtocol(int ix)
 {
     if (ix < 0)
@@ -227,8 +234,18 @@ void TestDialog::updateProtocol()
 
 void TestDialog::iterate(bool skipPorts)
 {
-    // First see if we can just go to the next protocol
-    if (!skipPorts && ++mCurrentProtocol < mProtocols.size()) {
+    // First of all if we are in quick test mode and the encryption is rsa
+    // skip to the other port type (udp after tcp) and next server after udp
+    if (!skipPorts && mQuickTest && mCurrentEncryptionType == ENCRYPTION_RSA) {
+        if (mCurrentProtocol == 0) {
+            mCurrentProtocol = 4; // TCP to UDP
+            Setting::instance()->setProtocol(mCurrentProtocol);
+            OpenvpnManager::instance()->start();
+            return;
+        } else { // next server instead since we are on udp already
+        }
+    } else if (!skipPorts && ++mCurrentProtocol < mProtocols.size()) {
+        // First see if we can just go to the next protocol
         Setting::instance()->setProtocol(mCurrentProtocol);
         OpenvpnManager::instance()->start();
         return;
@@ -267,9 +284,9 @@ void TestDialog::iterate(bool skipPorts)
     // Otherwise we finished checking all servers, all encryption types, all ports
     // Ask to save table widget to pipe separated values file.
     ui->saveCSVButton->setEnabled(true);
-    ui->cancelButton->hide();
     ui->pauseButton->hide();
-    ui->startButton->show();
+    ui->quickTestButton->show();
+    ui->startButton->setText(kResetText);
 }
 
 void TestDialog::nextServer()
@@ -279,7 +296,7 @@ void TestDialog::nextServer()
         ++mCurrentServerId;
         server = AuthManager::instance()->getServer(mServerIds.at(mCurrentServerId));
     } while (mCurrentServerId < mServerIds.size() &&
-           server.name.contains("Hub"));
+             server.name.contains("Hub"));
 }
 
 int TestDialog::addRow()
@@ -287,8 +304,9 @@ int TestDialog::addRow()
     int row = ui->tableWidget->rowCount();
     ui->tableWidget->setRowCount(row + 1);
 
+    const AServer &server = AuthManager::instance()->getServer(mServerIds.at(mCurrentServerId));
     QTableWidgetItem *serverItem = new QTableWidgetItem(ui->countryLabel->text());
-    serverItem->setToolTip(ui->serverIpLabel->text());
+    serverItem->setToolTip(server.address);
     ui->tableWidget->setItem(row, 0, serverItem);
     QTableWidgetItem *encryptionItem = new QTableWidgetItem(ui->encryptionLabel->text());
     ui->tableWidget->setItem(row, 1, encryptionItem);
@@ -302,7 +320,7 @@ void TestDialog::addConnected()
     int row = addRow();
     QTableWidgetItem *resultItem = new QTableWidgetItem(tr("success"));
     resultItem->setForeground(Qt::darkGreen);
-    resultItem->setToolTip(ui->L_NewIp->text());
+    resultItem->setToolTip(AuthManager::instance()->newIP());
     ui->tableWidget->setItem(row, 3, resultItem);
 }
 
@@ -359,9 +377,9 @@ bool TestDialog::saveCSV(QString filename)
         if (newIp.isEmpty()) {
             // Copy logs
             QString logFilename = QString("%1-%2-%3-%4").arg(serverName)
-                    .arg(encryptionName).arg(protocolName).arg("openvpn.log");
+                                  .arg(encryptionName).arg(protocolName).arg("openvpn.log");
             QString debugFilename = QString("%1-%2-%3-%4").arg(serverName)
-                    .arg(encryptionName).arg(protocolName).arg("debug.log");
+                                    .arg(encryptionName).arg(protocolName).arg("debug.log");
             QFile::rename(mLogFolder + "/" + logFilename, logfolder + "/" + logFilename);
             QFile::rename(mLogFolder + "/" + debugFilename, logfolder + "/" + debugFilename);
 
@@ -435,63 +453,29 @@ void TestDialog::initializeStateWords()
 
 void TestDialog::on_startButton_clicked()
 {
-    // Make and clean out log folder
-    QDir dir(mLogFolder);
-    if (!dir.exists())
-        dir.mkdir(mLogFolder);
-    else if (!dir.entryList(QDir::NoDotAndDotDot).isEmpty()) {
-        QStringList filenames = dir.entryList(QDir::NoDotAndDotDot);
-        foreach(QString filename, filenames)
-            dir.remove(filename);
+    if (ui->startButton->text() == kStartText) {
+        mQuickTest = false;
+        startTest();
+    } else { // Reset
+        ui->pauseButton->hide();
+        ui->quickTestButton->show();
+        ui->startButton->setText(kStartText);
+        ui->saveCSVButton->setEnabled(true);
+
+        OpenvpnManager::instance()->stop();
+        setStatusDisconnected();
     }
-
-    ui->startButton->hide();
-    ui->cancelButton->show();
-    ui->pauseButton->show();
-    ui->saveCSVButton->setEnabled(false);
-
-    // Clear out previous results if any
-    ui->tableWidget->setRowCount(0);
-    // Get all encryption types
-    mEncryptionTypes = {ENCRYPTION_RSA, ENCRYPTION_TOR_OBFS2, ENCRYPTION_ECC, ENCRYPTION_ECCXOR};
-    // Set encryption to type 0
-    mCurrentEncryptionType = 0;
-    Setting::instance()->setProtocol(mCurrentEncryptionType);
-    // Get all servers
-    mServerIds = AuthManager::instance()->currentEncryptionServers();
-    // Set server to first
-    mCurrentServerId = -1;
-    nextServer();
-    Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
-    // Get all protocols
-    mProtocols = Setting::instance()->currentEncryptionProtocols();
-    // Set protocol to first
-    mCurrentProtocol = 0;
-    Setting::instance()->setProtocol(mCurrentProtocol);
-    // Connect
-    OpenvpnManager::instance()->start();
 }
 
 void TestDialog::on_pauseButton_clicked()
 {
-    if (ui->pauseButton->text().compare("Pause") == 0) {
-        ui->pauseButton->setText("Resume");
+    if (ui->pauseButton->text().compare(kPauseText) == 0) {
+        ui->pauseButton->setText(kResumeText);
         OpenvpnManager::instance()->stop();
     } else {
-        ui->pauseButton->setText("Pause");
+        ui->pauseButton->setText(kPauseText);
         OpenvpnManager::instance()->start();
     }
-}
-
-void TestDialog::on_cancelButton_clicked()
-{
-    ui->cancelButton->hide();
-    ui->pauseButton->hide();
-    ui->startButton->show();
-    ui->saveCSVButton->setEnabled(true);
-
-    OpenvpnManager::instance()->stop();
-    setStatusDisconnected();
 }
 
 void TestDialog::on_saveCSVButton_clicked()
@@ -499,9 +483,9 @@ void TestDialog::on_saveCSVButton_clicked()
     // Get filename
     QSettings settings;
     QString filename = QFileDialog::getSaveFileName(this,
-                                                    "Save CSV file",
-                                                    settings.value(kLastFilenameKey, QDir::home().absolutePath()).toString(),
-                                                    "CSV File (*.csv)");
+                       "Save CSV file",
+                       settings.value(kLastFilenameKey, QDir::home().absolutePath()).toString(),
+                       "CSV File (*.csv)");
     // Save table to file
     if (saveCSV(filename))
         WndManager::Instance()->Confirmation("CSV File Saved");
@@ -584,14 +568,16 @@ void TestDialog::keyPressEvent(QKeyEvent * e)
         QDialog::keyPressEvent(e);
 }
 
+void TestDialog::on_quickTestButton_clicked()
+{
+    mQuickTest = true;
+    startTest();
+}
+
 void TestDialog::PortDlgAction(int action)
 {
     if (QDialog::Accepted == action) {
         OpenvpnManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
     }
 }
-
-
-
-
 
