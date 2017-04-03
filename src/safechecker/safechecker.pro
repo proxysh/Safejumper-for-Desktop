@@ -74,7 +74,7 @@ SOURCES += \
     ../safejumper/ministun.c \
     ../safejumper/openvpnmanager.cpp \
     ../safejumper/osspecific.cpp \
-    ../safejumper/pathhelper.cpp \
+    pathhelper.cpp \
     ../safejumper/pingwaiter.cpp \
     ../safejumper/portforwarder.cpp \
     ../safejumper/protocoldelegate.cpp \
@@ -102,7 +102,7 @@ HEADERS += \
     ../safejumper/ministun.h \
     ../safejumper/openvpnmanager.h \
     ../safejumper/osspecific.h \
-    ../safejumper/pathhelper.h \
+    pathhelper.h \
     ../safejumper/pingwaiter.h \
     ../safejumper/portforwarder.h \
     ../safejumper/protocoldelegate.h \

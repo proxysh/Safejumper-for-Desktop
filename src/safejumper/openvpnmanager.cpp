@@ -584,7 +584,6 @@ void OpenvpnManager::setState(OvState st)
 
 void OpenvpnManager::gotConnected(const QString & s)
 {
-    setState(ovsConnected);
     // extract IP
     //1432176303,CONNECTED,SUCCESS,10.14.0.6,91.219.237.159
     // 1460435651,CONNECTED,SUCCESS,10.200.1.6,85.236.153.236,465,192.168.58.170,35331
@@ -601,6 +600,9 @@ void OpenvpnManager::gotConnected(const QString & s)
                 ) // for proxy it shows 127.0.0.1
             emit gotNewIp(ip);
     }
+
+    // Set state to connected after checking the new ip so we will have the new ip
+    setState(ovsConnected);
 
     AuthManager::instance()->forwardPorts();
 }
