@@ -50,6 +50,7 @@ TestDialog::TestDialog(QWidget *parent) :
     mQuickTest(false)
 {
     ui->setupUi(this);
+    this->setFixedSize(this->size());
 
     ui->countryLabel->setText("");
     ui->L_Percent->setText("0%");
@@ -267,7 +268,7 @@ void TestDialog::iterate(bool skipPorts)
     // Got to the end of the list of servers, so switch to the next encryption
     // type and start over
     if (++mCurrentEncryptionType < mEncryptionTypes.size()) {
-        Setting::instance()->setProtocol(mCurrentEncryptionType);
+        Setting::instance()->setEncryption(mCurrentEncryptionType);
         // Get all servers
         mServerIds = AuthManager::instance()->currentEncryptionServers();
         // Set server to first
@@ -279,6 +280,7 @@ void TestDialog::iterate(bool skipPorts)
         mCurrentProtocol = 0;
         Setting::instance()->setProtocol(mCurrentProtocol);
         OpenvpnManager::instance()->start();
+        return;
     }
 
     // Otherwise we finished checking all servers, all encryption types, all ports
