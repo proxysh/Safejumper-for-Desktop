@@ -1,0 +1,12 @@
+Source: safechecker
+Section: net
+Priority: extra
+Standards-Version: 3.9.3
+Maintainer: Jeremy Whiting <info@3monkeysinternational.com>
+Build-Depends: debhelper (>= 8.0.0) 
+
+Package: safechecker
+Depends: liblzo2-2, liblz4-1, libxcb-xinerama0, libxcb-render-util0, libxcb-icccm4
+Architecture: any
+Description: VPN client tester for proxy_sh.
+  Safechecker is a tool to test the Proxy.sh VPN network.

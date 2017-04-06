@@ -1,0 +1,14 @@
+/usr/share/icons/hicolor/22x22/apps/safechecker.png
+/usr/share/icons/hicolor/128x128/apps/safechecker.png
+/usr/share/icons/hicolor/512x512/apps/safechecker.png
+/usr/share/icons/hicolor/64x64/apps/safechecker.png
+/usr/share/icons/hicolor/16x16/apps/safechecker.png
+/usr/share/icons/hicolor/192x192/apps/safechecker.png
+/usr/share/icons/hicolor/32x32/apps/safechecker.png
+/usr/share/icons/hicolor/24x24/apps/safechecker.png
+/usr/share/icons/hicolor/72x72/apps/safechecker.png
+/usr/share/icons/hicolor/256x256/apps/safechecker.png
+/usr/share/applications/safechecker.desktop
+/usr/share/doc/safechecker/README
+/usr/share/doc/safechecker/changelog.gz
+/usr/share/doc/safechecker/copyright

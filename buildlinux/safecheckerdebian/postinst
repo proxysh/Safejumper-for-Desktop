@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# fix permissions
+chown -R root:root /opt/safechecker/launchopenvpn
+chown -R root:root /opt/safechecker/netdown
+chown -R root:root /opt/safechecker/safechecker
+chown -R root:root /opt/safechecker/openvpn
+
+#DEBHELPER#
+exit 0
