@@ -18,6 +18,7 @@
 
 #include "loginwindow.h"
 
+#include <QDesktopWidget>
 #include <QMenu>
 #include <QFontDatabase>
 
@@ -78,8 +79,12 @@ LoginWindow::LoginWindow(QWidget *parent) :
     {
         QSettings settings;
         if (settings.contains("pos")) {
+            QDesktopWidget *desktop = QApplication::desktop();
             QPoint p = settings.value("pos").toPoint();
-            WndManager::Instance()->trans(p, this);
+            if (desktop->availableGeometry().contains(p))
+                WndManager::Instance()->trans(p, this);
+            else
+                WndManager::Instance()->trans(QPoint(100, 100), this);
         }
 //		_WndStart = pos();
         ui->rememberMeButton->setChecked(settings.value("cb_Rememberme", true).toBool());
