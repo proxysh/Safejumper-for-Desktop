@@ -41,6 +41,11 @@ static const QString kResumeText = "RESUME TEST";
 static const QString kStartText = "FULL TEST";
 static const QString kResetText = "RESET TEST";
 
+static const int kServerColumn = 0;
+static const int kResultColumn = 1;
+static const int kEncryptionColumn = 2;
+static const int kPortColumn = 3;
+
 QHash<QString, const char*> TestDialog::mStateWordImages;
 std::auto_ptr<TestDialog> TestDialog::mInstance;
 
@@ -54,6 +59,7 @@ TestDialog::TestDialog(QWidget *parent) :
 
     ui->countryLabel->setText("");
     ui->L_Percent->setText("0%");
+    ui->tableWidget->horizontalHeader()->resizeSection(kPortColumn, 4); // Set port column to small size and let it stretch
 
     ui->pauseButton->hide();
 
@@ -309,11 +315,11 @@ int TestDialog::addRow()
     const AServer &server = AuthManager::instance()->getServer(mServerIds.at(mCurrentServerId));
     QTableWidgetItem *serverItem = new QTableWidgetItem(ui->countryLabel->text());
     serverItem->setToolTip(server.address);
-    ui->tableWidget->setItem(row, 0, serverItem);
+    ui->tableWidget->setItem(row, kServerColumn, serverItem);
     QTableWidgetItem *encryptionItem = new QTableWidgetItem(ui->encryptionLabel->text());
-    ui->tableWidget->setItem(row, 1, encryptionItem);
+    ui->tableWidget->setItem(row, kEncryptionColumn, encryptionItem);
     QTableWidgetItem *portItem = new QTableWidgetItem(Setting::instance()->port());
-    ui->tableWidget->setItem(row, 2, portItem);
+    ui->tableWidget->setItem(row, kPortColumn, portItem);
     return row;
 }
 
@@ -323,7 +329,7 @@ void TestDialog::addConnected()
     QTableWidgetItem *resultItem = new QTableWidgetItem(tr("success"));
     resultItem->setForeground(Qt::darkGreen);
     resultItem->setToolTip(AuthManager::instance()->newIP());
-    ui->tableWidget->setItem(row, 3, resultItem);
+    ui->tableWidget->setItem(row, kResultColumn, resultItem);
 }
 
 void TestDialog::addError(QString message)
@@ -331,7 +337,7 @@ void TestDialog::addError(QString message)
     int row = addRow();
     QTableWidgetItem *resultItem = new QTableWidgetItem(QString("failure %1").arg(message));
     resultItem->setForeground(Qt::red);
-    ui->tableWidget->setItem(row, 3, resultItem);
+    ui->tableWidget->setItem(row, kResultColumn, resultItem);
 }
 
 bool TestDialog::saveCSV(QString filename)
@@ -358,12 +364,12 @@ bool TestDialog::saveCSV(QString filename)
     // Iterate over the rows of the table
     for (int i=0; i < ui->tableWidget->rowCount(); ++i) {
         // Write server name and ip address from the widget item
-        QString serverName = ui->tableWidget->item(i, 0)->text();
-        QString encryptionName = ui->tableWidget->item(i, 1)->text();
-        QString protocolName = ui->tableWidget->item(i, 2)->text();
+        QString serverName = ui->tableWidget->item(i, kServerColumn)->text();
+        QString encryptionName = ui->tableWidget->item(i, kEncryptionColumn)->text();
+        QString protocolName = ui->tableWidget->item(i, kPortColumn)->text();
         file.write(serverName.toLatin1());
         file.write("|");
-        file.write(ui->tableWidget->item(i, 0)->toolTip().toLatin1());
+        file.write(ui->tableWidget->item(i, kServerColumn)->toolTip().toLatin1());
         file.write("|");
         // Write the port number
         file.write(protocolName.toLatin1());
@@ -372,10 +378,10 @@ bool TestDialog::saveCSV(QString filename)
         file.write(encryptionName.toLatin1());
         file.write("|");
         // Write the result
-        file.write(ui->tableWidget->item(i, 3)->text().toLatin1());
+        file.write(ui->tableWidget->item(i, kResultColumn)->text().toLatin1());
         file.write("|");
         // Write the debug file name if it failed
-        QString newIp = ui->tableWidget->item(i, 3)->toolTip();
+        QString newIp = ui->tableWidget->item(i, kResultColumn)->toolTip();
         if (newIp.isEmpty()) {
             // Copy logs
             QString logFilename = QString("%1-%2-%3-%4").arg(serverName)
@@ -473,9 +479,11 @@ void TestDialog::on_pauseButton_clicked()
 {
     if (ui->pauseButton->text().compare(kPauseText) == 0) {
         ui->pauseButton->setText(kResumeText);
+        ui->saveCSVButton->setEnabled(true);
         OpenvpnManager::instance()->stop();
     } else {
         ui->pauseButton->setText(kPauseText);
+        ui->saveCSVButton->setEnabled(false);
         OpenvpnManager::instance()->start();
     }
 }
