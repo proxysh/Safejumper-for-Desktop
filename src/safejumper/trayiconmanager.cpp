@@ -392,21 +392,22 @@ void TrayIconManager::constructConnectToMenu()
         if (am->loggedIn()) {
             clearConnectToMenu();
 
-            const QList<int> & hubs = am->currentEncryptionHubs();
             if (mConnectToMenu.get() == NULL) {	// one time during entire program run
                 mConnectToMenu.reset(mTrayIconMenu->addMenu("Connect to ..."));
                 mTrayIconMenu->removeAction(mConnectToAction.get());
                 mTrayIconMenu->insertMenu(mDisconnectAction.get(), mConnectToMenu.get());
             }
-            mConnectToMenu->setEnabled(true);
-            //_ct_menu->setIcon(QIcon(":/icons-tm/connect-red.png"));
-
-            if (!Setting::instance()->showNodes()) {
-                for (int k = 0; k < hubs.size(); ++k) {
-                    AServer sr = am->getServer(hubs[k]);
-                    createMenuItem(mConnectToMenu.get(), sr.name, hubs[k]);//am->ServerIdFromHubId(k));
+            if (Setting::instance()->showNodes() || Setting::instance()->encryption() >= ENCRYPTION_ECC) {
+                // Use list of servers instead of hubs for ECC and ECC_XOR
+                const QList<int> &servers = am->currentEncryptionServers();
+                for (int k = 0; k < servers.size(); ++k) {
+                    AServer server = am->getServer(servers.at(k));
+                    createMenuItem(mConnectToMenu.get(), server.name, servers.at(k));
                 }
             } else {
+                const QList<int> & hubs = am->currentEncryptionHubs();
+                //_ct_menu->setIcon(QIcon(":/icons-tm/connect-red.png"));
+
                 const std::vector<std::pair<bool, int> > & L0 = am->getLevel0();
                 for (size_t k = 0; k < L0.size(); ++k) {
                     if (L0[k].first) {
@@ -432,8 +433,8 @@ void TrayIconManager::constructConnectToMenu()
                         createMenuItem(mConnectToMenu.get(), se.name, idsrv);
                     }
                 }
-
             }
+            mConnectToMenu->setEnabled(true);
         }
     }
 }

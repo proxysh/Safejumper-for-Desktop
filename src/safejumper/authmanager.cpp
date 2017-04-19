@@ -215,7 +215,7 @@ const QList<int> &AuthManager::currentEncryptionHubs()
 
     int enc = Setting::instance()->encryption();
     // Now get all the hub ids for the current encryption
-    if (mHubIds[enc].isEmpty()) {
+    if (mHubIds[enc].isEmpty() && enc < ENCRYPTION_ECC) { // Don't get hubs for ECC
         qDebug() << "populating hubs for enc " << enc << " from server list of size " << mServerIds[enc].size();
         for (int k = 0; k < mServerIds[enc].size(); ++k) {
             int serverId = mServerIds[enc].at(k);
@@ -936,7 +936,7 @@ QString AuthManager::processServersXml()
 
     // force hubs
     const QList<int> & hubs = AuthManager::currentEncryptionHubs();
-    if (hubs.isEmpty())
+    if (hubs.isEmpty() && Setting::instance()->encryption() < ENCRYPTION_ECC) // Don't check hubs for ECC
         log::logt("Cannot parse hubs");
 
     getObfsServerNames();

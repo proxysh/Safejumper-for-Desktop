@@ -131,8 +131,9 @@ void MapScreen::repopulateLocations()
     }
 
     // populate with the actual servers
-    mShowingNodes = Setting::instance()->showNodes();
     mEncryption = Setting::instance()->encryption();
+    // Always show all nodes when using ECC or ECC_XOR
+    mShowingNodes = Setting::instance()->showNodes() || mEncryption >= ENCRYPTION_ECC;
     mUseServerColumn = ((mEncryption == ENCRYPTION_RSA) && mShowingNodes) || (mEncryption > ENCRYPTION_RSA);
 
     setRowStyle(mUseServerColumn);
