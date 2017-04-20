@@ -59,9 +59,9 @@ void AuthManager::cleanup()
 
 AuthManager::AuthManager()
     :mLoggedIn(false),
-    mCancellingLogin(false),
-    mSeeded(false),
-    mIPAttemptCount(0)
+     mCancellingLogin(false),
+     mSeeded(false),
+     mIPAttemptCount(0)
 {
     connect(OpenvpnManager::instance(), &OpenvpnManager::gotNewIp,
             this, &AuthManager::setNewIp);
@@ -436,7 +436,7 @@ void AuthManager::processObfsServerNamesXml()
         if (enc == ENCRYPTION_TOR_OBFS2
                 || enc == ENCRYPTION_TOR_OBFS3
                 || enc == ENCRYPTION_TOR_SCRAMBLESUIT
-                )
+           )
             Setting::instance()->loadServer();
     }
 
@@ -576,6 +576,7 @@ void AuthManager::checkUpdates()
 {
     QString us(SJ_UPDATE_URL);
     if (!us.isEmpty()) {
+        log::logt(QString("Checking for updates from %1").arg(SJ_UPDATE_URL));
         mUpdateReply.reset(AuthManager::instance()->mNAM.get(BuildRequest(QUrl(us))));
         connect(mUpdateReply.get(), &QNetworkReply::finished,
                 this, &AuthManager::processUpdatesXml);
@@ -789,6 +790,7 @@ void AuthManager::processUpdatesXml()
     if (!ss.isEmpty()) {
         bool ok;
         int upd = ss.toInt(&ok);
+        log::logt(QString("Got updated xml, server version is %1, local version is %2").arg(upd).arg(SJ_BUILD_NUM));
         if (ok && SJ_BUILD_NUM < upd) {
             int result = WndManager::Instance()->Confirmation("New version " + ss + " available. Update?");
             Setting::instance()->updateMessageShown();
@@ -804,7 +806,7 @@ bool AuthManager::processServerNamesForEncryptionType(int enc, QString & out_msg
     QStringList names = extractNames(out_msg);
 
     if (out_msg.isEmpty() && !names.isEmpty()) {
-       populateServerIdsFromNames(names, mServerIds[enc]);
+        populateServerIdsFromNames(names, mServerIds[enc]);
     }
 
     return !out_msg.isEmpty();
@@ -1239,5 +1241,3 @@ void AuthManager::loginFinished()
     else
         emit loginError(message);
 }
-
-

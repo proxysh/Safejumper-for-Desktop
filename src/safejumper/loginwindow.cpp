@@ -140,7 +140,8 @@ void LoginWindow::Timer_Constructed()
     connect(AuthManager::instance(), SIGNAL(loginError(QString)),
             this, SLOT(loginError(QString)));
 
-    if (Setting::instance()->checkForUpdates()) {
+    // Always check for updates in safechecker until we add settings screen
+    if (Setting::instance()->checkForUpdates() || Setting::instance()->testing()) {
         AuthManager::instance()->checkUpdates();
     }
 
