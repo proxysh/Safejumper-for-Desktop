@@ -386,7 +386,7 @@ void Setting::loadProtocol()
 static QString gs_Empty = "";
 const QString & Setting::protocolName(int ix)
 {
-    if (ix > -1)
+    if (ix > -1 && ix < currentEncryptionProtocols().size())
         return currentEncryptionProtocols().at(ix);
     else
         return gs_Empty;
