@@ -112,6 +112,7 @@ HEADERS += \
     ../safejumper/stun.h \
     testdialog.h \
     ../safejumper/trayiconmanager.h \
+    update.h \
     ../safejumper/version.h \
     wndmanager.h
 

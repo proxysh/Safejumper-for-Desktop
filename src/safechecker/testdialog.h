@@ -29,7 +29,7 @@
 
 namespace Ui
 {
-    class TestDialog;
+class TestDialog;
 }
 
 class TestDialog : public QDialog
@@ -81,6 +81,10 @@ private:
 
     // Record current encryption/server/protocol result and go to the next one
     void iterate(bool skipPorts = false);
+    int randomTCPPort();
+    int randomUDPPort();
+    void resetPort(); // Start port back over at 0/random for new server test
+
     void nextServer(); // Iterate to the next server that doesn't have "Hub" in it's name
     // Add a row to the table widget
     int addRow();

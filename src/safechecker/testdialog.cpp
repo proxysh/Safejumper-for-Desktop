@@ -143,7 +143,7 @@ void TestDialog::startTest()
     // Get all protocols
     mProtocols = Setting::instance()->currentEncryptionProtocols();
     // Set protocol to first
-    mCurrentProtocol = 0;
+    resetPort();
     Setting::instance()->setProtocol(mCurrentProtocol);
     // Connect
     OpenvpnManager::instance()->start();
@@ -243,9 +243,9 @@ void TestDialog::iterate(bool skipPorts)
 {
     // First of all if we are in quick test mode and the encryption is rsa
     // skip to the other port type (udp after tcp) and next server after udp
-    if (!skipPorts && mQuickTest && mCurrentEncryptionType == ENCRYPTION_RSA) {
-        if (mCurrentProtocol == 0) {
-            mCurrentProtocol = 4; // TCP to UDP
+    if (mQuickTest) {
+        if (mCurrentProtocol >= 0 && mCurrentProtocol <= 3) {
+            mCurrentProtocol = randomUDPPort(); // TCP to UDP
             Setting::instance()->setProtocol(mCurrentProtocol);
             OpenvpnManager::instance()->start();
             return;
@@ -266,14 +266,14 @@ void TestDialog::iterate(bool skipPorts)
                  << " which is " << se.name
                  << " address: " << se.address;
         Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
-        mCurrentProtocol = 0;
+        resetPort();
         Setting::instance()->setProtocol(mCurrentProtocol);
         OpenvpnManager::instance()->start();
         return;
     }
     // Got to the end of the list of servers, so switch to the next encryption
-    // type and start over
-    if (++mCurrentEncryptionType < mEncryptionTypes.size()) {
+    // type and start over only if not on quick test mode
+    if (!mQuickTest && ++mCurrentEncryptionType < mEncryptionTypes.size()) {
         Setting::instance()->setEncryption(mCurrentEncryptionType);
         // Get all servers
         mServerIds = AuthManager::instance()->currentEncryptionServers();
@@ -283,7 +283,7 @@ void TestDialog::iterate(bool skipPorts)
         // Get all protocols
         mProtocols = Setting::instance()->currentEncryptionProtocols();
         // Set protocol to first
-        mCurrentProtocol = 0;
+        resetPort();
         Setting::instance()->setProtocol(mCurrentProtocol);
         OpenvpnManager::instance()->start();
         return;
@@ -295,6 +295,26 @@ void TestDialog::iterate(bool skipPorts)
     ui->pauseButton->hide();
     ui->quickTestButton->show();
     ui->startButton->setText(kResetText);
+}
+
+int TestDialog::randomTCPPort()
+{
+    // give a port index between 0 and 3
+    return (qrand() % 4);
+}
+
+int TestDialog::randomUDPPort()
+{
+    // give a port index between 4 and 8
+    return (qrand() % 5) + 4;
+}
+
+void TestDialog::resetPort()
+{
+    if (mQuickTest)
+        mCurrentProtocol = randomTCPPort();
+    else
+        mCurrentProtocol = 0;
 }
 
 void TestDialog::nextServer()
@@ -590,4 +610,3 @@ void TestDialog::PortDlgAction(int action)
         OpenvpnManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
     }
 }
-
