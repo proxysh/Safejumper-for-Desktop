@@ -34,6 +34,9 @@
 #include <QDir>
 #include <QFileDialog>
 
+#include <algorithm>
+#include <random>
+
 const QString kLastFilenameKey = "lastFilename";
 
 static const QString kPauseText = "PAUSE TEST";
@@ -112,6 +115,7 @@ TestDialog::TestDialog(QWidget *parent) :
 
 void TestDialog::startTest()
 {
+    ui->pauseButton->setText(kPauseText);
     // Make and clean out log folder
     QDir dir(mLogFolder);
     if (!dir.exists())
@@ -136,6 +140,7 @@ void TestDialog::startTest()
     Setting::instance()->setProtocol(mCurrentEncryptionType);
     // Get all servers
     mServerIds = AuthManager::instance()->currentEncryptionServers();
+    std::random_shuffle(mServerIds.begin(), mServerIds.end());
     // Set server to first
     mCurrentServerId = -1;
     nextServer();
@@ -277,6 +282,8 @@ void TestDialog::iterate(bool skipPorts)
         Setting::instance()->setEncryption(mCurrentEncryptionType);
         // Get all servers
         mServerIds = AuthManager::instance()->currentEncryptionServers();
+
+        std::random_shuffle(mServerIds.begin(), mServerIds.end());
         // Set server to first
         mCurrentServerId = 0;
         Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
