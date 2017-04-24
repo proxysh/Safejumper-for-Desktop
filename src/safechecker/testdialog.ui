@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>375</width>
-    <height>370</height>
+    <height>389</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1200,7 +1200,7 @@ color: #818181;
       <item row="2" column="0" colspan="3">
        <widget class="QTableWidget" name="tableWidget">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="maximumSize">
          <size>
@@ -1227,6 +1227,9 @@ color: #818181;
         </property>
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="textElideMode">
+         <enum>Qt::ElideMiddle</enum>
         </property>
         <attribute name="horizontalHeaderCascadingSectionResizes">
          <bool>true</bool>
