@@ -147,9 +147,14 @@ void TestDialog::startTest()
     Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
     // Get all protocols
     mProtocols = Setting::instance()->currentEncryptionProtocols();
+    mProtocolIds.clear();
+    for (int i = 0; i < mProtocols.size(); ++i)
+        mProtocolIds.append(i);
+
+    std::random_shuffle(mProtocolIds.begin(), mProtocolIds.end());
     // Set protocol to first
     resetPort();
-    Setting::instance()->setProtocol(mCurrentProtocol);
+    Setting::instance()->setProtocol(mProtocolIds.at(mCurrentProtocol));
     // Connect
     OpenvpnManager::instance()->start();
 }
@@ -258,7 +263,7 @@ void TestDialog::iterate(bool skipPorts)
         }
     } else if (!skipPorts && ++mCurrentProtocol < mProtocols.size()) {
         // First see if we can just go to the next protocol
-        Setting::instance()->setProtocol(mCurrentProtocol);
+        Setting::instance()->setProtocol(mProtocolIds.at(mCurrentProtocol));
         OpenvpnManager::instance()->start();
         return;
     }
@@ -272,7 +277,7 @@ void TestDialog::iterate(bool skipPorts)
                  << " address: " << se.address;
         Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
         resetPort();
-        Setting::instance()->setProtocol(mCurrentProtocol);
+        Setting::instance()->setProtocol(mProtocolIds.at(mCurrentProtocol));
         OpenvpnManager::instance()->start();
         return;
     }
@@ -289,9 +294,15 @@ void TestDialog::iterate(bool skipPorts)
         Setting::instance()->setServer(mServerIds.at(mCurrentServerId));
         // Get all protocols
         mProtocols = Setting::instance()->currentEncryptionProtocols();
+        mProtocolIds.clear();
+        for (int i = 0; i < mProtocols.size(); ++i)
+            mProtocolIds.append(i);
+
+        std::random_shuffle(mProtocolIds.begin(), mProtocolIds.end());
+
         // Set protocol to first
         resetPort();
-        Setting::instance()->setProtocol(mCurrentProtocol);
+        Setting::instance()->setProtocol(mProtocolIds.at(mCurrentProtocol));
         OpenvpnManager::instance()->start();
         return;
     }

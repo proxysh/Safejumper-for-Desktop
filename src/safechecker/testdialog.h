@@ -102,6 +102,7 @@ private:
     int mCurrentProtocol;
     std::vector<size_t> mEncryptionTypes; // List of all encryption types to iterate over
     QList<int> mServerIds; // List of current encryption type server ids
+    QList<int> mProtocolIds; // List of current encryption type protocol ids
     std::vector<QString> mProtocols; // List of current encryption type protocols
     QString mLogFolder; // Folder to keep failure logs
     bool mQuickTest; // True when in quick test mode
