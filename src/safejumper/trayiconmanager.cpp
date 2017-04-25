@@ -136,9 +136,12 @@ void TrayIconManager::createTrayIconMenu()
         mTrayIconMenu->addSeparator();
 
         mTrayIconMenu->addAction(mSettingsAction.get());
-        mTrayIconMenu->addAction(mLogsAction.get());
-        mTrayIconMenu->addSeparator();
+    }
 
+    mTrayIconMenu->addAction(mLogsAction.get());
+    mTrayIconMenu->addSeparator();
+
+    if (!Setting::instance()->testing()) {
         mTrayIconMenu->addAction(mWebManageAction.get());
         mTrayIconMenu->addAction(mSupportAction.get());
         mTrayIconMenu->addAction(mBugAction.get());
