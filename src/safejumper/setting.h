@@ -65,6 +65,9 @@ public:
     bool testing();
     void setTesting(bool value);
 
+    bool logging();
+    void setLogging(bool value);
+
     void setServer(int ixsrv);
     void loadServer();
 

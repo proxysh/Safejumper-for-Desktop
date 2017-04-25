@@ -19,7 +19,7 @@
 #include "connectiondialog.h"
 
 #include "ui_connectiondialog.h"
-#include "scr_settings.h"
+#include "settingsscreen.h"
 #include "mapscreen.h"
 #include "loginwindow.h"
 #include "authmanager.h"

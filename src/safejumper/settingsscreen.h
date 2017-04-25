@@ -16,8 +16,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#ifndef SCR_SETTINGS_H
-#define SCR_SETTINGS_H
+#ifndef SETTINGSSCREEN_H
+#define SETTINGSSCREEN_H
 
 #include <QDialog>
 #include <QtWidgets/QLineEdit>
@@ -29,65 +29,26 @@
 
 namespace Ui
 {
-class Scr_Settings;
+class SettingsScreen;
 }
 
-class Scr_Settings : public QDialog
+class SettingsScreen : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit Scr_Settings(QWidget *parent = 0);
-    ~Scr_Settings();
+    explicit SettingsScreen(QWidget *parent = 0);
+    ~SettingsScreen();
 
-    static Scr_Settings * Instance();
-    static bool IsExists()
-    {
-        return (_inst.get() != NULL);
-    }
-    static void Cleanup()
-    {
-        if (_inst.get() != NULL) delete _inst.release();
-    }
+    static SettingsScreen * instance();
+    static bool exists();
+    static void cleanup();
 
-    bool Is_cb_BlockOnDisconnect();
-    bool Is_cb_Startup();
-    bool Is_cb_AutoConnect();
-    bool Is_cb_Reconnect();
-    bool Is_cb_InsecureWiFi();
-    bool Is_cb_ShowNodes();
-    bool Is_cb_DisableIpv6();
-    bool Is_cb_FixDnsLeak();
-
-    QString Dns1();	 // "" if invalid
-    QString Dns2();	 // "" if invalid
-    QString LocalPort();	 // "" if invalid
     USet Ports();
-
-    int Encryption();		// 0 = usual RSA, 1 = obfs proxy, 2 =
-
-private:
-    Ui::Scr_Settings * ui;
-    static std::auto_ptr<Scr_Settings> _inst;
-    bool Vlidate_e_ip(QLineEdit * eb);
-    bool IsPortsValid(USet * out_ports = NULL);
-    void SaveDns(QLineEdit * dns, const char * name, QSettings & settings);
-    QString GetDns(QLineEdit * dns);
-    bool _moving;
-    QPoint _WndStart;
-    QPoint _CursorStart;
-
-
 
 protected:
     virtual void closeEvent(QCloseEvent * event);
     virtual void keyPressEvent(QKeyEvent * event);
-    virtual bool eventFilter(QObject *obj, QEvent *event);
-
-public slots:
-    void Pressed_Head();
-    void Clicked_Min();
-    void Clicked_Cross();
 
 private slots:
     void Toggle_BlockOnDisconnect_Line2(bool v);
@@ -110,6 +71,13 @@ private slots:
     void ToScr_Connect();
     void ToScr_Logs();
     void Clicked_Update();
+
+    void on_loggingButton_toggled(bool v);
+private:
+    Ui::SettingsScreen * ui;
+    static std::auto_ptr<SettingsScreen> mInstance;
+    bool Vlidate_e_ip(QLineEdit * eb);
+    bool IsPortsValid(USet * out_ports = NULL);
 };
 
-#endif // SCR_SETTINGS_H
+#endif // SETTINGSSCREEN_H

@@ -19,7 +19,7 @@
 #include "testdialog.h"
 
 #include "ui_testdialog.h"
-#include "scr_settings.h"
+#include "settingsscreen.h"
 #include "loginwindow.h"
 #include "authmanager.h"
 #include "pathhelper.h"

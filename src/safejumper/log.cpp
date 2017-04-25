@@ -24,9 +24,14 @@
 
 #include "scr_logs.h"
 #include "pathhelper.h"
+#include "setting.h"
 
 void log::logt(const QString & s)
 {
+    // Don't log anything if logging is disabled
+    if (!Setting::instance()->logging())
+        return;
+
     QDateTime now = QDateTime::currentDateTimeUtc();
     QString s1 = now.toString("yyyy-MM-dd-HH-mm-ss ") + s;
     s1 +=  + "\n";
@@ -40,6 +45,3 @@ void log::logt(const QString & s)
     if (Scr_Logs::IsExists())
         Scr_Logs::Instance()->Log(s1);
 }
-
-
-

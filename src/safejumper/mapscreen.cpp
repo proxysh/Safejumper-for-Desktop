@@ -24,7 +24,7 @@
 
 #include "setting.h"
 #include "ui_mapscreen.h"
-#include "scr_settings.h"
+#include "settingsscreen.h"
 #include "wndmanager.h"
 #include "authmanager.h"
 #include "openvpnmanager.h"

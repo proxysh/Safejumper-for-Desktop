@@ -79,11 +79,11 @@ SOURCES += \
     portforwarder.cpp \
     protocoldelegate.cpp \
     scr_logs.cpp \
-    scr_settings.cpp \
     setting.cpp \
     stun.cpp \
     trayiconmanager.cpp \
-    wndmanager.cpp
+    wndmanager.cpp \
+    settingsscreen.cpp
 
 HEADERS += \
     authmanager.h \
@@ -107,13 +107,13 @@ HEADERS += \
     portforwarder.h \
     protocoldelegate.h \
     scr_logs.h \
-    scr_settings.h \
     setting.h \
     stun.h \
     trayiconmanager.h \
     update.h \
     version.h \
-    wndmanager.h
+    wndmanager.h \
+    settingsscreen.h
 
 FORMS += \
     confirmationdialog.ui \
@@ -123,7 +123,7 @@ FORMS += \
     loginwindow.ui \
     mapscreen.ui \
     scr_logs.ui \
-    scr_settings.ui
+    settingsscreen.ui
 
 RESOURCES += \
     imgs.qrc

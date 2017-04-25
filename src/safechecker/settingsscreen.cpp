@@ -16,11 +16,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include "scr_settings.h"
+#include "settingsscreen.h"
 
 #include "scr_logs.h"
-#include "ui_scr_settings.h"
-#include "testdialog.h"
+#include "ui_settingsscreen.h"
+#include "connectiondialog.h"
+#include "mapscreen.h"
 #include "common.h"
 #include "loginwindow.h"
 #include "wndmanager.h"
@@ -36,15 +37,14 @@
 
 static bool _repopulation_inprogress = false;
 
-Scr_Settings::Scr_Settings(QWidget *parent) :
+SettingsScreen::SettingsScreen(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Scr_Settings)
-    , _moving(false)
+    ui(new Ui::SettingsScreen)
 {
     ui->setupUi(this);
     this->setFixedSize(this->size());
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_DARWIN
     ui->e_LocalPort->setAttribute(Qt::WA_MacShowFocusRect, 0);
     ui->e_PrimaryDns->setAttribute(Qt::WA_MacShowFocusRect, 0);
     ui->e_SecondaryDns->setAttribute(Qt::WA_MacShowFocusRect, 0);
@@ -64,34 +64,26 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
     ui->dd_Encryption->clear();
     for (int k = 0; k < ENCRYPTION_COUNT; ++k)
         ui->dd_Encryption->addItem(Setting::encryptionName(k));
-    ui->dd_Encryption->setView(ui->lv_Encryption);
     ui->dd_Encryption->setItemDelegate(new EncryptionDelegate(this));
     _repopulation_inprogress = false;
 
-//	QPoint p0 = _WndStart = pos();
-//	WndManager::DoShape(this);
-//	QPoint p1 = pos();
-//		move(p0);
-    qApp->installEventFilter(this);
+    QSettings settings;
+    ui->cb_AutoConnect->setChecked(Setting::instance()->autoconnect());
+    ui->cb_BlockOnDisconnect->setChecked(Setting::instance()->blockOnDisconnect());
+    ui->cb_DisableIpv6->setChecked(Setting::instance()->disableIPv6());
+    ui->cb_FixDnsLeak->setChecked(Setting::instance()->fixDns());
+    ui->cb_Reconnect->setChecked(Setting::instance()->reconnect());
+    ui->cb_ShowNodes->setChecked(Setting::instance()->showNodes());
+    ui->cb_Startup->setChecked(Setting::instance()->startup());
+    ui->cb_InsecureWiFi->setChecked(Setting::instance()->detectInsecureWifi());
 
-    {
-        QSettings settings;
-        ui->cb_AutoConnect->setChecked(settings.value("cb_AutoConnect", false).toBool());
-        ui->cb_BlockOnDisconnect->setChecked(settings.value("cb_BlockOnDisconnect", false).toBool());
-        ui->cb_DisableIpv6->setChecked(settings.value("cb_DisableIpv6", true).toBool());
-        ui->cb_FixDnsLeak->setChecked(settings.value("cb_FixDnsLeak", true).toBool());
-        ui->cb_Reconnect->setChecked(settings.value("cb_Reconnect", true).toBool());
-        ui->cb_ShowNodes->setChecked(settings.value("cb_ShowNodes", false).toBool());
-        ui->cb_Startup->setChecked(settings.value("cb_Startup", true).toBool());
-        ui->cb_InsecureWiFi->setChecked(settings.value("cb_InsecureWiFi", false).toBool());
+    ui->e_LocalPort->setText(Setting::instance()->localPort());
+    ui->e_Ports->setText(Setting::instance()->forwardPortsString());
+    ui->e_PrimaryDns->setText(Setting::instance()->dns1());
+    ui->e_SecondaryDns->setText(Setting::instance()->dns2());
+    ui->loggingButton->setChecked(Setting::instance()->logging());
 
-        ui->e_LocalPort->setText(settings.value("e_LocalPort", "9090").toString());
-        ui->e_Ports->setText(settings.value("e_Ports", "").toString());
-        ui->e_PrimaryDns->setText(settings.value("e_PrimaryDns", "").toString());
-        ui->e_SecondaryDns->setText(settings.value("e_SecondaryDns", "").toString());
-
-        ui->dd_Encryption->setCurrentIndex(settings.value("dd_Encryption", 0).toInt());
-    }
+    ui->dd_Encryption->setCurrentIndex(settings.value("dd_Encryption", 0).toInt());
 
     // OS-specific not implemented features
 #ifdef Q_OS_LINUX
@@ -117,68 +109,47 @@ Scr_Settings::Scr_Settings(QWidget *parent) :
         if (ui->e_SecondaryDns->text().isEmpty())
             ui->e_SecondaryDns->setText(Setting::instance()->defaultDNS2());
     }
-
-    if (ui->cb_Startup->isEnabled())
-        OsSpecific::instance()->setStartup(ui->cb_Startup->isChecked());
 }
 
-void Scr_Settings::closeEvent(QCloseEvent * event)
+void SettingsScreen::closeEvent(QCloseEvent * event)
 {
     event->ignore();
     WndManager::Instance()->HideThis(this);
 }
 
-Scr_Settings::~Scr_Settings()
+SettingsScreen::~SettingsScreen()
 {
     {
-        QSettings settings;
         if (this->isVisible())
             WndManager::Instance()->HideThis(this);
-
-        settings.setValue("cb_AutoConnect", ui->cb_AutoConnect->isChecked());
-        settings.setValue("cb_BlockOnDisconnect", ui->cb_BlockOnDisconnect->isChecked());
-        settings.setValue("cb_DisableIpv6", ui->cb_DisableIpv6->isChecked());
-        settings.setValue("cb_FixDnsLeak", ui->cb_FixDnsLeak->isChecked());
-        settings.setValue("cb_Reconnect", ui->cb_Reconnect->isChecked());
-        settings.setValue("cb_ShowNodes", ui->cb_ShowNodes->isChecked());
-        settings.setValue("cb_Startup", ui->cb_Startup->isChecked());
-        settings.setValue("cb_InsecureWiFi", ui->cb_InsecureWiFi->isChecked());
-
-        if (IsValidPort(ui->e_LocalPort->text()))
-            settings.setValue("e_LocalPort", ui->e_LocalPort->text());
-        if (IsPortsValid())
-            settings.setValue("e_Ports", ui->e_Ports->text());
-        SaveDns(ui->e_PrimaryDns, "e_PrimaryDns", settings);
-        SaveDns(ui->e_SecondaryDns, "e_SecondaryDns", settings);
-
-        settings.setValue("dd_Encryption", ui->dd_Encryption->currentIndex());
     }
     delete ui;
 }
 
-void Scr_Settings::SaveDns(QLineEdit * dns, const char * name, QSettings & settings)
+std::auto_ptr<SettingsScreen> SettingsScreen::mInstance;
+SettingsScreen * SettingsScreen::instance()
 {
-    bool er = false;
-    if (!dns->text().isEmpty())
-        er = !IsValidIp(dns->text());
-    if (!er)
-        settings.setValue(name, dns->text());
+    if (!mInstance.get())
+        mInstance.reset(new SettingsScreen());
+    return mInstance.get();
 }
 
-std::auto_ptr<Scr_Settings> Scr_Settings::_inst;
-Scr_Settings * Scr_Settings::Instance()
+bool SettingsScreen::exists()
 {
-    if (!_inst.get())
-        _inst.reset(new Scr_Settings());
-    return _inst.get();
+    return (mInstance.get() != NULL);
 }
 
-void Scr_Settings::ToScr_Connect()
+void SettingsScreen::cleanup()
+{
+    if (mInstance.get() != NULL) delete mInstance.release();
+}
+
+void SettingsScreen::ToScr_Connect()
 {
     WndManager::Instance()->ToPrimary();
 }
 
-void Scr_Settings::ToScr_Logs()
+void SettingsScreen::ToScr_Logs()
 {
     QString path = PathHelper::Instance()->openvpnLogFilename();
     QFile f(path);
@@ -194,71 +165,64 @@ void Scr_Settings::ToScr_Logs()
     WndManager::Instance()->ToLogs();
 }
 
-void Scr_Settings::Clicked_Update()
+void SettingsScreen::Clicked_Update()
 {
     // https://proxy.sh/version_osx.xml
     launchUpdateUrl();
 }
 
-void Scr_Settings::Toggle_BlockOnDisconnect_Line2(bool v)
+void SettingsScreen::on_loggingButton_toggled(bool v)
+{
+    Setting::instance()->setLogging(v);
+}
+
+void SettingsScreen::Toggle_BlockOnDisconnect_Line2(bool v)
 {
     bool checked = ui->cb_BlockOnDisconnect->isChecked();
     ui->b_BlockOnDisconnect_Line2->setChecked(checked);
-    SaveCb("b_BlockOnDisconnect", v);
+    Setting::instance()->setBlockOnDisconnect(v);
 }
 
-void Scr_Settings::Toggle_cb_BlockOnDisconnect(bool v)
+void SettingsScreen::Toggle_cb_BlockOnDisconnect(bool v)
 {
     bool checked = ui->b_BlockOnDisconnect_Line2->isChecked();
     ui->cb_BlockOnDisconnect->setChecked(checked);
-    SaveCb("b_BlockOnDisconnect", v);
+    Setting::instance()->setBlockOnDisconnect(v);
 }
 
-void Scr_Settings::Toggle_cb_Startup(bool v)
+void SettingsScreen::Toggle_cb_Startup(bool v)
 {
-    SaveCb("cb_Startup", v);
-    OsSpecific::instance()->setStartup(v);
+    Setting::instance()->setStartup(v);
 }
 
-void Scr_Settings::Toggle_cb_AutoConnect(bool v)
+void SettingsScreen::Toggle_cb_AutoConnect(bool v)
 {
-    SaveCb("cb_AutoConnect", v);
-    // TODO: -1 not implemented
+    Setting::instance()->setAutoconnect(v);
 }
 
-void Scr_Settings::Toggle_cb_Reconnect(bool v)
+void SettingsScreen::Toggle_cb_Reconnect(bool v)
 {
-    SaveCb("cb_Reconnect", v);
-    // TODO: -1 not implemented
+    Setting::instance()->setReconnect(v);
 }
 
-void Scr_Settings::Toggle_cb_InsecureWiFi(bool v)
+void SettingsScreen::Toggle_cb_InsecureWiFi(bool v)
 {
-    SaveCb("cb_InsecureWiFi", v);
-    if (v)
-        LoginWindow::Instance()->startWifiWatcher();
-    else
-        LoginWindow::Instance()->stopWifiWatcher();
+    Setting::instance()->setDetectInsecureWifi(v);
 }
 
-void Scr_Settings::Toggle_cb_ShowNodes(bool v)
+void SettingsScreen::Toggle_cb_ShowNodes(bool v)
 {
     Setting::instance()->setShowNodes(v);
 }
 
-void Scr_Settings::Toggle_cb_DisableIpv6(bool v)
+void SettingsScreen::Toggle_cb_DisableIpv6(bool v)
 {
-    SaveCb("cb_DisableIpv6", v);
-    try {
-        OsSpecific::instance()->setIPv6(!v);
-    } catch(std::exception & ex) {
-        log::logt(ex.what());
-    }
+    Setting::instance()->setDisableIPv6(v);
 }
 
-void Scr_Settings::Toggle_cb_FixDnsLeak(bool v)
+void SettingsScreen::Toggle_cb_FixDnsLeak(bool v)
 {
-    SaveCb("cb_FixDnsLeak", v);
+    Setting::instance()->setFixDns(v);
     if (v) {
         ui->e_PrimaryDns->setText(Setting::instance()->defaultDNS1());
         ui->e_SecondaryDns->setText(Setting::instance()->defaultDNS2());
@@ -268,79 +232,28 @@ void Scr_Settings::Toggle_cb_FixDnsLeak(bool v)
     }
 }
 
-bool Scr_Settings::Is_cb_BlockOnDisconnect()
-{
-    return ui->cb_BlockOnDisconnect->isChecked();
-}
-
-bool Scr_Settings::Is_cb_Startup()
-{
-    return ui->cb_Startup->isChecked();
-}
-
-bool Scr_Settings::Is_cb_AutoConnect()
-{
-    return ui->cb_AutoConnect->isChecked();
-}
-
-bool Scr_Settings::Is_cb_Reconnect()
-{
-    return ui->cb_Reconnect->isChecked();
-}
-
-bool Scr_Settings::Is_cb_InsecureWiFi()
-{
-    return ui->cb_InsecureWiFi->isChecked();
-}
-
-bool Scr_Settings::Is_cb_ShowNodes()
-{
-    return ui->cb_ShowNodes->isChecked();
-}
-
-bool Scr_Settings::Is_cb_DisableIpv6()
-{
-    return ui->cb_DisableIpv6->isChecked();
-}
-
-bool Scr_Settings::Is_cb_FixDnsLeak()
-{
-    return ui->cb_FixDnsLeak->isChecked();
-}
-
-int Scr_Settings::Encryption()
-{
-    return ui->dd_Encryption->currentIndex();
-}
-
-void Scr_Settings::Changed_dd_Encryption(int ix)
+void SettingsScreen::Changed_dd_Encryption(int ix)
 {
     if (_repopulation_inprogress)
         return;
 
-    if (ix == ENCRYPTION_TOR_OBFS2 && !OsSpecific::instance()->obfsproxyInstalled()) {
-#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+    if ((ix == ENCRYPTION_TOR_OBFS2
+            || ix == ENCRYPTION_TOR_OBFS3
+            || ix == ENCRYPTION_TOR_SCRAMBLESUIT
+        ) && !OsSpecific::instance()->obfsproxyInstalled()) {
+#if defined(Q_OS_DARWIN) || defined(Q_OS_LINUX)
         // Try to install first, then check if it's not installed again.
         OsSpecific::instance()->installObfsproxy();
         if (!OsSpecific::instance()->obfsproxyInstalled()) {
 #endif
             ErrorDialog dlg("Obfsproxy is not compatible with your OS :(", "Encryption error", this);
             dlg.exec();
-#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+#if defined(Q_OS_DARWIN) || defined(Q_OS_LINUX)
         }
 #endif
     }
 
-    QSettings settings;
-    settings.setValue("dd_Encryption", ix);
-
-//    if (Scr_Map::IsExists()) {
-//        Scr_Map::Instance()->RePopulateProtocols();	// list of protocol/ports should be updated to only "OpenVPN TCP 888 (Obfsproxy)".
-//        Setting::instance()->loadProt();
-//        Scr_Map::Instance()->RePopulateLocations(false); // Repopulate all locations
-//    }
-//    if (TestDialog::exists())
-//        TestDialog::instance()->updateEncryption();
+    Setting::instance()->setEncryption(ix);
 }
 
 static const char * gs_sErrStyle =
@@ -351,24 +264,23 @@ static const char * gs_sNormStyle =
     "QLineEdit\n{\npadding: 2px 10px 2px 10px;\nborder: 0 transparent #b8d4e9;\ncolor: #444444;\nborder-image: url(:/imgs/e-ip-inactive.png);\n}\n"
     "QLineEdit:focus\n{\nborder-image: url(:/imgs/e-ip-active.png);\n}"
     ;
-void Scr_Settings::Validate_e_Dns()
+
+void SettingsScreen::Validate_e_Dns()
 {
     if (Vlidate_e_ip(ui->e_PrimaryDns)) {
-        QSettings settings;
-        SaveDns(ui->e_PrimaryDns, "e_PrimaryDns", settings);
+        Setting::instance()->setDNS1(ui->e_PrimaryDns->text());
     }
 
 }
 
-void Scr_Settings::Validate_e_SecondaryDns()
+void SettingsScreen::Validate_e_SecondaryDns()
 {
     if (Vlidate_e_ip(ui->e_SecondaryDns)) {
-        QSettings settings;
-        SaveDns(ui->e_SecondaryDns, "e_SecondaryDns", settings);
+        Setting::instance()->setDNS2(ui->e_SecondaryDns->text());
     }
 }
 
-bool Scr_Settings::Vlidate_e_ip(QLineEdit * eb)
+bool SettingsScreen::Vlidate_e_ip(QLineEdit * eb)
 {
     bool error = false;
     if (!eb->text().isEmpty())
@@ -378,7 +290,7 @@ bool Scr_Settings::Vlidate_e_ip(QLineEdit * eb)
     else
         eb->setStyleSheet(gs_sNormStyle);
 
-    return error;
+    return !error;
 }
 
 static const char * gs_sPortsNorm =
@@ -389,15 +301,16 @@ static const char * gs_sPortsErr =
     "QLineEdit\n{\nborder-radius: 3px;\npadding: 2px 10px 2px 10px;\nborder: 0 transparent #b8d4e9;\ncolor: #444444;\n\nborder-image: url(:/imgs/e-error-241.png);\n}\n"
     "QLineEdit:focus\n{\nborder-image: url(:/imgs/e-active-241.png);\n}"
     ;
-void Scr_Settings::Validate_e_Ports()
+void SettingsScreen::Validate_e_Ports()
 {
-    if (IsPortsValid())
+    if (IsPortsValid()) {
         ui->e_Ports->setStyleSheet(gs_sPortsNorm);
-    else
+        Setting::instance()->setForwardPorts(ui->e_Ports->text());
+    } else
         ui->e_Ports->setStyleSheet(gs_sPortsErr);
 }
 
-bool Scr_Settings::IsPortsValid(USet * out_ports)	// = NULL)
+bool SettingsScreen::IsPortsValid(USet * out_ports)	// = NULL)
 {
     bool valid = true;
     if (out_ports != NULL)
@@ -427,7 +340,7 @@ bool Scr_Settings::IsPortsValid(USet * out_ports)	// = NULL)
     return valid;
 }
 
-USet Scr_Settings::Ports()
+USet SettingsScreen::Ports()
 {
     USet pp;
     if (!IsPortsValid(&pp))
@@ -435,84 +348,17 @@ USet Scr_Settings::Ports()
     return pp;
 }
 
-void Scr_Settings::Validate_e_LocalPort()
+void SettingsScreen::Validate_e_LocalPort()
 {
-    if (IsValidPort(ui->e_LocalPort->text()))
+    if (IsValidPort(ui->e_LocalPort->text())) {
         ui->e_LocalPort->setStyleSheet(gs_sNormStyle);
-    else
+        Setting::instance()->setLocalPort(ui->e_LocalPort->text());
+    } else
         ui->e_LocalPort->setStyleSheet(gs_sErrStyle);
 }
 
-QString Scr_Settings::Dns1()
-{
-    return GetDns(ui->e_PrimaryDns);
-}
-
-QString Scr_Settings::Dns2()
-{
-    return GetDns(ui->e_SecondaryDns);
-}
-
-QString Scr_Settings::GetDns(QLineEdit * dns)
-{
-    QString d;
-    if (!dns->text().isEmpty())
-        if (IsValidIp(dns->text()))
-            d = dns->text();
-    return d;
-}
-
-QString Scr_Settings::LocalPort()
-{
-    QString p;
-    if (IsValidPort(ui->e_LocalPort->text()))
-        p = ui->e_LocalPort->text();
-    return p;
-}
-
-void Scr_Settings::keyPressEvent(QKeyEvent * e)
+void SettingsScreen::keyPressEvent(QKeyEvent * e)
 {
     if(e->key() != Qt::Key_Escape)
         QDialog::keyPressEvent(e);
-}
-
-
-bool Scr_Settings::eventFilter(QObject *obj, QEvent *event)
-{
-    switch (event->type()) {
-    case QEvent::MouseMove: {
-        if (_moving) {
-            QPoint d = QCursor::pos() - _CursorStart;
-            if (d.x() != 0 || d.y() != 0) {
-                QPoint NewAbs = _WndStart + d;
-                this->move(NewAbs);
-            }
-        }
-        return false;
-    }
-    case QEvent::MouseButtonRelease: {
-        _moving = false;
-//			_WndStart = pos();
-        return false;
-    }
-    default:
-        return QDialog::eventFilter(obj, event);
-    }
-}
-
-void Scr_Settings::Pressed_Head()
-{
-    _WndStart = this->pos();
-    _CursorStart = QCursor::pos();
-    _moving = true;
-}
-
-void Scr_Settings::Clicked_Min()
-{
-    WndManager::Instance()->HideThis(this);
-}
-
-void Scr_Settings::Clicked_Cross()
-{
-    LoginWindow::Instance()->quitApplication();
 }

@@ -23,7 +23,7 @@
 #include <QFontDatabase>
 
 #include "ui_loginwindow.h"
-#include "scr_settings.h"
+#include "settingsscreen.h"
 #include "scr_logs.h"
 #include "mapscreen.h"
 #include "errordialog.h"
@@ -175,7 +175,7 @@ LoginWindow::~LoginWindow()
     OsSpecific::cleanup();
     Scr_Logs::Cleanup();
     MapScreen::cleanup();
-    Scr_Settings::Cleanup();
+    SettingsScreen::cleanup();
     Setting::cleanup();
     WndManager::Cleanup();
 

@@ -23,7 +23,7 @@
 #include <QPainter>
 
 #include "mapscreen.h"
-#include "scr_settings.h"
+#include "settingsscreen.h"
 #include "loginwindow.h"
 #include "scr_logs.h"
 #include "testdialog.h"
@@ -89,7 +89,7 @@ void WndManager::ToConnect()
 
 void WndManager::ToSettings()
 {
-    trans(ScrVisible(), Scr_Settings::Instance());
+    trans(ScrVisible(), SettingsScreen::instance());
 }
 
 void WndManager::ToLogs()
@@ -178,9 +178,9 @@ void WndManager::CloseAll()
             SaveAndHide(MapScreen::instance());
             ++visible;
         }
-    if (Scr_Settings::IsExists())
-        if (Scr_Settings::Instance()->isVisible()) {
-            SaveAndHide(Scr_Settings::Instance());
+    if (SettingsScreen::exists())
+        if (SettingsScreen::instance()->isVisible()) {
+            SaveAndHide(SettingsScreen::instance());
             ++visible;
         }
     //assert(visible < 2);
@@ -259,9 +259,9 @@ QWidget * WndManager::ScrVisible()
             w = MapScreen::instance();
             ++visible;
         }
-    if (Scr_Settings::IsExists())
-        if (Scr_Settings::Instance()->isVisible()) {
-            w = Scr_Settings::Instance();
+    if (SettingsScreen::exists())
+        if (SettingsScreen::instance()->isVisible()) {
+            w = SettingsScreen::instance();
             ++visible;
         }
     //assert(visible < 2);

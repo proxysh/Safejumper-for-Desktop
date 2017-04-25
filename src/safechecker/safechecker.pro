@@ -78,13 +78,13 @@ SOURCES += \
     ../safejumper/pingwaiter.cpp \
     ../safejumper/portforwarder.cpp \
     ../safejumper/protocoldelegate.cpp \
-    scr_settings.cpp \
     scr_logs.cpp \
     ../safejumper/setting.cpp \
     ../safejumper/stun.cpp \
     testdialog.cpp \
     ../safejumper/trayiconmanager.cpp \
-    wndmanager.cpp
+    wndmanager.cpp \
+    settingsscreen.cpp
 
 HEADERS += \
     ../safejumper/authmanager.h \
@@ -107,14 +107,14 @@ HEADERS += \
     ../safejumper/portforwarder.h \
     ../safejumper/protocoldelegate.h \
     scr_logs.h \
-    scr_settings.h \
     ../safejumper/setting.h \
     ../safejumper/stun.h \
     testdialog.h \
     ../safejumper/trayiconmanager.h \
     update.h \
     ../safejumper/version.h \
-    wndmanager.h
+    wndmanager.h \
+    settingsscreen.h
 
 FORMS += \
     ../safejumper/confirmationdialog.ui \
@@ -123,8 +123,8 @@ FORMS += \
     ../safejumper/loginwindow.ui \
     ../safejumper/mapscreen.ui \
     scr_logs.ui \
-    scr_settings.ui \
-    testdialog.ui
+    testdialog.ui \
+    settingsscreen.ui
 
 RESOURCES += \
     ../safejumper/imgs.qrc

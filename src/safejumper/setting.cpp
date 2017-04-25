@@ -28,6 +28,7 @@
 
 //In future, we’ll add things such as “OpenVPN with XOR TCP 448” or “OpenVPN with TOR UDP 4044”.
 
+static const QString kLoggingKey = "logging";
 
 std::vector<QString> Setting::mProtocols[ENCRYPTION_COUNT];
 std::vector<int> Setting::mPorts[ENCRYPTION_COUNT];
@@ -272,6 +273,16 @@ bool Setting::testing()
 void Setting::setTesting(bool value)
 {
     mTesting = value;
+}
+
+bool Setting::logging()
+{
+    return mSettings.value(kLoggingKey, true).toBool();
+}
+
+void Setting::setLogging(bool value)
+{
+    mSettings.setValue(kLoggingKey, value);
 }
 
 bool Setting::startup()
@@ -604,6 +615,3 @@ void Setting::updateMessageShown()
     uint t = QDateTime::currentDateTimeUtc().toTime_t();
     mSettings.setValue(gs_upd_name, QString::number(t));
 }
-
-
-

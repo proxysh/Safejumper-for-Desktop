@@ -22,7 +22,7 @@
 #include <QFontDatabase>
 #include <QTimer>
 
-#include "scr_settings.h"
+#include "settingsscreen.h"
 #include "scr_logs.h"
 #include "mapscreen.h"
 #include "errordialog.h"
