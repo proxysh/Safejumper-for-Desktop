@@ -135,9 +135,10 @@ void TestDialog::startTest()
     ui->tableWidget->setRowCount(0);
     // Get all encryption types
     mEncryptionTypes = {ENCRYPTION_RSA, ENCRYPTION_TOR_OBFS2, ENCRYPTION_ECC, ENCRYPTION_ECCXOR};
+    std::random_shuffle(mEncryptionTypes.begin(), mEncryptionTypes.end());
     // Set encryption to type 0
     mCurrentEncryptionType = 0;
-    Setting::instance()->setProtocol(mCurrentEncryptionType);
+    Setting::instance()->setEncryption(mEncryptionTypes.at(mCurrentEncryptionType));
     // Get all servers
     mServerIds = AuthManager::instance()->currentEncryptionServers();
     std::random_shuffle(mServerIds.begin(), mServerIds.end());
@@ -284,7 +285,7 @@ void TestDialog::iterate(bool skipPorts)
     // Got to the end of the list of servers, so switch to the next encryption
     // type and start over only if not on quick test mode
     if (!mQuickTest && ++mCurrentEncryptionType < mEncryptionTypes.size()) {
-        Setting::instance()->setEncryption(mCurrentEncryptionType);
+        Setting::instance()->setEncryption(mEncryptionTypes.at(mCurrentEncryptionType));
         // Get all servers
         mServerIds = AuthManager::instance()->currentEncryptionServers();
 
