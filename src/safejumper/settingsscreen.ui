@@ -1122,7 +1122,7 @@ border-image: url(:/imgs/cb-row-checked.png);
 </string>
         </property>
         <property name="text">
-         <string>Enable logging</string>
+         <string>Enable debug logging</string>
         </property>
         <property name="icon">
          <iconset resource="imgs.qrc">
