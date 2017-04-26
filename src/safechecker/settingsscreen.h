@@ -51,26 +51,25 @@ protected:
     virtual void keyPressEvent(QKeyEvent * event);
 
 private slots:
-    void Toggle_BlockOnDisconnect_Line2(bool v);
-    void Toggle_cb_BlockOnDisconnect(bool v);
-    void Toggle_cb_Startup(bool v);
-    void Toggle_cb_AutoConnect(bool v);
-    void Toggle_cb_Reconnect(bool v);
-    void Toggle_cb_InsecureWiFi(bool v);
-    void Toggle_cb_ShowNodes(bool v);
-    void Toggle_cb_DisableIpv6(bool v);
-    void Toggle_cb_FixDnsLeak(bool v);
+    void on_startupCheckBox_toggled(bool v);
+    void on_autoConnectCheckBox_toggled(bool v);
+    void on_reconnectCheckBox_toggled(bool v);
+    void on_insecureWifiCheckBox_toggled(bool v);
+    void on_showNodesCheckBox_toggled(bool v);
+    void on_killSwitchCheckBox_toggled(bool v);
+    void on_disableIPv6CheckBox_toggled(bool v);
+    void on_fixDNSCheckBox_toggled(bool v);
 
-    void Changed_dd_Encryption(int ix);
+    void on_encryptionComboBox_currentIndexChanged(int ix);
 
     void Validate_e_Dns();
     void Validate_e_SecondaryDns();
     void Validate_e_Ports();
     void Validate_e_LocalPort();
 
-    void ToScr_Connect();
-    void ToScr_Logs();
-    void Clicked_Update();
+    void on_backButton_clicked();
+    void on_showLogsButton_clicked();
+    void on_updateButton_clicked();
 
     void on_loggingButton_toggled(bool v);
 private:

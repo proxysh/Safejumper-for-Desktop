@@ -19,7 +19,6 @@
 #include "testdialog.h"
 
 #include "ui_testdialog.h"
-#include "settingsscreen.h"
 #include "loginwindow.h"
 #include "authmanager.h"
 #include "pathhelper.h"
