@@ -61,21 +61,20 @@ SettingsScreen::SettingsScreen(QWidget *parent) :
 #endif
     // fill Encryption drop down
     _repopulation_inprogress = true;
-    ui->dd_Encryption->clear();
+    ui->encryptionComboBox->clear();
     for (int k = 0; k < ENCRYPTION_COUNT; ++k)
-        ui->dd_Encryption->addItem(Setting::encryptionName(k));
-    ui->dd_Encryption->setItemDelegate(new EncryptionDelegate(this));
+        ui->encryptionComboBox->addItem(Setting::encryptionName(k));
+    ui->encryptionComboBox->setItemDelegate(new EncryptionDelegate(this));
     _repopulation_inprogress = false;
 
-    QSettings settings;
-    ui->cb_AutoConnect->setChecked(Setting::instance()->autoconnect());
-    ui->cb_BlockOnDisconnect->setChecked(Setting::instance()->blockOnDisconnect());
-    ui->cb_DisableIpv6->setChecked(Setting::instance()->disableIPv6());
-    ui->cb_FixDnsLeak->setChecked(Setting::instance()->fixDns());
-    ui->cb_Reconnect->setChecked(Setting::instance()->reconnect());
-    ui->cb_ShowNodes->setChecked(Setting::instance()->showNodes());
-    ui->cb_Startup->setChecked(Setting::instance()->startup());
-    ui->cb_InsecureWiFi->setChecked(Setting::instance()->detectInsecureWifi());
+    ui->autoConnectCheckBox->setChecked(Setting::instance()->autoconnect());
+    ui->killSwitchCheckBox->setChecked(Setting::instance()->blockOnDisconnect());
+    ui->disableIPv6CheckBox->setChecked(Setting::instance()->disableIPv6());
+    ui->fixDNSCheckBox->setChecked(Setting::instance()->fixDns());
+    ui->reconnectCheckBox->setChecked(Setting::instance()->reconnect());
+    ui->showNodesCheckBox->setChecked(Setting::instance()->showNodes());
+    ui->startupCheckBox->setChecked(Setting::instance()->startup());
+    ui->insecureWifiCheckBox->setChecked(Setting::instance()->detectInsecureWifi());
 
     ui->e_LocalPort->setText(Setting::instance()->localPort());
     ui->e_Ports->setText(Setting::instance()->forwardPortsString());
@@ -83,7 +82,7 @@ SettingsScreen::SettingsScreen(QWidget *parent) :
     ui->e_SecondaryDns->setText(Setting::instance()->dns2());
     ui->loggingButton->setChecked(Setting::instance()->logging());
 
-    ui->dd_Encryption->setCurrentIndex(settings.value("dd_Encryption", 0).toInt());
+    ui->encryptionComboBox->setCurrentIndex(Setting::instance()->encryption());
 
     // OS-specific not implemented features
 #ifdef Q_OS_LINUX
@@ -92,18 +91,17 @@ SettingsScreen::SettingsScreen(QWidget *parent) :
 #endif
 
     // disable non-implemented
-    //const char * st = "QPushButton\n{\n	border:0px;\n	color: #b1b1b1;\nborder-image: url(:/imgs/cb-row-norm.png);\n\nimage-position: left;\ntext-align: left;\n}\nQPushButton:checked\n{\ncolor: #3c3c3c;\nborder-image: url(:/imgs/cb-row-checked.png);\n}\nQPushButton:!enabled\n{\n	color: #f0f0f0;\n}";
-    if (!ui->cb_AutoConnect->isEnabled()) ui->cb_AutoConnect->setChecked(false);
-    if (!ui->cb_BlockOnDisconnect->isEnabled()) ui->cb_BlockOnDisconnect->setChecked(false);
-    if (!ui->cb_DisableIpv6->isEnabled()) ui->cb_DisableIpv6->setChecked(false);
-    if (!ui->cb_FixDnsLeak->isEnabled()) ui->cb_FixDnsLeak->setChecked(false);
-    if (!ui->cb_Reconnect->isEnabled()) ui->cb_Reconnect->setChecked(false);
-    if (!ui->cb_ShowNodes->isEnabled()) ui->cb_ShowNodes->setChecked(false);
-    if (!ui->cb_Startup->isEnabled()) ui->cb_Startup->setChecked(false);
-    if (!ui->cb_InsecureWiFi->isEnabled()) ui->cb_InsecureWiFi->setChecked(false);
+    if (!ui->autoConnectCheckBox->isEnabled()) ui->autoConnectCheckBox->setChecked(false);
+    if (!ui->killSwitchCheckBox->isEnabled()) ui->killSwitchCheckBox->setChecked(false);
+    if (!ui->disableIPv6CheckBox->isEnabled()) ui->disableIPv6CheckBox->setChecked(false);
+    if (!ui->fixDNSCheckBox->isEnabled()) ui->fixDNSCheckBox->setChecked(false);
+    if (!ui->reconnectCheckBox->isEnabled()) ui->reconnectCheckBox->setChecked(false);
+    if (!ui->showNodesCheckBox->isEnabled()) ui->showNodesCheckBox->setChecked(false);
+    if (!ui->startupCheckBox->isEnabled()) ui->startupCheckBox->setChecked(false);
+    if (!ui->insecureWifiCheckBox->isEnabled()) ui->insecureWifiCheckBox->setChecked(false);
 
 
-    if (ui->cb_FixDnsLeak->isChecked()) {
+    if (ui->fixDNSCheckBox->isChecked()) {
         if (ui->e_PrimaryDns->text().isEmpty())
             ui->e_PrimaryDns->setText(Setting::instance()->defaultDNS1());
         if (ui->e_SecondaryDns->text().isEmpty())
@@ -144,12 +142,12 @@ void SettingsScreen::cleanup()
     if (mInstance.get() != NULL) delete mInstance.release();
 }
 
-void SettingsScreen::ToScr_Connect()
+void SettingsScreen::on_backButton_clicked()
 {
     WndManager::Instance()->ToPrimary();
 }
 
-void SettingsScreen::ToScr_Logs()
+void SettingsScreen::on_showLogsButton_clicked()
 {
     QString path = PathHelper::Instance()->openvpnLogFilename();
     QFile f(path);
@@ -165,7 +163,7 @@ void SettingsScreen::ToScr_Logs()
     WndManager::Instance()->ToLogs();
 }
 
-void SettingsScreen::Clicked_Update()
+void SettingsScreen::on_updateButton_clicked()
 {
     // https://proxy.sh/version_osx.xml
     launchUpdateUrl();
@@ -176,51 +174,42 @@ void SettingsScreen::on_loggingButton_toggled(bool v)
     Setting::instance()->setLogging(v);
 }
 
-void SettingsScreen::Toggle_BlockOnDisconnect_Line2(bool v)
+void SettingsScreen::on_killSwitchCheckBox_toggled(bool v)
 {
-    bool checked = ui->cb_BlockOnDisconnect->isChecked();
-    ui->b_BlockOnDisconnect_Line2->setChecked(checked);
     Setting::instance()->setBlockOnDisconnect(v);
 }
 
-void SettingsScreen::Toggle_cb_BlockOnDisconnect(bool v)
-{
-    bool checked = ui->b_BlockOnDisconnect_Line2->isChecked();
-    ui->cb_BlockOnDisconnect->setChecked(checked);
-    Setting::instance()->setBlockOnDisconnect(v);
-}
-
-void SettingsScreen::Toggle_cb_Startup(bool v)
+void SettingsScreen::on_startupCheckBox_toggled(bool v)
 {
     Setting::instance()->setStartup(v);
 }
 
-void SettingsScreen::Toggle_cb_AutoConnect(bool v)
+void SettingsScreen::on_autoConnectCheckBox_toggled(bool v)
 {
     Setting::instance()->setAutoconnect(v);
 }
 
-void SettingsScreen::Toggle_cb_Reconnect(bool v)
+void SettingsScreen::on_reconnectCheckBox_toggled(bool v)
 {
     Setting::instance()->setReconnect(v);
 }
 
-void SettingsScreen::Toggle_cb_InsecureWiFi(bool v)
+void SettingsScreen::on_insecureWifiCheckBox_toggled(bool v)
 {
     Setting::instance()->setDetectInsecureWifi(v);
 }
 
-void SettingsScreen::Toggle_cb_ShowNodes(bool v)
+void SettingsScreen::on_showNodesCheckBox_toggled(bool v)
 {
     Setting::instance()->setShowNodes(v);
 }
 
-void SettingsScreen::Toggle_cb_DisableIpv6(bool v)
+void SettingsScreen::on_disableIPv6CheckBox_toggled(bool v)
 {
     Setting::instance()->setDisableIPv6(v);
 }
 
-void SettingsScreen::Toggle_cb_FixDnsLeak(bool v)
+void SettingsScreen::on_fixDNSCheckBox_toggled(bool v)
 {
     Setting::instance()->setFixDns(v);
     if (v) {
@@ -232,7 +221,7 @@ void SettingsScreen::Toggle_cb_FixDnsLeak(bool v)
     }
 }
 
-void SettingsScreen::Changed_dd_Encryption(int ix)
+void SettingsScreen::on_encryptionComboBox_currentIndexChanged(int ix)
 {
     if (_repopulation_inprogress)
         return;
