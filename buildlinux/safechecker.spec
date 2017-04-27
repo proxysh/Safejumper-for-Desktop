@@ -16,7 +16,7 @@ Name:           safechecker
 Summary:        VPN client for proxy_sh.
 License:        GPL-2.0 and GPL-3.0
 Group:          Productivity/Networking/Web/Utilities
-Version:        2017.04.04
+Version:        2017.04.26
 Release:        0
 Url:            http://proxy.sh
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
