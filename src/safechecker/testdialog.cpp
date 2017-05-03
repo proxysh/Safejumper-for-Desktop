@@ -148,8 +148,13 @@ void TestDialog::startTest()
     // Get all protocols
     mProtocols = Setting::instance()->currentEncryptionProtocols();
     mProtocolIds.clear();
-    for (int i = 0; i < mProtocols.size(); ++i)
-        mProtocolIds.append(i);
+    if (mQuickTest) {
+        for (int i = 0; i < 4; ++i)
+            mProtocolIds.append(i);
+    } else {
+        for (int i = 0; i < mProtocols.size(); ++i)
+            mProtocolIds.append(i);
+    }
 
     std::random_shuffle(mProtocolIds.begin(), mProtocolIds.end());
     // Set protocol to first
@@ -251,17 +256,9 @@ void TestDialog::updateProtocol()
 
 void TestDialog::iterate(bool skipPorts)
 {
-    // First of all if we are in quick test mode and the encryption is rsa
-    // skip to the other port type (udp after tcp) and next server after udp
-    if (mQuickTest) {
-        if (mCurrentProtocol >= 0 && mCurrentProtocol <= 3) {
-            mCurrentProtocol = randomUDPPort(); // TCP to UDP
-            Setting::instance()->setProtocol(mCurrentProtocol);
-            OpenvpnManager::instance()->start();
-            return;
-        } else { // next server instead since we are on udp already
-        }
-    } else if (!skipPorts && ++mCurrentProtocol < mProtocols.size()) {
+    // First of all if we are not in quick test mode and not skipping because of error,
+    // try the next protocol, otherwise go to the next server
+    if (!mQuickTest && !skipPorts && ++mCurrentProtocol < mProtocols.size()) {
         // First see if we can just go to the next protocol
         Setting::instance()->setProtocol(mProtocolIds.at(mCurrentProtocol));
         OpenvpnManager::instance()->start();
