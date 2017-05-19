@@ -237,9 +237,9 @@ void OpenvpnManager::launchObfsproxy()
 {
     int enc = Setting::instance()->encryption();
     bool obfs = (enc == ENCRYPTION_TOR_OBFS2
-                   || enc == ENCRYPTION_TOR_OBFS3
-                   ||  enc == ENCRYPTION_TOR_SCRAMBLESUIT
-                 );
+                 || enc == ENCRYPTION_TOR_OBFS3
+                 ||  enc == ENCRYPTION_TOR_SCRAMBLESUIT
+                );
     QString server = Setting::instance()->serverAddress();
     QString port = Setting::instance()->port();
     if (server.isEmpty() || port.isEmpty()) {
@@ -282,7 +282,7 @@ bool OpenvpnManager::writeConfigFile()
     bool obfs = (enc == ENCRYPTION_TOR_OBFS2
                  || enc == ENCRYPTION_TOR_OBFS3
                  || enc == ENCRYPTION_TOR_SCRAMBLESUIT
-                 );
+                );
     QFile ff(PathHelper::Instance()->openvpnConfigFilename());
     if (!ff.open(QIODevice::WriteOnly)) {
         QString se = "Cannot write config file '" + PathHelper::Instance()->openvpnConfigFilename() + "'";
@@ -326,7 +326,7 @@ bool OpenvpnManager::writeConfigFile()
     ff.write("resolv-retry infinite\n");
     ff.write("nobind\n");
     ff.write("comp-lzo\n");
-    ff.write("verb 5\n");
+    ff.write("verb 3\n");
     ff.write("reneg-sec 0\n");
     ff.write("route-method exe\n");
     ff.write("route-delay 2 0\n");
@@ -398,30 +398,30 @@ QStringList OpenvpnManager::getOpenvpnArgs()
 #endif
 
 #ifndef Q_OS_WIN
-     args << "--daemon"; // does not work at windows
+         args << "--daemon"; // does not work at windows
 #endif
 
 #ifdef NO_PARAMFILE
     args << "--dev tun0"
-            << "--proto" << Setting::Instance()->Protocol()
-            << "--remote-random"
-            << "--remote" << Setting::Instance()->Server() << Setting::Instance()->Port()
+         << "--proto" << Setting::Instance()->Protocol()
+         << "--remote-random"
+         << "--remote" << Setting::Instance()->Server() << Setting::Instance()->Port()
 
-            << "--cipher" << "AES-256-CBC"
-            << "--auth" << "SHA512"
-            << "--remote-cert-tls" << "server"
+         << "--cipher" << "AES-256-CBC"
+         << "--auth" << "SHA512"
+         << "--remote-cert-tls" << "server"
 
-            << "--auth-user-pass"
+         << "--auth-user-pass"
 
-            << "--resolv-retry" << "infinite"
-            << "--nobind"
-            << "--persist-key"
-            << "--persist-tun"
+         << "--resolv-retry" << "infinite"
+         << "--nobind"
+         << "--persist-key"
+         << "--persist-tun"
 
-            << "--verb" << "3"
-            << "--comp-lzo"
-            << "--route-delay" << "2"
-            << "--allow-pull-fqdn";
+         << "--verb" << "3"
+         << "--comp-lzo"
+         << "--route-delay" << "2"
+         << "--allow-pull-fqdn";
 #endif
     args << "--management" << kLocalAddress << Setting::instance()->localPort()
          << "--management-hold"
@@ -487,8 +487,7 @@ void OpenvpnManager::checkState()
             if (d > kTryNextPortSeconds) {
                 cancel(QString("Timeout at %1 seconds").arg(kTryNextPortSeconds));
             }
-        }
-        else if (!mPortDialogShown && !mInPortLoop) {
+        } else if (!mPortDialogShown && !mInPortLoop) {
             if (d > kTryNextPortSeconds) {
                 mPortDialogShown = true;
                 WndManager::Instance()->ShowPortDlg();
@@ -595,9 +594,9 @@ void OpenvpnManager::gotConnected(const QString & s)
         QString ip = p1 > -1 ? s.mid(p + 1, p1 - p - 1) : s.mid(p + 1);
         int enc = Setting::instance()->encryption();
         if ((enc != ENCRYPTION_TOR_OBFS2)
-              && enc != ENCRYPTION_TOR_OBFS3
-              && enc != ENCRYPTION_TOR_SCRAMBLESUIT
-                ) // for proxy it shows 127.0.0.1
+                && enc != ENCRYPTION_TOR_OBFS3
+                && enc != ENCRYPTION_TOR_SCRAMBLESUIT
+           ) // for proxy it shows 127.0.0.1
             emit gotNewIp(ip);
     }
 
@@ -1014,8 +1013,8 @@ bool OpenvpnManager::openvpnRunning()
     bool running = false;
 
     running = mProcess.get() != NULL &&
-            (mProcess->state() == QProcess::Running ||
-             mProcess->state() == QProcess::Starting);
+              (mProcess->state() == QProcess::Running ||
+               mProcess->state() == QProcess::Starting);
 
     if (!running)
         running = mSocket.get() != NULL && mSocket->isOpen();
@@ -1166,4 +1165,3 @@ void OpenvpnManager::reconnectTimeout()
         launchOpenvpn();
     }
 }
-
