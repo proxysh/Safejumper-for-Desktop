@@ -1124,6 +1124,12 @@ void OpenvpnManager::killRunningOpenvpn()
                     log::logt(ex.what());
                     WndManager::Instance()->ErrMsg(ex.what());
                 }
+            } else {
+#ifdef Q_OS_WIN
+                // Unknown openvpn process, kill with taskkill
+                OsSpecific::runCommandFast("taskkill", QStringList() << "/F" << "/IM" << "openvpn.exe");
+                OsSpecific::runCommandFast("taskkill", QStringList() << "/F" << "/IM" << "ovpntray.exe");
+#endif
             }
         }
     }
