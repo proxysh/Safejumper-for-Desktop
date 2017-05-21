@@ -543,6 +543,15 @@ void OpenvpnManager::parseOpenvpnLogLine(const QString & s)
         return;   // skip our commands
 
     log::logt("OpenVPNlogfile: " + s);
+
+    // Check for used port
+    if (s.contains("Socket bind failed on local address")) {
+        QString port = Setting::instance()->localPort();
+        // Change to next port
+        Setting::instance()->setLocalPort(QString::number(port.toInt() + 1));
+        start(); // Try again
+    }
+
     if (s.contains("TCPv4_CLIENT link remote:", Qt::CaseInsensitive)) {
         parseNewIp(s);
     } else if (s.contains("Initialization Sequence Completed:", Qt::CaseInsensitive)) {
