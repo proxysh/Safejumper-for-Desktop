@@ -75,6 +75,7 @@ public:
 
     QString runCommandFast(const char * cmd, uint16_t ms = 500) const;			// returns stdout
     QString runCommandFast(const QString & cmd, uint16_t ms = 500) const;
+    static QString runCommandFast(const QString &cmd, const QStringList &arguments);
 
     void runObfsproxy(const QString &srv,
                       const QString &port,

@@ -881,8 +881,7 @@ void OsSpecific::setStartup(bool b)
         } else
         {
             QFile f(pfn);
-            if (f.exists())
-            {
+            if (f.exists()) {
                 f.open(QIODevice::ReadWrite);
                 delete_startup(f);
                 f.flush();
@@ -1017,6 +1016,26 @@ QString OsSpecific::runCommandFast(const QString & cmd, uint16_t ms /* = 500 */)
     return runCommandFast(cmd.toStdString().c_str(), ms);
 }
 
+QString OsSpecific::runCommandFast(const QString &cmd, const QStringList &arguments)
+{
+    std::auto_ptr<QProcess> pr(new QProcess());
+    pr->start(cmd, arguments);
+    if (!pr->waitForFinished()) {
+        // or if this QProcess is already finished)
+        if (pr->exitStatus() != QProcess::NormalExit) {
+            QString s1(pr->readAllStandardError());
+            log::logt("runCommandFast(): Error: not NormalExit " + s1);
+        }
+        if (QProcess::NotRunning != pr->state()) {
+            pr->terminate();
+            pr->kill();
+        }
+    }
+    QString s0(pr->readAllStandardOutput());
+    pr.release()->deleteLater();
+    return s0;
+}
+
 QString OsSpecific::runCommandFast(const char * cmd, uint16_t ms /* = 500 */) const
 {
     std::auto_ptr<QProcess> pr(new QProcess());
@@ -1143,9 +1162,9 @@ void OsSpecific::runObfsproxy(const QString &srv,
             args << "--password JNI3L3K2VZM3UY37WEA2JQ442V5YVZZS";
         }
         args << "--dest " + srv + ":" + port;
-    //	"185.47.202.158:888 "
+        //	"185.47.202.158:888 "
         args << "socks 127.0.0.1:" + local_port;
-    //	"1050"
+        //	"1050"
         const QString cmd = args.join(' ');
 
         mObfsproxy.reset(new QProcess());
@@ -1239,5 +1258,3 @@ bool OsSpecific::obfsproxyRunning()
 #endif
     return b;
 }
-
-

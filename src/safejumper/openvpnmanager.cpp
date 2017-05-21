@@ -1031,7 +1031,10 @@ bool OpenvpnManager::openvpnRunning()
 //  if (!is)        // lookup child
     {
 #ifdef WIN32
-        ;        // TODO: -0
+        QString result = OsSpecific::runCommandFast("tasklist.exe", QStringList()<<"/svc");
+        if (result.contains("openvpn.exe") || result.contains("ovpntray.exe")) {
+            running = true;
+        }
 #else
 
         /*  command composition '|' does not work here
