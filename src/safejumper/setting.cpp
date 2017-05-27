@@ -75,7 +75,7 @@ const std::vector<QString> & Setting::currentEncryptionProtocols()
     if (mProtocols[enc].empty()) {
         switch (enc) {
         case ENCRYPTION_RSA: {
-            static const char * gs_protocols [] = {
+            const char * gs_protocols [] = {
                 "TCP 80 (RSA)"
                 , "TCP 110 (RSA)"
                 , "TCP 443 (RSA)"
@@ -89,7 +89,7 @@ const std::vector<QString> & Setting::currentEncryptionProtocols()
                 , "UDP 8080 (RSA)"
                 , "UDP 9201 (RSA)"
             };
-            static const int gs_ports [] = {
+            const int gs_ports [] = {
                 80
                 , 110
                 , 443
@@ -107,58 +107,58 @@ const std::vector<QString> & Setting::currentEncryptionProtocols()
         }
 
         case ENCRYPTION_TOR_OBFS2: {
-            static const char * gs_protocols1 [] = {
+            const char * gs_protocols [] = {
                 "TCP 888 (RSA+TOR)"
             };
-            static const int gs_ports1 [] = {
+            const int gs_ports [] = {
                 888
             };
-            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
-            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
+            size_t sz = sizeof(gs_protocols)/sizeof(gs_protocols[0]);
+            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols, gs_ports);
             break;
         }
         case ENCRYPTION_TOR_OBFS3: {
-            static const char *gs_protocols1 [] = {
+            const char *gs_protocols [] = {
                 "TCP 898 (RSA+TOR)"
             };
-            static const int gs_ports1 [] = {
+            const int gs_ports [] = {
                 898
             };
-            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
-            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
+            size_t sz = sizeof(gs_protocols)/sizeof(gs_protocols[0]);
+            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols, gs_ports);
             break;
         }
         case ENCRYPTION_TOR_SCRAMBLESUIT: {
-            static const char *gs_protocols1 [] = {
+            const char *gs_protocols [] = {
                 "TCP 988 (RSA+TOR)"
             };
-            static const int gs_ports1 [] = {
+            const int gs_ports [] = {
                 988
             };
-            size_t sz = sizeof(gs_protocols1)/sizeof(gs_protocols1[0]);
-            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols1, gs_ports1);
+            size_t sz = sizeof(gs_protocols)/sizeof(gs_protocols[0]);
+            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols, gs_ports);
             break;
         }
         case ENCRYPTION_ECC: {
-            static const char * gs_protocols2 [] = {
+            const char * gs_protocols [] = {
                 "TCP 465 (ECC)"
             };
-            static const int gs_ports2 [] = {
+            const int gs_ports [] = {
                 465
             };
-            size_t sz = sizeof(gs_protocols2)/sizeof(gs_protocols2[0]);
-            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols2, gs_ports2);
+            size_t sz = sizeof(gs_protocols)/sizeof(gs_protocols[0]);
+            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols, gs_ports);
             break;
         }
         case ENCRYPTION_ECCXOR: {
-            static const char * gs_protocols2 [] = {
+            const char * gs_protocols [] = {
                 "TCP 995 (ECC+XOR)"
             };
-            static const int gs_ports2 [] = {
+            const int gs_ports [] = {
                 995
             };
-            size_t sz = sizeof(gs_protocols2)/sizeof(gs_protocols2[0]);
-            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols2, gs_ports2);
+            size_t sz = sizeof(gs_protocols)/sizeof(gs_protocols[0]);
+            PopulateColls(mProtocols[enc], mPorts[enc], sz, gs_protocols, gs_ports);
             break;
         }
         default:
