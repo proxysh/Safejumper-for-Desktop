@@ -292,6 +292,7 @@ bool OpenvpnManager::writeConfigFile()
     }
     ff.write("client\n");
     ff.write("dev tun\n");
+    ff.write("setenv FORWARD_COMPATIBLE 1\n");
     ff.write("proto ");
     ff.write(Setting::instance()->tcpOrUdp().toLatin1());
     ff.write("\n");       // "tcp"/"udp"
