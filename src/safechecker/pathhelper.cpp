@@ -59,7 +59,7 @@ QString PathHelper::openvpnFilename()
     return resourcesPath() + openvpnRelativeFilename();
 #else
 #ifdef Q_OS_WIN
-    return "c:/Program Files/Safejumper/OpenVPN/bin/openvpn.exe";
+    return "c:/Program Files/Safechecker/OpenVPN/bin/openvpn.exe";
 #else	// Q_OS_LINUX
     return "/opt/safechecker/openvpn";
 #endif
@@ -152,5 +152,4 @@ QString PathHelper::safejumperLogFilename()
 {
     return tempPath() + "safechecker-debug.log";
 }
-
 
