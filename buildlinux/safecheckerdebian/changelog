@@ -1,3 +1,9 @@
+safechecker (2017.06.08.0) unstable; urgency=medium
+
+  * Initial Safechecker version 3.2 alpha build 78
+
+ -- Jeremy Whiting <info@3monkeysinternational.com>  Thu, 8 Jun 2017 20:45:00 -0600
+
 safechecker (2017.04.04.0) unstable; urgency=medium
 
   * Initial Safechecker version 3.2 alpha build 76
