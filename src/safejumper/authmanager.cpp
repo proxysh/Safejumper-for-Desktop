@@ -564,7 +564,7 @@ void AuthManager::getExpirationDate()
 {
     clearReply();
     // https://api.proxy.sh/safejumper/expire_date/VPNusername/VPNpassword
-    mReply.reset(AuthManager::instance()->mNAM.get(BuildRequest(
+    mReply.reset(mNAM.get(BuildRequest(
                      QUrl("https://api.proxy.sh/safejumper/expire_date/"
                           + QUrl::toPercentEncoding(AuthManager::instance()->VPNName(), "", "")
                           + "/" + QUrl::toPercentEncoding(AuthManager::instance()->VPNPassword(), "", "")))));
@@ -577,7 +577,7 @@ void AuthManager::checkUpdates()
     QString us(SJ_UPDATE_URL);
     if (!us.isEmpty()) {
         log::logt(QString("Checking for updates from %1").arg(SJ_UPDATE_URL));
-        mUpdateReply.reset(AuthManager::instance()->mNAM.get(BuildRequest(QUrl(us))));
+        mUpdateReply.reset(mNAM.get(BuildRequest(QUrl(us))));
         connect(mUpdateReply.get(), &QNetworkReply::finished,
                 this, &AuthManager::processUpdatesXml);
     }
