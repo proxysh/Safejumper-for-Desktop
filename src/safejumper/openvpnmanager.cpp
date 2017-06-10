@@ -1053,6 +1053,12 @@ bool OpenvpnManager::openvpnRunning()
             return is;
         */
 
+#ifdef Q_OS_DARWIN
+        QString result = OsSpecific::instance()->runCommandFast(PathHelper::Instance()->openvpnRunningScriptFilename());
+        if (result.trimmed() != "0") {
+            running = true;
+        }
+#else
         QTemporaryFile file(QDir::tempPath() + "/safejumper-tmp-XXXXXX.sh");
         QTemporaryFile outf(QDir::tempPath() + "/safejumper-tmp-XXXXXX.out");
         if (file.open())
@@ -1096,6 +1102,7 @@ bool OpenvpnManager::openvpnRunning()
                     break;
                 }
             }
+#endif
 #endif  // else WIN32
     }
 //log::logt(QString("IsOvRunning() returns ") + QString(is ? "true": "false") );

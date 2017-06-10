@@ -35,6 +35,7 @@ public:
     QString openvpnFilename();
 #ifdef Q_OS_DARWIN
     QString openvpnRelativeFilename();
+    QString openvpnRunningScriptFilename();
 #endif
     QString openvpnLogFilename();
     QString openvpnConfigFilename();

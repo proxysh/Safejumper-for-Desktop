@@ -51,6 +51,10 @@ public:
 
     QString resourcesPath();
 
+#ifdef Q_OS_DARWIN
+    // This script never changes, so why keep writing it to a temp file, just run it.
+    QString openvpnRunningScriptFilename();
+#endif
 private:
     QString tempPath(); // Where to keep config file, logs etc.
     PathHelper();
@@ -58,3 +62,4 @@ private:
 };
 
 #endif // PATHHELPER_H
+

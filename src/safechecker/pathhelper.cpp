@@ -85,6 +85,13 @@ QString PathHelper::resourcesPath()
 #endif
 }
 
+#ifdef Q_OS_DARWIN
+QString PathHelper::openvpnRunningScriptFilename()
+{
+    return resourcesPath() + "openvpnRunning.sh";
+}
+#endif
+
 QString PathHelper::tempPath()
 {
     return QDir::homePath() + "/.safechecker/";
