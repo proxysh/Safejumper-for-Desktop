@@ -1,3 +1,9 @@
+safejumper (2017.06.17.0) unstable; urgency=medium
+
+  * Updated packaging with bug fixes for version 3.2 alpha build 78
+
+ -- Jeremy Whiting <info@3monkeysinternational.com>  Sat, 17 Jun 2017 20:26:00 -0600
+
 safejumper (2017.04.26.0) unstable; urgency=medium
 
   * Updated packaging with bug fixes for version 3.2 alpha build 77
