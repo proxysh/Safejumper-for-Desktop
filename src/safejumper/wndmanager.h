@@ -21,6 +21,7 @@
 
 #include <QWidget>
 #include <QDialog>
+#include <QPointer>
 #include <memory>
 
 #include "confirmationdialog.h"
@@ -85,7 +86,7 @@ private:
 
     void SaveAndHide(QWidget * from);
     void DoTrans(QWidget * to);
-    Dlg_newnode * _DlgPort;
+    QPointer<Dlg_newnode> _DlgPort;
 };
 
 #endif // WNDMANAGER_H
