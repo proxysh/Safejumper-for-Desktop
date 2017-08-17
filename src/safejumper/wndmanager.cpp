@@ -76,7 +76,6 @@ void WndManager::ToConnect()
     QWidget * from = ScrVisible();
     if (ConnectionDialog::instance() != from) {
         trans(from, ConnectionDialog::instance());
-        ConnectionDialog::instance()->setAccountName(AuthManager::instance()->VPNName());
     } else {
         ToFront(ConnectionDialog::instance());		// activate it
     }

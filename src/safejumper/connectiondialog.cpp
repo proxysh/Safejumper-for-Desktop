@@ -30,6 +30,7 @@
 #include "log.h"
 #include "flag.h"
 #include "fonthelper.h"
+#include "version.h"
 
 ConnectionDialog::HmWords ConnectionDialog::mStateWordImages;
 
@@ -44,6 +45,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->L_Percent->setText("0%");
     ui->L_OldIp->setText("");
     ui->L_NewIp->setText("");
+    ui->versionLabel->setText(QString("v ") + SJ_VERSION + ", build " + QString::number(SJ_BUILD_NUM) );
     setNoServer();
 
     setWindowFlags(Qt::Dialog);
@@ -52,7 +54,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
 #ifdef Q_OS_WIN
     setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->L_Until->setFont(FontHelper::pt(7));
-    ui->L_Email->setFont(FontHelper::pt(10));
+    ui->emailLabel->setFont(FontHelper::pt(10));
 #else		// linux
     ui->L_Until->setFont(FontHelper::pt(7));
     ui->L_Package->setFont(FontHelper::pt(10));
@@ -171,17 +173,10 @@ void ConnectionDialog::setOldIP(const QString & s)
     ui->L_OldIp->show();
 }
 
-void ConnectionDialog::setAccountName(const QString & s)
-{
-    if (ui->L_Login->text().isEmpty() || ui->L_Login->text() == "--")
-        ui->L_Login->setText(s);
-    ui->L_Login->show();
-}
-
 void ConnectionDialog::setEmail(const QString & s)
 {
-    ui->L_Email->setText(s);
-    ui->L_Email->show();
+    ui->emailLabel->setText(s);
+    ui->emailLabel->show();
 }
 
 void ConnectionDialog::setAmount(const QString & s)

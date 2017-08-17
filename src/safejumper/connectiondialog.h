@@ -48,7 +48,6 @@ public:
     void statusDisconnected();
 
 public slots:
-    void setAccountName(const QString & s);
     void portDialogResult(int action);
 
 protected:

@@ -209,7 +209,7 @@ background: transparent;
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="L_Login">
+   <widget class="QLabel" name="emailLabel">
     <property name="geometry">
      <rect>
       <x>98</x>
@@ -239,7 +239,7 @@ background: transparent;
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="L_Email">
+   <widget class="QLabel" name="versionLabel">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -392,8 +392,8 @@ color: #0f0f0f;
    <zorder>gvLogoRound</zorder>
    <zorder>L_Until</zorder>
    <zorder>L_ConnectStatus</zorder>
-   <zorder>L_Login</zorder>
-   <zorder>L_Email</zorder>
+   <zorder>emailLabel</zorder>
+   <zorder>versionLabel</zorder>
    <zorder>L_Package</zorder>
    <zorder>L_Amount</zorder>
    <zorder>b_Package</zorder>
@@ -1514,6 +1514,16 @@ QPushButton:pressed
    <signal>clicked()</signal>
    <receiver>ConnectionDialog</receiver>
    <slot>showMapWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
   <connection>
    <sender>b_Row_Country</sender>
