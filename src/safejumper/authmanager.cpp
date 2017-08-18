@@ -152,6 +152,11 @@ const QString &AuthManager::VPNPassword()
     return mVPNPassword;
 }
 
+const QString &AuthManager::email()
+{
+    return mEmail;
+}
+
 const QString &AuthManager::newIP()
 {
     return mNewIP;
@@ -565,9 +570,9 @@ void AuthManager::getExpirationDate()
     clearReply();
     // https://api.proxy.sh/safejumper/expire_date/VPNusername/VPNpassword
     mReply.reset(mNAM.get(BuildRequest(
-                     QUrl("https://api.proxy.sh/safejumper/expire_date/"
-                          + QUrl::toPercentEncoding(AuthManager::instance()->VPNName(), "", "")
-                          + "/" + QUrl::toPercentEncoding(AuthManager::instance()->VPNPassword(), "", "")))));
+                              QUrl("https://api.proxy.sh/safejumper/expire_date/"
+                                   + QUrl::toPercentEncoding(AuthManager::instance()->VPNName(), "", "")
+                                   + "/" + QUrl::toPercentEncoding(AuthManager::instance()->VPNPassword(), "", "")))));
     connect(mReply.get(), &QNetworkReply::finished,
             this, &AuthManager::processExpirationXml);
 }
@@ -643,10 +648,10 @@ void AuthManager::processAccountTypeXml()
         return;
     }
     n = nl.item(0);
-    QString email = n.toElement().text();
-    log::logt("Got account e-mail " + email + " and amount " + amount);
+    mEmail = n.toElement().text();
+    log::logt("Got account e-mail " + mEmail + " and amount " + amount);
     emit amountLoaded(amount);
-    emit emailLoaded(email);
+    emit emailLoaded(mEmail);
     /*
     QFile f("/tmp/acc.xml");
     f.open(QIODevice::WriteOnly);

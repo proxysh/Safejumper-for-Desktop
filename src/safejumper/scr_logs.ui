@@ -681,53 +681,5 @@ border: 1px solid #e0e0e0;
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>b_Head</sender>
-   <signal>pressed()</signal>
-   <receiver>Scr_Logs</receiver>
-   <slot>Pressed_Head()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>187</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>179</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Minimize</sender>
-   <signal>clicked()</signal>
-   <receiver>Scr_Logs</receiver>
-   <slot>Clicked_Min()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>344</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>179</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Cross</sender>
-   <signal>clicked()</signal>
-   <receiver>Scr_Logs</receiver>
-   <slot>Clicked_Cross()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>359</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>179</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
 </ui>

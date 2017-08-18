@@ -27,11 +27,14 @@
 #include "confirmationdialog.h"
 #include "dlg_newnode.h"
 
+class FeedbackWindow;
+
 //  WndManager::Instance()->ToPrimary(this);
 //  WndManager::Instance()->HideThis(this);
 //  WndManager::DoShape(this);
-class WndManager
+class WndManager: public QObject
 {
+    Q_OBJECT
 public:
     static WndManager * Instance();
     ~WndManager();
@@ -70,6 +73,9 @@ public:
     void ShowPortDlg();
     void ClosePortDlg();
     bool IsCyclePort();		// true - if cycle ports; false - cycle nodes
+
+private slots:
+    void showFeedback();
 
 private:
     WndManager();

@@ -22,10 +22,13 @@
 #include "common.h"
 
 #include <QDialog>
+#include <QNetworkReply>
 #include <QProcess>
-#include <memory>
 #include <QTcpSocket>
 #include <QTimer>
+
+class QNetworkAccessManager;
+class QProgressDialog;
 
 namespace Ui
 {
@@ -46,6 +49,9 @@ public:
     void statusConnecting(const QString & word);
     void statusConnected();
     void statusDisconnected();
+
+    void showFeedback();
+    void showConnection();
 
 public slots:
     void portDialogResult(int action);
@@ -73,6 +79,13 @@ private slots:
     void setUntil(const QString & date);
     void setNewIP(const QString & s);
 
+    // Feedback page slots
+    void on_sendFeedbackButton_clicked();
+    void on_cancelFeedbackButton_clicked();
+
+    void postError(QNetworkReply::NetworkError error);
+    void sendFeedbackFinished();
+
 private:
     Ui::ConnectionDialog *ui;
     static std::auto_ptr<ConnectionDialog> mInstance;
@@ -87,6 +100,10 @@ private:
     static void initializeStateWords();
     typedef QHash<QString, const char *> HmWords;
     static HmWords mStateWordImages;
+
+    // Feedback page members
+    QNetworkAccessManager *mNam;
+    QProgressDialog *mProgressDialog;
 };
 
 

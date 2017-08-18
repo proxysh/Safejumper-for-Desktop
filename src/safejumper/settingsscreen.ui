@@ -1344,38 +1344,6 @@ color: #3c3c3c;
  </resources>
  <connections>
   <connection>
-   <sender>backButton</sender>
-   <signal>clicked()</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>ToScr_Connect()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>41</x>
-     <y>38</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>killSwitchCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Toggle_BlockOnDisconnect_Line2(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>137</x>
-     <y>218</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>61</x>
-     <y>234</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>e_PrimaryDns</sender>
    <signal>editingFinished()</signal>
    <receiver>SettingsScreen</receiver>
@@ -1400,22 +1368,6 @@ color: #3c3c3c;
     <hint type="sourcelabel">
      <x>485</x>
      <y>115</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>showLogsButton</sender>
-   <signal>clicked()</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>ToScr_Logs()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>129</x>
-     <y>52</y>
     </hint>
     <hint type="destinationlabel">
      <x>274</x>
@@ -1456,118 +1408,6 @@ color: #3c3c3c;
    </hints>
   </connection>
   <connection>
-   <sender>startupCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Toggle_cb_Startup(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>137</x>
-     <y>88</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>autoConnectCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Toggle_cb_AutoConnect(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>137</x>
-     <y>114</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>reconnectCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Toggle_cb_Reconnect(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>137</x>
-     <y>140</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>insecureWifiCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Toggle_cb_InsecureWiFi(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>137</x>
-     <y>166</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>showNodesCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Toggle_cb_ShowNodes(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>137</x>
-     <y>192</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>disableIPv6CheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Toggle_cb_DisableIpv6(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>427</x>
-     <y>203</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fixDNSCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Toggle_cb_FixDnsLeak(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>427</x>
-     <y>229</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>encryptionComboBox</sender>
    <signal>currentIndexChanged(int)</signal>
    <receiver>SettingsScreen</receiver>
@@ -1576,86 +1416,6 @@ color: #3c3c3c;
     <hint type="sourcelabel">
      <x>485</x>
      <y>45</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>updateButton</sender>
-   <signal>clicked()</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Clicked_Update()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>219</x>
-     <y>52</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Head</sender>
-   <signal>pressed()</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Pressed_Head()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>274</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>146</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Minimize</sender>
-   <signal>clicked()</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Clicked_Min()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>519</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>146</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>b_Cross</sender>
-   <signal>clicked()</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Clicked_Cross()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>534</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>274</x>
-     <y>146</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>killSwitchCheckBox2</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SettingsScreen</receiver>
-   <slot>Toggle_cb_BlockOnDisconnect(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>61</x>
-     <y>234</y>
     </hint>
     <hint type="destinationlabel">
      <x>274</x>

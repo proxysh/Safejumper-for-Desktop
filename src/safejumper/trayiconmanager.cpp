@@ -80,6 +80,7 @@ bool TrayIconManager::exists()
 
 void TrayIconManager::disableActionsOnLogout()
 {
+    mBugAction->setEnabled(false);
     mLogoutAction->setEnabled(false);	//_ac_Logout->setIcon(QIcon(":/icons-tm/close-grey.png"));
     mJumpAction->setEnabled(false);	//_ac_Jump->setIcon(QIcon(":/icons-tm/jump-grey.png"));
     mSwitchCountryAction->setEnabled(false);	//_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-grey.png"));
@@ -87,6 +88,7 @@ void TrayIconManager::disableActionsOnLogout()
 
 void TrayIconManager::enableButtonsOnLogin()
 {
+    mBugAction->setEnabled(true);
     mLogoutAction->setEnabled(true);	//_ac_Logout->setIcon(QIcon(":/icons-tm/close-red.png"));
     mJumpAction->setEnabled(true);		//_ac_Jump->setIcon(QIcon(":/icons-tm/jump-red.png"));
     mSwitchCountryAction->setEnabled(true);	//_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-red.png"));
@@ -199,7 +201,8 @@ void TrayIconManager::createMenuActions()
 
     mBugAction.reset(new QAction(//QIcon(":/icons-tm/bug-red.png"),
                          tr("&Report Bug"), this));
-    connect(mBugAction.get(), SIGNAL(triggered()), this, SLOT(bugTriggered()));
+    connect(mBugAction.get(), &QAction::triggered,
+            this, &TrayIconManager::bugTriggered);
 
     mEarnAction.reset(new QAction(//QIcon(":/icons-tm/earn-red.png"),
                           tr("&Earn Money"), this));
@@ -326,12 +329,6 @@ void TrayIconManager::supportTriggered()
 {
     WndManager::Instance()->CloseAll();
     OpenUrl_Support();
-}
-
-void TrayIconManager::bugTriggered()
-{
-    WndManager::Instance()->CloseAll();
-    OpenUrl_Bug();
 }
 
 void TrayIconManager::earnTriggered()

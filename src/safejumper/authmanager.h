@@ -81,6 +81,7 @@ public:
     const QString & accountPassword();
     const QString & VPNName();
     const QString & VPNPassword();
+    const QString & email();
 
     const QString & newIP();
     const QString & oldIP();

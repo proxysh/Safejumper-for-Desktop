@@ -27,16 +27,26 @@
 #include "wndmanager.h"
 #include "setting.h"
 #include "openvpnmanager.h"
+#include "pathhelper.h"
 #include "log.h"
 #include "flag.h"
 #include "fonthelper.h"
 #include "version.h"
 
+#include <QHttpMultiPart>
+#include <QMessageBox>
+#include <QProgressDialog>
+
+const int kConnectionPage = 0;
+const int kFeedbackPage = 1;
+
 ConnectionDialog::HmWords ConnectionDialog::mStateWordImages;
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ConnectionDialog)
+    ui(new Ui::ConnectionDialog),
+    mNam(NULL),
+    mProgressDialog(NULL)
 {
     ui->setupUi(this);
     this->setFixedSize(this->size());
@@ -317,6 +327,19 @@ void ConnectionDialog::statusDisconnected()
     enableButtons(true);
 }
 
+void ConnectionDialog::showFeedback()
+{
+    ui->titleLineEdit->clear();
+    ui->feedbackTextEdit->clear();
+
+    ui->stackedWidget->setCurrentIndex(kFeedbackPage);
+}
+
+void ConnectionDialog::showConnection()
+{
+    ui->stackedWidget->setCurrentIndex(kConnectionPage);
+}
+
 std::auto_ptr<ConnectionDialog> ConnectionDialog::mInstance;
 ConnectionDialog * ConnectionDialog::instance()
 {
@@ -370,6 +393,132 @@ void ConnectionDialog::portDialogResult(int action)
     }
 }
 
+void ConnectionDialog::on_cancelFeedbackButton_clicked()
+{
+    showConnection();
+}
+
+void ConnectionDialog::on_sendFeedbackButton_clicked()
+{
+    // Gather the information we need to send
+    // Username, log file(s), feedback text
+    QString title = ui->titleLineEdit->text();
+
+    if (title.isEmpty()) {
+        QMessageBox::warning(this, "Blank title", "Title field is required", QMessageBox::Ok);
+        ui->titleLineEdit->setFocus();
+        return;
+    }
+
+    QString email = AuthManager::instance()->email();
+    QString loginName = AuthManager::instance()->VPNName();
+
+    QString feedbackText = ui->feedbackTextEdit->toPlainText();
+    QFile debugLog(PathHelper::Instance()->safejumperLogFilename());
+    debugLog.open(QIODevice::ReadOnly|QIODevice::Text);
+    // Only send last 4k of log
+    QString logText = QString(debugLog.readAll()).right(4096);
+
+    // Construct post
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+    QHttpPart loginPart;
+    loginPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"login\""));
+    loginPart.setBody(loginName.toLatin1());
+
+    QHttpPart emailPart;
+    emailPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"email\""));
+    emailPart.setBody(email.toLatin1());
+
+    QHttpPart titlePart;
+    titlePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"title\""));
+    titlePart.setBody(title.toLatin1());
+
+    QHttpPart textPart;
+    textPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"text\""));
+    textPart.setBody(feedbackText.toLatin1());
+
+    QHttpPart logPart;
+    logPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"logtext\""));
+    logPart.setBody(logText.toLatin1());
+
+    multiPart->append(loginPart);
+    multiPart->append(emailPart);
+    multiPart->append(titlePart);
+    multiPart->append(textPart);
+    multiPart->append(logPart);
+
+    QNetworkRequest request(QUrl("https://proxy.sh/api-feedback.php"));
+    request.setRawHeader("cache-control:", "no-cache");
+
+    if (mNam)
+        mNam->deleteLater();
+    mNam = new QNetworkAccessManager(this);
+//    request.setRawHeader(QByteArray("UDID"), Log::udid().toLatin1());
+    QNetworkReply *reply = mNam->post(request, multiPart);
+    multiPart->setParent(reply);
+
+    bool result = connect(reply, static_cast<void(QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+            this, &ConnectionDialog::postError);
+    qDebug() << "result of connecting to error signal is " << result;
+    result = connect(reply, &QNetworkReply::finished,
+            this, &ConnectionDialog::sendFeedbackFinished);
+    qDebug() << "result of connecting to finished signal is " << result;
+    qDebug() << "Sent feedback with title " << title
+             << " login " << loginName
+             << " email " << email
+             << " awaiting response";
+
+    if (mProgressDialog) {
+        mProgressDialog->close();
+        mProgressDialog->deleteLater();
+        mProgressDialog = NULL;
+    }
+
+    mProgressDialog = new QProgressDialog(this);
+    mProgressDialog->setLabelText("Sending Bug Report\nPlease wait...");
+    mProgressDialog->setRange(0, 0);
+    mProgressDialog->setMinimumDuration(0);
+    mProgressDialog->setValue(0);
+}
+
+void ConnectionDialog::postError(QNetworkReply::NetworkError error)
+{
+    if (mProgressDialog) {
+        mProgressDialog->close();
+        mProgressDialog->deleteLater();
+        mProgressDialog = NULL;
+    }
+
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    qDebug() << "Got error from post request " << error
+             << " request url was " << reply->url().toString();
+    QByteArray response = reply->readAll();
+    QMessageBox::information(this, "Post error", response);
+}
+
+void ConnectionDialog::sendFeedbackFinished()
+{
+    if (mProgressDialog) {
+        mProgressDialog->close();
+        mProgressDialog->deleteLater();
+        mProgressDialog = NULL;
+    }
+
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    if (reply->error() != QNetworkReply::NoError) {
+        QMessageBox::information(this, "send feedback error", reply->errorString());
+        return;
+    }
+
+    QByteArray response = reply->readAll();
+
+    qDebug() << "issue response: " << response;
+
+    QMessageBox::information(this, "Issue created", QString("Issue created."));
+
+    showConnection();
+}
 
 
 

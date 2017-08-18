@@ -50,14 +50,10 @@ public slots:
 private slots:
     void ShowSupportUrl();
     void ToScr_Connect();
-    void Pressed_Head();
-    void Clicked_Min();
-    void Clicked_Cross();
 
 protected:
     virtual void closeEvent(QCloseEvent * event);
     virtual void keyPressEvent(QKeyEvent * event);
-    virtual bool eventFilter(QObject *obj, QEvent *event);
 private:
     Ui::Scr_Logs *ui;
     explicit Scr_Logs(QWidget *parent = 0);

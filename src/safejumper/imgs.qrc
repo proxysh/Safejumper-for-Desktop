@@ -113,6 +113,9 @@
         <file alias="b-newport-hover.png">images/b-newport-hover.png</file>
         <file alias="b-newport-pressed.png">images/b-newport-pressed.png</file>
         <file>images/safechecker.png</file>
+        <file alias="b-report-hover.png">images/b-report-hover.png</file>
+        <file alias="b-report-norm.png">images/b-report-norm.png</file>
+        <file alias="b-report-pressed.png">images/b-report-pressed.png</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="icon-tray.png">images/icon-tray.png</file>

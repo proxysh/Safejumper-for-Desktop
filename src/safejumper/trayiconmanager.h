@@ -49,6 +49,8 @@ signals:
     void connectToServer(int serverId);
     void quitApplication();
 
+    void bugTriggered();
+
 public slots:
     void disableActionsOnLogout();
     void enableButtonsOnLogin();
@@ -65,7 +67,6 @@ public slots:
     void logsTriggered();
     void webManagTriggered();
     void supportTriggered();
-    void bugTriggered();
     void earnTriggered();
     void aboutTriggered();
     void logoutTriggered();

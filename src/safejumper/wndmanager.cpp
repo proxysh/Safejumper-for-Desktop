@@ -31,10 +31,14 @@
 #include "authmanager.h"
 #include "errordialog.h"
 #include "log.h"
+#include "trayiconmanager.h"
 
 WndManager::WndManager()
     : _DlgPort(NULL)
-{}
+{
+    connect(TrayIconManager::instance(), &TrayIconManager::bugTriggered,
+            this, &WndManager::showFeedback);
+}
 
 WndManager::~WndManager()
 {
@@ -74,6 +78,7 @@ void WndManager::ToLogin()
 void WndManager::ToConnect()
 {
     QWidget * from = ScrVisible();
+    ConnectionDialog::instance()->showConnection();
     if (ConnectionDialog::instance() != from) {
         trans(from, ConnectionDialog::instance());
     } else {
@@ -340,4 +345,11 @@ bool WndManager::IsCyclePort()
     if (_DlgPort != NULL)
         b = _DlgPort->IsCyclePort();
     return b;
+}
+
+void WndManager::showFeedback()
+{
+    QWidget * from = ScrVisible();
+    ToConnect();
+    ConnectionDialog::instance()->showFeedback();
 }

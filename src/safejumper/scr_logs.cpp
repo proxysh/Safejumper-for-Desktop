@@ -42,12 +42,6 @@ Scr_Logs::Scr_Logs(QWidget *parent) :
 #ifndef Q_OS_DARWIN
     FontHelper::SetFont(this);
 #endif
-
-//	QPoint p0 = _WndStart = pos();
-//	WndManager::DoShape(this);
-//	QPoint p1 = pos();
-//		move(p0);
-    qApp->installEventFilter(this);
 }
 
 void Scr_Logs::closeEvent(QCloseEvent * event)
@@ -100,44 +94,4 @@ void Scr_Logs::keyPressEvent(QKeyEvent * e)
 {
     if(e->key() != Qt::Key_Escape)
         QDialog::keyPressEvent(e);
-}
-
-bool Scr_Logs::eventFilter(QObject *obj, QEvent *event)
-{
-    switch (event->type()) {
-    case QEvent::MouseMove: {
-        if (_moving) {
-            QPoint d = QCursor::pos() - _CursorStart;
-            if (d.x() != 0 || d.y() != 0) {
-                QPoint NewAbs = _WndStart + d;
-                this->move(NewAbs);
-            }
-        }
-        return false;
-    }
-    case QEvent::MouseButtonRelease: {
-        _moving = false;
-//			_WndStart = pos();
-        return false;
-    }
-    default:
-        return QDialog::eventFilter(obj, event);
-    }
-}
-
-void Scr_Logs::Pressed_Head()
-{
-    _WndStart = this->pos();
-    _CursorStart = QCursor::pos();
-    _moving = true;
-}
-
-void Scr_Logs::Clicked_Min()
-{
-    WndManager::Instance()->HideThis(this);
-}
-
-void Scr_Logs::Clicked_Cross()
-{
-    LoginWindow::Instance()->quitApplication();
 }
