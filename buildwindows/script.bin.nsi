@@ -8,6 +8,9 @@ Page directory "" "" ""
 Page instfiles "" "" ""
 Page custom ""  ""
 
+!define SJ_VERSION         "3.2 alpha"
+!define SJ_BUILD             "79"
+
 Section main
 
 SectionIn RO
@@ -118,7 +121,7 @@ SectionIn RO
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
             "Publisher" "Proxy.sh"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
-            "DisplayVersion" "3.2 alpha build 74"
+            "DisplayVersion" "${SJ_VERSION} build ${SJ_BUILD}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
             "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Safejumper" \
