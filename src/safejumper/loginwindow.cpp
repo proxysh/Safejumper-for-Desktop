@@ -114,6 +114,9 @@ LoginWindow::LoginWindow(QWidget *parent) :
 
     connect(Setting::instance(), SIGNAL(detectInsecureWifiChanged()),
             this, SLOT(detectInsecureWifiChanged()));
+
+    connect(qApp, &QApplication::aboutToQuit,
+            this, &LoginWindow::quitApplication);
 }
 
 void LoginWindow::on_rememberMeButton_toggled()
