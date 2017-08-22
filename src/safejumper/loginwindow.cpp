@@ -48,7 +48,8 @@ LoginWindow::LoginWindow(QWidget *parent) :
     ui(new Ui::LoginWindow)
     , _ConnectAfterLogin(false)
     , _activatedcount(0)
-    , _wifi_processing(false)
+    , _wifi_processing(false),
+    mQuitConfirmed(false)
 {
     ui->setupUi(this);
 
@@ -210,12 +211,19 @@ LoginWindow * LoginWindow::Instance()
 
 void LoginWindow::quitApplication()
 {
-
 // HACK: workaround: without any form visible program exits => force show() primary
 //	if (WndManager::Instance()->ScrVisible() != NULL)
-    WndManager::Instance()->ToPrimary();
-    int res = WndManager::Instance()->Confirmation(QString("Would you like to shut %1 down?").arg(QApplication::applicationName()));
+    int res = QDialog::Rejected;
+    if (!mQuitConfirmed) {
+        WndManager::Instance()->ToPrimary();
+        res = WndManager::Instance()->Confirmation(QString("Would you like to shut %1 down?").arg(QApplication::applicationName()));
+    } else {
+        // already confirmed, so set res to accepted
+        res = QDialog::Accepted;
+    }
+
     if (res == QDialog::Accepted) {
+        mQuitConfirmed = true;
         WndManager::Instance()->CloseAll();
         if (OpenvpnManager::exists())
             OpenvpnManager::instance()->stop();

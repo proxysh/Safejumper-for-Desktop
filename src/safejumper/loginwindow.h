@@ -95,6 +95,7 @@ private:
 
     std::auto_ptr<QTimer> _timer_wifi;
     bool _wifi_processing;
+    bool mQuitConfirmed;
 };
 
 #endif // LOGINWINDOW_H
