@@ -57,6 +57,7 @@ private slots:
     void on_insecureWifiCheckBox_toggled(bool v);
     void on_showNodesCheckBox_toggled(bool v);
     void on_killSwitchCheckBox_toggled(bool v);
+    void on_killSwitchCheckBox2_toggled(bool v);
     void on_disableIPv6CheckBox_toggled(bool v);
     void on_fixDNSCheckBox_toggled(bool v);
 

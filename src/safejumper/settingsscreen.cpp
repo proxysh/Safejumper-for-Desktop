@@ -69,6 +69,7 @@ SettingsScreen::SettingsScreen(QWidget *parent) :
 
     ui->autoConnectCheckBox->setChecked(Setting::instance()->autoconnect());
     ui->killSwitchCheckBox->setChecked(Setting::instance()->blockOnDisconnect());
+    ui->killSwitchCheckBox2->setChecked(Setting::instance()->blockOnDisconnect());
     ui->disableIPv6CheckBox->setChecked(Setting::instance()->disableIPv6());
     ui->fixDNSCheckBox->setChecked(Setting::instance()->fixDns());
     ui->reconnectCheckBox->setChecked(Setting::instance()->reconnect());
@@ -93,6 +94,7 @@ SettingsScreen::SettingsScreen(QWidget *parent) :
     // disable non-implemented
     if (!ui->autoConnectCheckBox->isEnabled()) ui->autoConnectCheckBox->setChecked(false);
     if (!ui->killSwitchCheckBox->isEnabled()) ui->killSwitchCheckBox->setChecked(false);
+    if (!ui->killSwitchCheckBox2->isEnabled()) ui->killSwitchCheckBox2->setChecked(false);
     if (!ui->disableIPv6CheckBox->isEnabled()) ui->disableIPv6CheckBox->setChecked(false);
     if (!ui->fixDNSCheckBox->isEnabled()) ui->fixDNSCheckBox->setChecked(false);
     if (!ui->reconnectCheckBox->isEnabled()) ui->reconnectCheckBox->setChecked(false);
@@ -177,6 +179,12 @@ void SettingsScreen::on_loggingButton_toggled(bool v)
 void SettingsScreen::on_killSwitchCheckBox_toggled(bool v)
 {
     Setting::instance()->setBlockOnDisconnect(v);
+    ui->killSwitchCheckBox2->setChecked(v);
+}
+
+void SettingsScreen::on_killSwitchCheckBox2_toggled(bool v)
+{
+    ui->killSwitchCheckBox->setChecked(v);
 }
 
 void SettingsScreen::on_startupCheckBox_toggled(bool v)
