@@ -35,7 +35,7 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QPushButton" name="b_Showlogs">
+   <widget class="QPushButton" name="showLogsButton">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -70,7 +70,7 @@ QPushButton:pressed
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="b_Update">
+   <widget class="QPushButton" name="updateButton">
     <property name="geometry">
      <rect>
       <x>180</x>
@@ -166,7 +166,7 @@ border-image: url(:/imgs/cb-row-checked.png);
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="b_LogoBack">
+   <widget class="QPushButton" name="backButton">
     <property name="geometry">
      <rect>
       <x>6</x>
@@ -1344,7 +1344,7 @@ color: #3c3c3c;
  </resources>
  <connections>
   <connection>
-   <sender>b_LogoBack</sender>
+   <sender>backButton</sender>
    <signal>clicked()</signal>
    <receiver>SettingsScreen</receiver>
    <slot>ToScr_Connect()</slot>
@@ -1408,7 +1408,7 @@ color: #3c3c3c;
    </hints>
   </connection>
   <connection>
-   <sender>b_Showlogs</sender>
+   <sender>showLogsButton</sender>
    <signal>clicked()</signal>
    <receiver>SettingsScreen</receiver>
    <slot>ToScr_Logs()</slot>
@@ -1584,7 +1584,7 @@ color: #3c3c3c;
    </hints>
   </connection>
   <connection>
-   <sender>b_Update</sender>
+   <sender>updateButton</sender>
    <signal>clicked()</signal>
    <receiver>SettingsScreen</receiver>
    <slot>Clicked_Update()</slot>
