@@ -21,6 +21,7 @@
 
 #include "common.h"
 
+#include <memory>
 #include <QDialog>
 #include <QNetworkReply>
 #include <QProcess>
