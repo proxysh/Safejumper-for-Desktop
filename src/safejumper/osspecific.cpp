@@ -637,9 +637,9 @@ void OsSpecific::setIPv6(bool enable)
             if (ERROR_SUCCESS == lRes)
                 old = val;
             if (enable)
-                val = old & ( ~((DWORD)0x1));
+                val = old & ( ~((DWORD)0xFF));
             else
-                val = old | 0x1;
+                val = old | 0xFF;
             lRes = ::RegSetValueEx(hKey, gs_regname, 0, REG_DWORD, reinterpret_cast<LPBYTE>(&val), sz);
             if (ERROR_SUCCESS != lRes)
                 throw std::runtime_error(("IPv6 disabling failure code: " + QString::number(lRes)).toStdString().c_str());
@@ -712,7 +712,7 @@ bool OsSpecific::IPv6()
             lRes = ::RegQueryValueExW(hKey, gs_regname, 0, NULL, reinterpret_cast<LPBYTE>(&val), &sz);
             if (lRes != ERROR_FILE_NOT_FOUND) {
                 if (lRes == ERROR_SUCCESS) {
-                    if ( (val & 0x1) == 0x1)	// 0x01 to disable IPv6 on all tunnel interfaces https://support.microsoft.com/en-us/kb/929852
+                    if ( (val & 0xFF) == 0xFF)	// 0x01 to disable IPv6 on all tunnel interfaces https://support.microsoft.com/en-us/kb/929852
                         on = false;
                 } else {
                     throw std::runtime_error("Cannot read IPv6 reg key value");		// another error
