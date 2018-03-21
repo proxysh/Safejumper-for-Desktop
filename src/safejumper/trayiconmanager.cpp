@@ -217,6 +217,9 @@ void TrayIconManager::createMenuActions()
 
     mCloseAction.reset(new QAction(//QIcon(":/icons-tm/close-red.png"),
                            tr("Close"), this));
+#ifdef Q_OS_DARWIN
+    mCloseAction.setShortcut(QKeySequence::Quit);
+#endif
     connect(mCloseAction.get(), SIGNAL(triggered()), this, SLOT(closeTriggered()));
 }
 
