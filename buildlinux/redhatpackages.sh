@@ -1,6 +1,6 @@
 #!/bin/bash
 VERSION=2017.12.08
-QTVERSION=5.7.0
+QTVERSION=5.10.1
 OLDPATH=$PATH
 ./cleanup.sh
 export PATH=../../qt-$QTVERSION-32bit/qtbase/bin:$OLDPATH
