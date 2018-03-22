@@ -370,8 +370,18 @@ bool OpenvpnManager::writeConfigFile()
     }
 #endif
 
-//ff.write("dhcp-option DNS 146.185.134.104\n");
-//ff.write("dhcp-option DNS 146.185.134.104\n");
+    //ff.write("dhcp-option DNS 146.185.134.104\n");
+    //ff.write("dhcp-option DNS 146.185.134.104\n");
+    if (!Setting::instance()->dns1().isEmpty()) {
+        ff.write("dhcp-option DNS ");
+        ff.write(Setting::instance()->dns1().toUtf8());
+        ff.write("\n");
+    }
+    if (!Setting::instance()->dns2().isEmpty()) {
+        ff.write("dhcp-option DNS ");
+        ff.write(Setting::instance()->dns2().toUtf8());
+        ff.write("\n");
+    }
 
     if (obfs) {
 // TODO: -0 OS
