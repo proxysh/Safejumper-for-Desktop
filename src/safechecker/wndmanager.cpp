@@ -220,7 +220,7 @@ void WndManager::ApplyCoords(QWidget * to)
 {
 //    int nx = _x + 187 - (to->width() / 2);
 
-//log::logt(QString().sprintf("ApplyCoords(): moving to (%d,%d)", nx, _y));
+//Log::logt(QString().sprintf("ApplyCoords(): moving to (%d,%d)", nx, _y));
 //    to->move(nx, _y);
 }
 

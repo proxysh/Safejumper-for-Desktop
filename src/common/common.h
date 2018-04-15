@@ -19,24 +19,51 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <QDialog>
 #include <QHash>
 #include <QString>
 #include <QSettings>
-#include <QApplication>
-#ifndef Q_OS_OSX
-#include "qtsingleapplication.h"
-#define THE_APP_CLASS QtSingleApplication
-#else
-#define THE_APP_CLASS QApplication
-#endif
-
 #include <QNetworkRequest>
 
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
+
+#define kSAFEJUMPER_HELPER_LABEL "sh.proxy.SafejumperHelper"
+
+bool IsValidIp(const QString & ip);
+bool IsValidPort(const QString & s);
+
+enum vpnState {
+    vpnStateDisconnected = 0,
+    vpnStateConnecting,
+    vpnStateConnected,
+    vpnStateTotal
+};
+
+QString vpnStateWord(vpnState state);
+
+// Only use commands for start and stop. all settings such as server choice,
+// protocol choice, credentials use QSettings.
+enum commands {
+    cmdGetStatus,
+    cmdStart,
+    cmdStop,
+    cmdKillRunningOpenvpn, // Kill openvpn processes that are running
+    cmdSetCredentials, // Set vpn username and password. performed once after connecting from gui to service
+    cmdNetdown, // Turn off network devices because of kill switch
+    notifyStatusChange,
+    notifyStatusWord,
+    notifyTimeout, // Openvpn timed out, so switch ports or nodes and try again
+    notifyError, // Error message from service
+    notifyGotIP, // Got new ip address from openvpn management socket
+};
+
+#ifdef Q_OS_WIN
+static const QString kSocketName = "SafejumperVPN";
+#else
+static const QString kSocketName = "/var/tmp/SafejumperVPN";
+#endif
 
 enum EncryptionType {
     ENCRYPTION_RSA = 0,
@@ -57,9 +84,21 @@ const QList<QString> encryptionNames = {
     "ECC + XOR",
 };
 
-#define PORT_FORWARD_MAX 5
 
-extern THE_APP_CLASS * g_pTheApp;
+enum OpenVPNStateWord {
+    ovnStateConnecting,
+    ovnStateTCPConnecting,
+    ovnStateWait,
+    ovnStateExiting,
+    ovnStateReconnecting,
+    ovnStateAuth,
+    ovnStateGetConfig,
+    ovnStateAssignIP,
+    ovnStateResolve,
+    ovnStateUnknown, // Unknown state word from openvpn
+};
+
+#define PORT_FORWARD_MAX 5
 
 bool IsValidIp(const QString & ip);
 bool IsValidPort(const QString & s);

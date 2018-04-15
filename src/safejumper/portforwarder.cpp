@@ -64,12 +64,12 @@ void PortForwarder::FinishedFirstPage()
     bool err = false;
     if (_reply->error() != QNetworkReply::NoError) {
         err = true;
-        log::logt("FinishedFirstPage(): got QNetworkReply::Error");
+        Log::logt("FinishedFirstPage(): got QNetworkReply::Error");
     } else {
         QByteArray ba = _reply->readAll();
         if (ba.isEmpty()) {
             err = true;
-            log::logt("FinishedFirstPage(): Server's answer is empty");
+            Log::logt("FinishedFirstPage(): Server's answer is empty");
         }
 
         QString msg;
@@ -77,7 +77,7 @@ void PortForwarder::FinishedFirstPage()
         if (!doc.setContent(QString(ba), &msg)) {
             err = true;
             msg = "Error parsing server XML response\n" + msg;
-            log::logt(msg);
+            Log::logt(msg);
         }
 
         if (!err) {
@@ -115,7 +115,7 @@ void PortForwarder::FinishedFirstPage()
                         already_set.insert(t);
                     } else {
                         if (err)
-                            log::logt("Cannot parse port" + QString::number(k) + " '" + ts + "'");
+                            Log::logt("Cannot parse port" + QString::number(k) + " '" + ts + "'");
                     }
                 } else {
                     loop = false;
@@ -188,12 +188,12 @@ void PortForwarder::SetPort()
         int port = (*_it_curr).second;
         if (_reply.get()) {
             if (_reply->isRunning()) {
-                log::logt("SetPort(): Connection is still open when we want to set next port" + QString::number(ix) + " " + QString::number(port));
+                Log::logt("SetPort(): Connection is still open when we want to set next port" + QString::number(ix) + " " + QString::number(port));
                 _reply->abort();			// emit finished()
             }
         }
 
-        log::logt("Forwarding port" + QString::number(ix) + ": " + QString::number(port));
+        Log::logt("Forwarding port" + QString::number(ix) + ": " + QString::number(port));
         // https://api.proxy.sh/safejumper/ports/port1:2234/spaxugci/04w8z8aWjS
         // - sets port1 for forwarding
         _reply.reset(_nam.get(BuildRequest(QUrl("https://api.proxy.sh/safejumper/ports/port"
@@ -208,13 +208,13 @@ void PortForwarder::Finished_SetPort()
     bool err = false;
     if (_reply->error() != QNetworkReply::NoError) {
         err = true;
-        log::logt("Finished_SetPort(): got QNetworkReply::Error");
+        Log::logt("Finished_SetPort(): got QNetworkReply::Error");
         // TODO: -2 handle networking error - resubmit port forward request
     } else {
         QByteArray ba = _reply->readAll();
         if (ba.isEmpty()) {
             err = true;
-            log::logt("Finished_SetPort(): Server's answer is empty");
+            Log::logt("Finished_SetPort(): Server's answer is empty");
         }
 
         if (!err) {

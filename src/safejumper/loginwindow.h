@@ -27,8 +27,6 @@
 #include <QTimer>
 #include <QAbstractSocket>
 
-#include "openvpnmanager.h"
-
 namespace Ui
 {
 class LoginWindow;
@@ -47,10 +45,6 @@ public:
     }
     static void Cleanup();
     ~LoginWindow();
-
-    void StatusConnecting();
-    void StatusConnected();
-    void StatusDisconnected();
 
     void startWifiWatcher();
     void stopWifiWatcher();

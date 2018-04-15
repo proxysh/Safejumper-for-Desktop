@@ -27,10 +27,9 @@
 
 #include "pingwaiter.h"
 #include "setting.h"
-#include "openvpnmanager.h"
+#include "vpnservicemanager.h"
 #include "mapscreen.h"
 #include "loginwindow.h"
-#include "osspecific.h"
 #include "log.h"
 #include "flag.h"
 #include "common.h"
@@ -63,7 +62,7 @@ AuthManager::AuthManager()
      mSeeded(false),
      mIPAttemptCount(0)
 {
-    connect(OpenvpnManager::instance(), &OpenvpnManager::gotNewIp,
+    connect(VPNServiceManager::instance(), &VPNServiceManager::gotNewIp,
             this, &AuthManager::setNewIp);
 }
 
@@ -105,9 +104,11 @@ void AuthManager::login(const QString & name, const QString & password)
     mVPNPassword.clear();                    // TODO: -2 secure clear
     mLoggedIn = false;
     mCancellingLogin = false;
-    log::logt("Starting login with name '" + QUrl::toPercentEncoding(name, "", "") + "'");
+    Log::logt("Starting login with name '" + QUrl::toPercentEncoding(name, "", "") + "'");
 
     mReply.reset(mNAM.get(BuildRequest(QUrl("https://proxy.sh/access.php?u=" + QUrl::toPercentEncoding(name, "", "") + "&p=" + QUrl::toPercentEncoding(password, "", "")))));
+    connect(mReply.get(), SIGNAL(error(QNetworkReply::NetworkError)),
+            this, SLOT(loginNetworkError(QNetworkReply::NetworkError)));
     connect(mReply.get(), &QNetworkReply::finished,
             this, &AuthManager::loginFinished);
 }
@@ -174,7 +175,7 @@ AServer AuthManager::getServer(int id)
     if (id > -1 && id < mServers.size()) {
         s = mServers.at(id);
     } else {
-        log::logt("getServer called with id " + QString::number(id));
+        Log::logt("getServer called with id " + QString::number(id));
     }
     return s;
 }
@@ -195,6 +196,15 @@ void AuthManager::setNewIp(const QString & ip)
         mNewIP = ip;
         emit newIpLoaded(ip);
     }
+}
+
+void AuthManager::loginNetworkError(QNetworkReply::NetworkError error)
+{
+    Log::logt(QString("Login error: %1").arg(error));
+
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+
+    emit loginError(QString("Network error logging in: %1").arg(reply->errorString()));
 }
 
 const QList<int> &AuthManager::currentEncryptionServers()
@@ -242,7 +252,7 @@ int AuthManager::hubidForServerNode(int srv)
         if (it != mHubClearedId.end())
             hub = (int)(*it).second;
     } else {
-        log::logt("Hub ID For Server Node " + QString::number(srv) + " requested but out of bounds");
+        Log::logt("Hub ID For Server Node " + QString::number(srv) + " requested but out of bounds");
     }
     return hub;
 }
@@ -255,7 +265,7 @@ const std::vector<std::pair<bool, int> > & AuthManager::getLevel0()
 
 void AuthManager::prepareLevels()
 {
-    log::logt("prepareLevels called");
+    Log::logt("prepareLevels called");
     // TODO: -1 special hub for boost
     if (!mServers.isEmpty() && mLevel0.empty()) {
         const QList<int> & hubs = currentEncryptionHubs();
@@ -397,7 +407,7 @@ void AuthManager::processEccServerNamesXml()
     bool err = processServerNamesForEncryptionType(ENCRYPTION_ECC, message);
 
     if (err)
-        log::logt("Error getting ecc names: " + message);
+        Log::logt("Error getting ecc names: " + message);
 
     // do not get obfs addresses: proceed
     getAccountType();
@@ -455,7 +465,7 @@ void AuthManager::processObfsServerNamesXml()
     bool err = false;
     out_msg.clear();
     if (_reply->error() != QNetworkReply::NoError) {
-        log::logt(_reply->errorString());
+        Log::logt(_reply->errorString());
     } else {
         QByteArray ba = _reply->readAll();
 
@@ -581,7 +591,7 @@ void AuthManager::checkUpdates()
 {
     QString us(SJ_UPDATE_URL);
     if (!us.isEmpty()) {
-        log::logt(QString("Checking for updates from %1").arg(SJ_UPDATE_URL));
+        Log::logt(QString("Checking for updates from %1").arg(SJ_UPDATE_URL));
         mUpdateReply.reset(mNAM.get(BuildRequest(QUrl(us))));
         connect(mUpdateReply.get(), &QNetworkReply::finished,
                 this, &AuthManager::processUpdatesXml);
@@ -591,7 +601,7 @@ void AuthManager::checkUpdates()
 void AuthManager::getOldIP()
 {
     ++mIPAttemptCount;
-    log::logt("StartDwnl_OldIp() attempt " + QString::number(mIPAttemptCount));
+    Log::logt("StartDwnl_OldIp() attempt " + QString::number(mIPAttemptCount));
     static const QString us = "https://proxy.sh/ip.php";
     mIPReply.reset(AuthManager::instance()->mNAM.get(BuildRequest(QUrl(us))));
     connect(mIPReply.get(), &QNetworkReply::finished,
@@ -617,12 +627,12 @@ void AuthManager::processAccountTypeXml()
 {
     QString message;
     if (mReply->error() != QNetworkReply::NoError) {
-        log::logt(mReply->errorString());
+        Log::logt(mReply->errorString());
         return;
     }
     QByteArray ba = mReply->readAll();
     if (ba.isEmpty()) {
-        log::logt("Cannot get account info. Server response is empty.");
+        Log::logt("Cannot get account info. Server response is empty.");
         return;
     }
     // parse XML response
@@ -631,12 +641,12 @@ void AuthManager::processAccountTypeXml()
     //<root><package>10</package><email>aaa@gmail.com</email></root>
     QDomDocument doc;
     if (!doc.setContent(QString(ba), &message)) {
-        log::logt("Error parsing XML account info\n" + message);
+        Log::logt("Error parsing XML account info\n" + message);
         return;
     }
     QDomNodeList nlpackage = doc.elementsByTagName("package");
     if (nlpackage.size() <= 0) {
-        log::logt("Missing package amount");
+        Log::logt("Missing package amount");
         return;
     }
     QDomNode n = nlpackage.item(0);
@@ -644,12 +654,12 @@ void AuthManager::processAccountTypeXml()
 
     QDomNodeList nl = doc.elementsByTagName("email");
     if (nl.size() <= 0) {
-        log::logt("Missing email in account XML");
+        Log::logt("Missing email in account XML");
         return;
     }
     n = nl.item(0);
     mEmail = n.toElement().text();
-    log::logt("Got account e-mail " + mEmail + " and amount " + amount);
+    Log::logt("Got account e-mail " + mEmail + " and amount " + amount);
     emit amountLoaded(amount);
     emit emailLoaded(mEmail);
     /*
@@ -667,12 +677,12 @@ void AuthManager::processExpirationXml()
 {
     QString message;
     if (mReply->error() != QNetworkReply::NoError) {
-        log::logt(mReply->errorString());
+        Log::logt(mReply->errorString());
         return;
     }
     QByteArray ba = mReply->readAll();
     if (ba.isEmpty()) {
-        log::logt("Cannot get expiration info. Server response is empty.");
+        Log::logt("Cannot get expiration info. Server response is empty.");
         return;
     }
     // parse XML response
@@ -688,12 +698,12 @@ void AuthManager::processExpirationXml()
     QDomDocument doc;
     QString until = "--";
     if (!doc.setContent(QString(ba), &message)) {
-        log::logt("Error parsing XML expiration info\n" + message);
+        Log::logt("Error parsing XML expiration info\n" + message);
         return;
     }
     QDomNodeList nl = doc.elementsByTagName("expire_date");
     if (nl.size() <= 0) {
-        log::logt("Missing expiration info");
+        Log::logt("Missing expiration info");
         return;
     }
     QDomNode n = nl.item(0);
@@ -707,12 +717,12 @@ void AuthManager::processExpirationXml()
 void AuthManager::processDnsXml()
 {
     if (mReply->error() != QNetworkReply::NoError) {
-        log::logt(mReply->errorString());
+        Log::logt(mReply->errorString());
         return;
     }
     QByteArray ba = mReply->readAll();
     if (ba.isEmpty()) {
-        log::logt("Cannot get DNS info. Server response is empty.");
+        Log::logt("Cannot get DNS info. Server response is empty.");
         return;
     }
     // parse XML response
@@ -725,12 +735,12 @@ void AuthManager::processDnsXml()
     QDomDocument doc;
     QString msg;
     if (!doc.setContent(QString(ba), &msg)) {
-        log::logt("Error parsing XML DNS info\n" + msg);
+        Log::logt("Error parsing XML DNS info\n" + msg);
         return;
     }
     QDomNodeList nl = doc.elementsByTagName("dns");
     if (nl.size() <= 0) {
-        log::logt("Missing DNS nodes");
+        Log::logt("Missing DNS nodes");
         return;
     }
     QString dns[2];
@@ -747,7 +757,7 @@ void AuthManager::processDnsXml()
 void AuthManager::processUpdatesXml()
 {
     if (mUpdateReply->error() != QNetworkReply::NoError) {
-        log::logt(mUpdateReply->errorString());
+        Log::logt(mUpdateReply->errorString());
         return;
     }
     QByteArray ba = mUpdateReply->readAll();
@@ -765,7 +775,7 @@ void AuthManager::processUpdatesXml()
     "</version>";
     */
     if (ba.isEmpty()) {
-        log::logt("Cannot get Updates info. Server response is empty.");
+        Log::logt("Cannot get Updates info. Server response is empty.");
         return;
     }
     // parse XML response
@@ -782,12 +792,12 @@ void AuthManager::processUpdatesXml()
     QDomDocument doc;
     QString msg;
     if (!doc.setContent(QString(ba), &msg)) {
-        log::logt("Error parsing XML Updates info\n" + msg);
+        Log::logt("Error parsing XML Updates info\n" + msg);
         return;
     }
     QDomNodeList nl = doc.elementsByTagName("build");
     if (nl.size() <= 0) {
-        log::logt("Missing 'build' node");
+        Log::logt("Missing 'build' node");
         return;
     }
     QDomNode n = nl.item(0);
@@ -795,7 +805,7 @@ void AuthManager::processUpdatesXml()
     if (!ss.isEmpty()) {
         bool ok;
         int upd = ss.toInt(&ok);
-        log::logt(QString("Got updated xml, server version is %1, local version is %2").arg(upd).arg(SJ_BUILD_NUM));
+        Log::logt(QString("Got updated xml, server version is %1, local version is %2").arg(upd).arg(SJ_BUILD_NUM));
         if (ok && SJ_BUILD_NUM < upd) {
             int result = WndManager::Instance()->Confirmation("New version " + ss + " available. Update?");
             Setting::instance()->updateMessageShown();
@@ -821,7 +831,7 @@ QStringList AuthManager::extractNames(QString & out_msg)
 {
     QStringList names;
     if (mReply->error() != QNetworkReply::NoError) {
-        log::logt("Network error:" + mReply->errorString());
+        Log::logt("Network error:" + mReply->errorString());
         out_msg = "Network error: " + mReply->errorString();
     } else {
         QByteArray ba = mReply->readAll();
@@ -934,6 +944,7 @@ QString AuthManager::processServersXml()
             }
             mVPNLogin = login;
             mVPNPassword = psw;
+            VPNServiceManager::instance()->sendCredentials();
             mLoggedIn = true;
         } else {
             mLoggedIn = false;
@@ -944,7 +955,7 @@ QString AuthManager::processServersXml()
     // force hubs
     const QList<int> & hubs = AuthManager::currentEncryptionHubs();
     if (hubs.isEmpty() && Setting::instance()->encryption() < ENCRYPTION_ECC) // Don't check hubs for ECC
-        log::logt("Cannot parse hubs");
+        Log::logt("Cannot parse hubs");
 
     getObfsServerNames();
 //  StartDwnl_AccType();
@@ -957,7 +968,7 @@ QString AuthManager::processServersXml()
 
 void AuthManager::pingAllServers()
 {
-    log::logt("pingAllServers called");
+    Log::logt("pingAllServers called");
     // Fill mPings with as many -1 entries as there are servers
     while (mPings.size() < mServers.size())
         mPings.append(-1);
@@ -981,17 +992,17 @@ void AuthManager::pingAllServers()
 
 void AuthManager::startWorker(size_t id)
 {
-    log::logt("startWorker called with id " + QString::number(id));
+    Log::logt("startWorker called with id " + QString::number(id));
     if (!mToPing.empty()) {
         size_t srv = mToPing.front();
         mToPing.pop();
-        log::logt("startWorker will ping server number " + QString::number(srv));
+        Log::logt("startWorker will ping server number " + QString::number(srv));
 
         mInProgress.at(id) = srv;
         LoginWindow * m = LoginWindow::Instance();
 
         if (mWorkers.at(id) !=NULL) {
-            log::logt("Workers at " + QString::number(id) + " not null, so disconnecting and terminating");
+            Log::logt("Workers at " + QString::number(id) + " not null, so disconnecting and terminating");
             disconnect(mWorkers.at(id), static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                        mWaiters.at(id), &PingWaiter::PingFinished);
             disconnect(mWorkers.at(id), &QProcess::errorOccurred,
@@ -1006,7 +1017,7 @@ void AuthManager::startWorker(size_t id)
                 mWaiters.at(id), &PingWaiter::PingFinished);
         connect(mWorkers.at(id), &QProcess::errorOccurred,
                 mWaiters.at(id), &PingWaiter::PingError);
-        OsSpecific::instance()->startPing(*mWorkers.at(id), mServers.at(srv).address);
+        startPing(*mWorkers.at(id), mServers.at(srv).address);
         connect(mTimers.at(id), &QTimer::timeout,
                 mWaiters.at(id), &PingWaiter::Timer_Terminate);
         mTimers.at(id)->setSingleShot(true);
@@ -1020,30 +1031,30 @@ void AuthManager::startWorker(size_t id)
 
 void AuthManager::pingComplete(size_t idWaiter)
 {
-    log::logt("pingComplete called with id " + QString::number(idWaiter));
+    Log::logt("pingComplete called with id " + QString::number(idWaiter));
     mTimers.at(idWaiter)->stop();
-    int p = OsSpecific::instance()->extractPing(*mWorkers.at(idWaiter));
-//      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " Got ping " + QString::number(p));
+    int p = extractPing(*mWorkers.at(idWaiter));
+//      Log::logt(_servers.at(_inprogress.at(idWaiter)).address + " Got ping " + QString::number(p));
     mPings[mInProgress.at(idWaiter)] = p;
     startWorker(idWaiter);
 }
 
 void AuthManager::pingError(size_t idWaiter)
 {
-    log::logt("pingError called with id " + QString::number(idWaiter));
+    Log::logt("pingError called with id " + QString::number(idWaiter));
     mTimers.at(idWaiter)->stop();
-    int p = OsSpecific::instance()->extractPing(*mWorkers.at(idWaiter));
-//      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process error, extracted ping: " + QString::number(p));
+    int p = extractPing(*mWorkers.at(idWaiter));
+//      Log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process error, extracted ping: " + QString::number(p));
     mPings[mInProgress.at(idWaiter)] = p;
     startWorker(idWaiter);
 }
 
 void AuthManager::pingTerminated(size_t idWaiter)
 {
-    log::logt("pingTerminated called with id " + QString::number(idWaiter));
+    Log::logt("pingTerminated called with id " + QString::number(idWaiter));
     mWorkers.at(idWaiter)->terminate();
-    int p = OsSpecific::instance()->extractPing(*mWorkers.at(idWaiter));
-//      log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process terminated, extracted ping: " + QString::number(p));
+    int p = extractPing(*mWorkers.at(idWaiter));
+//      Log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process terminated, extracted ping: " + QString::number(p));
     mPings[mInProgress.at(idWaiter)] = p;
     startWorker(idWaiter);
 }
@@ -1061,11 +1072,11 @@ std::vector<int> AuthManager::getPings(const std::vector<size_t> & toping)
     std::vector<int> v;
     v.assign(toping.size(), -1);
     if (mPings.empty())
-        log::logt("GetPings(): Empty pings collection");
+        Log::logt("GetPings(): Empty pings collection");
     else {
         for (size_t k = 0; k < toping.size(); ++k) {
             if (toping.at(k) >= (size_t)mPings.size())
-                log::logt("GetPings(): Server id greater than size of pings coll");
+                Log::logt("GetPings(): Server id greater than size of pings coll");
             else
                 v.at(k) = mPings.at(toping.at(k));
         }
@@ -1082,18 +1093,18 @@ static bool PCmp(const IUPair & a, const IUPair & b)
 
 int AuthManager::getServerToJump()
 {
-    log::logt("getServerToJump called");
+    Log::logt("getServerToJump called");
     if (mServers.isEmpty()) {
-        log::logt("Server list not loaded, so using -1");
+        Log::logt("Server list not loaded, so using -1");
         return -1;
     }
     int srv = -1;
     int prev = Setting::instance()->serverID();
-    log::logt("Previous server is " + QString::number(prev));
+    Log::logt("Previous server is " + QString::number(prev));
     std::vector<size_t> toping;     // ix inside mServers
     int enc = Setting::instance()->encryption();
     if (Setting::instance()->showNodes()) {
-        log::logt("showNodes is set, so getting pings of all servers");
+        Log::logt("showNodes is set, so getting pings of all servers");
         // jump to server
         for (int k = 0; k < mServerIds[enc].size(); ++k) {
             if (mServerIds[enc].at(k) != prev)
@@ -1101,7 +1112,10 @@ int AuthManager::getServerToJump()
         }
     } else {
         // jump to hub
+        Log::logt("showNodes is not set, so getting pings of hubs");
         int prevhub = hubIxFromServerName(getServer(prev).name);
+        Log::logt("prevhub is " + QString::number(prevhub));
+        Log::logt("Looping through " + QString::number(mHubIds[enc].size()) + " hubs");
         for (int k = 0; k < mHubIds[enc].size(); ++k) {
             int ixsrv = serverIdFromHubId(mHubIds[enc].at(k));
             if (ixsrv != prev) {
@@ -1114,7 +1128,8 @@ int AuthManager::getServerToJump()
             }
         }
     }
-    log::logt("getServerToJump pings list is " + QString::number(toping.size()));
+
+    Log::logt("getServerToJump pings list is " + QString::number(toping.size()));
 
     std::vector<int> pings = getPings(toping);      // from cache; do not wait for pings; return vec of the same size
 
@@ -1146,11 +1161,13 @@ int AuthManager::getServerToJump()
                 if (!mHubs.empty()) {
                     int h = rand() % mHubs.size();
                     srv = serverIdFromHubId(h);
+                } else {
+                    srv = 0; // We should always have one hub
                 }
             }
         }
     }
-//log::logt("SrvToJump() returns " + QString::number(srv));
+//Log::logt("SrvToJump() returns " + QString::number(srv));
     return srv;
 }
 
@@ -1161,7 +1178,7 @@ void AuthManager::jump()
     if (srv > -1) {
 // TODO: -0             SetNewIp("");
         Setting::instance()->setServer(srv);
-        OpenvpnManager::instance()->start();               // contains stop
+        VPNServiceManager::instance()->sendConnectToVPNRequest();               // contains stop
     }
 }
 
@@ -1178,15 +1195,15 @@ uint64_t AuthManager::getRandom64()
 
 void AuthManager::processOldIP()
 {
-    log::logt("ProcessOldIpHttp() attempt " + QString::number(mIPAttemptCount));
+    Log::logt("ProcessOldIpHttp() attempt " + QString::number(mIPAttemptCount));
     QString ip;
     bool err = true;
     if (mIPReply->error() != QNetworkReply::NoError) {
-        log::logt(mIPReply->errorString());
+        Log::logt(mIPReply->errorString());
     } else {
         QByteArray ba = mIPReply->readAll();
         if (ba.isEmpty()) {
-            log::logt("Cannot get old IP address. Server response is empty.");
+            Log::logt("Cannot get old IP address. Server response is empty.");
         } else {
             QString s(ba);
             int p[3];
@@ -1211,19 +1228,20 @@ void AuthManager::processOldIP()
     }
 
     if (err) {
-        log::logt("ProcessOldIpHttp() attempt " + QString::number(mIPAttemptCount) + " fails");
+        Log::logt("ProcessOldIpHttp() attempt " + QString::number(mIPAttemptCount) + " fails");
         if (mIPAttemptCount < 4)
             getOldIP();
         else
-            log::logt("ProcessOldIpHttp() conceide at attempt " + QString::number(mIPAttemptCount));
+            Log::logt("ProcessOldIpHttp() conceide at attempt " + QString::number(mIPAttemptCount));
     } else {
-        log::logt("Determined old IP:  " + ip);
+        Log::logt("Determined old IP:  " + ip);
         mOldIP = ip;
         // try to push value (if Scr_Connect was constructed yet)
         emit oldIpLoaded(mOldIP);
     }
 }
 
+// TODO: Call this after reaching connected state
 void AuthManager::forwardPorts()
 {
     UVec ports = Setting::instance()->forwardPorts();
@@ -1240,9 +1258,88 @@ void AuthManager::forwardPorts()
 void AuthManager::loginFinished()
 {
     QString message = processServersXml();
-    log::logt("loginFinished called message is " + message);
+    Log::logt("loginFinished called message is " + message);
     if (message.isEmpty())
         emit loginCompleted();
     else
         emit loginError(message);
+}
+
+void AuthManager::startPing(QProcess & pr, const QString & adr)
+{
+    pr.start(pingCommand(), formatArguments(adr));
+}
+
+int AuthManager::extractPing(QProcess & pr)
+{
+    int ping = -1;
+    QByteArray ba = pr.readAllStandardOutput();
+    QString s(ba);
+    QStringList out = s.split("\n", QString::SkipEmptyParts);
+    if (!out.isEmpty()) {
+        const QString & sp = out.at(out.size() - 1).trimmed();	// last line
+#ifndef Q_OS_WIN
+        if (sp.indexOf("min/avg/max") > -1) {
+            int e = sp.indexOf('=');
+            int slash = sp.indexOf('/', e +1);
+            int sl1 = sp.indexOf('/', slash +1);
+            if (sl1 > -1) {
+                QString sv = sp.mid(slash + 1, sl1 - slash - 1);
+                bool ok;
+                double d = sv.toDouble(&ok);
+                if (ok)
+                    ping = (int)d;
+            }
+        }
+#else
+        int a;
+        if ((a = sp.indexOf("Average =")) > -1) {
+            int e = sp.indexOf('=', a);
+            if (e > -1) {
+                QString val = sp.mid(e + 1, sp.length() - (e + 1 + 2));
+                bool ok;
+                int p = val.toInt(&ok);
+                if (ok)
+                    ping = p;
+            }
+
+        }
+#endif
+    }
+    return ping;
+}
+
+QStringList AuthManager::formatArguments(const QString & adr)
+{
+    QStringList args;
+    args
+#ifndef Q_OS_WIN
+            << "-c" << "1"		// one packet - Mac, Linux
+#ifdef Q_OS_LINUX
+            << "-w" << "1"		// 1s deadline - Linux
+#endif
+#ifdef Q_OS_DARWIN
+            << "-t" << "1"		// 1s timeout - Mac
+#endif
+#else
+            << "-n" << "1"		// one packet - Windows
+            << "-w"	<< "1200"	// timeout in ms
+#endif
+            << adr
+            ;
+    return args;
+}
+
+const QString & AuthManager::pingCommand()
+{
+#ifdef  Q_OS_DARWIN
+    static const QString cmd = "/sbin/ping";
+#else
+#ifdef  Q_OS_LINUX
+    static const QString cmd = "/bin/ping";
+#else
+    static const QString cmd = "ping";
+#endif
+#endif
+    return cmd;
 }

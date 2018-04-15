@@ -18,18 +18,22 @@
 
 #include "log.h"
 
-
 #include <QFile>
 #include <QDateTime>
 
-#include "scr_logs.h"
-#include "pathhelper.h"
-#include "setting.h"
+#include <QtDebug>
 
-void log::logt(const QString & s)
+#include "pathhelper.h"
+
+Log *Log::mInstance = 0;
+bool Log::mEnabled = false;
+
+void Log::logt(const QString & s)
 {
-    // Don't log anything if logging is disabled
-    if (!Setting::instance()->logging())
+    qDebug() << "Log: " << s;
+
+    // Don't Log anything if Logging is disabled
+    if (!Log::mEnabled)
         return;
 
     QDateTime now = QDateTime::currentDateTimeUtc();
@@ -42,6 +46,17 @@ void log::logt(const QString & s)
         ff.close();
     }
 
-    if (Scr_Logs::IsExists())
-        Scr_Logs::Instance()->Log(s1);
+    emit instance()->logMessage(s1);
+}
+
+Log *Log::instance()
+{
+    if (!Log::mInstance)
+        mInstance = new Log;
+    return mInstance;
+}
+
+void Log::enableLogging(bool enabled)
+{
+    mEnabled = enabled;
 }

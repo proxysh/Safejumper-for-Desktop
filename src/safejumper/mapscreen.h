@@ -19,6 +19,8 @@
 #ifndef MAPSCREEN_H
 #define MAPSCREEN_H
 
+#include "common.h"
+
 #include <memory>
 
 #include <QDialog>
@@ -67,6 +69,8 @@ private slots:
 
     void updateProtocol(); // slot for reacting to Setting protocolChanged signal
     void updateLocation(); // slot for reacting to Setting locationChanged signal
+
+    void stateChanged(vpnState state);
 private:
     int currentServerId();	  // -1 if not selected, otherwise [0-...] id of server inside auth manager
     void setRowStyle(bool show_nodes);

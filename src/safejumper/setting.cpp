@@ -25,6 +25,8 @@
 #include "osspecific.h"
 #include "log.h"
 
+#include <QApplication>
+#include <QDir>
 
 //In future, we’ll add things such as “OpenVPN with XOR TCP 448” or “OpenVPN with TOR UDP 4044”.
 
@@ -217,11 +219,6 @@ bool Setting::disableIPv6()
 void Setting::setDisableIPv6(bool v)
 {
     mSettings.setValue("cb_DisableIpv6", v);
-    try {
-        OsSpecific::instance()->setIPv6(!v);
-    } catch(std::exception & ex) {
-        log::logt(ex.what());
-    }
 }
 
 bool Setting::autoconnect()
@@ -293,8 +290,101 @@ bool Setting::startup()
 void Setting::setStartup(bool v)
 {
     mSettings.setValue("cb_Startup", v);
+
     // Do the OsSpecific stuff to make it happen
-    OsSpecific::instance()->setStartup(v);
+#ifdef Q_OS_WIN
+    QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
+    static const char * keyname = "proxy_sh";
+    if (v) {
+        QString val = "\"" + QCoreApplication::applicationFilePath() + "\"";
+        val.replace("/","\\");
+        settings.setValue(keyname, val);
+    } else {
+        settings.remove(keyname);
+    }
+#endif	// Q_OS_WIN
+
+#ifdef Q_OS_LINUX
+    QString dir = QDir::homePath() + "/.config/autostart";
+    QString pfn = dir + "/.desktop";
+    if (v) {
+        QDir d;
+        if (d.mkpath(dir)) {
+            QFile f(pfn);
+            if (f.exists()) {
+                f.open(QIODevice::ReadWrite);
+                delete_startup(f);
+            } else {
+                f.open(QIODevice::Append);
+            }
+            f.write(gs_desktop.toLatin1());
+            f.flush();
+            f.close();
+        }
+    } else {
+        QFile f(pfn);
+        if (f.exists()) {
+            f.open(QIODevice::ReadWrite);
+            delete_startup(f);
+            f.flush();
+            f.close();
+        }
+    }
+#endif	// Q_OS_LINUX
+
+#ifdef Q_OS_OSX
+    QString dir = QDir::homePath() + "/Library/LaunchAgents";
+    QString pfn = dir + "/sh.proxy.safejumper.plist";
+    QFile pa(pfn);
+    if (pa.exists()) {
+        if (!pa.remove())
+            Log::logt("Cannot delete startup file '"+ pfn + "'");
+    }
+    if (v) {
+        QDir d(dir);
+        if (!d.exists()) {
+            d.mkpath(dir);
+        }
+        if (!pa.open(QIODevice::WriteOnly)) {
+            Log::logt("Cannot open startup file '"+ pfn + "' for writing");
+        } else {
+            QString s =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
+                "<plist version=\"1.0\">\n"
+                "<dict>\n"
+                "<key>Label</key>\n"
+                "<string>sh.proxy.safejumper</string>\n"
+
+                "<key>LimitLoadToSessionType</key>\n"
+                "<string>Aqua</string>\n"
+                "<key>OnDemand</key>\n"
+                "<true/>\n"
+
+                "<key>Program</key>\n"
+                "<string>"
+                ;
+
+            s +=
+                QApplication::applicationFilePath() + "</string>\n"
+
+                //	  "<key>ProgramArguments</key>\n"
+                //	  "<array>\n"
+                //	  "<string>";
+                // <string>arguments_here</string>\n
+                //	"</array>\n"
+
+                "<key>KeepAlive</key>\n"
+                "<false/>\n"
+                "<key>RunAtLoad</key>\n"
+                "<true/>\n"
+                "</dict>\n"
+                "</plist>\n"
+                ;
+            pa.write(s.toLatin1());
+        }
+    }
+#endif	// Q_OS_OSX
 }
 
 bool Setting::reconnect()
@@ -429,16 +519,16 @@ void Setting::setServer(int ixsrv)
 
 void Setting::loadServer()
 {
-    log::logt("Setting loadServer called");
+    Log::logt("Setting loadServer called");
     if (AuthManager::instance()->currentEncryptionServers().empty()) {
-        log::logt("Returning because we don't have a server list");
+        Log::logt("Returning because we don't have a server list");
         return;		// cannot select in empty list
     }
 
     int savedsrv = mSettings.value(LocationSettingsName(), -1).toInt();
     QString savedname = mSettings.value(LocationSettingsStrName(), "undefined").toString();
-    log::logt("In Setting::loadServer previously saved server name is " + savedname);
-    log::logt("Previously saved server index is " + QString::number(savedsrv));
+    Log::logt("In Setting::loadServer previously saved server name is " + savedname);
+    Log::logt("Previously saved server index is " + QString::number(savedsrv));
 
     int ixsrv = -1;
     // verify that the sever exists
@@ -449,12 +539,12 @@ void Setting::loadServer()
                 ixsrv = savedsrv;
             else if (savedname != "undefined") {
                 ixsrv = AuthManager::instance()->serverIxFromName(savedname);
-                log::logt("Server names didn't match their indexes, server index is " + QString::number(ixsrv));
+                Log::logt("Server names didn't match their indexes, server index is " + QString::number(ixsrv));
             }
         } else {
             if (savedname != "undefined") {
                 ixsrv = AuthManager::instance()->serverIxFromName(savedname);
-                log::logt("Server names didn't match their indexes, server index is " + QString::number(ixsrv));
+                Log::logt("Server names didn't match their indexes, server index is " + QString::number(ixsrv));
             }
         }
     }
@@ -462,7 +552,7 @@ void Setting::loadServer()
     if (ixsrv < 0)
         ixsrv = AuthManager::instance()->getServerToJump();
 
-    log::logt("Setting::loadServer server index to set is " + QString::number(ixsrv));
+    Log::logt("Setting::loadServer server index to set is " + QString::number(ixsrv));
     // initiate population of the Location drop-down;
     // will call Setting::IsShowNodes() which will initiate scr_settings and load checkboxes
     setServer(ixsrv);

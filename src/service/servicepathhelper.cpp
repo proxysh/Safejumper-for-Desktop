@@ -16,7 +16,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include "pathhelper.h"
+#include "servicepathhelper.h"
 
 #include <QDir>
 #include <QCoreApplication>
@@ -24,36 +24,36 @@
 
 extern QCoreApplication * g_pTheApp;
 
-std::auto_ptr<PathHelper> PathHelper::_inst;
-PathHelper * PathHelper::Instance()
+std::auto_ptr<ServicePathHelper> ServicePathHelper::_inst;
+ServicePathHelper * ServicePathHelper::Instance()
 {
     if (!_inst.get())
-        _inst.reset(new PathHelper());
+        _inst.reset(new ServicePathHelper());
     return _inst.get();
 }
 
-bool PathHelper::exists()
+bool ServicePathHelper::exists()
 {
     return (_inst.get() != NULL);
 }
 
-void PathHelper::cleanup()
+void ServicePathHelper::cleanup()
 {
     if (_inst.get() != NULL)
         delete _inst.release();
 }
 
-PathHelper::PathHelper()
+ServicePathHelper::ServicePathHelper()
 {
     QDir dir(tempPath());
     if (!dir.exists())
         dir.mkpath(tempPath());
 }
 
-PathHelper::~PathHelper()
+ServicePathHelper::~ServicePathHelper()
 {}
 
-QString PathHelper::openvpnFilename()
+QString ServicePathHelper::openvpnFilename()
 {
 #ifdef Q_OS_DARWIN
     return resourcesPath() + openvpnRelativeFilename();
@@ -67,72 +67,69 @@ QString PathHelper::openvpnFilename()
 }
 
 #ifdef Q_OS_DARWIN
-QString PathHelper::openvpnRelativeFilename()
+QString ServicePathHelper::openvpnRelativeFilename()
 {
     return "/openvpn/openvpn-2.4.0/openvpn-executable";
 }
 #endif
 
-QString PathHelper::resourcesPath()
+QString ServicePathHelper::resourcesPath()
 {
 #ifdef Q_OS_DARWIN
-    QDir d(g_pTheApp->applicationDirPath());
-    d.cdUp();
-    d.cd("Resources");
-    return d.canonicalPath();
+    return "/Applications/Safejumper.app/Contents/Resources";
 #else
     return QCoreApplication::applicationDirPath();
 #endif
 }
 
 #ifdef Q_OS_DARWIN
-QString PathHelper::openvpnRunningScriptFilename()
+QString ServicePathHelper::openvpnRunningScriptFilename()
 {
     return resourcesPath() + "openvpnRunning.sh";
 }
 #endif
 
-QString PathHelper::tempPath()
+QString ServicePathHelper::tempPath()
 {
     return QDir::homePath() + "/.safejumper/";
 }
 
-QString PathHelper::openvpnLogFilename()
+QString ServicePathHelper::openvpnLogFilename()
 {
-    return tempPath() + "safejumper-openvpn.log";
+    return resourcesPath() + "/safejumper-openvpn.log";
 }
 
-QString PathHelper::openvpnConfigFilename()
+QString ServicePathHelper::openvpnConfigFilename()
 {
-    return tempPath() + "safejumper-openvpn.ovpn";
+    return resourcesPath() + "/safejumper-openvpn.ovpn";
 }
 
-QString PathHelper::proxyshCaCertFilename()
+QString ServicePathHelper::proxyshCaCertFilename()
 {
     return resourcesPath() + "/proxysh.crt";
 }
 
-QString PathHelper::upScriptFilename()
+QString ServicePathHelper::upScriptFilename()
 {
     return resourcesPath() + "/client.up.safejumper.sh";
 }
 
-QString PathHelper::downScriptFilename()
+QString ServicePathHelper::downScriptFilename()
 {
     return resourcesPath() + "/client.down.safejumper.sh";
 }
 
-QString PathHelper::netDownFilename()
+QString ServicePathHelper::netDownFilename()
 {
     return resourcesPath() + "/netdown";
 }
 
-QString PathHelper::launchopenvpnFilename()
+QString ServicePathHelper::launchopenvpnFilename()
 {
     return resourcesPath() + "/launchopenvpn";
 }
 
-QString PathHelper::obfsproxyFilename()
+QString ServicePathHelper::obfsproxyFilename()
 {
 #ifdef Q_OS_DARWIN
     return resourcesPath() + "/env/bin/obfsproxy";
@@ -145,17 +142,26 @@ QString PathHelper::obfsproxyFilename()
 #endif	// 	Q_OS_DARWIN
 }
 
-QString PathHelper::obfsproxyLogFilename()
+QString ServicePathHelper::obfsproxyLogFilename()
 {
-    return tempPath() + "safejumper-obfsproxy.log";
+    return resourcesPath() + "/safejumper-obfsproxy.log";
 }
 
-QString PathHelper::installObfsproxyFilename()
+QString ServicePathHelper::installObfsproxyFilename()
 {
     return resourcesPath() + "/installobfsproxy.sh";
 }
 
-QString PathHelper::safejumperLogFilename()
+QString ServicePathHelper::safejumperServiceLogFilename()
+{
+#ifdef Q_OS_WIN
+    return resourcesPath() + "/safejumper-service.log";
+#else
+    return "/tmp/safejumper-service.log";
+#endif
+}
+
+QString ServicePathHelper::safejumperLogFilename()
 {
     return tempPath() + "safejumper-debug.log";
 }

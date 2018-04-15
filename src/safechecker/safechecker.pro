@@ -8,7 +8,10 @@ QT	   += network xml core gui widgets
 u
 TARGET = safechecker
 TEMPLATE = app
-INCLUDEPATH += ../safejumper/
+INCLUDEPATH += ../safejumper/ \
+               ../common/
+
+DEFINES += SAFECHECKER
 
 macx: {
     TARGET = Safechecker
@@ -59,7 +62,7 @@ linux: {
 
 SOURCES += \
     ../safejumper/authmanager.cpp \
-    ../safejumper/common.cpp \
+    ../common/common.cpp \
     ../safejumper/confirmationdialog.cpp \
     ../safejumper/dlg_newnode.cpp \
     ../safejumper/encryptiondelegate.cpp \
@@ -67,13 +70,12 @@ SOURCES += \
     ../safejumper/flag.cpp \
     ../safejumper/fonthelper.cpp \
     ../safejumper/locationdelegate.cpp \
-    ../safejumper/log.cpp \
+    ../common/log.cpp \
     ../safejumper/loginwindow.cpp \
     main.cpp \
     ../safejumper/mapscreen.cpp \
     ../safejumper/ministun.c \
-    ../safejumper/openvpnmanager.cpp \
-    ../safejumper/osspecific.cpp \
+    ../common/osspecific.cpp \
     pathhelper.cpp \
     ../safejumper/pingwaiter.cpp \
     ../safejumper/portforwarder.cpp \
@@ -88,7 +90,7 @@ SOURCES += \
 
 HEADERS += \
     ../safejumper/authmanager.h \
-    ../safejumper/common.h \
+    ../common/common.h \
     ../safejumper/confirmationdialog.h \
     ../safejumper/dlg_newnode.h \
     ../safejumper/encryptiondelegate.h \
@@ -96,12 +98,11 @@ HEADERS += \
     ../safejumper/flag.h \
     ../safejumper/fonthelper.h \
     ../safejumper/locationdelegate.h \
-    ../safejumper/log.h \
+    ../common/log.h \
     ../safejumper/loginwindow.h \
     ../safejumper/mapscreen.h \
     ../safejumper/ministun.h \
-    ../safejumper/openvpnmanager.h \
-    ../safejumper/osspecific.h \
+    ../common/osspecific.h \
     pathhelper.h \
     ../safejumper/pingwaiter.h \
     ../safejumper/portforwarder.h \

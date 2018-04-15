@@ -16,6 +16,12 @@ Section main
 SectionIn RO
        CreateDirectory $INSTDIR
        SetOutPath $INSTDIR
+       # Stop and uninstall service in case it's running
+       nsExec::Exec '$INSTDIR\safejumperservice.exe -t'
+       Pop $0
+       nsExec::Exec '$INSTDIR\safejumperservice.exe -u'
+       Pop $0
+       
        File  Qt5Core.dll
        File  Qt5Gui.dll
        File  Qt5Network.dll
@@ -31,6 +37,7 @@ SectionIn RO
        File  platforms\qwindows.dll
        SetOutPath $INSTDIR
        File  safejumper.exe
+       File  safejumperservice.exe
        SetOutPath $TEMP
        File  openvpn-proxysh.exe
        Push $0
@@ -54,7 +61,7 @@ SectionIn RO
        Delete  $OUTDIR\python-2.7.11.msi
        File  wheel-pip\pip-8.1.2-py2.py3-none-any.whl
        Push $0
-       ExecWait 'c:\python27\python.exe -m pip install $OUTDIR\pip-8.1.2-py2.py3-none-any.whl' $0
+       ExecWait 'c:\python27\pythonw.exe -m pip install $OUTDIR\pip-8.1.2-py2.py3-none-any.whl' $0
        IfErrors Label_0x25 Label_0x26
 
   Label_0x25:
@@ -72,7 +79,7 @@ SectionIn RO
        File  wheel\Twisted-16.2.0-cp27-cp27m-win32.whl
        File  wheel\zope.interface-4.2.0-cp27-cp27m-win32.whl
        Push $0
-       ExecWait 'c:\python27\python.exe -m pip install $OUTDIR\argparse-1.4.0-py2.py3-none-any.whl $OUTDIR\obfsproxy-0.2.13-py2-none-any.whl $OUTDIR\pycrypto-2.6.1-cp27-cp27m-win32.whl $OUTDIR\pyptlib-0.0.6-py2-none-any.whl $OUTDIR\PyYAML-3.11-cp27-cp27m-win32.whl $OUTDIR\setuptools-23.1.0-py2.py3-none-any.whl $OUTDIR\Twisted-16.2.0-cp27-cp27m-win32.whl $OUTDIR\zope.interface-4.2.0-cp27-cp27m-win32.whl' $0
+       ExecWait 'c:\python27\pythonw.exe -m pip install $OUTDIR\argparse-1.4.0-py2.py3-none-any.whl $OUTDIR\obfsproxy-0.2.13-py2-none-any.whl $OUTDIR\pycrypto-2.6.1-cp27-cp27m-win32.whl $OUTDIR\pyptlib-0.0.6-py2-none-any.whl $OUTDIR\PyYAML-3.11-cp27-cp27m-win32.whl $OUTDIR\setuptools-23.1.0-py2.py3-none-any.whl $OUTDIR\Twisted-16.2.0-cp27-cp27m-win32.whl $OUTDIR\zope.interface-4.2.0-cp27-cp27m-win32.whl' $0
        IfErrors Label_0x29 Label_0x30
 
   Label_0x29:
@@ -90,6 +97,16 @@ SectionIn RO
        Delete  $OUTDIR\setuptools-23.1.0-py2.py3-none-any.whl
        Delete  $OUTDIR\Twisted-16.2.0-cp27-cp27m-win32.whl
        Delete  $OUTDIR\zope.interface-4.2.0-cp27-cp27m-win32.whl
+
+       ; Stop and unnistall in case a previous build is installed
+       nsExec::Exec '$INSTDIR\safejumperservice.exe -t'
+       Pop $0
+       nsExec::Exec '$INSTDIR\safejumperservice.exe -u'
+       Pop $0
+       nsExec::Exec '$INSTDIR\safejumperservice.exe -i'
+       Pop $0
+       nsExec::Exec '$INSTDIR\safejumperservice.exe -s'
+       Pop $0
 
     SetOutPath 'c:\Program Files\OpenVPN\bin\'
     #File  fix-dns-leak-32.dll // No longer needed with openvpn 2.3.9+

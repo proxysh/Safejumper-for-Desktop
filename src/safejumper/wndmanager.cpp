@@ -32,12 +32,17 @@
 #include "errordialog.h"
 #include "log.h"
 #include "trayiconmanager.h"
+#include "vpnservicemanager.h"
 
 WndManager::WndManager()
     : _DlgPort(NULL)
 {
     connect(TrayIconManager::instance(), &TrayIconManager::bugTriggered,
             this, &WndManager::showFeedback);
+    connect(VPNServiceManager::instance(), &VPNServiceManager::stateChanged,
+            this, &WndManager::stateChanged);
+    connect(VPNServiceManager::instance(), &VPNServiceManager::error,
+            this, &WndManager::showErrorMessage);
 }
 
 WndManager::~WndManager()
@@ -215,7 +220,7 @@ void WndManager::ApplyCoords(QWidget * to)
     //assert(tw > 0);
     int nx = _x + 187 - (to->width() / 2);
 
-//log::logt(QString().sprintf("ApplyCoords(): moving to (%d,%d)", nx, _y));
+//Log::logt(QString().sprintf("ApplyCoords(): moving to (%d,%d)", nx, _y));
     to->move(nx, _y);
 }
 
@@ -263,47 +268,7 @@ QWidget * WndManager::ScrVisible()
     return w;
 }
 
-void WndManager::HandleConnecting()
-{
-    // disable buttons
-    // change status label to connecting
-    ConnectionDialog::instance()->statusConnecting();
-    if (MapScreen::exists())
-        MapScreen::instance()->statusConnecting();
-    LoginWindow::Instance()->StatusConnecting();
-
-    // if any form visible
-    QWidget * w = ScrVisible();
-    if (NULL != w)  // switch to Scr_Connect
-        ToPrimary();
-    // disable menu buttons
-
-    // change tray icon
-    LoginWindow::Instance()->StatusConnecting();
-}
-
-void WndManager::HandleConnected()
-{
-    ClosePortDlg();
-    ConnectionDialog::instance()->statusConnected();
-    LoginWindow::Instance()->StatusConnected();
-}
-
-void WndManager::HandleDisconnected()
-{
-    ConnectionDialog::instance()->statusDisconnected();
-    if (MapScreen::exists())
-        MapScreen::instance()->statusDisconnected();
-    LoginWindow::Instance()->StatusDisconnected();
-    // TODO: -0
-}
-
-void WndManager::HandleState(const QString & word)
-{
-    ConnectionDialog::instance()->statusConnecting(word);
-}
-
-void WndManager::ErrMsg(const QString & msg)
+void WndManager::showErrorMessage(const QString & msg)
 {
     this->ToPrimary();
     ErrorDialog dlg(msg, "Error", this->ScrVisible());
@@ -349,7 +314,24 @@ bool WndManager::IsCyclePort()
 
 void WndManager::showFeedback()
 {
-    QWidget * from = ScrVisible();
     ToConnect();
     ConnectionDialog::instance()->showFeedback();
+}
+
+void WndManager::stateChanged(vpnState state)
+{
+    switch (state) {
+    case vpnStateConnecting:
+        // if any form visible
+        if (ScrVisible() != NULL)  // switch to Scr_Connect
+            ToPrimary();
+        break;
+    case vpnStateConnected:
+        ClosePortDlg();
+        break;
+    case vpnStateDisconnected:
+        break;
+    default:
+        break;
+    }
 }

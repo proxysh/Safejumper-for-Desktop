@@ -24,6 +24,7 @@
 #include <QPointer>
 #include <memory>
 
+#include "common.h"
 #include "confirmationdialog.h"
 #include "dlg_newnode.h"
 
@@ -58,13 +59,7 @@ public:
     QWidget * ScrVisible();	 // NULL if no visible
 
     static void DoShape(QWidget * d);
-    void HandleConnecting();
-    void HandleConnected();
-    void HandleDisconnected();
 
-    void HandleState(const QString & word);		// just output it into header for debug purpose
-
-    void ErrMsg(const QString & msg);
     void ToFront(QWidget * w);
     void ToFront();
 
@@ -76,6 +71,10 @@ public:
 
 private slots:
     void showFeedback();
+
+    void stateChanged(vpnState state);
+
+    void showErrorMessage(const QString & msg);
 
 private:
     WndManager();

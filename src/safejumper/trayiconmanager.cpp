@@ -27,6 +27,7 @@
 #include "mapscreen.h"
 #include "errordialog.h"
 #include "confirmationdialog.h"
+#include "osspecific.h"
 
 #include "authmanager.h"
 #include "wndmanager.h"
@@ -34,9 +35,8 @@
 #include "version.h"
 #include "setting.h"
 
-#include "openvpnmanager.h"
+#include "vpnservicemanager.h"
 
-#include "osspecific.h"
 #include "log.h"
 
 TrayIconManager::TrayIconManager(QWidget *parent)
@@ -45,7 +45,7 @@ TrayIconManager::TrayIconManager(QWidget *parent)
     createTrayIcon();
     mTrayIcon->show();
 
-    statusDisconnected();
+    stateChanged(vpnStateDisconnected);
 
     disableActionsOnLogout();
 
@@ -60,6 +60,9 @@ TrayIconManager::TrayIconManager(QWidget *parent)
     connect(AuthManager::instance(), &AuthManager::logoutCompleted,
             this, &TrayIconManager::disableActionsOnLogout);
 
+    connect(VPNServiceManager::instance(), &VPNServiceManager::stateChanged,
+            this, &TrayIconManager::stateChanged);
+
     // On OSX check update the state icon every 3 seconds so we can change
     // from dark to light icons as the theme changes
     // TODO: Get notified by the os when this user setting changes instead
@@ -67,7 +70,7 @@ TrayIconManager::TrayIconManager(QWidget *parent)
     if (mIconTimer.get() == NULL) {
         mIconTimer.reset(new QTimer(this));
         connect(mIconTimer.get(), SIGNAL(timeout()),
-                this, SLOT(updateStateIcon()));
+                this, SLOT(refreshStateIcon()));
         mIconTimer->start(3000);
     }
 #endif
@@ -110,7 +113,7 @@ void TrayIconManager::createTrayIcon()
     createTrayIconMenu();
     QMenu *menu = mTrayIconMenu.get();
     mTrayIcon->setContextMenu(menu);
-    QIcon icon(OsSpecific::instance()->disconnectedIcon());
+    QIcon icon(disconnectedIcon());
     mTrayIcon->setIcon(icon);
     connect(mTrayIcon.get(), &QSystemTrayIcon::activated,
             this, &TrayIconManager::actionActivated);
@@ -235,26 +238,28 @@ void TrayIconManager::actionActivated(QSystemTrayIcon::ActivationReason reason)
 #endif
 }
 
-void TrayIconManager::updateStateIcon()
+void TrayIconManager::refreshStateIcon()
 {
-    OpenvpnManager::OvState st = OpenvpnManager::ovsDisconnected;
-    if (OpenvpnManager::exists())
-        st = OpenvpnManager::instance()->state();
-    updateStateIcon(st);
+    if (VPNServiceManager::exists()) {
+        vpnState state = VPNServiceManager::instance()->state();
+        stateChanged(state);
+    }
 }
 
-void TrayIconManager::updateStateIcon(OpenvpnManager::OvState st)
+void TrayIconManager::stateChanged(vpnState st)
 {
     QString ic;
     switch (st) {
-    case OpenvpnManager::ovsDisconnected:
-        ic = OsSpecific::instance()->disconnectedIcon();
+    case vpnStateDisconnected:
+        updateActionsEnabled(false);
+        ic = disconnectedIcon();
         break;
-    case OpenvpnManager::ovsConnecting:
-        ic = OsSpecific::instance()->connectingIcon();
+    case vpnStateConnecting:
+        updateActionsEnabled(true);
+        ic = connectingIcon();
         break;
-    case OpenvpnManager::ovsConnected:
-        ic = OsSpecific::instance()->connectedIcon();
+    case vpnStateConnected:
+        ic = connectedIcon();
         mJumpAction->setEnabled(true);
         mSwitchCountryAction->setEnabled(true);
         break;
@@ -270,7 +275,7 @@ void TrayIconManager::connectTriggered()
     if (!AuthManager::instance()->loggedIn()) {
         emit login();
     } else {
-        OpenvpnManager::instance()->start();
+        VPNServiceManager::instance()->sendConnectToVPNRequest();
     }
 }
 
@@ -284,7 +289,7 @@ void TrayIconManager::connectToTriggered()
             size_t serverId = action->data().toInt();
 
             Setting::instance()->setServer(serverId);
-            OpenvpnManager::instance()->start();
+            VPNServiceManager::instance()->sendConnectToVPNRequest();
         } else {
             emit login();
         }
@@ -293,7 +298,7 @@ void TrayIconManager::connectToTriggered()
 
 void TrayIconManager::disconnectTriggered()
 {
-    OpenvpnManager::instance()->stop();
+    VPNServiceManager::instance()->sendDisconnectFromVPNRequest();
 }
 
 void TrayIconManager::statusTriggered()
@@ -352,8 +357,7 @@ void TrayIconManager::closeTriggered()
 
 void TrayIconManager::logoutTriggered()
 {
-    if (OpenvpnManager::exists())
-        OpenvpnManager::instance()->stop();
+    VPNServiceManager::instance()->sendDisconnectFromVPNRequest();
     if (AuthManager::exists())
         AuthManager::instance()->logout();
     WndManager::Instance()->ToPrimary();
@@ -457,12 +461,12 @@ void TrayIconManager::clearConnectToMenu()
 void TrayIconManager::statusConnecting()
 {
     updateActionsEnabled(true);
-    updateStateIcon(OpenvpnManager::ovsConnecting);
+    stateChanged(vpnStateConnecting);
 }
 
 void TrayIconManager::statusConnected()
 {
-    updateStateIcon(OpenvpnManager::ovsConnected);
+    stateChanged(vpnStateConnected);
     mJumpAction->setEnabled(true);			//_ac_Jump->setIcon(QIcon(":/icons-tm/jump-red.png"));
     mSwitchCountryAction->setEnabled(true);	//_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-red.png"));
 }
@@ -470,7 +474,7 @@ void TrayIconManager::statusConnected()
 void TrayIconManager::statusDisconnected()
 {
     updateActionsEnabled(false);
-    updateStateIcon(OpenvpnManager::ovsDisconnected);
+    stateChanged(vpnStateDisconnected);
 }
 
 static void s_set_enabled(QAction * ac, bool enabled, const char * /*icon_word */)
@@ -503,4 +507,84 @@ void TrayIconManager::updateActionsEnabled(bool connecting)
         s_set_enabled(mDisconnectAction.get(), false, disconn);
         s_set_enabled(mConnectToAction.get(), false, conn);
     }
+}
+
+const QString gs_icon = ":/icons/icon-tray.png";
+const QString gs_icon_cross = ":/icons/icon-tray-cross.png";
+const QString gs_icon_cycle = ":/icons/icon-tray-cycle.png";
+
+const QString gs_icon_white = ":/icons/icon-tray-white.png";
+const QString gs_icon_cross_white = ":/icons/icon-tray-cross-white.png";
+const QString gs_icon_cycle_white = ":/icons/icon-tray-cycle-white.png";
+
+const QString gs_icon_light = ":/icons/icon-tray-hover.png";
+const QString gs_icon_cross_light = ":/icons/icon-tray-hover-cross.png";
+const QString gs_icon_cycle_light = ":/icons/icon-tray-hover-cycle.png";
+
+const QString gs_icon_color = ":/icons/icon-tray-color.png";
+const QString gs_icon_cross_color = ":/icons/icon-tray-color-cross.png";
+const QString gs_icon_cycle_color = ":/icons/icon-tray-color-cycle.png";
+
+const QString TrayIconManager::disconnectedIcon() const
+{
+#ifdef Q_OS_DARWIN
+    return isDark() ? gs_icon_cross_white : gs_icon_cross;
+#else
+    return gs_icon_cross_color;
+#endif
+}
+
+const QString TrayIconManager::connectingIcon() const
+{
+#ifdef Q_OS_DARWIN
+    return isDark() ? gs_icon_cycle_white : gs_icon_cycle;
+#else
+    return gs_icon_cycle_color;
+#endif
+}
+
+#ifdef Q_OS_DARWIN
+bool TrayIconManager::isDark() const
+{
+    QString result = OsSpecific::instance()->runCommandFast("defaults read -g AppleInterfaceStyle");
+    bool dark = result.contains("Dark");
+    Log::logt(QString("Current theme ") + result);
+    return dark;
+}
+#endif
+
+const QString TrayIconManager::connectedIcon() const
+{
+#ifdef Q_OS_DARWIN
+    return isDark() ? gs_icon_white : gs_icon;
+#else
+    return gs_icon_color;
+#endif
+}
+
+const QString TrayIconManager::disconnectedSelectedIcon() const
+{
+#ifdef Q_OS_DARWIN
+    return gs_icon_cross_light;
+#else
+    return gs_icon_cross_color;
+#endif
+}
+
+const QString TrayIconManager::connectingSelectedIcon() const
+{
+#ifdef Q_OS_DARWIN
+    return gs_icon_cycle_light;
+#else
+    return gs_icon_cycle_color;
+#endif
+}
+
+const QString TrayIconManager::connectedSelectedIcon() const
+{
+#ifdef Q_OS_DARWIN
+    return gs_icon_light;
+#else
+    return gs_icon_color;
+#endif
 }

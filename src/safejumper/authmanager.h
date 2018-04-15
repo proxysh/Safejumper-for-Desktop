@@ -134,6 +134,7 @@ signals:
     void newIpLoaded(QString newIp);
 
 private slots:
+    void loginNetworkError(QNetworkReply::NetworkError error);
     void loginFinished();
     void processObfsServerNamesXml();
     void processEccServerNamesXml();
@@ -150,6 +151,12 @@ private:
     void populateServerIdsFromNames(QStringList names, QList<int> &serverList);		// for _obfs_names lookup respective server ix in _servers
     QStringList extractNames(QString & out_msg);
     void pingAllServers();
+
+    void startPing(QProcess & pr, const QString & adr);		// pr must have already connected finished() signal
+    int extractPing(QProcess & pr);		// exract ping value from pr's stdout; -1 on error / unavailable
+
+    const QString & pingCommand();			// both for StartPing()
+    QStringList formatArguments(const QString & adr);
 
     bool mLoggedIn;
     bool mCancellingLogin;

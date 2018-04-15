@@ -14,12 +14,13 @@ CONFIG += static
 
 TEMPLATE = app
 
-QMAKE_INCDIR += ../safejumper/
+QMAKE_INCDIR += ../safejumper/ \
+    ../common/
 
 SOURCES += main.cpp \
-	../safejumper/pathhelper.cpp \
+        ../common/pathhelper.cpp \
     common.cpp
 
 HEADERS  += \
-	../safejumper/pathhelper.h \
+        ../common/pathhelper.h \
     common.h

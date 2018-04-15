@@ -30,17 +30,22 @@
 #include "confirmationdialog.h"
 #include "trayiconmanager.h"
 
+#include "application.h"
 #include "authmanager.h"
 #include "wndmanager.h"
 #include "common.h"
 #include "version.h"
 #include "setting.h"
 
-#include "openvpnmanager.h"
+#include "vpnservicemanager.h"
 
 #include "osspecific.h"
 #include "log.h"
 #include "fonthelper.h"
+
+#ifdef Q_OS_DARWIN
+#include "smjobbless.h"
+#endif
 
 LoginWindow::LoginWindow(QWidget *parent) :
     //QDialog(parent),
@@ -98,8 +103,6 @@ LoginWindow::LoginWindow(QWidget *parent) :
         }
     }
 
-    StatusDisconnected();
-
     if (!ui->eLogin->text().isEmpty() && ui->ePsw->text().isEmpty())
         ui->ePsw->setFocus();
     else
@@ -132,11 +135,19 @@ void LoginWindow::Timer_Constructed()
     connect(g_pTheApp, SIGNAL(showUp()), this, SLOT(ToScr_Primary()));
 #endif
 
+#ifdef Q_OS_DARWIN
+    bool helperInstalled = installPrivilegedHelperTool();
+
+    while (!helperInstalled) {
+        helperInstalled = installPrivilegedHelperTool();
+        usleep(100);
+    }
+#endif
+
     Scr_Logs * l = Scr_Logs::Instance();
 
     if (l->IsExists())		// force construction
-        if (OpenvpnManager::instance()->openvpnRunning())
-            OpenvpnManager::instance()->killRunningOpenvpn();
+        VPNServiceManager::instance()->killRunningOpenvpn();
 
     AuthManager::instance()->getOldIP();
     connect(AuthManager::instance(), SIGNAL(loginCompleted()),
@@ -150,13 +161,13 @@ void LoginWindow::Timer_Constructed()
     }
 
     if (Setting::instance()->autoconnect()) {
-        log::logt("autoconnect set so logging in automatically");
+        Log::logt("autoconnect set so logging in automatically");
         _ConnectAfterLogin = true;
         on_loginButton_clicked();
     }
 
     if (Setting::instance()->detectInsecureWifi()) {
-        log::logt("autodetect insecure wifi is on, so starting wifi watcher");
+        Log::logt("autodetect insecure wifi is on, so starting wifi watcher");
         startWifiWatcher();
     }
 }
@@ -175,7 +186,7 @@ LoginWindow::~LoginWindow()
 
     TrayIconManager::cleanup();
     AuthManager::cleanup();
-    OpenvpnManager::cleanup();
+    VPNServiceManager::cleanup();
     OsSpecific::cleanup();
     Scr_Logs::Cleanup();
     MapScreen::cleanup();
@@ -225,8 +236,8 @@ void LoginWindow::quitApplication()
     if (res == QDialog::Accepted) {
         mQuitConfirmed = true;
         WndManager::Instance()->CloseAll();
-        if (OpenvpnManager::exists())
-            OpenvpnManager::instance()->stop();
+        if (VPNServiceManager::exists())
+            VPNServiceManager::instance()->sendDisconnectFromVPNRequest();
         g_pTheApp->quit();
     }
 }
@@ -272,31 +283,13 @@ void LoginWindow::enableButtons(bool enabled)
 //	QString errmsg;
 //	bool ok = AuthManager::Instance()->ProcessXml_EccxorName(errmsg);
 //	if (!ok)
-//		log::logt(errmsg);
+//		Log::logt(errmsg);
 //}
 
 void LoginWindow::on_optionsButton_clicked()
 {
     WndManager::Instance()->ToSettings();
 }
-
-void LoginWindow::StatusConnecting()
-{
-    TrayIconManager::instance()->updateActionsEnabled(true);
-    TrayIconManager::instance()->updateStateIcon(OpenvpnManager::ovsConnecting);
-}
-
-void LoginWindow::StatusConnected()
-{
-    TrayIconManager::instance()->updateStateIcon(OpenvpnManager::ovsConnected);
-}
-
-void LoginWindow::StatusDisconnected()
-{
-    TrayIconManager::instance()->updateActionsEnabled(false);
-    TrayIconManager::instance()->updateStateIcon(OpenvpnManager::ovsDisconnected);
-}
-
 
 void LoginWindow::startWifiWatcher()
 {
@@ -322,18 +315,18 @@ void LoginWindow::checkWifi()
     if (NULL != _timer_wifi.get() 		// if not terminating now
             && !_wifi_processing) {			// and not already in the body below
         _wifi_processing = true;
-        log::logt("Checking wifi");
+        Log::logt("Checking wifi");
         bool stopped = false;
         if (!AuthManager::exists()) {
-            log::logt("setting stopped because AuthManager doesn't exist");
+            Log::logt("setting stopped because AuthManager doesn't exist");
             stopped = true;
         } else {
-            if (!OpenvpnManager::exists()) {
-                log::logt("setting stopped because OpenvpnManager doesn't exist");
+            if (!VPNServiceManager::exists()) {
+                Log::logt("setting stopped because VPNServiceManager doesn't exist");
                 stopped = true;
             } else {
-                if (OpenvpnManager::instance()->state() == OpenvpnManager::ovsDisconnected) {
-                    log::logt("setting stopped because openvpnmanager is disconnected");
+                if (VPNServiceManager::instance()->state() == vpnStateDisconnected) {
+                    Log::logt("setting stopped because vpnservicemanager is disconnected");
                     stopped = true;
                 }
             }
@@ -342,16 +335,16 @@ void LoginWindow::checkWifi()
         if (stopped) {
             if (!AuthManager::instance()->loggedIn()) {
                 if (Setting::instance()->autoconnect()) {	// log in only if checked Auto-connect when app starts
-                    log::logt("Autoconnect is set, so logging in if hasInSecureWifi");
+                    Log::logt("Autoconnect is set, so logging in if hasInSecureWifi");
                     if (OsSpecific::instance()->hasInsecureWifi()) {
-                        log::logt("Logging in because hasInsecureWifi");
+                        Log::logt("Logging in because hasInsecureWifi");
                         _ConnectAfterLogin = true;
                         on_loginButton_clicked();
                     }
                 }
             } else {
                 if (OsSpecific::instance()->hasInsecureWifi())
-                    OpenvpnManager::instance()->start();
+                    VPNServiceManager::instance()->sendConnectToVPNRequest();
             }
         }
         _wifi_processing = false;
@@ -375,10 +368,10 @@ void LoginWindow::BlockOnDisconnect()
             if (!AuthManager::instance()->loggedIn()) {
                 doblock = true;
             } else {
-                if (!OpenvpnManager::exists()) {
+                if (!VPNServiceManager::exists()) {
                     doblock = true;
                 } else {
-                    if (OpenvpnManager::instance()->state() == OpenvpnManager::ovsDisconnected)
+                    if (VPNServiceManager::instance()->state() == vpnStateDisconnected)
                         doblock = true;
                     // otherwise unblocked and should be unblocked
                 }
@@ -387,13 +380,13 @@ void LoginWindow::BlockOnDisconnect()
     }
 
     if (doblock) {
-        OsSpecific::instance()->netDown();
+        VPNServiceManager::instance()->sendNetdownCommand();
     }
 }
 
 void LoginWindow::loggedIn()
 {
-    log::logt("LoginWindow loggedIn called");
+    Log::logt("LoginWindow loggedIn called");
     saveCredentials();
 
     if (Setting::instance()->encryption() == ENCRYPTION_RSA)
@@ -405,15 +398,15 @@ void LoginWindow::loggedIn()
 //			int ix = settings.value("dd_Protocol_ix", -1).toInt();
 //			if (ix < 0)
 //			{
-//log::logt("sleeping 3");
+//Log::logt("sleeping 3");
 //				QThread::sleep(3);		// if first run: wait for pings  - to get adequate jump
 //			}
 //		}
     WndManager::Instance()->ToPrimary();
     TrayIconManager::instance()->constructConnectToMenu();
     if (_ConnectAfterLogin) {
-        log::logt("Connect after login set, so launching openvpn");
-        OpenvpnManager::instance()->start();
+        Log::logt("Connect after login set, so launching openvpn");
+        VPNServiceManager::instance()->sendConnectToVPNRequest();
     }
     enableButtons(true);
     _ConnectAfterLogin = false;
@@ -424,7 +417,7 @@ void LoginWindow::loginError(QString message)
     TrayIconManager::instance()->disableActionsOnLogout();
     if (!_CancelLogin) {
         WndManager::Instance()->ToFront(this);
-        log::logt("Login Error " + message);
+        Log::logt("Login Error " + message);
         ErrorDialog dlg(message, "Login Error", this);
         dlg.exec();
     }

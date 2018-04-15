@@ -27,7 +27,7 @@
 #include "settingsscreen.h"
 #include "wndmanager.h"
 #include "authmanager.h"
-#include "openvpnmanager.h"
+#include "vpnservicemanager.h"
 #include "log.h"
 #include "flag.h"
 #include "locationdelegate.h"
@@ -72,6 +72,9 @@ MapScreen::MapScreen(QWidget *parent) :
             this, &MapScreen::updateProtocol);
     connect(Setting::instance(), &Setting::serverChanged,
             this, &MapScreen::updateLocation);
+
+    connect(VPNServiceManager::instance(), &VPNServiceManager::stateChanged,
+            this, &MapScreen::stateChanged);
 }
 
 
@@ -294,7 +297,7 @@ void MapScreen::on_settingsButton_clicked()
 
 void MapScreen::on_connectButton_clicked()
 {
-    OpenvpnManager::instance()->start();
+    VPNServiceManager::instance()->sendConnectToVPNRequest();
 }
 
 void MapScreen::repopulate()
@@ -334,6 +337,22 @@ void MapScreen::updateLocation()
     }
     if (!srvs.empty())
         ui->locationComboBox->setCurrentIndex(toselect);
+}
+
+void MapScreen::stateChanged(vpnState state)
+{
+    switch (state) {
+    case vpnStateConnected:
+        break;
+    case vpnStateConnecting:
+        ui->connectButton->setEnabled(false);
+        break;
+    case vpnStateDisconnected:
+        ui->connectButton->setEnabled(true);
+        break;
+    default:
+        break;
+    }
 }
 
 static const char * const gs_stIcon1 = "QLabel\n{\n	border:0px;\n	color: #ffffff;\nborder-image: url(:/imgs/l-1.png);\n}";
@@ -388,22 +407,6 @@ void MapScreen::displayMark(const QString & name)
         p = mDefaultPoint;
     ui->L_Mark->move(p);
     ui->L_Mark->setText(flag::ShortName(name));
-}
-
-void MapScreen::statusConnecting()
-{
-    ui->connectButton->setEnabled(false);
-    // TODO: -1 CANCEL button
-}
-
-void MapScreen::statusConnected()
-{
-    ;
-}
-
-void MapScreen::statusDisconnected()
-{
-    ui->connectButton->setEnabled(true);
 }
 
 void MapScreen::keyPressEvent(QKeyEvent * e)
