@@ -6,7 +6,7 @@ lessThan(QT_MAJOR_VERSION, 5) | lessThan(QT_MINOR_VERSION, 4) : error(Safejumper
 
 TEMPLATE = app
 
-CONFIG(debug, debug|release)::TARGET = safejumperservice_d
+CONFIG(debug, debug|release)::TARGET = safejumperservice
 CONFIG(release, debug|release)::TARGET = safejumperservice
 
 INCLUDEPATH += ../common
