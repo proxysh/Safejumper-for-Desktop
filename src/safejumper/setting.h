@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <vector>
+#include <QFile>
 #include <QString>
 
 #include "common.h"
@@ -136,6 +137,9 @@ private:
     QString LocationSettingsName();
     QString LocationSettingsStrName();
     int determineNextPort();
+#ifdef Q_OS_LINUX
+    void delete_startup(QFile &f);
+#endif
     QSettings mSettings;
 };
 

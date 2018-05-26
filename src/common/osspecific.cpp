@@ -81,53 +81,6 @@ OsSpecific::~OsSpecific()
 {
 }
 
-#ifdef Q_OS_LINUX
-
-static const QString gs_desktop =
-    "[Desktop Entry]\n"
-    "Type=Application\n"
-    "Name=Safejumper\n"
-    "Exec=/opt/safejumper/safejumper.sh\n"
-    "Icon=/usr/share/icons/hicolor/64x64/apps/safejumper.png\n"
-    "Comment=OpenVPN client for proxy.sh\n"
-    "X-GNOME-Autostart-enabled=true\n"
-    ;
-
-// f - opened for read-write
-void delete_startup(QFile & f)
-{
-    int ncount = gs_desktop.count('\n');
-    int n3 = 0;
-    for (int k = 0; k < 3; ++k)
-        n3 = gs_desktop.indexOf('\n', n3 + 1);
-    if (n3 < 0)
-        return;
-
-    QString s(f.readAll());
-
-    QString begining = gs_desktop.mid(0, n3);
-    int p = s.indexOf(begining);
-    if (p < 0)
-        return;
-
-    int lastn = p;
-    for (int k = 0; lastn > -1 && k < ncount; ++k)
-        lastn = gs_desktop.indexOf('\n', lastn + 1);
-    if (lastn < 0) {
-        Log::logt("Openned .desktop file but cannot find proper " + QString::number(ncount) + " lines");
-        return;	// err
-    }
-
-    QString remains = s.mid(0, p);
-    remains += s.mid(lastn + 1);
-
-    QByteArray out = remains.toLatin1();
-    f.resize(out.length());
-    f.write(out);
-    f.flush();
-}
-#endif
-
 QString OsSpecific::runCommandFast(const QString & cmd, uint16_t ms /* = 500 */) const
 {
     return runCommandFast(cmd.toStdString().c_str(), ms);

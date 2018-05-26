@@ -27,7 +27,7 @@
 
 #include "servicelog.h"
 #include "osspecific.h"
-#include "servicePathHelper.h"
+#include "servicepathhelper.h"
 
 #ifdef Q_OS_WIN
 #include <winsock2.h>
@@ -1074,7 +1074,7 @@ bool OpenvpnManager::openvpnRunning()
         QTemporaryFile outf(QDir::tempPath() + "/safejumper-tmp-XXXXXX.out");
         if (file.open())
             if (outf.open()) {
-                QString script = QString(OsSpecific::instance()->isOpenvpnRunningCommand()) + " > " + outf.fileName();
+                QString script = QString("ps -xa | grep open | grep execut | grep Safeju > ") + outf.fileName();
                 file.write(script.toLatin1());
                 file.flush();
 
