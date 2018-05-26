@@ -5,7 +5,11 @@
 description	"Safejumper service daemon"
 
 start on runlevel [2345]
+stop on shutdown
+expect daemon
 respawn
 
-exec /opt/safejumper/safejumperservice
+script
+    exec /opt/safejumper/safejumperservice
+end script
 
