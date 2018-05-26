@@ -495,13 +495,12 @@ void OpenvpnManager::checkState()
     if (openvpnRunning()) {
         if (mSocket.get() == NULL) {
             connectToOpenvpnSocket();
+        } else if (mSocket->isValid() &&
+                   mSocket->state() == QAbstractSocket::ConnectedState) {
+            mSocket->write("state\n");
+            mSocket->flush();
         } else {
-            if (mSocket->isOpen() && mSocket->isValid()) {
-                if (mSocket->state() == QAbstractSocket::ConnectedState) {
-                    mSocket->write("state\n");
-                    mSocket->flush();
-                }
-            }
+            Log::serviceLog("Socket is not null, but not valid or connected");
         }
     } else if (state() == vpnStateConnected) {
         // handle crush
@@ -807,6 +806,7 @@ void OpenvpnManager::connectToOpenvpnSocket()
 void OpenvpnManager::socketError(QAbstractSocket::SocketError error)
 {
     if (error == QAbstractSocket::RemoteHostClosedError) {
+        Log::serviceLog("Disconnecting from openvpn management because remote closed");
         disconnectFromOpenvpnSocket();
         return;
     }
