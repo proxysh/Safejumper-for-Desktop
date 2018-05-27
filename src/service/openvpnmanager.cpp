@@ -1070,53 +1070,55 @@ bool OpenvpnManager::openvpnRunning()
             running = true;
         }
 #else
-        QTemporaryFile file(QDir::tempPath() + "/safejumper-tmp-XXXXXX.sh");
-        QTemporaryFile outf(QDir::tempPath() + "/safejumper-tmp-XXXXXX.out");
-        if (file.open())
-            if (outf.open()) {
-                QString script = QString("ps -xa | grep open | grep execut | grep Safeju > ") + outf.fileName();
-                file.write(script.toLatin1());
-                file.flush();
+        if (!running) {
+            QTemporaryFile file(QDir::tempPath() + "/safejumper-tmp-XXXXXX.sh");
+            QTemporaryFile outf(QDir::tempPath() + "/safejumper-tmp-XXXXXX.out");
+            if (file.open())
+                if (outf.open()) {
+                    QString script = QString("ps -xa | grep open | grep execut | grep Safeju > ") + outf.fileName();
+                    file.write(script.toLatin1());
+                    file.flush();
 
-                int re = QProcess::execute("/bin/bash", QStringList() << file.fileName());
-                switch (re) {
-                case -2:
-                    Log::serviceLog("openvpnRunning(): -2 the process cannot be started");
-                    break;
-                case -1:
-                    Log::serviceLog("openvpnRunning(): -1 the process crashed");
-                    break;
-                case 0: {
-                    QByteArray ba = outf.readAll();
-                    QString s2(ba);
-                    QString s3 = s2.trimmed();
-                    int p = s3.indexOf(' ');
-                    QString s4 = s3.mid(0, p);
-                    bool converted;
-                    mPID = s4.toInt(&converted);
-                    if (converted) {
-                        if (mPID > 0) {
-                            running = true;
-                            //                              AttachMgmt();
+                    int re = QProcess::execute("/bin/bash", QStringList() << file.fileName());
+                    switch (re) {
+                    case -2:
+                        Log::serviceLog("openvpnRunning(): -2 the process cannot be started");
+                        break;
+                    case -1:
+                        Log::serviceLog("openvpnRunning(): -1 the process crashed");
+                        break;
+                    case 0: {
+                        QByteArray ba = outf.readAll();
+                        QString s2(ba);
+                        QString s3 = s2.trimmed();
+                        int p = s3.indexOf(' ');
+                        QString s4 = s3.mid(0, p);
+                        bool converted;
+                        mPID = s4.toInt(&converted);
+                        if (converted) {
+                            if (mPID > 0) {
+                                running = true;
+                                //                              AttachMgmt();
+                            }
                         }
+                        break;
                     }
-                    break;
+                    case 1:
+                        running = false;     // no lines
+                        break;
+                    case 2:
+                        running = false;     // grep failure
+                        break;
+                    default:
+                        Log::serviceLog("IsOvRunning(): ps-grep return code = " + QString::number(re));
+                        break;
+                    }
                 }
-                case 1:
-                    running = false;     // no lines
-                    break;
-                case 2:
-                    running = false;     // grep failure
-                    break;
-                default:
-                    Log::serviceLog("IsOvRunning(): ps-grep return code = " + QString::number(re));
-                    break;
-                }
-            }
+        }
 #endif
 #endif  // else WIN32
     }
-//Log::serviceLog(QString("IsOvRunning() returns ") + QString(is ? "true": "false") );
+    Log::serviceLog(QString("openvpnRunning return value:") + QString(running ? "true": "false") );
     return running;
 }
 
