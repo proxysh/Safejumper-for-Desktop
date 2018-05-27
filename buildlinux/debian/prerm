@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ -x /bin/systemctl ]; then
+    systemctl disable safejumper
+    systemctl stop safejumper
+fi
+
+#DEBHELPER#
+exit 0

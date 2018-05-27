@@ -6,7 +6,10 @@ chown -R root:root /opt/safejumper/netdown
 chown -R root:root /opt/safejumper/safejumperservice
 chown -R root:root /opt/safejumper/openvpn
 
-initctl start safejumper
+if [ -x /bin/systemctl ]; then
+    systemctl enable safejumper
+    systemctl start safejumper
+fi
 
 #DEBHELPER#
 exit 0
