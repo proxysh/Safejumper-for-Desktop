@@ -132,6 +132,7 @@ private:
      */
     void disconnectFromCore();
 
+    void tryNextPort();
 
     QLocalSocket m_socket;
 
@@ -140,6 +141,7 @@ private:
     static VPNServiceManager *mInstance;
 
     vpnState mState;
+    bool mChangingPorts;
 };
 
 #endif // QBCVPNSERVICECONNECTION_H

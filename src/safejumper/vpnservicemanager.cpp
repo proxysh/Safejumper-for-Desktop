@@ -340,3 +340,13 @@ void VPNServiceManager::socket_error(QLocalSocket::LocalSocketError error)
 {
     Log::logt("Socket error " + QString::number(error));
 }
+
+void VPNServiceManager::tryNextPort()
+{
+    if (mChangingPorts)
+        Setting::instance()->switchToNextPort();
+    else
+        Setting::instance()->switchToNextNode();
+    sendConnectToVPNRequest();
+}
+

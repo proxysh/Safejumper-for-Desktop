@@ -255,7 +255,7 @@ void OpenvpnManager::startConnecting()
 
     if (ok) {
         Log::serviceLog("openvpn launched, starting timer");
-        mStartDateTime = QDateTime::currentDateTimeUtc().toTime_t();
+        mStartDateTime = QDateTime::currentDateTimeUtc();
         startTimer();
     } else
         setState(vpnStateDisconnected);
@@ -511,12 +511,14 @@ void OpenvpnManager::checkState()
     }
 
     if (state() == vpnStateConnecting) {
-        uint d = QDateTime::currentDateTimeUtc().toTime_t() - mStartDateTime;
+        uint d = mStartDateTime.secsTo(QDateTime::currentDateTimeUtc());
         if (mTesting) {
             if (d > kTryNextPortSeconds) {
                 cancel(QString("Timeout at %1 seconds").arg(kTryNextPortSeconds));
             }
         } else if (d > kTryNextPortSeconds) {
+            mStartDateTime = QDateTime::currentDateTimeUtc(); // Update start date time to now to prevent duplicate timeouts
+            stop();
             emit timedOut();
         }
 
@@ -1231,16 +1233,6 @@ void OpenvpnManager::killRunningOpenvpn()
 void OpenvpnManager::socketConnected()
 {
     Log::serviceLog("Socket to openvpn connected");
-}
-
-void OpenvpnManager::tryNextPort()
-{
-    mStartDateTime = QDateTime::currentDateTimeUtc().toTime_t();      // force start interval - prevent double port change
-//    if (mChangingPorts)
-//        Setting::instance()->switchToNextPort();
-//    else
-//        Setting::instance()->switchToNextNode();
-    startConnecting();
 }
 
 void OpenvpnManager::startReconnectTimer()

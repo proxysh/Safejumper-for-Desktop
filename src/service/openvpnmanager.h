@@ -20,6 +20,7 @@
 #define OPENVPN_MANAGER_H
 
 #include <memory>
+#include <QDateTime>
 #include <QObject>
 #include <QProcess>
 #include <QTcpSocket>
@@ -130,7 +131,6 @@ private:
 
     bool writeConfigFile(); // Write openvpn options to ovpn file
     QStringList getOpenvpnArgs(); // Arguments to pass to openvpn
-    void tryNextPort();
 
     void parseSocketLine(QString s);
     void parseSocketQueryWord(const QString & word, const QString & s);
@@ -175,7 +175,7 @@ private:
     QString mPreviousStateWord;
 
     int mReconnectAttempt;
-    uint mStartDateTime;
+    QDateTime mStartDateTime;
 
     bool mTesting;
 
