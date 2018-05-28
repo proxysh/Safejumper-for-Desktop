@@ -3,10 +3,12 @@
 qmake DEFINES+="Q_OS_REDHAT" ../src
 make
 cp safejumper/safejumper linuxfiles
+cp service/safejumperservice linuxfiles
 cp launchopenvpn/launchopenvpn linuxfiles
 cp netdown/netdown linuxfiles
 cp openvpn64 linuxfiles/openvpn
 cp -r env64 linuxfiles/env
+cp debian/safejumper.service linuxfiles
 
 # Then the content of linuxfiles mostly goes into /opt/safejumper/.
 
