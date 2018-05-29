@@ -41,6 +41,7 @@ public:
 
     vpnState state();
 
+    void startPortLoop(bool changePort);
 signals:
     /*!
      * Notify the client who's been registered on the status change
@@ -142,6 +143,8 @@ private:
 
     vpnState mState;
     bool mChangingPorts;
+    bool mInPortLoop;
+    bool mPortDialogShown;
 };
 
 #endif // QBCVPNSERVICECONNECTION_H

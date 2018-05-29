@@ -65,7 +65,6 @@ public:
 
     int Confirmation(const QString & msg);		// switch to primary, return dialog code: QDialog::Accepted or another
 
-    void ShowPortDlg();
     void ClosePortDlg();
     bool IsCyclePort();		// true - if cycle ports; false - cycle nodes
 
@@ -75,6 +74,8 @@ private slots:
     void stateChanged(vpnState state);
 
     void showErrorMessage(const QString & msg);
+
+    void showPortDialog();
 
 private:
     WndManager();

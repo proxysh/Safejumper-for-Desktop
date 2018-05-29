@@ -398,7 +398,7 @@ void ConnectionDialog::portDialogResult(int action)
 {
     if (QDialog::Accepted == action) {
         // Switch to next port/node and tell service to connect
-//        OpenvpnManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
+        VPNServiceManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
     }
 }
 

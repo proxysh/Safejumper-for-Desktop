@@ -43,6 +43,8 @@ WndManager::WndManager()
             this, &WndManager::stateChanged);
     connect(VPNServiceManager::instance(), &VPNServiceManager::error,
             this, &WndManager::showErrorMessage);
+    connect(VPNServiceManager::instance(), &VPNServiceManager::timedOut,
+            this, &WndManager::showPortDialog);
 }
 
 WndManager::~WndManager()
@@ -281,7 +283,7 @@ int WndManager::Confirmation(const QString & msg)
     return dlg.exec();
 }
 
-void WndManager::ShowPortDlg()
+void WndManager::showPortDialog()
 {
     ToPrimary();
     if (_DlgPort != NULL)

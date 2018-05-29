@@ -40,7 +40,9 @@ VPNServiceManager* VPNServiceManager::mInstance = 0;
 
 VPNServiceManager::VPNServiceManager(QObject *parent)
     : QObject(parent),
-      mConnected(false)
+      mConnected(false),
+      mInPortLoop(false),
+      mPortDialogShown(false)
 {
     m_socket.setServerName(kSocketName);
     QObject::connect(&m_socket, &QLocalSocket::readyRead, this, &VPNServiceManager::socket_readyRead);
@@ -293,6 +295,10 @@ void VPNServiceManager::socket_readyRead()
 //            Log::logt(QString("Got state change to %1").arg(vpnStateWord((vpnState)state)));
 
             mState = (vpnState)state;
+            // Now that we are connected, stop port loop
+            if (mState == vpnStateConnected)
+                mInPortLoop = false;
+
             emit stateChanged(mState);
         }
         break;
@@ -314,7 +320,14 @@ void VPNServiceManager::socket_readyRead()
         case notifyTimeout: {
             // Openvpn timed out, so switch to the next port or server
             // asking the user accordingly
-            emit timedOut();
+            if (mInPortLoop)
+                tryNextPort();
+            else if (mPortDialogShown) {
+                // Do nothing, wait for user to choose which
+            } else {
+                mPortDialogShown = true;
+                emit timedOut();
+            }
         }
         break;
 
@@ -339,6 +352,14 @@ void VPNServiceManager::socket_disconnected()
 void VPNServiceManager::socket_error(QLocalSocket::LocalSocketError error)
 {
     Log::logt("Socket error " + QString::number(error));
+}
+
+void VPNServiceManager::startPortLoop(bool changePort)
+{
+    mChangingPorts = changePort;
+    mPortDialogShown = false;
+    mInPortLoop = true;
+    tryNextPort();
 }
 
 void VPNServiceManager::tryNextPort()
