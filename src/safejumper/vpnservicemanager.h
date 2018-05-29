@@ -76,6 +76,8 @@ signals:
 
     void gotNewIp(const QString &ip);
 
+    void killSwitch();
+
 public slots:
     /*!
      * Query the status of the connection
@@ -145,6 +147,7 @@ private:
     bool mChangingPorts;
     bool mInPortLoop;
     bool mPortDialogShown;
+    bool mUserRequestedDisconnect;
 };
 
 #endif // QBCVPNSERVICECONNECTION_H

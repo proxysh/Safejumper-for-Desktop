@@ -121,6 +121,8 @@ LoginWindow::LoginWindow(QWidget *parent) :
 
 //    connect(qApp, &QApplication::aboutToQuit,
 //            this, &LoginWindow::quitApplication);
+    connect(VPNServiceManager::instance(), &VPNServiceManager::killSwitch,
+            this, &LoginWindow::onKillSwitch);
 }
 
 void LoginWindow::on_rememberMeButton_toggled()
@@ -359,7 +361,7 @@ void LoginWindow::detectInsecureWifiChanged()
         LoginWindow::Instance()->stopWifiWatcher();
 }
 
-void LoginWindow::BlockOnDisconnect()
+void LoginWindow::onKillSwitch()
 {
     // implementation is the same as in the old Safejumper
     bool doblock = false;

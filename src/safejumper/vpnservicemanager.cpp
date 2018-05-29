@@ -42,7 +42,8 @@ VPNServiceManager::VPNServiceManager(QObject *parent)
     : QObject(parent),
       mConnected(false),
       mInPortLoop(false),
-      mPortDialogShown(false)
+      mPortDialogShown(false),
+      mUserRequestedDisconnect(false)
 {
     m_socket.setServerName(kSocketName);
     QObject::connect(&m_socket, &QLocalSocket::readyRead, this, &VPNServiceManager::socket_readyRead);
@@ -190,6 +191,8 @@ void VPNServiceManager::sendConnectToVPNRequest()
 {
     Log::logt(QString("sendConnectToVPNRequest called"));
 
+    mUserRequestedDisconnect = false;
+
     if (ensureConnected()) {
         QJsonObject jObj;
 
@@ -223,6 +226,7 @@ void VPNServiceManager::sendConnectToVPNRequest()
 void VPNServiceManager::sendDisconnectFromVPNRequest()
 {
     Log::logt(QString("sendDisconnectFromVPNRequest called"));
+    mUserRequestedDisconnect = true;
     if (ensureConnected()) {
         QJsonObject jObj;
 
@@ -298,6 +302,8 @@ void VPNServiceManager::socket_readyRead()
             // Now that we are connected, stop port loop
             if (mState == vpnStateConnected)
                 mInPortLoop = false;
+            else if (mState == vpnStateDisconnected && !mUserRequestedDisconnect)
+                emit killSwitch(); // Emit kill switch signal, login window will perform if needed
 
             emit stateChanged(mState);
         }

@@ -48,7 +48,6 @@ public:
 
     void startWifiWatcher();
     void stopWifiWatcher();
-    void BlockOnDisconnect();
 
 public slots:
     void loggedIn();
@@ -72,6 +71,7 @@ private slots:
     void checkWifi();
 
     void detectInsecureWifiChanged();
+    void onKillSwitch();
 private:
     Ui::LoginWindow *ui;
     explicit LoginWindow(QWidget *parent = 0);
