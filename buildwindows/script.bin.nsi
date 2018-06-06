@@ -22,22 +22,21 @@ SectionIn RO
        nsExec::Exec '$INSTDIR\safejumperservice.exe -u'
        Pop $0
        
+       File  libeay32.dll
+       File  vcredist_x86.exe
+       File  proxysh.crt
+       File  ssleay32.dll
+       File  safejumper.ico
+       File  safejumper.exe
+       File  safejumperservice.exe
        File  Qt5Core.dll
        File  Qt5Gui.dll
        File  Qt5Network.dll
        File  Qt5Svg.dll
        File  Qt5Widgets.dll
        File  Qt5Xml.dll
-       File  libeay32.dll
-       File  vcredist_x86.exe
-       File  proxysh.crt
-       File  ssleay32.dll
-       File  safejumper.ico
        SetOutPath $INSTDIR\platforms
        File  platforms\qwindows.dll
-       SetOutPath $INSTDIR
-       File  safejumper.exe
-       File  safejumperservice.exe
        SetOutPath $TEMP
        File  openvpn-proxysh.exe
        Push $0
