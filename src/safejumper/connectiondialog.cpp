@@ -26,7 +26,7 @@
 #include "common.h"
 #include "wndmanager.h"
 #include "setting.h"
-#include "openvpnmanager.h"
+#include "vpnservicemanager.h"
 #include "pathhelper.h"
 #include "log.h"
 #include "flag.h"
@@ -40,7 +40,7 @@
 const int kConnectionPage = 0;
 const int kFeedbackPage = 1;
 
-ConnectionDialog::HmWords ConnectionDialog::mStateWordImages;
+QHash<int, QString> ConnectionDialog::mStateWordImages;
 
 ConnectionDialog::ConnectionDialog(QWidget *parent) :
     QDialog(parent),
@@ -74,7 +74,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
     ui->L_LOAD->move(p1);
 #endif
 
-    statusDisconnected();
+    stateChanged(vpnStateDisconnected);
 
     ui->cancelButton->hide();
 
@@ -110,6 +110,11 @@ ConnectionDialog::ConnectionDialog(QWidget *parent) :
             this, &ConnectionDialog::updateProtocol);
     connect(Setting::instance(), &Setting::serverChanged,
             this, &ConnectionDialog::updateServer);
+
+    connect(VPNServiceManager::instance(), &VPNServiceManager::stateWord,
+            this, &ConnectionDialog::stateWordChanged);
+    connect(VPNServiceManager::instance(), &VPNServiceManager::stateChanged,
+            this, &ConnectionDialog::stateChanged);
 }
 
 bool ConnectionDialog::exists()
@@ -135,12 +140,12 @@ void ConnectionDialog::setNoServer()
 
 void ConnectionDialog::setServer(int srv)
 {
-    log::logt("setServer called with server id " + QString::number(srv));
+    Log::logt("setServer called with server id " + QString::number(srv));
     if (srv < 0) {	// none
         setNoServer();
     } else {
         const AServer & se = AuthManager::instance()->getServer(srv);
-        log::logt("setServer server name is " + se.name);
+        Log::logt("setServer server name is " + se.name);
         ui->L_Country->setText(se.name);
         ui->b_Flag->show();
         ui->b_FlagBox->show();
@@ -252,26 +257,20 @@ static const char * gs_Conn_Connecting_Template_end =  ".png);\n}";
 void ConnectionDialog::initializeStateWords()
 {
     if (mStateWordImages.empty()) {
-        mStateWordImages.insert("AUTH", "auth");
-        mStateWordImages.insert("GET_CONFIG", "config");
-        mStateWordImages.insert("ASSIGN_IP", "ip");
-        mStateWordImages.insert("TCP_CONNECT", "connect");
-        mStateWordImages.insert("RESOLVE", "resolve");
+        mStateWordImages.insert(ovnStateAuth, "auth");
+        mStateWordImages.insert(ovnStateGetConfig, "config");
+        mStateWordImages.insert(ovnStateAssignIP, "ip");
+        mStateWordImages.insert(ovnStateTCPConnecting, "connect");
+        mStateWordImages.insert(ovnStateResolve, "resolve");
 
         // CONNECTING - default - must be absent in this collection
 
-        mStateWordImages.insert("WAIT", "wait");
-        mStateWordImages.insert("RECONNECTING", "reconn");
+        mStateWordImages.insert(ovnStateWait, "wait");
+        mStateWordImages.insert(ovnStateReconnecting, "reconn");
     }
 }
 
-void ConnectionDialog::statusConnecting()
-{
-    ui->L_ConnectStatus->setStyleSheet(gs_Conn_Connecting);
-    enableButtons(false);
-}
-
-void ConnectionDialog::statusConnecting(const QString & word)
+void ConnectionDialog::stateWordChanged(OpenVPNStateWord word)
 {
 //	ModifyWndTitle(word);
 //	this->StatusConnecting();
@@ -279,15 +278,15 @@ void ConnectionDialog::statusConnecting(const QString & word)
     initializeStateWords();
 
     QString s;
-    HmWords::iterator it = mStateWordImages.find(word);
+    QHash<int, QString>::iterator it = mStateWordImages.find(word);
     if (it != mStateWordImages.end()) {
         s = gs_Conn_Connecting_Template_start;
         s += it.value();
         s += gs_Conn_Connecting_Template_end;
     } else {
         s = gs_Conn_Connecting;
-        if (word.compare("WAIT", Qt::CaseInsensitive) == 0) {
-            log::logt("Cannot find WAIT in the collection! Do actions manualy!");
+        if (word == ovnStateWait) {
+            Log::logt("Cannot find WAIT in the collection! Do actions manualy!");
             s = gs_Conn_Connecting_Template_start;
             s += "wait";
             s += gs_Conn_Connecting_Template_end;
@@ -311,20 +310,6 @@ void ConnectionDialog::enableButtons(bool enabled)
     ui->b_Row_Country->setEnabled(enabled);
     ui->b_Row_Ip->setEnabled(enabled);
     ui->b_Row_Protocol->setEnabled(enabled);
-}
-
-void ConnectionDialog::statusConnected()
-{
-    ui->L_ConnectStatus->setStyleSheet(gs_ConnGreen);
-    enableButtons(true);
-    ui->connectButton->hide();
-    ui->cancelButton->show();
-}
-
-void ConnectionDialog::statusDisconnected()
-{
-    ui->L_ConnectStatus->setStyleSheet(gs_ConnRed);
-    enableButtons(true);
 }
 
 void ConnectionDialog::showFeedback()
@@ -366,13 +351,12 @@ void ConnectionDialog::showPackageUrl()
 
 void ConnectionDialog::on_connectButton_clicked()
 {
-    OpenvpnManager::instance()->start();		// handle visuals inside
+    VPNServiceManager::instance()->sendConnectToVPNRequest();		// handle visuals inside
 }
 
 void ConnectionDialog::on_cancelButton_clicked()
 {
-    OpenvpnManager::instance()->stop();
-    LoginWindow::Instance()->BlockOnDisconnect();
+    VPNServiceManager::instance()->sendDisconnectFromVPNRequest();
 }
 
 void ConnectionDialog::on_jumpButton_clicked()
@@ -386,10 +370,35 @@ void ConnectionDialog::keyPressEvent(QKeyEvent * e)
         QDialog::keyPressEvent(e);
 }
 
+void ConnectionDialog::stateChanged(vpnState state)
+{
+
+    switch (state) {
+    case vpnStateConnecting: {
+        ui->L_ConnectStatus->setStyleSheet(gs_Conn_Connecting);
+        enableButtons(false);
+    }
+    break;
+    case vpnStateConnected: {
+        ui->L_ConnectStatus->setStyleSheet(gs_ConnGreen);
+        enableButtons(true);
+        ui->connectButton->hide();
+        ui->cancelButton->show();
+    }
+    break;
+    case vpnStateDisconnected: {
+        ui->L_ConnectStatus->setStyleSheet(gs_ConnRed);
+        enableButtons(true);
+    }
+    break;
+    }
+}
+
 void ConnectionDialog::portDialogResult(int action)
 {
     if (QDialog::Accepted == action) {
-        OpenvpnManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
+        // Switch to next port/node and tell service to connect
+        VPNServiceManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
     }
 }
 
@@ -459,10 +468,10 @@ void ConnectionDialog::on_sendFeedbackButton_clicked()
     multiPart->setParent(reply);
 
     bool result = connect(reply, static_cast<void(QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
-            this, &ConnectionDialog::postError);
+                          this, &ConnectionDialog::postError);
     qDebug() << "result of connecting to error signal is " << result;
     result = connect(reply, &QNetworkReply::finished,
-            this, &ConnectionDialog::sendFeedbackFinished);
+                     this, &ConnectionDialog::sendFeedbackFinished);
     qDebug() << "result of connecting to finished signal is " << result;
     qDebug() << "Sent feedback with title " << title
              << " login " << loginName

@@ -19,12 +19,25 @@
 #ifndef LOG_H
 #define LOG_H
 
+#include <QObject>
 #include <QString>
 
-class log
+class Log: public QObject
 {
+    Q_OBJECT
 public:
     static void logt(const QString & s);
+
+    static Log* instance();
+
+    void enableLogging(bool enabled);
+
+signals:
+    void logMessage(const QString &message);
+
+private:
+    static bool mEnabled;
+    static Log *mInstance;
 };
 
 #endif // LOG_H

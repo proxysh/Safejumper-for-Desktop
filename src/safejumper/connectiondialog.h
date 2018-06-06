@@ -47,7 +47,6 @@ public:
     static void cleanup();
 
     void statusConnecting();
-    void statusConnecting(const QString & word);
     void statusConnected();
     void statusDisconnected();
 
@@ -62,6 +61,9 @@ protected:
     virtual void keyPressEvent(QKeyEvent * event);
 
 private slots:
+    void stateChanged(vpnState state);
+    void stateWordChanged(OpenVPNStateWord word);
+
     void on_connectButton_clicked();
     void on_cancelButton_clicked();
     void on_jumpButton_clicked();
@@ -100,7 +102,7 @@ private:
 
     static void initializeStateWords();
     typedef QHash<QString, const char *> HmWords;
-    static HmWords mStateWordImages;
+    static QHash<int, QString> mStateWordImages;
 
     // Feedback page members
     QNetworkAccessManager *mNam;

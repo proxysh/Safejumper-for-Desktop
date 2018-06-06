@@ -35,11 +35,11 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("Safejumper");
     g_pTheApp = new THE_APP_CLASS(argc, argv);
 
-    log::logt("Starting Application");
+    Log::logt("Starting Application");
     LoginWindow::Instance()->show();
     int res = g_pTheApp->exec();
     LoginWindow::Cleanup();
-    log::logt("Quit Application");
+    Log::logt("Quit Application");
     delete g_pTheApp;
     return res;
 }

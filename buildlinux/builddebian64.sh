@@ -3,6 +3,7 @@
 qmake ../src
 make
 cp safejumper/safejumper linuxfiles
+cp service/safejumperservice linuxfiles
 cp launchopenvpn/launchopenvpn linuxfiles
 cp netdown/netdown linuxfiles
 cp openvpn64 linuxfiles/openvpn

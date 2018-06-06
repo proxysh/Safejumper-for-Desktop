@@ -12,3 +12,5 @@
 /usr/share/doc/safejumper/README
 /usr/share/doc/safejumper/changelog.gz
 /usr/share/doc/safejumper/copyright
+/usr/lib/systemd/system/safejumper.service
+/etc/init/safejumper.conf

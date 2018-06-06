@@ -19,7 +19,7 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define SJ_BUILD_NUM 82
-#define SJ_VERSION "3.2 alpha"
+#define SJ_BUILD_NUM 83
+#define SJ_VERSION "3.2"
 
 #endif // VERSION_H

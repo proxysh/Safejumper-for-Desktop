@@ -1,0 +1,15 @@
+# safejumper - Safejumper VPN Service.
+#
+# This task runs safejumper's service daemon.
+
+description	"Safejumper service daemon"
+
+start on runlevel [2345]
+stop on shutdown
+expect daemon
+respawn
+
+script
+    exec /opt/safejumper/safejumperservice
+end script
+

@@ -21,7 +21,6 @@
 #include <QUrl>
 #include <QDesktopServices>
 #include <QSettings>
-#include <QApplication>
 #include <QSslConfiguration>
 #include <QSslSocket>
 

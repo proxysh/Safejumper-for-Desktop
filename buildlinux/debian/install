@@ -1,4 +1,5 @@
 safejumper /opt/safejumper
+safejumperservice /opt/safejumper
 netdown /opt/safejumper
 launchopenvpn /opt/safejumper
 proxysh.crt /opt/safejumper

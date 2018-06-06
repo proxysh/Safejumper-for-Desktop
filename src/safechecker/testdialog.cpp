@@ -556,7 +556,7 @@ void TestDialog::setStatusConnecting(const QString & word)
     } else {
         s = gs_Conn_Connecting;
         if (word.compare("WAIT", Qt::CaseInsensitive) == 0) {
-            log::logt("Cannot find WAIT in the collection! Do actions manualy!");
+            Log::logt("Cannot find WAIT in the collection! Do actions manualy!");
             s = gs_Conn_Connecting_Template_start;
             s += "wait";
             s += gs_Conn_Connecting_Template_end;

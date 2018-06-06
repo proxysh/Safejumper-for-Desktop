@@ -21,7 +21,9 @@
 
 #include <QSystemTrayIcon>
 
-#include "openvpnmanager.h"
+#include "common.h"
+
+#include <memory>
 
 class QAction;
 
@@ -41,8 +43,6 @@ public:
     void statusDisconnected();
 
     void updateActionsEnabled(bool connecting);
-    void updateStateIcon(OpenvpnManager::OvState st);
-
 signals:
     void login();
     void logout();
@@ -73,8 +73,11 @@ public slots:
     void closeTriggered();
 
 private slots:
-    void updateStateIcon();
+    void refreshStateIcon();
+
     void actionActivated(QSystemTrayIcon::ActivationReason reason);
+
+    void stateChanged(vpnState st);
 
 private:
     explicit TrayIconManager(QWidget *parent = 0);
@@ -86,6 +89,18 @@ private:
     void createTrayIcon();
     void clearConnectToMenu();
     void createMenuItem(QMenu * m, const QString & name, size_t srv);
+
+#ifdef Q_OS_DARWIN
+    bool isDark() const;
+#endif
+
+    const QString disconnectedIcon() const;
+    const QString connectingIcon() const;
+    const QString connectedIcon() const;
+
+    const QString disconnectedSelectedIcon() const;
+    const QString connectingSelectedIcon() const;
+    const QString connectedSelectedIcon() const;
 
     std::auto_ptr<QSystemTrayIcon> mTrayIcon;
     std::auto_ptr<QMenu> mTrayIconMenu;

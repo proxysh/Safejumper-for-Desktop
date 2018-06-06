@@ -24,6 +24,7 @@
 #include <QPointer>
 #include <memory>
 
+#include "common.h"
 #include "confirmationdialog.h"
 #include "dlg_newnode.h"
 
@@ -58,24 +59,23 @@ public:
     QWidget * ScrVisible();	 // NULL if no visible
 
     static void DoShape(QWidget * d);
-    void HandleConnecting();
-    void HandleConnected();
-    void HandleDisconnected();
 
-    void HandleState(const QString & word);		// just output it into header for debug purpose
-
-    void ErrMsg(const QString & msg);
     void ToFront(QWidget * w);
     void ToFront();
 
     int Confirmation(const QString & msg);		// switch to primary, return dialog code: QDialog::Accepted or another
 
-    void ShowPortDlg();
     void ClosePortDlg();
     bool IsCyclePort();		// true - if cycle ports; false - cycle nodes
 
 private slots:
     void showFeedback();
+
+    void stateChanged(vpnState state);
+
+    void showErrorMessage(const QString & msg);
+
+    void showPortDialog();
 
 private:
     WndManager();

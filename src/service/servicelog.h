@@ -16,45 +16,30 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#ifndef PATHHELPER_H
-#define PATHHELPER_H
+#ifndef LOG_H
+#define LOG_H
 
-#include <memory>
-
+#include <QObject>
 #include <QString>
 
-class PathHelper
+class Log: public QObject
 {
+    Q_OBJECT
 public:
-    static bool exists();
-    static PathHelper * Instance();
-    static void cleanup();
+    static void logt(const QString & s);
 
-    ~PathHelper();
+    static void serviceLog(const QString &s);
 
-    QString openvpnFilename();
-#ifdef Q_OS_DARWIN
-    QString openvpnRelativeFilename();
-    QString openvpnRunningScriptFilename();
-#endif
-    QString openvpnLogFilename();
-    QString openvpnConfigFilename();
-    QString proxyshCaCertFilename();
-    QString upScriptFilename();
-    QString downScriptFilename();
-    QString launchopenvpnFilename();
-    QString obfsproxyFilename();
-    QString obfsproxyLogFilename();
-    QString installObfsproxyFilename();
-    QString netDownFilename();
-    QString safejumperLogFilename(); // "/tmp/Safejumper-debug.log"
+    static Log* instance();
 
-    QString resourcesPath();
+    void enableLogging(bool enabled);
+
+signals:
+    void logMessage(const QString &message);
 
 private:
-    QString tempPath(); // Where to keep config file, logs etc.
-    PathHelper();
-    static std::auto_ptr<PathHelper> _inst;
+    static bool mEnabled;
+    static Log *mInstance;
 };
 
-#endif // PATHHELPER_H
+#endif // LOG_H

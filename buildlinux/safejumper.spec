@@ -16,7 +16,7 @@ Name:           safejumper
 Summary:        VPN client for proxy_sh.
 License:        GPL-2.0 and GPL-3.0
 Group:          Productivity/Networking/Web/Utilities
-Version:        2018.03.22
+Version:        2018.05.25
 Release:        0
 Url:            http://proxy.sh
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -58,7 +58,9 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/32x32/apps
 mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/64x64/apps
 mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/512x512/apps
 mkdir -p $RPM_BUILD_ROOT/usr/share/icons/hicolor/72x72/apps
+mkdir -p $RPM_BUILD_ROOT/usr/lib/systemd/system/
 install -m 0755 safejumper                $RPM_BUILD_ROOT/opt/safejumper/safejumper
+install -m 0755 safejumperservice         $RPM_BUILD_ROOT/opt/safejumper/safejumperservice
 install -m 0755 launchopenvpn             $RPM_BUILD_ROOT/opt/safejumper/launchopenvpn
 install -m 0755 netdown                   $RPM_BUILD_ROOT/opt/safejumper/netdown
 install -m 0755 openvpn                   $RPM_BUILD_ROOT/opt/safejumper/openvpn
@@ -67,6 +69,7 @@ install -m 0744 client.up.safejumper.sh   $RPM_BUILD_ROOT/opt/safejumper/client.
 install -m 0644 proxysh.crt               $RPM_BUILD_ROOT/opt/safejumper/proxysh.crt
 install -d 0644 env                       $RPM_BUILD_ROOT/opt/safejumper/env
 install -m 0755 safejumper.desktop        $RPM_BUILD_ROOT/usr/share/applications
+install -m 0644 safejumper.service $RPM_BUILD_ROOT/usr/lib/systemd/system/safejumper.service
 install -m 0744 icons/128x128/apps/safejumper.png   $RPM_BUILD_ROOT/usr/share/icons/hicolor/128x128/apps
 install -m 0744 icons/16x16/apps/safejumper.png     $RPM_BUILD_ROOT/usr/share/icons/hicolor/16x16/apps
 install -m 0744 icons/192x192/apps/safejumper.png   $RPM_BUILD_ROOT/usr/share/icons/hicolor/192x192/apps
@@ -82,8 +85,12 @@ cp      -avr env/*                        $RPM_BUILD_ROOT/opt/safejumper/env/
 %pre
 
 %preun
+systemctl disable safejumper
+systemctl stop safejumper
 
 %post
+systemctl enable safejumper
+systemctl start safejumper
 
 %posttrans
 
@@ -97,6 +104,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc {README,LICENSE}
 %dir /opt/safejumper/
 /opt/safejumper/safejumper
+/opt/safejumper/safejumperservice
 /opt/safejumper/launchopenvpn
 /opt/safejumper/netdown
 /opt/safejumper/openvpn
@@ -115,5 +123,6 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/icons/hicolor/512x512/apps/safejumper.png
 /usr/share/icons/hicolor/64x64/apps/safejumper.png
 /usr/share/icons/hicolor/72x72/apps/safejumper.png
+/usr/lib/systemd/system/safejumper.service
 
 %changelog

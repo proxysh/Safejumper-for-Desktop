@@ -23,6 +23,8 @@ buildwindows/translations
 buildwindows/vcredist_x86.exe
 buildwindows/safejumper
 buildwindows/safejumper.exe
+buildwindows/service
+buildwindows/safejumperservice.exe
 buildwindows/d3dcompiler_47.dll
 buildwindows/libEGL.dll
 buildwindows/libGLESV2.dll
