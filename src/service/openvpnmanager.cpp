@@ -1159,7 +1159,7 @@ void OpenvpnManager::netDown(bool down)
         if (NO_ERROR != r) {
             Log::serviceLog("Cannot enumerate adapters, error code: " + QString::number(r));
         } else {
-            for (int k = 1; p != NULL && k < 5; p = p->Next, ++k) {	// adpters in order - so try first 4
+            for (int k = 0; p != NULL && k < v.size(); p = p->Next, ++k) {
                 QString s = QString::fromWCharArray(p->Description);
                 if (s.indexOf("TAP-Windows") > -1) continue;
                 if (s.indexOf("WAN Miniport") > -1) continue;
@@ -1167,7 +1167,6 @@ void OpenvpnManager::netDown(bool down)
                 if (s.indexOf("ISATAP") > -1) continue;
                 if (s.indexOf("Tunelling") > -1) continue;
                 QString name = QString::fromWCharArray(p->FriendlyName);
-                if (name.indexOf("isatap") > -1) continue;
                 if (name.indexOf("isatap") > -1) continue;
 
 
