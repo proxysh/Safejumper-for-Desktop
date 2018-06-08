@@ -248,26 +248,31 @@ void TrayIconManager::refreshStateIcon()
 
 void TrayIconManager::stateChanged(vpnState st)
 {
+    QString message;
     QString ic;
     switch (st) {
     case vpnStateDisconnected:
         updateActionsEnabled(false);
         ic = disconnectedIcon();
+        message = "Safejumper is Disconnected";
         break;
     case vpnStateConnecting:
         updateActionsEnabled(true);
         ic = connectingIcon();
+        message = "Safejumper is Connecting";
         break;
     case vpnStateConnected:
         ic = connectedIcon();
         mJumpAction->setEnabled(true);
         mSwitchCountryAction->setEnabled(true);
+        message = "Safejumper is Connected";
         break;
     default:
         break;
     }
     QIcon icon(ic);
     mTrayIcon->setIcon(icon);
+    mTrayIcon->showMessage("Safejumper", message, icon);
 }
 
 void TrayIconManager::connectTriggered()
