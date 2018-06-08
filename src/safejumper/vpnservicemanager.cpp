@@ -61,7 +61,7 @@ bool VPNServiceManager::ensureConnected()
             QThread::sleep(3);
             mConnected = connectToCore();
             if (!mConnected) {
-                QMessageBox::critical(nullptr, tr("Connection error"), tr("Connection to Safejumper service was closed.\nTerminating."));
+                QMessageBox::critical(nullptr, tr("Connection error"), tr("Connection to Safejumper service was closed.\nPlease ensure service is running"));
 //                emit serviceUnavailable();
             }
         }
