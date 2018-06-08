@@ -8,8 +8,8 @@ Page directory "" "" ""
 Page instfiles "" "" ""
 Page custom ""  ""
 
-!define SJ_VERSION         "3.2"
-!define SJ_BUILD             "83"
+!define SJ_VERSION         "4.0"
+!define SJ_BUILD             "84"
 
 Section main
 
