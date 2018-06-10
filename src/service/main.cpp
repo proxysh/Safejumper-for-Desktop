@@ -7,7 +7,7 @@
 #include <windows.h>
 #endif
 
-#include "log.h"
+#include "servicelog.h"
 
 const QString kAppName = "Safejumper";
 
