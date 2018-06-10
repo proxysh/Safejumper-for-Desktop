@@ -48,7 +48,7 @@ VPNServiceManager::VPNServiceManager(QObject *parent)
     m_socket.setServerName(kSocketName);
     QObject::connect(&m_socket, &QLocalSocket::readyRead, this, &VPNServiceManager::socket_readyRead);
     QObject::connect(&m_socket, &QLocalSocket::disconnected, this, &VPNServiceManager::socket_disconnected);
-    QObject::connect(&m_socket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(socket_error(QLotalSocket::LocalSocketError)));
+    QObject::connect(&m_socket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(socket_error(QLocalSocket::LocalSocketError)));
 }
 
 bool VPNServiceManager::ensureConnected()
