@@ -241,6 +241,7 @@ void TrayIconManager::actionActivated(QSystemTrayIcon::ActivationReason reason)
 void TrayIconManager::refreshStateIcon()
 {
     if (VPNServiceManager::exists()) {
+        qDebug() << "refreshStateIcon called";
         vpnState state = VPNServiceManager::instance()->state();
         QString iconName;
         switch(state) {
@@ -255,6 +256,8 @@ void TrayIconManager::refreshStateIcon()
         }
         QIcon icon(iconName);
         mTrayIcon->setIcon(icon);
+    } else {
+        qDebug() << "Not refreshing state icon since vpn service manager doesn't exist";
     }
 }
 
