@@ -15,7 +15,7 @@ macx: {
     QMAKE_INFO_PLIST = ./Info.plist
     QMAKE_LFLAGS += -F /System/Library/Frameworks/
     QMAKE_RPATHDIR += @executable_path/../Frameworks
-    LIBS += -framework Security -framework ServiceManagement
+    LIBS += -framework Security -framework ServiceManagement -framework Foundation
     target.path = /Applications
     resources.path = /Applications/Safejumper.app/Contents/Resources
     resources.files = ./resources/*
