@@ -100,15 +100,15 @@ void QVPNClientConnection::socket_readyRead()
         case cmdStart: {
             // Get parameters from json object and pass to openvpn manager
             mEncryption = jObj.value("encryption").toInt();
-            mHostname = jObj.value("server").toString();
-            mPort = jObj.value("port").toString();
-            mLocalPort = jObj.value("localport").toString();
-            mTcpOrUdp = jObj.value("tcporudp").toString();
+            mHostname = jObj.value("server").toString().split("\n").at(0);
+            mPort = jObj.value("port").toString().split("\n").at(0);
+            mLocalPort = jObj.value("localport").toString().split("\n").at(0);
+            mTcpOrUdp = jObj.value("tcporudp").toString().split("\n").at(0);
 
             bool fixDNS = jObj.value("fixDNS").toBool();
             bool disableIPv6 = jObj.value("disableIPv6").toBool();
-            QString dns1 = jObj.value("dns1").toString();
-            QString dns2 = jObj.value("dns2").toString();
+            QString dns1 = jObj.value("dns1").toString().split("\n").at(0);
+            QString dns2 = jObj.value("dns2").toString().split("\n").at(0);
 
             mReconnecting = true;
 
