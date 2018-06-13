@@ -101,14 +101,15 @@ QString EscapePsw(const QString & raw)
 {
     QString s;
     for (int k = 0; k < raw.length(); ++k) {
-        if (raw.at(k) == '\\' ) {
+        // Replace slash with double slash
+        if (raw.at(k) == '\\') {
             s += "\\\\";
+        // Replace " with slash quote
+        } else if (raw.at(k) == '"') {
+            s += "\\\"";
+        // Take all others as is
         } else {
-            if (raw.at(k) == '"') {
-                s += "\\\"";
-            } else {
-                s += raw.at(k);
-            }
+            s += raw.at(k);
         }
     }
     return s;
