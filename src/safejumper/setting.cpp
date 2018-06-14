@@ -40,6 +40,8 @@ Setting::Setting()
 {
     mDefaultDNS[0] = "146.185.134.104";
     mDefaultDNS[1] = "192.241.172.159";
+
+    Log::instance()->enableLogging(logging());
 }
 
 Setting::~Setting()
@@ -280,6 +282,7 @@ bool Setting::logging()
 void Setting::setLogging(bool value)
 {
     mSettings.setValue(kLoggingKey, value);
+    Log::instance()->enableLogging(value);
 }
 
 bool Setting::startup()
