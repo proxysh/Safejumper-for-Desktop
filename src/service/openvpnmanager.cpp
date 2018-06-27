@@ -174,52 +174,11 @@ void OpenvpnManager::startConnecting()
     bool ok = false;
     try {
 #ifndef Q_OS_WIN
-        mParametersTempFile.reset(new QTemporaryFile());
-        if (!mParametersTempFile->open())
-            throw std::runtime_error("Cannot create tmp file.");
-
-        setRights();        // lean inside, throw on error
-
-        mParametersTempFile->write(params.toLatin1());
-        mParametersTempFile->flush();
-
-        QStringList arg3;
-        arg3 << mParametersTempFile->fileName();
-        mParametersTempFile->close();
-
-//#ifdef Q_OS_DARWIN
-//          Log::serviceLog("######  touch launcher ####");
-//          OsSpecific::Instance()->RunFastCmd("touch -a " + ServicePathHelper::Instance()->LauncherPfn());
-//#endif
         Log::serviceLog("######  before exec ####");
 
-#ifdef Q_OS_LINUX
-        QProcess::execute(ServicePathHelper::Instance()->launchopenvpnFilename(), arg3);
-#else
-//#ifdef Q_OS_DARWIN
-//            QProcess::execute(prog, args);     // force password dialog; without launcher
-//#else
-        int r3 = QProcess::execute(ServicePathHelper::Instance()->launchopenvpnFilename(), arg3);    // 30ms block internally
-        Log::serviceLog("Launched " + ServicePathHelper::Instance()->launchopenvpnFilename() + " with argument " + arg3.at(0));
-        Log::serviceLog("QProcess::execute() returns " + QString::number(r3));
-        Log::serviceLog("###############");
-        if (r3 != 0) {
-            std::string ts;
-            switch (r3) {
-            case -2:        // cannot be started
-            case -1: {      // the process crashes
-                ts = ("OpenVPN couldn't be reached (" + QString::number(r3) + "). Please reboot and/or re-install Safejumper.").toStdString();
-                break;
-            }
-            default:
-                ts = ("Cannot run OpenVPN. Error code is: " + QString::number(r3)).toStdString();
-                break;
-            }
-            throw std::runtime_error(ts);
-        }
-//#endif
-#endif
+        int result = QProcess::execute(prog.remove("\\"), args);
 
+        Log::serviceLog("Result of openvpn execution is " + QString::number(result));
         // Wait 1 seconds to let openvpn open the socket we connect to
         sleep(1);
         Log::serviceLog("before attaching to OpenVPN");
@@ -1078,7 +1037,8 @@ bool OpenvpnManager::openvpnRunning()
 
 #ifdef Q_OS_DARWIN
         QString result = OsSpecific::instance()->runCommandFast(ServicePathHelper::Instance()->openvpnRunningScriptFilename());
-        if (result.trimmed() != "0") {
+        Log::serviceLog("Result of " + ServicePathHelper::Instance()->openvpnRunningScriptFilename() + " is " + result);
+        if (result.trimmed() != "0" && !result.isEmpty()) {
             running = true;
         }
 #else
