@@ -1,3 +1,9 @@
+safejumper (2018.06.26.0) unstable; urgency=medium
+
+  * Updated packaging with bug fixes for version 4.0 build 86
+
+ -- Jeremy Whiting <info@3monkeysinternational.com>  Tue, 26 Jun 2018 21:41:00 -0600
+
 safejumper (2018.06.14.0) unstable; urgency=medium
 
   * Updated packaging with bug fixes for version 4.0 build 85
