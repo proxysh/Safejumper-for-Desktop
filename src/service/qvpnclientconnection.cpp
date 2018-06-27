@@ -96,19 +96,21 @@ void QVPNClientConnection::socket_readyRead()
         case cmdNetdown: {
             OpenvpnManager::instance()->netDown(true);
         }
-            break;
+        break;
         case cmdStart: {
+            QRegExp newlines("[\n\r]");
+
             // Get parameters from json object and pass to openvpn manager
             mEncryption = jObj.value("encryption").toInt();
-            mHostname = jObj.value("server").toString().split("\n").at(0);
-            mPort = jObj.value("port").toString().split("\n").at(0);
-            mLocalPort = jObj.value("localport").toString().split("\n").at(0);
-            mTcpOrUdp = jObj.value("tcporudp").toString().split("\n").at(0);
+            mHostname = jObj.value("server").toString().remove(newlines);
+            mPort = jObj.value("port").toString().remove(newlines);
+            mLocalPort = jObj.value("localport").toString().remove(newlines);
+            mTcpOrUdp = jObj.value("tcporudp").toString().remove(newlines);
 
             bool fixDNS = jObj.value("fixDNS").toBool();
             bool disableIPv6 = jObj.value("disableIPv6").toBool();
-            QString dns1 = jObj.value("dns1").toString().split("\n").at(0);
-            QString dns2 = jObj.value("dns2").toString().split("\n").at(0);
+            QString dns1 = jObj.value("dns1").toString().remove(newlines);
+            QString dns2 = jObj.value("dns2").toString().remove(newlines);
 
             mReconnecting = true;
 
