@@ -462,10 +462,20 @@ QStringList OpenvpnManager::getOpenvpnArgs()
 //          << "--script-security" << "2" << "execve"       // https://openvpn.net/index.php/open-source/documentation/manuals/69-openvpn-21.html
     args << "--script-security" << "3";
 
-#ifndef Q_OS_WIN            // TODO: -0 DNS on linux
+#ifdef Q_OS_LINUX
     args << "--up" << ServicePathHelper::Instance()->upScriptFilename();     // /Applications/Safejumper.app/Contents/Resources/client.up.safejumper.sh
     args << "--down" << ServicePathHelper::Instance()->downScriptFilename(); // /Applications/Safejumper.app/Contents/Resources/client.down.safejumper.sh
 #endif
+
+#ifdef Q_OS_DARWIN
+    QString scriptArgs = " -d -f -m -o -w";
+    if (mDisableIPv6)
+        scriptArgs += " -9";
+
+    args << "--up" << ServicePathHelper::Instance()->upScriptFilename() + scriptArgs;     // /Applications/Safejumper.app/Contents/Resources/client.up.safejumper.sh
+    args << "--down" << ServicePathHelper::Instance()->downScriptFilename() + scriptArgs; // /Applications/Safejumper.app/Contents/Resources/client.down.safejumper.sh
+#endif
+
     args << "--up-restart";
 
     // TODO: -1 download cert from proxy.sh
