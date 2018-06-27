@@ -85,7 +85,7 @@ QString ServicePathHelper::resourcesPath()
 #ifdef Q_OS_DARWIN
 QString ServicePathHelper::openvpnRunningScriptFilename()
 {
-    return resourcesPath() + "openvpnRunning.sh";
+    return resourcesPath() + "/openvpnRunning.sh";
 }
 #endif
 
