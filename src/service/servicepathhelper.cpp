@@ -69,7 +69,7 @@ QString ServicePathHelper::openvpnFilename()
 #ifdef Q_OS_DARWIN
 QString ServicePathHelper::openvpnRelativeFilename()
 {
-    return "/openvpn/openvpn-2.4.0/openvpn-executable";
+    return "/openvpn/openvpn-executable";
 }
 #endif
 
