@@ -25,12 +25,12 @@
 #include "common.h"
 #include "wndmanager.h"
 #include "fonthelper.h"
+#include "log.h"
 #include "loginwindow.h"
 
 Scr_Logs::Scr_Logs(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Scr_Logs)
-    , _moving(false)
 {
 #ifdef Q_OS_WIN
     setWindowFlags(Qt::Dialog);
@@ -42,6 +42,8 @@ Scr_Logs::Scr_Logs(QWidget *parent) :
 #ifndef Q_OS_DARWIN
     FontHelper::SetFont(this);
 #endif
+    connect(Log::instance(), &Log::logMessage,
+            this, &Scr_Logs::addLogMessage);
 }
 
 void Scr_Logs::closeEvent(QCloseEvent * event)
@@ -63,6 +65,16 @@ Scr_Logs * Scr_Logs::Instance()
     return _inst.get();
 }
 
+bool Scr_Logs::IsExists()
+{
+    return (_inst.get() != NULL);
+}
+
+void Scr_Logs::Cleanup()
+{
+    if (_inst.get() != NULL) delete _inst.release();
+}
+
 void Scr_Logs::ShowSupportUrl()
 {
     OpenUrl_Support();
@@ -73,7 +85,7 @@ void Scr_Logs::ToScr_Connect()
     WndManager::Instance()->ToPrimary();
 }
 
-void Scr_Logs::Log(const QString & s)
+void Scr_Logs::addLogMessage(const QString & s)
 {
     QTextCursor c = ui->e_Logs->textCursor();
     c.movePosition(QTextCursor::End);

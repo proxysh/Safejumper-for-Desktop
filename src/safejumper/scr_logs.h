@@ -35,17 +35,11 @@ class Scr_Logs : public QDialog
 public:
     ~Scr_Logs();
     static Scr_Logs * Instance();
-    static bool IsExists()
-    {
-        return (_inst.get() != NULL);
-    }
-    static void Cleanup()
-    {
-        if (_inst.get() != NULL) delete _inst.release();
-    }
+    static bool IsExists();
+    static void Cleanup();
 
-    void Log(const QString & s);
 public slots:
+    void addLogMessage(const QString & s);
     void Clicked_Copytoclipboard();
 private slots:
     void ShowSupportUrl();
@@ -58,9 +52,6 @@ private:
     Ui::Scr_Logs *ui;
     explicit Scr_Logs(QWidget *parent = 0);
     static std::auto_ptr<Scr_Logs> _inst;
-    bool _moving;
-    QPoint _WndStart;
-    QPoint _CursorStart;
 };
 
 #endif // SCR_LOGS_H
