@@ -1,4 +1,6 @@
 #!/bin/bash
+hdiutil detach /Volumes/safejumper/
+hdiutil detach /Volumes/safechecker/
 
 sudo cp launchopenvpn/launchopenvpn Resources/
 sudo cp netdown/netdown Resources/
