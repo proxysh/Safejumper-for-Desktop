@@ -107,6 +107,9 @@ SectionIn RO
        nsExec::Exec '$INSTDIR\safejumperservice.exe -s'
        Pop $0
 
+    # set DACL for todylserver
+    nsExec::Exec 'sc sdset "Safejumper" D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRCRPWP;;;IU)(A;;CCLCSWLOCRRC;;;SU)'
+
     SetOutPath 'c:\Program Files\OpenVPN\bin\'
     #File  fix-dns-leak-32.dll // No longer needed with openvpn 2.3.9+
     #File  fix-dns-leak-64.dll // No longer needed with openvpn 2.3.9+
