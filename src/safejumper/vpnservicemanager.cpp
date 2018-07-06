@@ -43,7 +43,8 @@ VPNServiceManager::VPNServiceManager(QObject *parent)
       mConnected(false),
       mInPortLoop(false),
       mPortDialogShown(false),
-      mUserRequestedDisconnect(false)
+      mUserRequestedDisconnect(false),
+      mState(vpnStateDisconnected)
 {
     m_socket.setServerName(kSocketName);
     QObject::connect(&m_socket, &QLocalSocket::readyRead, this, &VPNServiceManager::socket_readyRead);
