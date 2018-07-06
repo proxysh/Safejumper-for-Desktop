@@ -61,8 +61,20 @@ bool VPNServiceManager::ensureConnected()
             QThread::sleep(3);
             mConnected = connectToCore();
             if (!mConnected) {
-                QMessageBox::critical(nullptr, tr("Connection error"), tr("Connection to Safejumper service was closed.\nPlease ensure service is running"));
-//                emit serviceUnavailable();
+                // Try restarting/starting the service then try again
+                restartService();
+
+                mConnected = connectToCore();
+
+                if (!mConnected) {
+                    // Sleep and try one more time
+                    QThread::sleep(3);
+                    mConnected = connectToCore();
+                    if (!mConnected) {
+                        QMessageBox::critical(nullptr, tr("Connection error"), tr("Connection to Safejumper service was closed.\nPlease ensure service is running"));
+                        //                emit serviceUnavailable();
+                    }
+                }
             }
         }
     }
@@ -375,5 +387,20 @@ void VPNServiceManager::tryNextPort()
     else
         Setting::instance()->switchToNextNode();
     sendConnectToVPNRequest();
+}
+
+void VPNServiceManager::restartService()
+{
+#ifdef Q_OS_WIN
+    // Stop and start the service
+    QProcess::execute("sc", QStringList() << "stop" << "Safejumper");
+    QProcess::execute("sc", QStringList() << "start" << "Safejumper");
+#else
+#ifdef Q_OS_DARWIN
+#else
+    // On linux start and stop the upstart service or the systemd service
+    // using runAsRoot bits to run the commands as root
+#endif
+#endif
 }
 

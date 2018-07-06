@@ -137,6 +137,8 @@ private:
 
     void tryNextPort();
 
+    void restartService();
+
     QLocalSocket m_socket;
 
     bool mConnected;
