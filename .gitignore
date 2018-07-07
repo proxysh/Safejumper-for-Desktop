@@ -12,7 +12,6 @@ safejumper.dmg
 Safejumper.app
 qrc_*.cpp
 uic_wrapper.sh
-buildmac/Resources/env
 buildwindows/Qt5*.dll
 buildwindows/Safejumper_install.exe
 buildwindows/bearer
