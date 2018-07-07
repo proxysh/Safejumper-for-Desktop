@@ -38,6 +38,22 @@
 
 VPNServiceManager* VPNServiceManager::mInstance = 0;
 
+#ifdef Q_OS_LINUX
+static void execAsRootLinux(const QString & cmd, const QStringList & args)
+{
+    QStringList args1;
+    args1 << cmd << args;
+    int re = QProcess::execute("pkexec", args1);
+    if (re != 0) {
+        QString s1 = "Unable to run command as root\n Result code is " + QString::number(re);
+        if (re == 126)
+            s1 = "Unable to run command as root.\n User declined auth.";
+        s1 += "\nCommand: " + cmd;
+        throw std::runtime_error(s1.toStdString());
+    }
+}
+#endif // Q_OS_LINUX
+
 VPNServiceManager::VPNServiceManager(QObject *parent)
     : QObject(parent),
       mConnected(false),
@@ -401,6 +417,11 @@ void VPNServiceManager::restartService()
 #else
     // On linux start and stop the upstart service or the systemd service
     // using runAsRoot bits to run the commands as root
+    if (QFile::exists("/usr/bin/systemctl")) {
+        execAsRootLinux("/usr/bin/systemctl", QStringList() << "restart" << "safejumper");
+    } else if (QFile::exists("/usr/bin/service")) {
+        execAsRootLinux("/usr/bin/service", QStringList() << "safejumper" << "restart");
+    }
 #endif
 #endif
 }
