@@ -73,6 +73,15 @@ QString ServicePathHelper::openvpnRelativeFilename()
 }
 #endif
 
+QString ServicePathHelper::serviceLogPath()
+{
+#ifdef Q_OS_DARWIN
+    return "/Library/Logs";
+#else
+    return resourcesPath();
+#endif
+}
+
 QString ServicePathHelper::resourcesPath()
 {
 #ifdef Q_OS_DARWIN
@@ -96,12 +105,12 @@ QString ServicePathHelper::tempPath()
 
 QString ServicePathHelper::openvpnLogFilename()
 {
-    return resourcesPath() + "/safejumper-openvpn.log";
+    return serviceLogPath() + "/safejumper-openvpn.log";
 }
 
 QString ServicePathHelper::openvpnConfigFilename()
 {
-    return resourcesPath() + "/safejumper-openvpn.ovpn";
+    return serviceLogPath() + "/safejumper-openvpn.ovpn";
 }
 
 QString ServicePathHelper::proxyshCaCertFilename()
@@ -144,7 +153,7 @@ QString ServicePathHelper::obfsproxyFilename()
 
 QString ServicePathHelper::obfsproxyLogFilename()
 {
-    return resourcesPath() + "/safejumper-obfsproxy.log";
+    return serviceLogPath() + "/safejumper-obfsproxy.log";
 }
 
 QString ServicePathHelper::installObfsproxyFilename()

@@ -54,6 +54,7 @@ public:
     QString safejumperServiceLogFilename();
 
 private:
+    QString serviceLogPath();
     QString tempPath(); // Where to keep config file, logs etc.
     ServicePathHelper();
     static std::auto_ptr<ServicePathHelper> _inst;

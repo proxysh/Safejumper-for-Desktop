@@ -15,12 +15,14 @@ tell application "Finder"
         set icon size of theViewOptions to 100
         set file_list to entire contents
         repeat with i in file_list
-            if the name of i is "license.txt" then
-                set the position of i to {415, 400}
+            if the name of i is "uninstall.sh" then
+                set the position of i to {615, 400}
             else if the name of i is "Applications" then
                 set the position of i to {615, 225}
             else if the name of i ends with ".app" then
                 set the position of i to {215, 225}
+            else if the name of i is "README.txt" then
+                set the position of i to {215, 400}
             end if
         end repeat
         update without registering applications

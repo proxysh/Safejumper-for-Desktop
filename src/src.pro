@@ -25,8 +25,12 @@ SUBDIRS += \
     # Commands to organize the bundle app
     organizer.commands += $(MKDIR) $$shell_quote($$OUT_PWD/safejumper/$${APPNAME}/Contents/Library/LaunchServices);
     organizer.commands += $(COPY) $$shell_quote($$OUT_PWD/$${HELPERAPP}) $$shell_quote($$OUT_PWD/safejumper/$${APPNAME}/Contents/Library/LaunchServices);
+    organizer.commands += $(MKDIR) $$shell_quote($$OUT_PWD/safejumper/$${APPNAME}/Contents/Resources);
     organizer.commands += $(COPY) $$PWD/service/$${HELPERAPP_INFO} $$shell_quote($$OUT_PWD/safejumper/$${APPNAME}/Contents/Resources);
     organizer.commands += $(COPY) $$PWD/service/$${HELPER_APP_LAUNCHD_INFO} $$shell_quote($$OUT_PWD/safejumper/$${APPNAME}/Contents/Resources);
+
+    organizer.commands += sudo $(COPY) -r $$OUT_PWD/Resources/* $$RESOURCES_INST_DIR;
+    organizer.commands += $(COPY) $$OUT_PWD/safejumper.icns $$RESOURCES_INST_DIR;
 
     include (common/certificate.pri)
 
@@ -51,7 +55,7 @@ SUBDIRS += \
     # Sign the application, using the provided entitlements
     CODESIGN_ALLOCATE_PATH=$$system(xcrun -find codesign_allocate)
     codesigner.commands += export CODESIGN_ALLOCATE=$${CODESIGN_ALLOCATE_PATH};
-    codesigner.commands += codesign --force --sign $${CERTSHA1} -r=\'designated => anchor apple generic and identifier \"$${BUNDLEID}\" and ((cert leaf[field.1.2.840.113635.100.6.1.9] exists) or (certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists and certificate leaf[subject.OU]=$${CERT_OU}))\' --timestamp=none $$shell_quote($$OUT_PWD/safejumper/$${APPNAME}) > /dev/null 2>&1;
+    codesigner.commands += codesign --force --sign $${CERTSHA1} -r=\'designated => (anchor apple generic and identifier \"$${BUNDLEID}\" and (cert leaf[field.1.2.840.113635.100.6.1.9] exists or certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists and certificate leaf[subject.OU]=$${CERT_OU}))\' --timestamp=none $$shell_quote($$OUT_PWD/safejumper/$${APPNAME});
 
     first.depends = $(first) organizer codesigner
     export(first.depends)

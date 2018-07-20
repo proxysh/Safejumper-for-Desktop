@@ -20,7 +20,7 @@ macx: {
     resources.path = /Applications/Safejumper.app/Contents/Resources
     resources.files = ./resources/*
     INSTALLS = target resources
-    ICON = Safejumper.icns
+    ICON = safejumper.icns
 
     include (../common/certificate.pri)
 

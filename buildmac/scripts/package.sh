@@ -12,6 +12,8 @@ scripts/pkg-dmg \
     --icon safejumper.icns  \
     --mkdir .background \
     --symlink  /Applications:Applications \
+    --copy uninstall.sh:uninstall.sh \
+    --copy README.txt:README.txt
 
 scripts/pkg-dmg \
     --verbosity 2 \
