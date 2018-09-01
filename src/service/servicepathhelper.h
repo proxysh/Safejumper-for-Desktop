@@ -40,8 +40,10 @@ public:
     QString openvpnLogFilename();
     QString openvpnConfigFilename();
     QString proxyshCaCertFilename();
+#ifdef Q_OS_LINUX
     QString upScriptFilename();
     QString downScriptFilename();
+#endif
     QString launchopenvpnFilename();
     QString obfsproxyFilename();
     QString obfsproxyLogFilename();
@@ -58,6 +60,9 @@ private:
     QString tempPath(); // Where to keep config file, logs etc.
     ServicePathHelper();
     static std::auto_ptr<ServicePathHelper> _inst;
+#ifdef Q_OS_LINUX
+    bool mUseSystemdResolver;
+#endif
 };
 
 #endif // SERVICEPATHHELPER_H

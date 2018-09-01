@@ -22,6 +22,10 @@
 #include <QCoreApplication>
 #include <QProcess>
 
+#ifdef Q_OS_LINUX
+#include <QtDbus>
+#endif
+
 extern QCoreApplication * g_pTheApp;
 
 std::auto_ptr<ServicePathHelper> ServicePathHelper::_inst;
@@ -48,6 +52,9 @@ ServicePathHelper::ServicePathHelper()
     QDir dir(tempPath());
     if (!dir.exists())
         dir.mkpath(tempPath());
+#ifdef Q_OS_LINUX
+    mUseSystemdResolver = false;
+#endif
 }
 
 ServicePathHelper::~ServicePathHelper()
@@ -118,15 +125,23 @@ QString ServicePathHelper::proxyshCaCertFilename()
     return resourcesPath() + "/proxysh.crt";
 }
 
+#ifdef Q_OS_LINUX
 QString ServicePathHelper::upScriptFilename()
 {
-    return resourcesPath() + "/client.up.safejumper.sh";
+    if (!mUseSystemdResolver)
+        return resourcesPath() + "/client.up.safejumper.sh";
+    else
+        return resourcesPath() + "/update-systemd-resolved";
 }
 
 QString ServicePathHelper::downScriptFilename()
 {
-    return resourcesPath() + "/client.down.safejumper.sh";
+    if (!mUseSystemdResolver)
+        return resourcesPath() + "/client.down.safejumper.sh";
+    else
+        return resourcesPath() + "/update-systemd-resolved";
 }
+#endif
 
 QString ServicePathHelper::netDownFilename()
 {
@@ -174,6 +189,3 @@ QString ServicePathHelper::safejumperLogFilename()
 {
     return tempPath() + "safejumper-debug.log";
 }
-
-// SDDL original D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)S:(AU;FA;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;WD)
-// SDDL working  D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRCRPWP;;;IU)(A;;CCLCSWLOCRRC;;;SU)
