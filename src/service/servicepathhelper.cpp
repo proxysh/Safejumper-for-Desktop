@@ -125,23 +125,29 @@ QString ServicePathHelper::proxyshCaCertFilename()
     return resourcesPath() + "/proxysh.crt";
 }
 
-#ifdef Q_OS_LINUX
 QString ServicePathHelper::upScriptFilename()
 {
+#ifdef Q_OS_LINUX
     if (!mUseSystemdResolver)
+#endif
         return resourcesPath() + "/client.up.safejumper.sh";
+#ifdef Q_OS_LINUX
     else
         return resourcesPath() + "/update-systemd-resolved";
+#endif
 }
 
 QString ServicePathHelper::downScriptFilename()
 {
+#ifdef Q_OS_LINUX
     if (!mUseSystemdResolver)
+#endif
         return resourcesPath() + "/client.down.safejumper.sh";
+#ifdef Q_OS_LINUX
     else
         return resourcesPath() + "/update-systemd-resolved";
-}
 #endif
+}
 
 QString ServicePathHelper::netDownFilename()
 {

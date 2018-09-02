@@ -40,10 +40,8 @@ public:
     QString openvpnLogFilename();
     QString openvpnConfigFilename();
     QString proxyshCaCertFilename();
-#ifdef Q_OS_LINUX
     QString upScriptFilename();
     QString downScriptFilename();
-#endif
     QString launchopenvpnFilename();
     QString obfsproxyFilename();
     QString obfsproxyLogFilename();
