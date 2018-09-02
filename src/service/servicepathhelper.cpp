@@ -18,21 +18,40 @@
 
 #include "servicepathhelper.h"
 
+#include "servicelog.h"
+
 #include <QDir>
 #include <QCoreApplication>
 #include <QProcess>
 
 #ifdef Q_OS_LINUX
-#include <QtDbus>
+#include "osspecific.h"
 #endif
 
 extern QCoreApplication * g_pTheApp;
+
+#ifdef Q_OS_LINUX
+bool detectionDone = false;
+#endif
 
 std::auto_ptr<ServicePathHelper> ServicePathHelper::_inst;
 ServicePathHelper * ServicePathHelper::Instance()
 {
     if (!_inst.get())
         _inst.reset(new ServicePathHelper());
+#ifdef Q_OS_LINUX
+    if (!detectionDone) {
+        detectionDone = true;
+        _inst->mUseSystemdResolver = false;
+        QString result = OsSpecific::instance()->runCommandFast("/opt/safejumper/detectresolve.sh");
+        if (result.isEmpty()) {
+            Log::serviceLog("script to check if resolve1 service is registered did not run");
+        } else {
+            _inst->mUseSystemdResolver = (result.trimmed() == "1");
+            Log::serviceLog(QString("dbus reply to check if resolve1 service is registered gave result %1").arg(_inst->mUseSystemdResolver));
+        }
+    }
+#endif
     return _inst.get();
 }
 
@@ -52,9 +71,6 @@ ServicePathHelper::ServicePathHelper()
     QDir dir(tempPath());
     if (!dir.exists())
         dir.mkpath(tempPath());
-#ifdef Q_OS_LINUX
-    mUseSystemdResolver = false;
-#endif
 }
 
 ServicePathHelper::~ServicePathHelper()

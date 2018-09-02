@@ -16,7 +16,7 @@ Name:           safejumper
 Summary:        VPN client for proxy_sh.
 License:        GPL-2.0 and GPL-3.0
 Group:          Productivity/Networking/Web/Utilities
-Version:        2018.07.20
+Version:        2018.09.02
 Release:        0
 Url:            http://proxy.sh
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -66,6 +66,8 @@ install -m 0755 netdown                   $RPM_BUILD_ROOT/opt/safejumper/netdown
 install -m 0755 openvpn                   $RPM_BUILD_ROOT/opt/safejumper/openvpn
 install -m 0744 client.down.safejumper.sh $RPM_BUILD_ROOT/opt/safejumper/client.down.safejumper.sh
 install -m 0744 client.up.safejumper.sh   $RPM_BUILD_ROOT/opt/safejumper/client.up.safejumper.sh
+install -m 0744 update-systemd-resolved   $RPM_BUILD_ROOT/opt/safejumper/update-systemd-resolved
+install -m 0744 detectresolve.sh          $RPM_BUILD_ROOT/opt/safejumper/detectresolve.sh
 install -m 0644 proxysh.crt               $RPM_BUILD_ROOT/opt/safejumper/proxysh.crt
 install -d 0644 env                       $RPM_BUILD_ROOT/opt/safejumper/env
 install -m 0755 safejumper.desktop        $RPM_BUILD_ROOT/usr/share/applications
@@ -110,6 +112,8 @@ rm -rf $RPM_BUILD_ROOT
 /opt/safejumper/openvpn
 /opt/safejumper/client.down.safejumper.sh
 /opt/safejumper/client.up.safejumper.sh
+/opt/safejumper/update-systemd-resolved
+/opt/safejumper/detectresolve.sh
 /opt/safejumper/proxysh.crt
 /opt/safejumper/env
 /usr/share/applications/safejumper.desktop
