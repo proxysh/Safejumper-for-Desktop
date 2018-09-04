@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2018.09.02
+VERSION=2018.09.04
 QTVERSION=5.11.0
 OLDPATH=$PATH
 ./cleanup.sh
