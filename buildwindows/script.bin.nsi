@@ -9,7 +9,7 @@ Page instfiles "" "" ""
 Page custom ""  ""
 
 !define SJ_VERSION         "4.0"
-!define SJ_BUILD             "92"
+!define SJ_BUILD             "93"
 
 Section main
 
