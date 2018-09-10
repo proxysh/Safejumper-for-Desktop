@@ -16,14 +16,13 @@ Name:           safejumper
 Summary:        VPN client for proxy_sh.
 License:        GPL-2.0 and GPL-3.0
 Group:          Productivity/Networking/Web/Utilities
-Version:        2018.09.04
+Version:        2018.09.10
 Release:        0
 Url:            http://proxy.sh
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source:         safejumper-%version.tar.gz
 Conflicts:      safejumper < %version-%release
 Requires:	net-tools
-Requires:	redhat-rpm-config
 
 # Do not check any files in env for requires
 %global __requires_exclude_from ^/opt/safejumper/env/.*$

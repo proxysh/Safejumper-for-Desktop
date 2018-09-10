@@ -23,7 +23,6 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source:         safechecker-%version.tar.gz
 Conflicts:      safechecker < %version-%release
 Requires:	net-tools
-Requires:	redhat-rpm-config
 
 # Do not check any files in env for requires
 %global __requires_exclude_from ^/opt/safechecker/env/.*$
