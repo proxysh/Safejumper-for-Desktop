@@ -1,6 +1,6 @@
 #!/bin/bash
 # Run this script from the buildlinux folder to build a debian/ubuntu package
-qmake LIBS+="-L/usr/lib/i386-linux-gnu/libssl.a -L/usr/lib/i386-linux-gnu/libcrypto.a" ../src
+qmake ../src
 make
 cp safejumper/safejumper linuxfiles
 cp service/safejumperservice linuxfiles
