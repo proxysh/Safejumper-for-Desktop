@@ -225,31 +225,31 @@ void OpenvpnManager::startConnecting()
 
 void OpenvpnManager::launchObfsproxy()
 {
-    bool obfs = (mEncryption == ENCRYPTION_TOR_OBFS2
-                 || mEncryption == ENCRYPTION_TOR_OBFS3
-                 || mEncryption == ENCRYPTION_TOR_SCRAMBLESUIT
-                );
-    if (mHostname.isEmpty() || mPort.isEmpty()) {
-        QString message = "Server or port is empty, select a location";
-        Log::serviceLog(message);
-        emit sendError(message);
-        return;
-    }
-    if (obfs) {
-        QString obfstype;
-        if (mEncryption == ENCRYPTION_TOR_OBFS2)
-            obfstype = "obfs2";
-        else if (mEncryption == ENCRYPTION_TOR_OBFS3)
-            obfstype = "obfs3";
-        else
-            obfstype = "scramblesuit";
-        runObfsproxy(mHostname, mPort, obfstype, "1050");
-        if (!obfsproxyRunning()) {
-            Log::serviceLog("Cannot run Obfsproxy");
-            emit sendError("Cannot run Obfsproxy");
-            return;
-        }
-    }
+//    bool obfs = (mEncryption == ENCRYPTION_TOR_OBFS2
+//                 || mEncryption == ENCRYPTION_TOR_OBFS3
+//                 || mEncryption == ENCRYPTION_TOR_SCRAMBLESUIT
+//                );
+//    if (mHostname.isEmpty() || mPort.isEmpty()) {
+//        QString message = "Server or port is empty, select a location";
+//        Log::serviceLog(message);
+//        emit sendError(message);
+//        return;
+//    }
+//    if (obfs) {
+//        QString obfstype;
+//        if (mEncryption == ENCRYPTION_TOR_OBFS2)
+//            obfstype = "obfs2";
+//        else if (mEncryption == ENCRYPTION_TOR_OBFS3)
+//            obfstype = "obfs3";
+//        else
+//            obfstype = "scramblesuit";
+//        runObfsproxy(mHostname, mPort, obfstype, "1050");
+//        if (!obfsproxyRunning()) {
+//            Log::serviceLog("Cannot run Obfsproxy");
+//            emit sendError("Cannot run Obfsproxy");
+//            return;
+//        }
+//    }
 }
 
 void OpenvpnManager::processError(QProcess::ProcessError error)
@@ -265,10 +265,11 @@ void OpenvpnManager::processStarted()
 
 bool OpenvpnManager::writeConfigFile()
 {
-    bool obfs = (mEncryption == ENCRYPTION_TOR_OBFS2
-                 || mEncryption == ENCRYPTION_TOR_OBFS3
-                 || mEncryption == ENCRYPTION_TOR_SCRAMBLESUIT
-                );
+    bool obfs = false;
+//    bool obfs = (mEncryption == ENCRYPTION_TOR_OBFS2
+//                 || mEncryption == ENCRYPTION_TOR_OBFS3
+//                 || mEncryption == ENCRYPTION_TOR_SCRAMBLESUIT
+//                );
     QFile ff(ServicePathHelper::Instance()->openvpnConfigFilename());
     if (!ff.open(QIODevice::WriteOnly)) {
         QString se = "Cannot write config file '" + ServicePathHelper::Instance()->openvpnConfigFilename() + "'";
@@ -316,36 +317,36 @@ bool OpenvpnManager::writeConfigFile()
     ff.write("route-method exe\n");
     ff.write("route-delay 2 0\n");
 
-    if (mEncryption == ENCRYPTION_ECC || mEncryption == ENCRYPTION_ECCXOR) {
-//          ff.write("tls-cipher ECDHE-ECDSA-AES256-GCM-SHA384\n");
-        ff.write("tls-cipher TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SHA384\n");
+//    if (mEncryption == ENCRYPTION_ECC || mEncryption == ENCRYPTION_ECCXOR) {
+////          ff.write("tls-cipher ECDHE-ECDSA-AES256-GCM-SHA384\n");
+//        ff.write("tls-cipher TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SHA384\n");
 
-        //ff.write("tls-cipher ECDH\n");
-        //ff.write("tls-cipher !ECDH\n");
+//        //ff.write("tls-cipher ECDH\n");
+//        //ff.write("tls-cipher !ECDH\n");
 
-        ff.write("ecdh-curve secp384r1\n");
+//        ff.write("ecdh-curve secp384r1\n");
 
-        if (mEncryption == ENCRYPTION_ECCXOR)
-            ff.write("scramble obfuscate 0054D65beN6r2kd\n");
+//        if (mEncryption == ENCRYPTION_ECCXOR)
+//            ff.write("scramble obfuscate 0054D65beN6r2kd\n");
 
-        // TODO: -1 download cert from https://proxy.sh/proxysh-ecc.crt
-        ff.write(
-            "<ca>\n"
-            "-----BEGIN CERTIFICATE-----\n"
-            "MIIB3DCCAWKgAwIBAgIJAMyliDCXM4kcMAoGCCqGSM49BAMCMBMxETAPBgNVBAMT\n"
-            "CHByb3h5LnNoMB4XDTE0MTExMzExNTk1NVoXDTI0MTExMDExNTk1NVowEzERMA8G\n"
-            "A1UEAxMIcHJveHkuc2gwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAATwczmfgxUfobt/\n"
-            "7S+A2P1tYNOYATTpxcIEAtUVCgywp1Fd6tKAttCqvpHz8PDOb4NYS6JONivO5yaT\n"
-            "jfDiTrWRGZeYf2JsNs6byv/A9qxvDCcJ49EotonMJYX4+TQq75ejgYEwfzAdBgNV\n"
-            "HQ4EFgQU6miAiqVUQAYeUP4LnZfKNdfQjUkwQwYDVR0jBDwwOoAU6miAiqVUQAYe\n"
-            "UP4LnZfKNdfQjUmhF6QVMBMxETAPBgNVBAMTCHByb3h5LnNoggkAzKWIMJcziRww\n"
-            "DAYDVR0TBAUwAwEB/zALBgNVHQ8EBAMCAQYwCgYIKoZIzj0EAwIDaAAwZQIwd5vR\n"
-            "8fTrEdXLKZjiXeCjH/vxnnbelGcgpFz/r0cdr8YISa20w2zfGVB1+8XRhaYHAjEA\n"
-            "yZeceiNW01Uj7DnjgWdLJWxcuduP1eTojzcQTGcFRPGd45w6pM1oGvLBhCD+QDzw\n"
-            "-----END CERTIFICATE-----\n"
-            "</ca>\n"
-        );
-    }
+//        // TODO: -1 download cert from https://proxy.sh/proxysh-ecc.crt
+//        ff.write(
+//            "<ca>\n"
+//            "-----BEGIN CERTIFICATE-----\n"
+//            "MIIB3DCCAWKgAwIBAgIJAMyliDCXM4kcMAoGCCqGSM49BAMCMBMxETAPBgNVBAMT\n"
+//            "CHByb3h5LnNoMB4XDTE0MTExMzExNTk1NVoXDTI0MTExMDExNTk1NVowEzERMA8G\n"
+//            "A1UEAxMIcHJveHkuc2gwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAATwczmfgxUfobt/\n"
+//            "7S+A2P1tYNOYATTpxcIEAtUVCgywp1Fd6tKAttCqvpHz8PDOb4NYS6JONivO5yaT\n"
+//            "jfDiTrWRGZeYf2JsNs6byv/A9qxvDCcJ49EotonMJYX4+TQq75ejgYEwfzAdBgNV\n"
+//            "HQ4EFgQU6miAiqVUQAYeUP4LnZfKNdfQjUkwQwYDVR0jBDwwOoAU6miAiqVUQAYe\n"
+//            "UP4LnZfKNdfQjUmhF6QVMBMxETAPBgNVBAMTCHByb3h5LnNoggkAzKWIMJcziRww\n"
+//            "DAYDVR0TBAUwAwEB/zALBgNVHQ8EBAMCAQYwCgYIKoZIzj0EAwIDaAAwZQIwd5vR\n"
+//            "8fTrEdXLKZjiXeCjH/vxnnbelGcgpFz/r0cdr8YISa20w2zfGVB1+8XRhaYHAjEA\n"
+//            "yZeceiNW01Uj7DnjgWdLJWxcuduP1eTojzcQTGcFRPGd45w6pM1oGvLBhCD+QDzw\n"
+//            "-----END CERTIFICATE-----\n"
+//            "</ca>\n"
+//        );
+//    }
 
     if (mFixDNS) {
         qDebug() << "Fixdns is enabled, so setting dns servers";
@@ -438,8 +439,8 @@ QStringList OpenvpnManager::getOpenvpnArgs()
     args << "--up-restart";
 
     // TODO: -1 download cert from proxy.sh
-    if (mEncryption != ENCRYPTION_ECC && mEncryption != ENCRYPTION_ECCXOR)
-        args << "--ca" << ServicePathHelper::Instance()->proxyshCaCertFilename();    // /tmp/proxysh.crt
+//    if (mEncryption != ENCRYPTION_ECC && mEncryption != ENCRYPTION_ECCXOR)
+//        args << "--ca" << ServicePathHelper::Instance()->proxyshCaCertFilename();    // /tmp/proxysh.crt
 
     if (!mDNS1.isEmpty())
         args << "--dhcp-option" << "DNS" << mDNS1;
@@ -589,10 +590,10 @@ void OpenvpnManager::gotConnected(const QString & s)
     if (p > -1) {
         int p1 = s.indexOf(',', p + 1);
         QString ip = p1 > -1 ? s.mid(p + 1, p1 - p - 1) : s.mid(p + 1);
-        if ((mEncryption != ENCRYPTION_TOR_OBFS2)
-                && mEncryption != ENCRYPTION_TOR_OBFS3
-                && mEncryption != ENCRYPTION_TOR_SCRAMBLESUIT
-           ) // for proxy it shows 127.0.0.1
+//        if ((mEncryption != ENCRYPTION_TOR_OBFS2)
+//                && mEncryption != ENCRYPTION_TOR_OBFS3
+//                && mEncryption != ENCRYPTION_TOR_SCRAMBLESUIT
+//           ) // for proxy it shows 127.0.0.1
             emit gotNewIp(ip);
     }
 

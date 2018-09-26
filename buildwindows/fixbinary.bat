@@ -1,1 +1,1 @@
-windeployqt.exe "%1"
+windeployqt.exe --qmldir ../../src/application "%1"

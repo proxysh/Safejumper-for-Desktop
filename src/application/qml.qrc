@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>LoginPage.qml</file>
+        <file>MainWindow.qml</file>
+        <file>MapPage.qml</file>
+        <file>MenuPage.qml</file>
+        <file>MenuButton.qml</file>
+        <file>SettingsPage.qml</file>
+        <file>ToggleSetting.qml</file>
+        <file>SelectionPopup.qml</file>
+        <file>InputPopup.qml</file>
+        <file>DNSPopup.qml</file>
+    </qresource>
+</RCC>

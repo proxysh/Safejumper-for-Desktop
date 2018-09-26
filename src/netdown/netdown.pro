@@ -14,15 +14,4 @@ CONFIG   += static
 
 TEMPLATE = app
 
-#QMAKE_INCDIR += ../safejumper/
-QMAKE_INCDIR += ../launchopenvpn/
-
-SOURCES += main.cpp \
-#	../safejumper/pathhelper.cpp \
-    ../launchopenvpn/common.cpp \
-    runit.cpp
-
-HEADERS  += \
-#	../safejumper/pathhelper.h \
-    ../launchopenvpn/common.h \
-    runit.h
+SOURCES += main.cpp

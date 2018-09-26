@@ -6,12 +6,14 @@
 TEMPLATE = subdirs
 
 SUBDIRS = \
-        safejumper \
+        application \
         service
+
+TRANSLATIONS = languages/gui_en.ts \
+               languages/gui_zh.ts
 
 macx: {
 SUBDIRS += \
-    launchopenvpn \
     netdown
 
     # Bundle App name
@@ -66,7 +68,6 @@ SUBDIRS += \
 
 linux: {
 SUBDIRS += \
-    launchopenvpn \
     netdown
 }
 

@@ -91,11 +91,11 @@ bool IsValidPort(const QString & s)
     return ok;
 }
 
-void SaveCb(const char * name, bool val)
-{
-    QSettings settings;
-    settings.setValue(name, val);
-}
+//void SaveCb(const char * name, bool val)
+//{
+//    QSettings settings;
+//    settings.setValue(name, val);
+//}
 
 QString EscapePsw(const QString & raw)
 {

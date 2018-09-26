@@ -29,7 +29,27 @@
 #include <string>
 #include <vector>
 
-#define kSAFEJUMPER_HELPER_LABEL "sh.proxy.SafejumperHelper"
+#define kHELPER_LABEL "sh.proxy.SafejumperHelper"
+
+#define APP_BUILD_NUM 94
+#define APP_BUILD "94"
+#define APP_VERSION "4.0"
+
+#define APPLICATION_VERSION QObject::tr("Version: %1 build %2").arg(APP_VERSION).arg(APP_BUILD)
+
+#ifdef Q_OS_DARWIN
+#define UPDATE_URL "https://proxy.sh/safejumper_mac.xml"
+#endif
+
+#ifdef Q_OS_WIN
+#define UPDATE_URL "https://proxy.sh/safejumper_windows.xml"
+#endif
+
+#ifdef Q_OS_LINUX
+#define UPDATE_URL "https://proxy.sh/safejumper_linux.xml"
+#endif
+
+const QString kLoginUrl = "https://shieldtra.com/auth";
 
 bool IsValidIp(const QString & ip);
 bool IsValidPort(const QString & s);
@@ -66,24 +86,29 @@ static const QString kSocketName = "/var/tmp/SafejumperVPN";
 #endif
 
 enum EncryptionType {
-    ENCRYPTION_RSA = 0,
-    ENCRYPTION_TOR_OBFS2,
-    ENCRYPTION_TOR_OBFS3,
-    ENCRYPTION_TOR_SCRAMBLESUIT,
-    ENCRYPTION_ECC,
-    ENCRYPTION_ECCXOR,
+//    ENCRYPTION_RSA = 0,
+//    ENCRYPTION_TOR_OBFS2,
+//    ENCRYPTION_TOR_OBFS3,
+//    ENCRYPTION_TOR_SCRAMBLESUIT,
+//    ENCRYPTION_ECC,
+//    ENCRYPTION_ECCXOR,
+    ENCRYPTION_TLSCRYPT,
+    ENCRYPTION_TLSCRYPT_XOR,
     ENCRYPTION_COUNT
 };
 
-const QList<QString> encryptionNames = {
-    "RSA 4096-bit",
-    "RSA + TOR (obfs2)",
-    "RSA + TOR (obfs3)",
-    "RSA + TOR (scramblesuit)",
-    "ECC (secp384r1)",
-    "ECC + XOR",
-};
+#define DEFAULT_ENCRYPTION ENCRYPTION_TLSCRYPT
 
+const QList<QString> encryptionNames = {
+//    "RSA 4096-bit",
+//    "RSA + TOR (obfs2)",
+//    "RSA + TOR (obfs3)",
+//    "RSA + TOR (scramblesuit)",
+//    "ECC (secp384r1)",
+//    "ECC + XOR",
+    "TLSCrypt",
+    "TLSCrypt + XOR",
+};
 
 enum OpenVPNStateWord {
     ovnStateConnecting,
@@ -110,15 +135,20 @@ bool OpenUrl_Earn();
 bool OpenUrl_Bug();
 bool launchUpdateUrl();
 
-void SaveCb(const char * name, bool val);
+//void SaveCb(const char * name, bool val);
 
 struct AServer {
-    QString address;    // IP or DNs
     QString name;       // "Chile Hub" - Hub at the end indicates hub
-    QString load;       // double
+    QString address;    // DNs
+    QString ip;
+    QString isoCode;
+    QVariantList ports;
+    QVariantList xorPorts;
+    int load;       // double
+    bool favorite;
 };
 
-typedef QHash<QString, size_t>  HMSI;
+// typedef QHash<QString, size_t>  HMSI;
 
 typedef std::map<std::string, int> SIMap;
 typedef std::map<int, int> IIMap;
