@@ -26,6 +26,7 @@ Rectangle {
     color: "#F4F5F7"
 
     signal closeClicked()
+    signal signupClicked()
 
     Column {
         id: loginColumn
@@ -217,6 +218,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 16
                 font.family: "Roboto-Bold"
+                font.bold: true
                 color: "white"
                 text: qsTr("LOGIN");
             }
@@ -226,6 +228,51 @@ Rectangle {
                 onClicked: {
                     authmanager.login(emailInput.text, passwordInput.text);
                 }
+            }
+        }
+
+        Item {
+            // spacer
+            width: parent.width
+            height: 60
+        }
+
+        Text {
+            text: qsTr("Don't have an account?");
+            color: "#020433"
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.family: "Roboto-Medium"
+            font.pixelSize: 16
+        }
+
+        Rectangle {
+            id: signupButton
+            color: "white"
+            width: parent.width
+            height: 56
+            radius: 5
+
+            layer.enabled: true
+            layer.effect: DropShadow {
+                horizontalOffset: 1
+                verticalOffset: 1
+                color: "#80000000"
+            }
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.family: "Roboto"
+                font.bold: true
+                font.pixelSize: 16
+                color: defaultColor
+                text: qsTr("SIGN UP");
+            }
+
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: { loginPage.signupClicked(); }
             }
         }
     }
