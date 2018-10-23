@@ -54,10 +54,6 @@ int main(int argc, char *argv[])
 
     g_pTheApp = new THE_APP_CLASS(argc, argv);
 
-    QTranslator translator;
-    translator.load("gui_zh.qm");
-    g_pTheApp->installTranslator(&translator);
-
     Log::logt("Starting Application");
     MainWindow::instance()->show();
     int res = g_pTheApp->exec();

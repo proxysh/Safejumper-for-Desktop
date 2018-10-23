@@ -97,6 +97,25 @@ Item {
         }
     }
 
+    SelectionPopup {
+        id: languagePopup
+        title: qsTr("Language");
+        subtitle: qsTr("Select language for user interface");
+        visible: false
+        itemModel: settings.languages
+        selectedIndex: settings.language
+        z: 20
+
+        onItemSelected: {
+            hidePopup(languagePopup);
+            settings.language = index;
+        }
+
+        onCancel: {
+            hidePopup(languagePopup);
+        }
+    }
+
     InputPopup {
         id: localPortPopup
         title: qsTr("Local OpenVPN Port");
@@ -785,6 +804,87 @@ Item {
                 }
 
                 // Language
+                Rectangle {
+                    id: languageBox
+                    width: parent.width
+                    height: 103
+
+                    color: "white"
+                    radius: 5
+
+                    layer.enabled: true
+                    layer.effect: DropShadow {
+                        horizontalOffset: 1
+                        verticalOffset: 1
+                        color: "#80000000"
+                    }
+
+                    Column {
+                        anchors.fill: parent
+
+                        RowLayout {
+                            width: parent.width
+                            height: 55
+                            spacing: 16
+
+                            Text {
+                                font.pixelSize: 16
+                                font.family: "Roboto"
+                                font.bold: true
+                                color: defaultColor
+                                text: qsTr("Language");
+                                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                                Layout.leftMargin: 20
+                            }
+
+                            Image {
+                                source: "../images/pencil.png"
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                Layout.rightMargin: 20
+                                width: 18
+                                height: 18
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked:
+                                        {
+                                            showPopup(languagePopup);
+                                        }
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            width: 295
+                            height: 1
+                            color: "#EBECF0"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
+
+                        RowLayout {
+                            width: parent.width
+                            height: 41
+                            spacing: 16
+                            Text {
+                                font.pixelSize: 12
+                                font.family: "Roboto-Black"
+                                color: "#6C798F"
+                                text: qsTr("LANGUAGE");
+                                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                                Layout.leftMargin: 20
+                            }
+
+                            Text {
+                                font.pixelSize: 16
+                                font.family: "Roboto-Medium"
+                                color: "#091E42"
+                                text: settings.currentLanguage
+                                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                                Layout.rightMargin: 20
+                            }
+                        }
+                    }
+                }
 
                 // Notifications
                 ToggleSetting {

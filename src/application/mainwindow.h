@@ -48,6 +48,8 @@ public slots:
     void showMap();
     void showSettings();
 
+    void languageChanged();
+
 protected:
     virtual void closeEvent(QCloseEvent * event);
 

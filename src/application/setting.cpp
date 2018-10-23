@@ -20,10 +20,11 @@
 
 #include <stdexcept>
 
-#include "common.h"
+#include "application.h"
 #include "authmanager.h"
-#include "osspecific.h"
+#include "common.h"
 #include "log.h"
+#include "osspecific.h"
 
 #include <QApplication>
 #include <QDir>
@@ -33,6 +34,7 @@
 static const QString kLoggingKey = "logging";
 static const QString kNotificationsKey = "notifications";
 static const QString kEncryptionKey = "encryption";
+static const QString kLanguageKey = "language";
 
 std::vector<QString> Setting::mProtocols[ENCRYPTION_COUNT];
 std::vector<int> Setting::mPorts[ENCRYPTION_COUNT];
@@ -44,6 +46,8 @@ Setting::Setting()
     mDefaultDNS[1] = "192.241.172.159";
 
     Log::instance()->enableLogging(logging());
+
+    setLanguage(language());
 }
 
 Setting::~Setting()
@@ -508,6 +512,35 @@ QStringList Setting::currentEncryptionPorts()
 {
     int enc = encryption();
     return mPortsByEncryption.value(enc);
+}
+
+int Setting::language()
+{
+    return mSettings.value(kLanguageKey, languageEnglish).toInt();
+}
+
+void Setting::setLanguage(int language)
+{
+    if (language >= FIRST_LANGUAGE && language <= LAST_LANGUAGE) {
+        Log::logt(QString("Changing language to %1").arg(kLanguageNames.at(language)));
+        mSettings.setValue(kLanguageKey, language);
+        // Switch gui translation
+        g_pTheApp->removeTranslator(&mTranslator);
+        mTranslator.load(kLanguageTranslations.at(language));
+        g_pTheApp->installTranslator(&mTranslator);
+
+        emit languageChanged();
+    }
+}
+
+QString Setting::currentLanguage()
+{
+    return kLanguageNames.at(language());
+}
+
+QStringList Setting::languages()
+{
+    return kLanguageNames;
 }
 
 QString Setting::EncryptionIx()

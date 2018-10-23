@@ -23,6 +23,7 @@
 #include <vector>
 #include <QFile>
 #include <QString>
+#include <QTranslator>
 
 #include "common.h"
 
@@ -59,6 +60,10 @@ class Setting: public QObject
     Q_PROPERTY(QString portCount READ portCount NOTIFY encryptionChanged)
 
     Q_PROPERTY(QStringList ports READ currentEncryptionPorts NOTIFY encryptionChanged)
+
+    Q_PROPERTY(int language READ language WRITE setLanguage NOTIFY languageChanged)
+    Q_PROPERTY(QString currentLanguage READ currentLanguage NOTIFY languageChanged)
+    Q_PROPERTY(QStringList languages READ languages NOTIFY languageChanged)
 
 public:
     ~Setting();
@@ -167,6 +172,12 @@ public:
     void setEncryptionPorts(int encryptionType, QStringList ports, QList<int> portNumbers);
     QStringList currentEncryptionPorts();
 
+    int language();
+    void setLanguage(int language);
+    QString currentLanguage();
+
+    QStringList languages();
+
 signals:
     void showNodesChanged();
     void detectInsecureWifiChanged();
@@ -188,6 +199,7 @@ signals:
     void rememberMeChanged();
     void loginChanged();
     void passwordChanged();
+    void languageChanged();
 
 private:
     Setting();
@@ -213,6 +225,8 @@ private:
     void delete_startup(QFile &f);
 #endif
     QSettings mSettings;
+
+    QTranslator mTranslator;
 };
 
 #endif // SETTING_H

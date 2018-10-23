@@ -31,6 +31,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QQmlContext>
+#include <QQmlEngine>
 
 const int kConnectionPage = 0;
 const int kFeedbackPage = 1;
@@ -45,6 +46,13 @@ MainWindow::MainWindow() :
     rootContext()->setContextProperty("authmanager", AuthManager::instance());
     rootContext()->setContextProperty("serversModel", AuthManager::instance()->serversModel());
     rootContext()->setContextProperty("settings", Setting::instance());
+
+    connect(Setting::instance(), &Setting::languageChanged,
+            this, &MainWindow::languageChanged);
+
+    // Call it here, since the language was loaded by the above instantiation
+    // of the setting object
+    languageChanged();
 
     setMaximumHeight(755);
     setMinimumHeight(755);
@@ -139,6 +147,11 @@ void MainWindow::showMap()
 void MainWindow::showSettings()
 {
     // Manipulate qml object to show settings page
+}
+
+void MainWindow::languageChanged()
+{
+    rootContext()->engine()->retranslate();
 }
 
 void MainWindow::on_cancelFeedbackButton_clicked()

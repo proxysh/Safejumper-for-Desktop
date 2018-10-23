@@ -54,6 +54,27 @@ const QString kLoginUrl = "https://shieldtra.com/auth";
 bool IsValidIp(const QString & ip);
 bool IsValidPort(const QString & s);
 
+// IMPORTANT: Never add languages in the middle, always add them to the end
+// if sorting is needed in gui, sort in the gui or code, not here since
+// user's selected language is stored in settings by number
+enum language {
+    languageEnglish,
+    languageSimplifiedChinese
+};
+
+#define FIRST_LANGUAGE languageEnglish
+#define LAST_LANGUAGE languageSimplifiedChinese
+
+const QStringList kLanguageNames = {
+    QObject::tr("English"),
+    QObject::tr("Simplified Chinese")
+};
+
+const QStringList kLanguageTranslations = {
+    "gui_en.qm",
+    "gui_zh.qm"
+};
+
 enum vpnState {
     vpnStateDisconnected = 0,
     vpnStateConnecting,
