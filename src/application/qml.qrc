@@ -10,5 +10,7 @@
         <file>SelectionPopup.qml</file>
         <file>InputPopup.qml</file>
         <file>DNSPopup.qml</file>
+        <file>SignupPage.qml</file>
+        <file>ErrorPopup.qml</file>
     </qresource>
 </RCC>

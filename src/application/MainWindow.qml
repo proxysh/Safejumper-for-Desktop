@@ -63,6 +63,15 @@ Rectangle {
         id: loginPage
         LoginPage {
             onCloseClicked: { stack.pop(); }
+            onSignupClicked: { stack.push(signupPage); }
+        }
+    }
+
+    Component {
+        id: signupPage
+        SignupPage {
+            onCloseClicked: { stack.pop(); }
+
         }
     }
 
