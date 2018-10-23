@@ -148,6 +148,8 @@ signals:
     void newIpLoaded(QString newIp);
     void subscriptionChanged();
 
+    void confirmation(const QString &message);
+
 private slots:
     void loginNetworkError(QNetworkReply::NetworkError error);
     void loginFinished();

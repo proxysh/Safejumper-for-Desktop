@@ -164,7 +164,7 @@ private:
     std::auto_ptr<QProcess> mObfsproxy;
     vpnState mState;
     QTimer *mStateTimer;
-    int mPID;		// for running process (run safejumper after crash)
+    int mPID;		// for running process (run gui after crash)
     std::auto_ptr<QTcpSocket> mSocket;
 
     qint64 mLogFilePosition;

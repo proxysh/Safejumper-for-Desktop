@@ -133,7 +133,7 @@ void OpenvpnManager::startConnecting()
     if (mTesting) {
         // If testing, nuke the log files between launches
         QFile::remove(ServicePathHelper::Instance()->openvpnLogFilename());
-        QFile::remove(ServicePathHelper::Instance()->safejumperLogFilename());
+        QFile::remove(ServicePathHelper::Instance()->applicationLogFilename());
     }
     setState(vpnStateConnecting);
     launchObfsproxy(); // Only launches if we are using obfs protocols
@@ -299,7 +299,7 @@ bool OpenvpnManager::writeConfigFile()
     ff.write("\n");
 
 //ff.write("remote 176.67.168.144 465\n");  // france 7
-//ff.write("remote 217.18.246.133 465\n");      // levski.proxy.sh
+//ff.write("remote 217.18.246.133 465\n");
 
 //ff.write("remote 176.9.137.187 465\n");   // germany 9 :ecc
 
@@ -329,7 +329,6 @@ bool OpenvpnManager::writeConfigFile()
 //        if (mEncryption == ENCRYPTION_ECCXOR)
 //            ff.write("scramble obfuscate 0054D65beN6r2kd\n");
 
-//        // TODO: -1 download cert from https://proxy.sh/proxysh-ecc.crt
 //        ff.write(
 //            "<ca>\n"
 //            "-----BEGIN CERTIFICATE-----\n"
@@ -381,7 +380,7 @@ QStringList OpenvpnManager::getOpenvpnArgs()
     QStringList args;
 //          << "--auth-nocache"
 #ifndef NO_PARAMFILE
-    args << "--config" << ServicePathHelper::Instance()->openvpnConfigFilename(); // /tmp/proxysh.ovpn
+    args << "--config" << ServicePathHelper::Instance()->openvpnConfigFilename();
 #endif
 #ifdef NO_PARAMFILE
     args << "--client"
@@ -423,8 +422,8 @@ QStringList OpenvpnManager::getOpenvpnArgs()
     args << "--script-security" << "3";
 
 #ifdef Q_OS_LINUX
-    args << "--up" << ServicePathHelper::Instance()->upScriptFilename();     // /Applications/Safejumper.app/Contents/Resources/client.up.safejumper.sh
-    args << "--down" << ServicePathHelper::Instance()->downScriptFilename(); // /Applications/Safejumper.app/Contents/Resources/client.down.safejumper.sh
+    args << "--up" << ServicePathHelper::Instance()->upScriptFilename();     // /Applications/ApplicationName.app/Contents/Resources/client.up.applicationname.sh
+    args << "--down" << ServicePathHelper::Instance()->downScriptFilename(); // /Applications/ApplicationName.app/Contents/Resources/client.down.applicationname.sh
 #endif
 
 #ifdef Q_OS_DARWIN
@@ -432,13 +431,12 @@ QStringList OpenvpnManager::getOpenvpnArgs()
     if (mDisableIPv6)
         scriptArgs += " -9";
 
-    args << "--up" << ServicePathHelper::Instance()->upScriptFilename() + scriptArgs;     // /Applications/Safejumper.app/Contents/Resources/client.up.safejumper.sh
-    args << "--down" << ServicePathHelper::Instance()->downScriptFilename() + scriptArgs; // /Applications/Safejumper.app/Contents/Resources/client.down.safejumper.sh
+    args << "--up" << ServicePathHelper::Instance()->upScriptFilename() + scriptArgs;     // /Applications/ApplicationName.app/Contents/Resources/client.up.applicationname.sh
+    args << "--down" << ServicePathHelper::Instance()->downScriptFilename() + scriptArgs; // /Applications/ApplicationName.app/Contents/Resources/client.down.applicationname.sh
 #endif
 
     args << "--up-restart";
 
-    // TODO: -1 download cert from proxy.sh
 //    if (mEncryption != ENCRYPTION_ECC && mEncryption != ENCRYPTION_ECCXOR)
 //        args << "--ca" << ServicePathHelper::Instance()->proxyshCaCertFilename();    // /tmp/proxysh.crt
 
@@ -1044,8 +1042,8 @@ bool OpenvpnManager::openvpnRunning()
         }
 #else
         if (!running) {
-            QTemporaryFile file(QDir::tempPath() + "/safejumper-tmp-XXXXXX.sh");
-            QTemporaryFile outf(QDir::tempPath() + "/safejumper-tmp-XXXXXX.out");
+            QTemporaryFile file(QDir::tempPath() + "/applicationname-tmp-XXXXXX.sh");
+            QTemporaryFile outf(QDir::tempPath() + "/applicationname-tmp-XXXXXX.out");
             if (file.open())
                 if (outf.open()) {
                     QString script = QString("ps -xa | grep open | grep execut | grep Safeju > ") + outf.fileName();

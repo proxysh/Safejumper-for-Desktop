@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-        <string>sh.proxy.SafejumperHelper</string>
+        <string>com.shieldtra.ShieldtraHelper</string>
 	<key>Program</key>
-        <string>/Library/PrivilegedHelperTools/sh.proxy.SafejumperHelper</string>
+        <string>/Library/PrivilegedHelperTools/com.shieldtra.ShieldtraHelper</string>
 	<key>ProgramArguments</key>
 	<array>
-                <string>/Library/PrivilegedHelperTools/sh.proxy.SafejumperHelper</string>
+                <string>/Library/PrivilegedHelperTools/com.shieldtra.ShieldtraHelper</string>
 	</array>
         <key>RunAtLoad</key>
         <true/>

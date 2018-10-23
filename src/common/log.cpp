@@ -39,7 +39,7 @@ void Log::logt(const QString & s)
     QDateTime now = QDateTime::currentDateTimeUtc();
     QString s1 = now.toString("yyyy-MM-dd-HH-mm-ss ") + s;
     s1 +=  + "\n";
-    QFile ff(PathHelper::Instance()->safejumperLogFilename());
+    QFile ff(PathHelper::Instance()->applicationLogFilename());
     if (ff.open(QIODevice::Append)) {
         ff.write(s1.toLatin1());
         ff.flush();

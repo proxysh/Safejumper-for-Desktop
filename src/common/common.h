@@ -29,24 +29,28 @@
 #include <string>
 #include <vector>
 
-#define kHELPER_LABEL "sh.proxy.SafejumperHelper"
+#define kHELPER_LABEL "com.shieldtra.ShieldtraHelper"
 
-#define APP_BUILD_NUM 94
-#define APP_BUILD "94"
-#define APP_VERSION "4.0"
+const QString kAppName = "Shieldtra";
+const QString kOrgName = "com.shieldtra";
+const QString kLowerAppName = "shieldtra";
+
+#define APP_BUILD_NUM 1
+#define APP_BUILD "1"
+#define APP_VERSION "1.0"
 
 #define APPLICATION_VERSION QObject::tr("Version: %1 build %2").arg(APP_VERSION).arg(APP_BUILD)
 
 #ifdef Q_OS_DARWIN
-#define UPDATE_URL "https://proxy.sh/safejumper_mac.xml"
+#define UPDATE_URL "https://shieldtra.com/shieldtra_mac.xml"
 #endif
 
 #ifdef Q_OS_WIN
-#define UPDATE_URL "https://proxy.sh/safejumper_windows.xml"
+#define UPDATE_URL "https://shieldtra.com/shieldtra_windows.xml"
 #endif
 
 #ifdef Q_OS_LINUX
-#define UPDATE_URL "https://proxy.sh/safejumper_linux.xml"
+#define UPDATE_URL "https://shieldtra.com/shieldtra_linux.xml"
 #endif
 
 const QString kLoginUrl = "https://shieldtra.com/auth";
@@ -101,9 +105,9 @@ enum commands {
 };
 
 #ifdef Q_OS_WIN
-static const QString kSocketName = "SafejumperVPN";
+static const QString kSocketName = "ShieldtraVPN";
 #else
-static const QString kSocketName = "/var/tmp/SafejumperVPN";
+static const QString kSocketName = "/var/tmp/ShieldtraVPN";
 #endif
 
 enum EncryptionType {

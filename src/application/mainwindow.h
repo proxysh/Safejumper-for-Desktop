@@ -41,7 +41,7 @@ public:
     void showConnection();
 
 public slots:
-    void portDialogResult(int action);
+    void portDialogResult(bool cyclePort);
 
     void showAndFocus();
     void showLogs();
@@ -49,6 +49,10 @@ public slots:
     void showSettings();
 
     void languageChanged();
+
+    void showConfirmation(const QString &text);
+
+    void closeWindow();
 
 protected:
     virtual void closeEvent(QCloseEvent * event);

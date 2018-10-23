@@ -21,20 +21,16 @@
 
 #include "authmanager.h"
 #include "common.h"
-#include "wndmanager.h"
+#include "log.h"
+#include "pathhelper.h"
 #include "setting.h"
 #include "vpnservicemanager.h"
-#include "pathhelper.h"
-#include "log.h"
 
 #include <QHttpMultiPart>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QQmlContext>
 #include <QQmlEngine>
-
-const int kConnectionPage = 0;
-const int kFeedbackPage = 1;
 
 MainWindow::MainWindow() :
     QQuickView(),
@@ -46,6 +42,7 @@ MainWindow::MainWindow() :
     rootContext()->setContextProperty("authmanager", AuthManager::instance());
     rootContext()->setContextProperty("serversModel", AuthManager::instance()->serversModel());
     rootContext()->setContextProperty("settings", Setting::instance());
+    rootContext()->setContextProperty("mainwindow", this);
 
     connect(Setting::instance(), &Setting::languageChanged,
             this, &MainWindow::languageChanged);
@@ -76,25 +73,24 @@ bool MainWindow::exists()
 
 void MainWindow::cleanup()
 {
-    if (!mInstance.isNull())
+    if (!mInstance.isNull()) {
+        mInstance->closeWindow();
         mInstance->deleteLater();
+    }
 }
 
 MainWindow::~MainWindow()
 {
     {
         if (this->isVisible()) {
-//            WndManager::Instance()->HideThis(this);
-//            WndManager::Instance()->SavePos();
+            closeWindow();
         }
     }
-//    delete ui;
 }
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
     event->ignore();
-//    WndManager::Instance()->HideThis(this);
 }
 
 void MainWindow::showFeedback()
@@ -119,12 +115,10 @@ MainWindow * MainWindow::instance()
     return mInstance;
 }
 
-void MainWindow::portDialogResult(int action)
+void MainWindow::portDialogResult(bool cyclePorts)
 {
-    if (QDialog::Accepted == action) {
-        // Switch to next port/node and tell service to connect
-        VPNServiceManager::instance()->startPortLoop(WndManager::Instance()->IsCyclePort());
-    }
+    // Switch to next port/node and tell service to connect
+    VPNServiceManager::instance()->startPortLoop(cyclePorts);
 }
 
 void MainWindow::showAndFocus()
@@ -154,6 +148,11 @@ void MainWindow::languageChanged()
     rootContext()->engine()->retranslate();
 }
 
+void MainWindow::showConfirmation(const QString &text)
+{
+    // Show confirmation message in qml gui
+}
+
 void MainWindow::on_cancelFeedbackButton_clicked()
 {
     showConnection();
@@ -175,7 +174,7 @@ void MainWindow::on_sendFeedbackButton_clicked()
     QString loginName = AuthManager::instance()->VPNName();
 
     QString feedbackText; // = ui->feedbackTextEdit->toPlainText();
-    QFile debugLog(PathHelper::Instance()->safejumperLogFilename());
+    QFile debugLog(PathHelper::Instance()->applicationLogFilename());
     debugLog.open(QIODevice::ReadOnly|QIODevice::Text);
     // Only send last 4k of log
     QString logText = QString(debugLog.readAll()).right(4096);
@@ -279,5 +278,12 @@ void MainWindow::sendFeedbackFinished()
 //    QMessageBox::information(this, "Issue created", QString("Issue created."));
 
     showConnection();
+}
+
+void MainWindow::closeWindow()
+{
+    QSettings settings;
+    settings.setValue("pos", position());
+    hide();
 }
 

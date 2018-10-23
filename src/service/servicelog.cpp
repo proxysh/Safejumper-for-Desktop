@@ -39,7 +39,7 @@ void Log::logt(const QString & s)
     QDateTime now = QDateTime::currentDateTimeUtc();
     QString s1 = now.toString("yyyy-MM-dd-HH-mm-ss ") + s;
     s1 +=  + "\n";
-    QFile ff(ServicePathHelper::Instance()->safejumperLogFilename());
+    QFile ff(ServicePathHelper::Instance()->applicationLogFilename());
     if (ff.open(QIODevice::Append)) {
         ff.write(s1.toLatin1());
         ff.flush();
@@ -60,7 +60,7 @@ void Log::serviceLog(const QString &s)
     QDateTime now = QDateTime::currentDateTime();
     QString s1 = now.toString("yyyy-MM-dd-HH-mm-ss ") + s;
     s1 +=  + "\n";
-    QFile ff(ServicePathHelper::Instance()->safejumperServiceLogFilename());
+    QFile ff(ServicePathHelper::Instance()->serviceLogFilename());
     if (ff.open(QIODevice::Append)) {
         ff.write(s1.toLatin1());
         ff.flush();

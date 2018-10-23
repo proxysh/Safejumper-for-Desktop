@@ -17,7 +17,8 @@
  ***************************************************************************/
 
 #include "pathhelper.h"
-#include "pathhelper.h"
+
+#include "common.h"
 
 #include <QDir>
 #include <QCoreApplication>
@@ -35,12 +36,12 @@ PathHelper * PathHelper::Instance()
 
 bool PathHelper::exists()
 {
-    return (_inst.get() != NULL);
+    return (_inst.get() != nullptr);
 }
 
 void PathHelper::cleanup()
 {
-    if (_inst.get() != NULL)
+    if (_inst.get() != nullptr)
         delete _inst.release();
 }
 
@@ -62,7 +63,7 @@ QString PathHelper::openvpnFilename()
 #ifdef Q_OS_WIN
     return resourcesPath() + "/OpenVPN/bin/openvpn.exe";
 #else	// Q_OS_LINUX
-    return "/opt/safejumper/openvpn";
+    return QString("/opt/%1/openvpn").arg(kLowerAppName);
 #endif
 #endif
 }
@@ -95,17 +96,17 @@ QString PathHelper::openvpnRunningScriptFilename()
 
 QString PathHelper::tempPath()
 {
-    return QDir::homePath() + "/.safejumper/";
+    return QDir::homePath() + QString("/.%1/").arg(kLowerAppName);
 }
 
 QString PathHelper::openvpnLogFilename()
 {
-    return resourcesPath() + "/safejumper-openvpn.log";
+    return resourcesPath() + QString("/%1-openvpn.log").arg(kLowerAppName);
 }
 
 QString PathHelper::openvpnConfigFilename()
 {
-    return resourcesPath() + "/safejumper-openvpn.ovpn";
+    return resourcesPath() + QString("/%1-openvpn.ovpn").arg(kLowerAppName);
 }
 
 QString PathHelper::proxyshCaCertFilename()
@@ -115,22 +116,17 @@ QString PathHelper::proxyshCaCertFilename()
 
 QString PathHelper::upScriptFilename()
 {
-    return resourcesPath() + "/client.up.safejumper.sh";
+    return resourcesPath() + QString("/client.up.%1.sh").arg(kLowerAppName);
 }
 
 QString PathHelper::downScriptFilename()
 {
-    return resourcesPath() + "/client.down.safejumper.sh";
+    return resourcesPath() + QString("/client.down.%1.sh").arg(kLowerAppName);
 }
 
 QString PathHelper::netDownFilename()
 {
     return resourcesPath() + "/netdown";
-}
-
-QString PathHelper::launchopenvpnFilename()
-{
-    return resourcesPath() + "/launchopenvpn";
 }
 
 QString PathHelper::obfsproxyFilename()
@@ -139,7 +135,7 @@ QString PathHelper::obfsproxyFilename()
     return resourcesPath() + "/env/bin/obfsproxy";
 #else
 #ifdef Q_OS_LINUX
-    return "/opt/safejumper/env/bin/obfsproxy";
+    return QString("/opt/%1/env/bin/obfsproxy").arg(kLowerAppName);
 #else		// Win
     return         "cmd /k c:\\python27\\Scripts\\obfsproxy.exe";
 #endif	// linux
@@ -148,26 +144,21 @@ QString PathHelper::obfsproxyFilename()
 
 QString PathHelper::obfsproxyLogFilename()
 {
-    return resourcesPath() + "/safejumper-obfsproxy.log";
+    return resourcesPath() + QString("/%1-obfsproxy.log").arg(kLowerAppName);
 }
 
-QString PathHelper::installObfsproxyFilename()
-{
-    return resourcesPath() + "/installobfsproxy.sh";
-}
-
-QString PathHelper::safejumperServiceLogFilename()
+QString PathHelper::serviceLogFilename()
 {
 #ifdef Q_OS_WIN
-    return resourcesPath() + "/safejumper-service.log";
+    return resourcesPath() + QString("/%1-service.log").arg(kLowerAppName);
 #else
-    return "/tmp/safejumper-service.log";
+    return QString("/tmp/%1-service.log").arg(kLowerAppName);
 #endif
 }
 
-QString PathHelper::safejumperLogFilename()
+QString PathHelper::applicationLogFilename()
 {
-    return tempPath() + "safejumper-debug.log";
+    return tempPath() + QString("%1-debug.log").arg(kLowerAppName);
 }
 
 

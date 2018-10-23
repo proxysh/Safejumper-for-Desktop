@@ -31,6 +31,7 @@
 #define THE_APP_CLASS QApplication
 #endif
 
+#include "common.h"
 #include "log.h"
 #include "mainwindow.h"
 
@@ -49,8 +50,8 @@ int main(int argc, char *argv[])
 
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QCoreApplication::setSetuidAllowed(true);
-    QApplication::setOrganizationName("proxy.sh");
-    QApplication::setApplicationName("Safejumper");
+    QApplication::setOrganizationName(kOrgName);
+    QApplication::setApplicationName(kAppName);
 
     g_pTheApp = new THE_APP_CLASS(argc, argv);
 

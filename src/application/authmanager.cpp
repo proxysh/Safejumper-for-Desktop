@@ -30,13 +30,12 @@
 #include <QJsonObject>
 #include <QUrlQuery>
 
+#include "common.h"
+#include "log.h"
+#include "flag.h"
 #include "pingwaiter.h"
 #include "setting.h"
 #include "vpnservicemanager.h"
-#include "log.h"
-#include "flag.h"
-#include "common.h"
-#include "wndmanager.h"
 
 static QStringList subscriptions;
 
@@ -838,10 +837,8 @@ void AuthManager::processUpdatesXml()
         int upd = ss.toInt(&ok);
         Log::logt(QString("Got updated xml, server version is %1, local version is %2").arg(upd).arg(APP_BUILD_NUM));
         if (ok && APP_BUILD_NUM < upd) {
-            int result = WndManager::Instance()->Confirmation("New version " + ss + " available. Update?");
+            emit confirmation(QString("New version %1 available. Update?").arg(upd));
             Setting::instance()->updateMessageShown();
-            if (result == QDialog::Accepted)
-                launchUpdateUrl();           // TODO: -2 auto update self
         }
     }
 }
@@ -1000,11 +997,11 @@ void AuthManager::pingAllServers()
     if (mWorkers.empty()) {
         mInProgress.assign(PINGWORKERS_NUM, 0);
 //        LoginWindow * m = LoginWindow::Instance();
-//        for (size_t k = 0; k < PINGWORKERS_NUM; ++k) {
-//            mWorkers.push_back(NULL);
-//            mWaiters.push_back(new PingWaiter(k, m));
-//            mTimers.push_back(new QTimer());
-//        }
+        for (size_t k = 0; k < PINGWORKERS_NUM; ++k) {
+            mWorkers.push_back(nullptr);
+            mWaiters.push_back(new PingWaiter(k, this));
+            mTimers.push_back(new QTimer());
+        }
     }
 
     mPingsLoaded = false;
@@ -1021,9 +1018,8 @@ void AuthManager::startWorker(size_t id)
         Log::logt("startWorker will ping server number " + QString::number(srv));
 
         mInProgress.at(id) = srv;
-//        LoginWindow * m = LoginWindow::Instance();
 
-        if (mWorkers.at(id) !=NULL) {
+        if (mWorkers.at(id) != nullptr) {
             Log::logt("Workers at " + QString::number(id) + " not null, so disconnecting and terminating");
             disconnect(mWorkers.at(id), static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                        mWaiters.at(id), &PingWaiter::PingFinished);
@@ -1034,7 +1030,7 @@ void AuthManager::startWorker(size_t id)
                 mWorkers.at(id)->deleteLater();
             }
         }
-//        mWorkers[id] = new QProcess(m);
+        mWorkers[id] = new QProcess(this);
         connect(mWorkers.at(id), static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 mWaiters.at(id), &PingWaiter::PingFinished);
         connect(mWorkers.at(id), &QProcess::errorOccurred,

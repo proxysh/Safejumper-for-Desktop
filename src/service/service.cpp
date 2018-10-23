@@ -4,15 +4,13 @@
 
 #include <QThread>
 
-const QString kAppName = "Safejumper";
-
 Service::Service(int argc, char **argv)
     : QtService<QCoreApplication>(argc, argv, kAppName)
     , m_VPNServer(nullptr)
 {
 //    Log::serviceLog("*** Service constructed ***");
 //    QThread::sleep(30);
-    setServiceDescription("Safejumper VPN service.");
+    setServiceDescription(QString("%1 VPN service.").arg(kAppName));
     setStartupType(QtServiceController::AutoStartup);
 }
 

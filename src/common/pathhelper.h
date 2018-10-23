@@ -42,16 +42,14 @@ public:
     QString proxyshCaCertFilename();
     QString upScriptFilename();
     QString downScriptFilename();
-    QString launchopenvpnFilename();
     QString obfsproxyFilename();
     QString obfsproxyLogFilename();
-    QString installObfsproxyFilename();
     QString netDownFilename();
-    QString safejumperLogFilename(); // "/tmp/Safejumper-debug.log"
+    QString applicationLogFilename();
 
     QString resourcesPath();
 
-    QString safejumperServiceLogFilename();
+    QString serviceLogFilename();
 
 private:
     QString tempPath(); // Where to keep config file, logs etc.

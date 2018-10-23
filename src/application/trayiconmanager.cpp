@@ -28,7 +28,6 @@
 #include "log.h"
 #include "mainwindow.h"
 #include "setting.h"
-#include "wndmanager.h"
 #include "vpnservicemanager.h"
 
 TrayIconManager::TrayIconManager(QWidget *parent)
@@ -315,7 +314,7 @@ void TrayIconManager::disconnectTriggered()
 
 void TrayIconManager::statusTriggered()
 {
-    WndManager::Instance()->ToPrimary();
+    MainWindow::instance()->showConnection();
 }
 
 void TrayIconManager::jumpTriggered()
@@ -341,25 +340,25 @@ void TrayIconManager::logsTriggered()
 
 void TrayIconManager::webManagTriggered()
 {
-    WndManager::Instance()->CloseAll();
+    MainWindow::instance()->closeWindow();
     OpenUrl_Panel();
 }
 
 void TrayIconManager::supportTriggered()
 {
-    WndManager::Instance()->CloseAll();
+    MainWindow::instance()->closeWindow();
     OpenUrl_Support();
 }
 
 void TrayIconManager::earnTriggered()
 {
-    WndManager::Instance()->CloseAll();
+    MainWindow::instance()->closeWindow();
     OpenUrl_Earn();
 }
 
 void TrayIconManager::aboutTriggered()
 {
-    WndManager::Instance()->ToPrimary();
+    MainWindow::instance()->showSettings();
 }
 
 void TrayIconManager::closeTriggered()
@@ -372,7 +371,7 @@ void TrayIconManager::logoutTriggered()
     VPNServiceManager::instance()->sendDisconnectFromVPNRequest();
     if (AuthManager::exists())
         AuthManager::instance()->logout();
-    WndManager::Instance()->ToPrimary();
+    MainWindow::instance()->showAndFocus();
     emit logout();
     clearConnectToMenu();
     mConnectToMenu->setEnabled(false);
@@ -384,7 +383,7 @@ std::auto_ptr<TrayIconManager> TrayIconManager::mInstance;
 TrayIconManager * TrayIconManager::instance()
 {
     if (!mInstance.get())
-        mInstance.reset(new TrayIconManager(NULL));
+        mInstance.reset(new TrayIconManager(nullptr));
     return mInstance.get();
 }
 

@@ -20,6 +20,8 @@
 
 #include "servicelog.h"
 
+#include "common.h"
+
 #include <QDir>
 #include <QCoreApplication>
 #include <QProcess>
@@ -43,7 +45,7 @@ ServicePathHelper * ServicePathHelper::Instance()
     if (!detectionDone) {
         detectionDone = true;
         _inst->mUseSystemdResolver = false;
-        QString result = OsSpecific::instance()->runCommandFast("/opt/safejumper/detectresolve.sh");
+        QString result = OsSpecific::instance()->runCommandFast(QString("/opt/%1/detectresolve.sh").arg(kLowerAppName));
         if (result.isEmpty()) {
             Log::serviceLog("script to check if resolve1 service is registered did not run");
         } else {
@@ -84,7 +86,7 @@ QString ServicePathHelper::openvpnFilename()
 #ifdef Q_OS_WIN
     return resourcesPath() + "/OpenVPN/bin/openvpn.exe";
 #else	// Q_OS_LINUX
-    return "/opt/safejumper/openvpn";
+    return QString("/opt/%1/openvpn").arg(kLowerAppName);
 #endif
 #endif
 }
@@ -108,7 +110,7 @@ QString ServicePathHelper::serviceLogPath()
 QString ServicePathHelper::resourcesPath()
 {
 #ifdef Q_OS_DARWIN
-    return "/Applications/Safejumper.app/Contents/Resources";
+    return QString("/Applications/%1.app/Contents/Resources").arg(kAppName);
 #else
     return QCoreApplication::applicationDirPath();
 #endif
@@ -123,17 +125,17 @@ QString ServicePathHelper::openvpnRunningScriptFilename()
 
 QString ServicePathHelper::tempPath()
 {
-    return QDir::homePath() + "/.safejumper/";
+    return QDir::homePath() + QString("/.%1/").arg(kLowerAppName);
 }
 
 QString ServicePathHelper::openvpnLogFilename()
 {
-    return serviceLogPath() + "/safejumper-openvpn.log";
+    return serviceLogPath() + QString("/%1-openvpn.log").arg(kLowerAppName);
 }
 
 QString ServicePathHelper::openvpnConfigFilename()
 {
-    return serviceLogPath() + "/safejumper-openvpn.ovpn";
+    return serviceLogPath() + QString("/%1-openvpn.ovpn").arg(kLowerAppName);
 }
 
 QString ServicePathHelper::proxyshCaCertFilename()
@@ -146,7 +148,7 @@ QString ServicePathHelper::upScriptFilename()
 #ifdef Q_OS_LINUX
     if (!mUseSystemdResolver)
 #endif
-        return resourcesPath() + "/client.up.safejumper.sh";
+        return resourcesPath() + QString("/client.up.%1.sh").arg(kLowerAppName);
 #ifdef Q_OS_LINUX
     else
         return resourcesPath() + "/update-systemd-resolved";
@@ -158,7 +160,7 @@ QString ServicePathHelper::downScriptFilename()
 #ifdef Q_OS_LINUX
     if (!mUseSystemdResolver)
 #endif
-        return resourcesPath() + "/client.down.safejumper.sh";
+        return resourcesPath() + QString("/client.down.%1.sh").arg(kLowerAppName);
 #ifdef Q_OS_LINUX
     else
         return resourcesPath() + "/update-systemd-resolved";
@@ -170,18 +172,13 @@ QString ServicePathHelper::netDownFilename()
     return resourcesPath() + "/netdown";
 }
 
-QString ServicePathHelper::launchopenvpnFilename()
-{
-    return resourcesPath() + "/launchopenvpn";
-}
-
 QString ServicePathHelper::obfsproxyFilename()
 {
 #ifdef Q_OS_DARWIN
     return resourcesPath() + "/env/bin/obfsproxy";
 #else
 #ifdef Q_OS_LINUX
-    return "/opt/safejumper/env/bin/obfsproxy";
+    return QString("/opt/%1/env/bin/obfsproxy").arg(kLowerAppName);
 #else		// Win
     return         "cmd /k c:\\python27\\Scripts\\obfsproxy.exe";
 #endif	// linux
@@ -190,24 +187,19 @@ QString ServicePathHelper::obfsproxyFilename()
 
 QString ServicePathHelper::obfsproxyLogFilename()
 {
-    return serviceLogPath() + "/safejumper-obfsproxy.log";
+    return serviceLogPath() + QString("/%1-obfsproxy.log").arg(kLowerAppName);
 }
 
-QString ServicePathHelper::installObfsproxyFilename()
-{
-    return resourcesPath() + "/installobfsproxy.sh";
-}
-
-QString ServicePathHelper::safejumperServiceLogFilename()
+QString ServicePathHelper::serviceLogFilename()
 {
 #ifdef Q_OS_WIN
-    return resourcesPath() + "/safejumper-service.log";
+    return resourcesPath() + QString("/%1-service.log").arg(kLowerAppName);
 #else
-    return "/tmp/safejumper-service.log";
+    return QString("/tmp/%1-service.log").arg(kLowerAppName);
 #endif
 }
 
-QString ServicePathHelper::safejumperLogFilename()
+QString ServicePathHelper::applicationLogFilename()
 {
-    return tempPath() + "safejumper-debug.log";
+    return tempPath() + QString("%1-debug.log").arg(kLowerAppName);
 }

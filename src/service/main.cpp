@@ -9,8 +9,6 @@
 
 #include "servicelog.h"
 
-const QString kAppName = "Safejumper";
-
 void registerTypes()
 {
     qRegisterMetaType<vpnState>("vpnState");
@@ -29,7 +27,7 @@ int main(int argc, char **argv)
     Log::instance()->enableLogging(true);
 
     QCoreApplication::setSetuidAllowed(true);
-    QCoreApplication::setOrganizationName("proxy.sh");
+    QCoreApplication::setOrganizationName(kOrgName);
     QCoreApplication::setApplicationName(kAppName);
 
     Service vpnservice(argc, argv);

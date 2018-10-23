@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-	<string>Safejumper</string>
+	<string>Shieldtra</string>
 	<key>CFBundleIconFile</key>
 	<string>safejumper.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>sh.proxy.Safejumper</string>
+	<string>com.shieldtra.Shieldtra</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleVersion</key>
@@ -18,8 +18,8 @@
 	<string>NSApplication</string>
 	<key>SMPrivilegedExecutables</key>
 	<dict>
-		<key>sh.proxy.SafejumperHelper</key>
-		<string>anchor apple generic and identifier "sh.proxy.SafejumperHelper" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "42EJ97Y7M3")</string>
+		<key>com.shieldtra.ShieldtraHelper</key>
+		<string>anchor apple generic and identifier "com.shieldtra.ShieldtraHelper" and (certificate leaf[field.1.2.840.113635.100.6.1.9] /* exists */ or certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "42EJ97Y7M3")</string>
 	</dict>
 </dict>
 </plist>

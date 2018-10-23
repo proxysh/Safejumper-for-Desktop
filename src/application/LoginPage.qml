@@ -55,8 +55,8 @@ Rectangle {
         Image {
             anchors.horizontalCenter: parent.horizontalCenter
             source: "../images/large-logo.png"
-            width: 105
-            height: 120
+            width: 128
+            height: 128
         }
 
         Item {
