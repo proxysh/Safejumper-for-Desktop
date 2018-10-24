@@ -63,9 +63,10 @@ Column {
 
             Text {
                 font.family: "Roboto"
-                font.pixelSize: 16
+                font.pixelSize: 18
                 color: "#6C798F"
                 text: confirmationPopup.subtitle
+                horizontalAlignment: Qt.AlignHCenter
                 width: 335-40 // 20px margin on both sides
                 wrapMode: Text.WordWrap
                 anchors.horizontalCenter: parent.horizontalCenter

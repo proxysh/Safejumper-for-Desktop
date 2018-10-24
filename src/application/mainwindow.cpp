@@ -65,7 +65,9 @@ MainWindow::MainWindow() :
     Setting::instance()->loadProtocol();
 
     connect(TrayIconManager::instance(), &TrayIconManager::quitApplication,
-            this, &MainWindow::confirmExit);
+            this, &MainWindow::exitTriggered);
+    connect(TrayIconManager::instance(), &TrayIconManager::logout,
+            this, &MainWindow::logoutTriggered);
 
     if (Setting::instance()->autoconnect())
         AuthManager::instance()->login(Setting::instance()->login(), Setting::instance()->password());
@@ -291,10 +293,22 @@ void MainWindow::sendFeedbackFinished()
     showConnection();
 }
 
+void MainWindow::logoutTriggered()
+{
+    showAndFocus();
+    emit logout();
+}
+
 void MainWindow::closeWindow()
 {
     QSettings settings;
     settings.setValue("pos", position());
     hide();
+}
+
+void MainWindow::exitTriggered()
+{
+    showAndFocus();
+    emit confirmExit();
 }
 

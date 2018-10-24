@@ -75,11 +75,21 @@ Rectangle {
     Connections {
         target: mainwindow
         onConfirmExit: { showPopup(exitConfirmation); }
+        onLogout: {
+            if (stack.currentItem.objectName == "loginPage")
+                // Do nothing
+                ;
+            else if (stack.currentItem.objectName == "signupPage")
+                stack.pop();
+            else
+                stack.push(loginPage);
+        }
     }
 
     Component {
         id: mapPage
         MapPage {
+            objectName: "mapPage"
             onMenuClicked: { stack.push(menuPage); }
             onSettingsClicked: { stack.push(settingsPage); }
         }
@@ -88,6 +98,7 @@ Rectangle {
     Component {
         id: menuPage
         MenuPage {
+            objectName: "menuPage"
             onCloseClicked: { stack.pop(); }
             onSettingsClicked: { stack.push(settingsPage); }
             onLogoutClicked: {
@@ -100,6 +111,7 @@ Rectangle {
     Component {
         id: settingsPage
         SettingsPage {
+            objectName: "settingsPage"
             onCloseClicked: { stack.pop(); }
             onLogoutClicked: {
                 authmanager.logout();
@@ -111,6 +123,7 @@ Rectangle {
     Component {
         id: loginPage
         LoginPage {
+            objectName: "loginPage"
             onCloseClicked: { stack.pop(); }
             onSignupClicked: { stack.push(signupPage); }
         }
@@ -119,6 +132,7 @@ Rectangle {
     Component {
         id: signupPage
         SignupPage {
+            objectName: "signupPage"
             onCloseClicked: { stack.pop(); }
 
         }

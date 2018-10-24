@@ -38,10 +38,6 @@ public:
 
     ~TrayIconManager();
 
-    void statusConnecting();
-    void statusConnected();
-    void statusDisconnected();
-
     void updateActionsEnabled(bool connecting);
 
 signals:

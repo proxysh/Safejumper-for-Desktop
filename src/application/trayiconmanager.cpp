@@ -259,16 +259,16 @@ void TrayIconManager::stateChanged(vpnState st)
     switch (st) {
     case vpnStateDisconnected:
         updateActionsEnabled(false);
-        message = "Safejumper is Disconnected";
+        message = kAppName + " is Disconnected";
         break;
     case vpnStateConnecting:
         updateActionsEnabled(true);
-        message = "Safejumper is Connecting";
+        message = kAppName + " is Connecting";
         break;
     case vpnStateConnected:
         mJumpAction->setEnabled(true);
         mSwitchCountryAction->setEnabled(true);
-        message = "Safejumper is Connected";
+        message = kAppName + " is Connected";
         break;
     default:
         break;
@@ -279,7 +279,7 @@ void TrayIconManager::stateChanged(vpnState st)
         return;
 
     QIcon icon = mTrayIcon->icon();
-    mTrayIcon->showMessage("Safejumper", message, icon);
+    mTrayIcon->showMessage(kAppName, message, icon);
 }
 
 void TrayIconManager::connectTriggered()
@@ -372,7 +372,6 @@ void TrayIconManager::logoutTriggered()
     VPNServiceManager::instance()->sendDisconnectFromVPNRequest();
     if (AuthManager::exists())
         AuthManager::instance()->logout();
-    MainWindow::instance()->showAndFocus();
     emit logout();
     clearConnectToMenu();
     mConnectToMenu->setEnabled(false);
@@ -468,25 +467,6 @@ void TrayIconManager::clearConnectToMenu()
     if (mConnectToMenu.get())
         if (!mConnectToMenu->isEmpty())
             mConnectToMenu->clear();			// delete actions
-}
-
-void TrayIconManager::statusConnecting()
-{
-    updateActionsEnabled(true);
-    stateChanged(vpnStateConnecting);
-}
-
-void TrayIconManager::statusConnected()
-{
-    stateChanged(vpnStateConnected);
-    mJumpAction->setEnabled(true);			//_ac_Jump->setIcon(QIcon(":/icons-tm/jump-red.png"));
-    mSwitchCountryAction->setEnabled(true);	//_ac_SwitchCountry->setIcon(QIcon(":/icons-tm/country-red.png"));
-}
-
-void TrayIconManager::statusDisconnected()
-{
-    updateActionsEnabled(false);
-    stateChanged(vpnStateDisconnected);
 }
 
 static void s_set_enabled(QAction * ac, bool enabled, const char * /*icon_word */)

@@ -58,6 +58,7 @@ public slots:
 
 signals:
     void confirmExit();
+    void logout();
 
 protected:
     virtual void closeEvent(QCloseEvent * event);
@@ -69,6 +70,10 @@ private slots:
 
     void postError(QNetworkReply::NetworkError error);
     void sendFeedbackFinished();
+
+    void logoutTriggered();
+
+    void exitTriggered();
 
 private:
     static QPointer<MainWindow> mInstance;
