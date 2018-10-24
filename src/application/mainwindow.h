@@ -65,6 +65,9 @@ private slots:
     void postError(QNetworkReply::NetworkError error);
     void sendFeedbackFinished();
 
+    void confirmExit();
+    void shutDown();
+
 private:
     static QPointer<MainWindow> mInstance;
     explicit MainWindow();

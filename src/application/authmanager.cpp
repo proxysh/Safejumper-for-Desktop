@@ -152,6 +152,26 @@ void AuthManager::logout()
     emit loggedInChanged();
 }
 
+void AuthManager::createAccount(const QString &email, const QString &name, const QString &password)
+{
+    // Create account with given e-mail, name, and password of type free with
+    // expiration 1 year in the future. Send message to gui when complete
+    QUrlQuery postData;
+    postData.addQueryItem("email", QUrl::toPercentEncoding(email));
+    postData.addQueryItem("password", QUrl::toPercentEncoding(password));
+    postData.addQueryItem("type", "0");
+
+    QNetworkRequest request(QUrl::fromUserInput(kCreateAccountUrl));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    // TODO: Implement as api is designed on server side as required
+//    mCreateAccountReply = mNAM.post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
+//    connect(mCreateAccountReply, SIGNAL(error(QNetworkReply::NetworkError)),
+//            this, SLOT(createAccountError(QNetworkReply::NetworkError)));
+//    connect(mCreateAccountReply, &QNetworkReply::finished,
+//            this, &AuthManager::createAccountFinished);
+}
+
 const QString &AuthManager::accountName()
 {
     return mAccountLogin;    // TODO: -1 check: still valid, synchro with the main wnd
@@ -1286,6 +1306,16 @@ void AuthManager::loginFinished()
         emit loggedInChanged();
     else
         emit loginError(message);
+}
+
+void AuthManager::createAccountError(QNetworkReply::NetworkError error)
+{
+
+}
+
+void AuthManager::createAccountFinished()
+{
+
 }
 
 void AuthManager::startPing(QProcess & pr, const QString & adr)

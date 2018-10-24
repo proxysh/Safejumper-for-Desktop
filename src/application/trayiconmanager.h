@@ -83,7 +83,7 @@ private slots:
     void stateChanged(vpnState st);
 
 private:
-    explicit TrayIconManager(QWidget *parent = 0);
+    explicit TrayIconManager(QWidget *parent = nullptr);
 
     static std::auto_ptr<TrayIconManager> mInstance;
 

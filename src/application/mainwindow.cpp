@@ -24,6 +24,7 @@
 #include "log.h"
 #include "pathhelper.h"
 #include "setting.h"
+#include "trayiconmanager.h"
 #include "vpnservicemanager.h"
 
 #include <QHttpMultiPart>
@@ -62,8 +63,16 @@ MainWindow::MainWindow() :
     // Setting::Instance()->LoadServer();
     Setting::instance()->loadProtocol();
 
+    connect(TrayIconManager::instance(), &TrayIconManager::quitApplication,
+            this, &MainWindow::closeWindow);
+
     if (Setting::instance()->autoconnect())
         AuthManager::instance()->login(Setting::instance()->login(), Setting::instance()->password());
+}
+
+void MainWindow::shutDown()
+{
+    // Shut down application
 }
 
 bool MainWindow::exists()
@@ -278,6 +287,11 @@ void MainWindow::sendFeedbackFinished()
 //    QMessageBox::information(this, "Issue created", QString("Issue created."));
 
     showConnection();
+}
+
+void MainWindow::confirmExit()
+{
+    // Tell gui to confirm exit
 }
 
 void MainWindow::closeWindow()

@@ -157,7 +157,7 @@ Item {
 
     Rectangle {
         id: guiRectangle
-        color: "lightgray"
+        color: "#F4F5F7"
         anchors.fill: parent
 
         Item {

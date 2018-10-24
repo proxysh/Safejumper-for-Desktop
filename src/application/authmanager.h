@@ -130,6 +130,8 @@ public slots:
     void login(const QString & name, const QString & password);
     void logout();
 
+    void createAccount(const QString &email, const QString &name, const QString &password);
+
     void setNewIp(const QString & ip);
 
 signals:
@@ -153,6 +155,9 @@ signals:
 private slots:
     void loginNetworkError(QNetworkReply::NetworkError error);
     void loginFinished();
+
+    void createAccountError(QNetworkReply::NetworkError error);
+    void createAccountFinished();
 //    void processObfsServerNamesXml();
 //    void processEccServerNamesXml();
 //    void processAccountTypeXml();
@@ -215,6 +220,7 @@ private:
     QNetworkAccessManager mNAM;
     QPointer<QNetworkReply> mReply;
     QPointer<QNetworkReply> mIPReply;
+    QPointer<QNetworkReply> mCreateAccountReply;
     int mIPAttemptCount;
     void clearReply();
     QPointer<QNetworkReply> mUpdateReply;
