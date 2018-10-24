@@ -33,6 +33,7 @@
 TrayIconManager::TrayIconManager(QWidget *parent)
     :mParent(parent)
 {
+    qDebug() << "Creating tray icon with menu";
     createTrayIcon();
     mTrayIcon->show();
 
@@ -528,21 +529,21 @@ void TrayIconManager::loggedInChanged()
         disableActionsOnLogout();
 }
 
-const QString gs_icon = ":/icons/icon-tray.png";
-const QString gs_icon_cross = ":/icons/icon-tray-cross.png";
-const QString gs_icon_cycle = ":/icons/icon-tray-cycle.png";
+const QString gs_icon = ":/images/icon-tray.png";
+const QString gs_icon_cross = ":/images/icon-tray-cross.png";
+const QString gs_icon_cycle = ":/images/icon-tray-cycle.png";
 
-const QString gs_icon_white = ":/icons/icon-tray-white.png";
-const QString gs_icon_cross_white = ":/icons/icon-tray-cross-white.png";
-const QString gs_icon_cycle_white = ":/icons/icon-tray-cycle-white.png";
+const QString gs_icon_white = ":/images/icon-tray-white.png";
+const QString gs_icon_cross_white = ":/images/icon-tray-cross-white.png";
+const QString gs_icon_cycle_white = ":/images/icon-tray-cycle-white.png";
 
-const QString gs_icon_light = ":/icons/icon-tray-hover.png";
-const QString gs_icon_cross_light = ":/icons/icon-tray-hover-cross.png";
-const QString gs_icon_cycle_light = ":/icons/icon-tray-hover-cycle.png";
+const QString gs_icon_light = ":/images/icon-tray-hover.png";
+const QString gs_icon_cross_light = ":/images/icon-tray-hover-cross.png";
+const QString gs_icon_cycle_light = ":/images/icon-tray-hover-cycle.png";
 
-const QString gs_icon_color = ":/icons/icon-tray-color.png";
-const QString gs_icon_cross_color = ":/icons/icon-tray-color-cross.png";
-const QString gs_icon_cycle_color = ":/icons/icon-tray-color-cycle.png";
+const QString gs_icon_color = ":/images/icon-tray-color.png";
+const QString gs_icon_cross_color = ":/images/icon-tray-color-cross.png";
+const QString gs_icon_cycle_color = ":/images/icon-tray-color-cycle.png";
 
 const QString TrayIconManager::disconnectedIcon() const
 {

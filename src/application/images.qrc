@@ -50,5 +50,17 @@
         <file>images/customerservice.png</file>
         <file>images/large-logo.png</file>
         <file>images/person-white.png</file>
+        <file>images/icon-tray.png</file>
+        <file>images/icon-tray-color.png</file>
+        <file>images/icon-tray-color-cross.png</file>
+        <file>images/icon-tray-color-cycle.png</file>
+        <file>images/icon-tray-cross.png</file>
+        <file>images/icon-tray-cross-white.png</file>
+        <file>images/icon-tray-cycle.png</file>
+        <file>images/icon-tray-cycle-white.png</file>
+        <file>images/icon-tray-hover.png</file>
+        <file>images/icon-tray-hover-cross.png</file>
+        <file>images/icon-tray-hover-cycle.png</file>
+        <file>images/icon-tray-white.png</file>
     </qresource>
 </RCC>

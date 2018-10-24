@@ -54,6 +54,11 @@ public slots:
 
     void closeWindow();
 
+    void shutDown();
+
+signals:
+    void confirmExit();
+
 protected:
     virtual void closeEvent(QCloseEvent * event);
 
@@ -64,9 +69,6 @@ private slots:
 
     void postError(QNetworkReply::NetworkError error);
     void sendFeedbackFinished();
-
-    void confirmExit();
-    void shutDown();
 
 private:
     static QPointer<MainWindow> mInstance;

@@ -70,7 +70,9 @@ enum language {
 #define FIRST_LANGUAGE languageEnglish
 #define LAST_LANGUAGE languageSimplifiedChinese
 
-const QStringList kLanguageNames = {
+// This list is reloaded in setting::setLanguage so the translated strings
+// will be loaded when language is initialized/changed
+static QStringList kLanguageNames = {
     QObject::tr("English"),
     QObject::tr("Simplified Chinese")
 };

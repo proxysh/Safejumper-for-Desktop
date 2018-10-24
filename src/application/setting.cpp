@@ -333,7 +333,7 @@ void Setting::setStartup(bool v)
     // Do the OsSpecific stuff to make it happen
 #ifdef Q_OS_WIN
     QSettings settings("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
-    static const char * keyname = "proxy_sh";
+    static const char * keyname = kOrgName.toStdString().c_str();
     if (v) {
         QString val = "\"" + QCoreApplication::applicationFilePath() + "\"";
         val.replace("/","\\");
@@ -373,7 +373,7 @@ void Setting::setStartup(bool v)
 
 #ifdef Q_OS_OSX
     QString dir = QDir::homePath() + "/Library/LaunchAgents";
-    QString pfn = dir + "/sh.proxy.safejumper.plist";
+    QString pfn = dir + QString("/%1.%2.plist").arg(kOrgName).arg(kLowerAppName);
     QFile pa(pfn);
     if (pa.exists()) {
         if (!pa.remove())
@@ -392,8 +392,8 @@ void Setting::setStartup(bool v)
                 "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
                 "<plist version=\"1.0\">\n"
                 "<dict>\n"
-                "<key>Label</key>\n"
-                "<string>sh.proxy.safejumper</string>\n"
+                "<key>Label</key>\n" +
+                QString("<string>%1.%2</string>\n").arg(kOrgName).arg(kLowerAppName) +
 
                 "<key>LimitLoadToSessionType</key>\n"
                 "<string>Aqua</string>\n"
@@ -452,9 +452,7 @@ void Setting::setEncryption(int enc)
         mSettings.setValue(kEncryptionKey, enc);
 
         loadProtocol(); // When encryption changes, we need to load protocols
-        qDebug() << "emiting encryptionChanged";
         emit encryptionChanged();
-        qDebug() << "emiting protocolChanged";
         emit protocolChanged();
     }
 }
@@ -480,7 +478,6 @@ QString Setting::portCount()
 
 QString Setting::defaultPort()
 {
-    qDebug() << "defaultPort called, encryption is " << encryption();
     return currentProtocolName();
 }
 
@@ -528,6 +525,10 @@ void Setting::setLanguage(int language)
         g_pTheApp->removeTranslator(&mTranslator);
         mTranslator.load(kLanguageTranslations.at(language));
         g_pTheApp->installTranslator(&mTranslator);
+
+        kLanguageNames.clear();
+        kLanguageNames << QObject::tr("English");
+        kLanguageNames << QObject::tr("Simplified Chinese");
 
         emit languageChanged();
     }
@@ -609,7 +610,6 @@ void Setting::loadProtocol()
 static QString gs_Empty = "";
 const QString & Setting::protocolName(int ix)
 {
-    qDebug() << "protocolName called with ix " << ix;
     if (ix > -1 && ix < currentEncryptionPorts().size())
         return currentEncryptionPorts().at(ix);
     else
@@ -618,7 +618,6 @@ const QString & Setting::protocolName(int ix)
 
 const QString & Setting::currentProtocolName()
 {
-    qDebug() << "currentProtocolName called, current protocol is " << currentProtocol();
     return protocolName(currentProtocol());
 }
 
@@ -629,7 +628,6 @@ const QString Setting::forwardPortsString()
 
 int Setting::currentProtocol()
 {
-    qDebug() << "currentProtocol called, ProtocolSettingsName is " << ProtocolSettingsName();
     return mSettings.value(ProtocolSettingsName(), 0).toInt();
 }
 

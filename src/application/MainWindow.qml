@@ -18,6 +18,7 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
+import QtGraphicalEffects 1.0
 
 Rectangle {
     id: screen
@@ -27,6 +28,54 @@ Rectangle {
     height: 755
 
     property color defaultColor: "#FEBE10"
+
+    property bool blur: false
+
+    function showPopup(component)
+    {
+        screen.blur = true;
+        component.visible = true;
+    }
+
+    function hidePopup(component)
+    {
+        screen.blur = false;
+        component.visible = false;
+    }
+
+    FastBlur {
+        id: blurItem
+        source: stack
+        radius: 32
+        anchors.fill: parent
+        z: 10
+        visible: screen.blur
+    }
+
+    ConfirmationPopup {
+        id: exitConfirmation
+        title: qsTr("Exit");
+        subtitle: qsTr("Would you like to shut Shieldtra down?");
+        confirmText: qsTr("CONFIRM");
+        cancelText: qsTr("CANCEL");
+        visible: false
+        z: 20
+
+        onConfirm: {
+            hidePopup(exitConfirmation);
+            mainwindow.shutDown();
+        }
+
+        onCancel: {
+            hidePopup(exitConfirmation);
+        }
+
+    }
+
+    Connections {
+        target: mainwindow
+        onConfirmExit: { showPopup(exitConfirmation); }
+    }
 
     Component {
         id: mapPage

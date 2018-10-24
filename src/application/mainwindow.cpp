@@ -19,6 +19,7 @@
 #define _WINSOCKAPI_
 #include "mainwindow.h"
 
+#include "application.h"
 #include "authmanager.h"
 #include "common.h"
 #include "log.h"
@@ -38,12 +39,12 @@ MainWindow::MainWindow() :
     mNam(nullptr),
     mProgressDialog(nullptr)
 {
-    setSource(QUrl("qrc:/qml/MainWindow.qml"));
-
     rootContext()->setContextProperty("authmanager", AuthManager::instance());
     rootContext()->setContextProperty("serversModel", AuthManager::instance()->serversModel());
     rootContext()->setContextProperty("settings", Setting::instance());
     rootContext()->setContextProperty("mainwindow", this);
+
+    setSource(QUrl("qrc:/qml/MainWindow.qml"));
 
     connect(Setting::instance(), &Setting::languageChanged,
             this, &MainWindow::languageChanged);
@@ -64,7 +65,7 @@ MainWindow::MainWindow() :
     Setting::instance()->loadProtocol();
 
     connect(TrayIconManager::instance(), &TrayIconManager::quitApplication,
-            this, &MainWindow::closeWindow);
+            this, &MainWindow::confirmExit);
 
     if (Setting::instance()->autoconnect())
         AuthManager::instance()->login(Setting::instance()->login(), Setting::instance()->password());
@@ -73,6 +74,7 @@ MainWindow::MainWindow() :
 void MainWindow::shutDown()
 {
     // Shut down application
+    g_pTheApp->quit();
 }
 
 bool MainWindow::exists()
@@ -287,11 +289,6 @@ void MainWindow::sendFeedbackFinished()
 //    QMessageBox::information(this, "Issue created", QString("Issue created."));
 
     showConnection();
-}
-
-void MainWindow::confirmExit()
-{
-    // Tell gui to confirm exit
 }
 
 void MainWindow::closeWindow()

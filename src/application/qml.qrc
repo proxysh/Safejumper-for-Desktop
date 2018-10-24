@@ -12,5 +12,6 @@
         <file>DNSPopup.qml</file>
         <file>SignupPage.qml</file>
         <file>ErrorPopup.qml</file>
+        <file>ConfirmationPopup.qml</file>
     </qresource>
 </RCC>

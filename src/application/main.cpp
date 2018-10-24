@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setSetuidAllowed(true);
     QApplication::setOrganizationName(kOrgName);
     QApplication::setApplicationName(kAppName);
+    QApplication::setQuitOnLastWindowClosed(false);
 
     g_pTheApp = new THE_APP_CLASS(argc, argv);
 

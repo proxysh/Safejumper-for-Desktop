@@ -36,7 +36,7 @@
 
 #define LOCAL_SOCKET_TIMEOUT 500
 
-VPNServiceManager* VPNServiceManager::mInstance = 0;
+VPNServiceManager* VPNServiceManager::mInstance = nullptr;
 
 #ifdef Q_OS_LINUX
 static void execAsRootLinux(const QString & cmd, const QStringList & args)
@@ -57,10 +57,10 @@ static void execAsRootLinux(const QString & cmd, const QStringList & args)
 VPNServiceManager::VPNServiceManager(QObject *parent)
     : QObject(parent),
       mConnected(false),
+      mState(vpnStateDisconnected),
       mInPortLoop(false),
       mPortDialogShown(false),
-      mUserRequestedDisconnect(false),
-      mState(vpnStateDisconnected)
+      mUserRequestedDisconnect(false)
 {
     m_socket.setServerName(kSocketName);
     QObject::connect(&m_socket, &QLocalSocket::readyRead, this, &VPNServiceManager::socket_readyRead);
@@ -88,7 +88,7 @@ bool VPNServiceManager::ensureConnected()
                     QThread::sleep(3);
                     mConnected = connectToCore();
                     if (!mConnected) {
-                        QMessageBox::critical(nullptr, tr("Connection error"), tr("Connection to Safejumper service was closed.\nPlease ensure service is running"));
+                        QMessageBox::critical(nullptr, tr("Connection error"), tr("Connection to service was closed.\nPlease ensure service is running"));
                         //                emit serviceUnavailable();
                     }
                 }
@@ -114,22 +114,22 @@ void VPNServiceManager::sendCommand(const QJsonObject &object)
 
 VPNServiceManager *VPNServiceManager::instance()
 {
-    if (mInstance == 0)
-        mInstance = new VPNServiceManager(0);
+    if (mInstance == nullptr)
+        mInstance = new VPNServiceManager(nullptr);
     return mInstance;
 }
 
 bool VPNServiceManager::exists()
 {
-    return mInstance != 0;
+    return mInstance != nullptr;
 }
 
 void VPNServiceManager::cleanup()
 {
-    if (mInstance != NULL) {
+    if (mInstance != nullptr) {
         mInstance->sendDisconnectFromVPNRequest();
         mInstance->deleteLater();
-        mInstance = 0;
+        mInstance = nullptr;
     }
 }
 
@@ -155,10 +155,10 @@ bool VPNServiceManager::connectToCore()
         qDebug() << "Attempting to connect to server on socket " << m_socket.serverName();
         m_socket.connectToServer(kSocketName);
         if (m_socket.waitForConnected(500)) {
-            Log::logt("Connect to safejumper service suceeded");
+            Log::logt("Connect to service suceeded");
             mConnected = true;
         } else {
-            Log::logt("Could not connect to safejumper service within half a second");
+            Log::logt("Could not connect to service within half a second");
             qDebug() << "socket state is " << m_socket.state();
             qDebug() << "socket error string is " << m_socket.errorString();
             qDebug() << "socket name is " << m_socket.serverName();
@@ -172,7 +172,7 @@ void VPNServiceManager::disconnectFromCore()
 {
     // No need to disconnect if we are disconnected
     if (m_socket.isOpen()) {
-        Log::logt("Disconnecting from safejumper service called, socket is open, so closing");
+        Log::logt("Disconnecting from service called, socket is open, so closing");
 
         // close socket
         m_socket.close();
@@ -265,7 +265,7 @@ void VPNServiceManager::sendDisconnectFromVPNRequest()
 
         sendCommand(jObj);
     } else {
-        Log::logt("gui is not connected to safejumper to send disconnect from vpn command");
+        Log::logt("gui is not connected to service to send disconnect from vpn command");
     }
 }
 
@@ -281,7 +281,7 @@ void VPNServiceManager::killRunningOpenvpn()
 
         sendCommand(jObj);
     } else {
-        Log::logt("gui is not connected to safejumper to send kill running openvpn command");
+        Log::logt("gui is not connected to service to send kill running openvpn command");
     }
 }
 
@@ -297,7 +297,7 @@ void VPNServiceManager::sendNetdownCommand()
 
         sendCommand(jObj);
     } else {
-        Log::logt("gui is not connected to safejumper to send netdown command");
+        Log::logt("gui is not connected to service to send netdown command");
     }
 }
 
@@ -380,7 +380,7 @@ void VPNServiceManager::socket_readyRead()
 
 void VPNServiceManager::socket_disconnected()
 {
-    Log::logt("Socket disconnected from safejumper. service crashed or is restarting");
+    Log::logt("Socket disconnected from service. It crashed or is restarting");
     disconnectFromCore();
 }
 
@@ -410,17 +410,17 @@ void VPNServiceManager::restartService()
 {
 #ifdef Q_OS_WIN
     // Stop and start the service
-    QProcess::execute("sc", QStringList() << "stop" << "Safejumper");
-    QProcess::execute("sc", QStringList() << "start" << "Safejumper");
+    QProcess::execute("sc", QStringList() << "stop" << kAppName);
+    QProcess::execute("sc", QStringList() << "start" << kAppName);
 #else
 #ifdef Q_OS_DARWIN
 #else
     // On linux start and stop the upstart service or the systemd service
     // using runAsRoot bits to run the commands as root
     if (QFile::exists("/usr/bin/systemctl")) {
-        execAsRootLinux("/usr/bin/systemctl", QStringList() << "restart" << "safejumper");
+        execAsRootLinux("/usr/bin/systemctl", QStringList() << "restart" << kLowerAppName);
     } else if (QFile::exists("/usr/bin/service")) {
-        execAsRootLinux("/usr/bin/service", QStringList() << "safejumper" << "restart");
+        execAsRootLinux("/usr/bin/service", QStringList() << kLowerAppName << "restart");
     }
 #endif
 #endif
