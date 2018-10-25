@@ -56,9 +56,14 @@ public slots:
 
     void shutDown();
 
+    void launchUrl(const QString &url);
+
 signals:
     void confirmExit();
     void logout();
+    void mapScreen();
+    void settingsScreen();
+    void logsScreen();
 
 protected:
     virtual void closeEvent(QCloseEvent * event);

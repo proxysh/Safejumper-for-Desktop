@@ -28,6 +28,7 @@ Rectangle {
     height: 755
 
     property color defaultColor: "#FEBE10"
+    property string shopUrl: "https://www.mbaex.com"
 
     property bool blur: false
 
@@ -83,6 +84,25 @@ Rectangle {
                 stack.pop();
             else
                 stack.push(loginPage);
+        }
+        onMapScreen: {
+            if (stack.currentItem.objectName == "mapPage")
+                // Do nothing
+                ;
+            else
+                // Keep popping until we get back to the map page
+                while (stack.currentItem.objectName != "mapPage")
+                    stack.pop();
+        }
+        onSettingsScreen: {
+            if (stack.currentItem.objectName == "settingsPage")
+                // Do nothing
+                ;
+            else
+                stack.push(settingsPage);
+        }
+        onLogsScreen: {
+            // Show logs popup
         }
     }
 

@@ -28,6 +28,7 @@
 #include "trayiconmanager.h"
 #include "vpnservicemanager.h"
 
+#include <QDesktopServices>
 #include <QHttpMultiPart>
 #include <QMessageBox>
 #include <QProgressDialog>
@@ -68,6 +69,12 @@ MainWindow::MainWindow() :
             this, &MainWindow::exitTriggered);
     connect(TrayIconManager::instance(), &TrayIconManager::logout,
             this, &MainWindow::logoutTriggered);
+    connect(TrayIconManager::instance(), &TrayIconManager::statusTriggered,
+            this, &MainWindow::showMap);
+    connect(TrayIconManager::instance(), &TrayIconManager::settingsTriggered,
+            this, &MainWindow::showSettings);
+    connect(TrayIconManager::instance(), &TrayIconManager::logsTriggered,
+            this, &MainWindow::showLogs);
 
     if (Setting::instance()->autoconnect())
         AuthManager::instance()->login(Setting::instance()->login(), Setting::instance()->password());
@@ -77,6 +84,12 @@ void MainWindow::shutDown()
 {
     // Shut down application
     g_pTheApp->quit();
+}
+
+void MainWindow::launchUrl(const QString &url)
+{
+    hide();
+    QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));
 }
 
 bool MainWindow::exists()
@@ -144,16 +157,21 @@ void MainWindow::showAndFocus()
 void MainWindow::showLogs()
 {
     // Manipulate qml object to show logs in popup
+    showAndFocus();
+    emit logsScreen();
 }
 
 void MainWindow::showMap()
 {
-
+    showAndFocus();
+    emit mapScreen();
 }
 
 void MainWindow::showSettings()
 {
     // Manipulate qml object to show settings page
+    showAndFocus();
+    emit settingsScreen();
 }
 
 void MainWindow::languageChanged()

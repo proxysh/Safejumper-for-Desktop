@@ -166,7 +166,8 @@ void TrayIconManager::createMenuActions()
 
     mStatusAction.reset(new QAction(//QIcon(":/icons-tm/status-red.png"),
                             tr("&Status"), this));
-    connect(mStatusAction.get(), SIGNAL(triggered()), this, SLOT(statusTriggered()));
+    connect(mStatusAction.get(), &QAction::triggered,
+            this, &TrayIconManager::statusTriggered);
 
     mJumpAction.reset(new QAction(//QIcon(":/icons-tm/status-grey.png"),
                           tr("&Jump to Faster"), this));
@@ -174,15 +175,18 @@ void TrayIconManager::createMenuActions()
 
     mSwitchCountryAction.reset(new QAction(//QIcon(":/icons-tm/country-grey.png"),
                                    tr("Switch Country"), this));
-    connect(mSwitchCountryAction.get(), SIGNAL(triggered()), this, SLOT(switchCountryTriggered()));
+    connect(mSwitchCountryAction.get(), &QAction::triggered,
+            this, &TrayIconManager::statusTriggered);
 
     mSettingsAction.reset(new QAction(//QIcon(":/icons-tm/settings-red.png"),
                               tr("Se&ttings"), this));
-    connect(mSettingsAction.get(), SIGNAL(triggered()), this, SLOT(settingsTriggered()));
+    connect(mSettingsAction.get(), &QAction::triggered,
+            this, &TrayIconManager::settingsTriggered);
 
     mLogsAction.reset(new QAction(//QIcon(":/icons-tm/logs-red.png"),
                           tr("&Logs"), this));
-    connect(mLogsAction.get(), SIGNAL(triggered()), this, SLOT(logsTriggered()));
+    connect(mLogsAction.get(), &QAction::triggered,
+            this, &TrayIconManager::logsTriggered);
 
     mWebManageAction.reset(new QAction(//QIcon(":/icons-tm/webmanag-red.png"),
                                tr("&Web Management"), this));
@@ -313,30 +317,10 @@ void TrayIconManager::disconnectTriggered()
     VPNServiceManager::instance()->sendDisconnectFromVPNRequest();
 }
 
-void TrayIconManager::statusTriggered()
-{
-    MainWindow::instance()->showConnection();
-}
-
 void TrayIconManager::jumpTriggered()
 {
     MainWindow::instance()->showAndFocus();
     AuthManager::instance()->jump();
-}
-
-void TrayIconManager::switchCountryTriggered()
-{
-    MainWindow::instance()->showMap();
-}
-
-void TrayIconManager::settingsTriggered()
-{
-    MainWindow::instance()->showSettings();
-}
-
-void TrayIconManager::logsTriggered()
-{
-    MainWindow::instance()->showLogs();
 }
 
 void TrayIconManager::webManagTriggered()
@@ -355,11 +339,6 @@ void TrayIconManager::earnTriggered()
 {
     MainWindow::instance()->closeWindow();
     OpenUrl_Earn();
-}
-
-void TrayIconManager::aboutTriggered()
-{
-    MainWindow::instance()->showSettings();
 }
 
 void TrayIconManager::closeTriggered()

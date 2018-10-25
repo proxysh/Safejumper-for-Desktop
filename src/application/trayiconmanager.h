@@ -48,6 +48,10 @@ signals:
 
     void bugTriggered();
 
+    void statusTriggered();
+    void settingsTriggered();
+    void logsTriggered();
+
 public slots:
     void loggedInChanged();
 
@@ -56,15 +60,10 @@ public slots:
     void connectTriggered();
     void connectToTriggered();
     void disconnectTriggered();
-    void statusTriggered();
     void jumpTriggered();
-    void switchCountryTriggered();
-    void settingsTriggered();
-    void logsTriggered();
     void webManagTriggered();
     void supportTriggered();
     void earnTriggered();
-    void aboutTriggered();
     void logoutTriggered();
     void closeTriggered();
 

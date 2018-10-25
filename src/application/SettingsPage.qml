@@ -378,6 +378,11 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.verticalCenter: parent.verticalCenter
                             }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: { mainwindow.launchUrl(shopUrl); }
+                            }
                         }
                     }
                 }

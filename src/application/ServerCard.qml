@@ -43,10 +43,12 @@ Rectangle {
     function toggleExpansion() {
         // Do nothing if not expandable
         if (expandable) {
-            if (showOptions)
-                showOptions = false
-            else
-                showOptions = true
+            if (showOptions) {
+                showOptions = false;
+            } else {
+                showOptions = true;
+            }
+            serverCard.height = serverColumn.childrenRect.height + 20
         }
     }
 
@@ -64,8 +66,6 @@ Rectangle {
 
     Column {
         id: serverColumn
-        anchors.topMargin: 20
-        anchors.top: parent.top
         width: parent.width
         anchors.bottom: parent.bottom
         spacing: 0

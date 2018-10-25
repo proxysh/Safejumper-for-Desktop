@@ -27,8 +27,6 @@ Rectangle {
     signal settingsClicked();
     signal logoutClicked();
 
-    property string subscription: "STARTER PACK"
-
     Column {
         anchors.fill: parent
 
@@ -94,6 +92,7 @@ Rectangle {
             buttonIcon: "../images/shopping.png"
             hoverButtonIcon: "../images/shopping-hover.png"
             buttonText: qsTr("Shop");
+            onClicked: { mainwindow.launchUrl(shopUrl); }
         }
 
         MenuButton {
@@ -161,7 +160,7 @@ Rectangle {
                         font.family: "Roboto"
                         font.bold: true
                         color: "white"
-                        text: subscription
+                        text: authmanager.subscription
                     }
                 }
             }
