@@ -196,7 +196,9 @@ Rectangle {
                       leftPadding: rememberButton.indicator.width + rememberButton.spacing
                   }
 
-            onCheckStateChanged: { settings.rememberMe = rememberButton.checked; }
+            onCheckStateChanged: {
+                settings.rememberMe = rememberButton.checked;
+            }
         }
 
         Rectangle {

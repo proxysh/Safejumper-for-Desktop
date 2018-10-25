@@ -13,5 +13,7 @@
         <file>SignupPage.qml</file>
         <file>ErrorPopup.qml</file>
         <file>ConfirmationPopup.qml</file>
+        <file>AllServersPage.qml</file>
+        <file>ServerCard.qml</file>
     </qresource>
 </RCC>

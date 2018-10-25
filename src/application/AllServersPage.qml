@@ -21,8 +21,7 @@ import QtQuick.Controls 2.4
 import QtGraphicalEffects 1.0
 
 Item {
-    id: mapPage
-    anchors.fill: parent
+    id: allServersPage
 
     signal menuClicked()
     signal settingsClicked()
@@ -55,7 +54,7 @@ Item {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: { mapPage.menuClicked() }
+                    onClicked: { allServersPage.menuClicked() }
                 }
             }
 
@@ -90,68 +89,9 @@ Item {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: { mapPage.settingsClicked(); }
+                    onClicked: { allServersPage.settingsClicked(); }
                 }
             }
         }
-    }
-
-    Image {
-        id: background
-        z: -1
-        anchors.top: headerArea.top - 55
-        anchors.left: parent.left
-        source: "../maps/DE-NotConnected.png"
-    }
-
-    Column {
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 24
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: 20
-        anchors.rightMargin: 20
-        spacing: 12
-
-        width: 335
-        height: childrenRect.height
-
-        ServerCard {
-            id: currentServerCard
-            showButton: true
-//            expandable: false
-        }
-
-        Rectangle {
-            id: allServersButton
-            width: parent.width
-            height: 56
-            color: "white"
-            radius: 5
-
-            layer.enabled: true
-            layer.effect: DropShadow {
-                horizontalOffset: 1
-                verticalOffset: 1
-                color: "#80000000"
-            }
-
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                text: qsTr("SHOW ALL SERVERS");
-                color: defaultColor
-                font.family: "Roboto-Bold"
-                font.bold: true
-                font.pixelSize: 16
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: { mapPage.allServersClicked(); }
-            }
-        }
-
-
     }
 }

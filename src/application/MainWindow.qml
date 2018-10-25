@@ -87,11 +87,19 @@ Rectangle {
     }
 
     Component {
+        id: allServersPage
+        AllServersPage {
+            objectName: "allServersPage"
+        }
+    }
+
+    Component {
         id: mapPage
         MapPage {
             objectName: "mapPage"
             onMenuClicked: { stack.push(menuPage); }
             onSettingsClicked: { stack.push(settingsPage); }
+            onAllServersClicked: { stack.push(allServersPage); }
         }
     }
 
