@@ -171,6 +171,9 @@
         <file>maps/GY-Connected.png</file>
         <file>maps/GY-Connecting.png</file>
         <file>maps/GY-NotConnected.png</file>
+	<file>maps/HK-Connected.png</file>
+	<file>maps/HK-Connecting.png</file>
+	<file>maps/HK-NotConnected.png</file>
         <file>maps/HN-Connected.png</file>
         <file>maps/HN-Connecting.png</file>
         <file>maps/HN-NotConnected.png</file>

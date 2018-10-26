@@ -28,6 +28,30 @@ Item {
     signal settingsClicked()
     signal allServersClicked()
 
+    function refresh()
+    {
+        console.log("Refreshing map page since server list is loaded");
+        var currentServer = serversModel.server(settings.server)
+        var iso = currentServer.iso
+        currentServerCard.currentServer = currentServer;
+        background.source = "../maps/" + iso + "-NotConnected.png"
+
+    }
+
+    Connections {
+        target: authmanager
+        onServerListsLoaded: {
+            refresh();
+        }
+    }
+
+    Connections {
+        target: settings
+        onServerChanged: {
+            refresh();
+        }
+    }
+
     Item {
         id: headerArea
         width: parent.width
@@ -90,7 +114,9 @@ Item {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: { mapPage.settingsClicked(); }
+                    onClicked: { mapPage.settingsClicked();
+                    console.log("serversModel type is " + serversModel.objectName);
+                    }
                 }
             }
         }
@@ -101,7 +127,7 @@ Item {
         z: -1
         anchors.top: headerArea.top - 55
         anchors.left: parent.left
-        source: "../maps/DE-NotConnected.png"
+        source: "../maps/" + serversModel.server(settings.server).iso + "-NotConnected.png"
     }
 
     Column {
@@ -119,7 +145,7 @@ Item {
         ServerCard {
             id: currentServerCard
             showButton: true
-//            expandable: false
+            expandable: false
         }
 
         Rectangle {
@@ -148,7 +174,9 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: { mapPage.allServersClicked(); }
+                onClicked: {
+                    mapPage.allServersClicked();
+                }
             }
         }
 

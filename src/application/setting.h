@@ -65,6 +65,8 @@ class Setting: public QObject
     Q_PROPERTY(QString currentLanguage READ currentLanguage NOTIFY languageChanged)
     Q_PROPERTY(QStringList languages READ languages NOTIFY languageChanged)
 
+    Q_PROPERTY(int server READ serverID WRITE setServer NOTIFY serverChanged)
+
 public:
     ~Setting();
     static Setting *instance();

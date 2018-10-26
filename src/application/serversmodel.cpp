@@ -19,10 +19,14 @@
 #include "setting.h"
 
 #include <QJsonObject>
+#include <QQmlApplicationEngine>
 
 ServersModel::ServersModel(QObject *parent)
     :QAbstractListModel(parent)
 {
+    setObjectName("ServersModel");
+
+    qmlRegisterType<AServer>("vpn.server", 1, 0, "Server");
 }
 
 ServersModel::~ServersModel()
@@ -42,36 +46,45 @@ QVariant ServersModel::data(const QModelIndex &index, int role) const
     QVariant retval;
 
     if (index.row() >= 0 && index.row() < mServers.size()) {
-        AServer server = mServers.at(index.row());
+        AServer *server = mServers.at(index.row());
         switch (role) {
         case nameRole:
-            retval = server.name;
+            retval = server->name();
             break;
 
         case isoRole:
-            retval = server.isoCode;
+            retval = server->iso();
             break;
 
         case loadRole:
-            retval = server.load;
+            retval = server->load();
             break;
 
         case portsRole:
-            retval = server.ports;
+            retval = server->ports();
             break;
 
         case xorPortsRole:
-//            retval = server.xorPorts;
+            retval = server->xorPorts();
             break;
 
         case ipRole:
-            retval = server.ip;
+            retval = server->ip();
             break;
 
         case hostnameRole:
-            retval = server.address;
+            retval = server->address();
             break;
+
+        case pingRole:
+            if (server->ping() > 0)
+                retval = QString("%1 ms").arg(server->ping());
+            else
+                retval = "";
+            break;
+
         }
+
     }
 
     return retval;
@@ -88,6 +101,7 @@ QHash<int, QByteArray> ServersModel::roleNames() const
     roles[xorPortsRole] = "xorports";
     roles[favoriteRole] = "favorite";
     roles[loadRole] = "load";
+    roles[pingRole] = "ping";
 
     return roles;
 }
@@ -103,35 +117,40 @@ void ServersModel::updateServers(const QJsonArray &servers)
     QList<int> xorPortNumbersList;
 
     Q_FOREACH(const QJsonValue &server, servers) {
-        AServer newServer;
-        newServer.ip = server.toObject().value("ip").toString();
-        newServer.name = server.toObject().value("name").toString();
-        newServer.address = server.toObject().value("hostname").toString();
-        newServer.isoCode = server.toObject().value("iso_code").toString();
+        AServer *newServer = new AServer();
+        newServer->setIP(server.toObject().value("ip").toString());
+        newServer->setName(server.toObject().value("name").toString());
+        newServer->setAddress(server.toObject().value("hostname").toString());
+        newServer->setISO(server.toObject().value("iso_code").toString());
         QString portsString = server.toObject().value("ports").toString();
         QStringList portsList = portsString.split(", ");
+        QVariantList ports;
         Q_FOREACH(const QString &port, portsList) {
             int portNumber = port.toInt();
-            newServer.ports << portNumber;
+            ports << portNumber;
             if (!tlsPortNumbersList.contains(portNumber)) {
                 tlsPortsList << QString("TCP %1").arg(port) << QString("UDP %1").arg(port);
                 tlsPortNumbersList << portNumber << portNumber;
             }
         }
+        newServer->setPorts(ports);
 
         QString xorPortsString = server.toObject().value("ports_xor").toString();
         portsList = xorPortsString.split(", ");
+        ports.clear();
         Q_FOREACH(const QString &port, portsList) {
             int portNumber = port.toInt();
-            newServer.xorPorts << portNumber;
+            ports << portNumber;
             if (!xorPortNumbersList.contains(portNumber)) {
                 xorPortsList << QString("TCP %1").arg(port) << QString("UDP %1").arg(port);
                 xorPortNumbersList << portNumber << portNumber;
             }
         }
-        newServer.load = server.toObject().value("serverload").toString().toInt();
+        newServer->setXorPorts(ports);
+        newServer->setLoad(server.toObject().value("serverload").toString().toInt());
         // TODO: Load if this server is a favorite from settings
-        newServer.favorite = false;
+        newServer->setFavorite(false);
+        newServer->setPing(-1);
         mServers.append(newServer);
     }
 
@@ -141,15 +160,21 @@ void ServersModel::updateServers(const QJsonArray &servers)
     endResetModel();
 }
 
-AServer ServersModel::server(int index)
+AServer *ServersModel::server(int index)
 {
     if (index >= 0 && index < mServers.size())
         return mServers.at(index);
 
-    return AServer();
+    return nullptr;
 }
 
 int ServersModel::count()
 {
     return mServers.count();
+}
+
+void ServersModel::setPing(int index, int ping)
+{
+    if (index >= 0 && index < mServers.size())
+        mServers.at(index)->setPing(ping);
 }

@@ -101,11 +101,11 @@ public:
     const std::vector<int> & getLevel1(size_t hub);					// for given hub id all the server ids, including hub entry itself
 
     size_t serverIdFromHubId(size_t ixHub);
-    AServer getServer(int id);	 // on -1 returns empty
+    AServer *getServer(int id);	 // on -1 returns nullptr
     int hubIxFromServerName(const QString & srv);	  // -1 if not found
     int hubIdFromServerId(int ixsrv);			   // -1 if ixsrv not a hub
     int serverIxFromName(const QString & srv);		 // -1 if not found
-    AServer getHub(int idhub);
+    AServer *getHub(int idhub);
 
     int pingFromServerIx(int srv);
 
@@ -124,7 +124,7 @@ public:
 
     void forwardPorts();
 
-    const ServersModel *serversModel() const;
+    ServersModel *serversModel() const;
 
 public slots:
     void login(const QString & name, const QString & password);
@@ -192,7 +192,7 @@ private:
     void seed();
 
     QList<int> mServerIds[ENCRYPTION_COUNT];		// IDs inside _servers available for each encryption
-    QList<AServer> mHubs;
+    QList<AServer*> mHubs;
     QList<int> mHubIds[ENCRYPTION_COUNT];		// IDs of hubs inside _servers available for each encryption		// _hub_ids[0] the same as _HubToServer
     std::vector<std::pair<bool, int> > mLevel0;		// <is hub, hub id / srv id>
     std::map<int, std::vector<int> > mLevel1;		// <hub id, <srv ids, including srv id of hub entry> >

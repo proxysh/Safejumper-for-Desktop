@@ -633,8 +633,8 @@ int Setting::currentProtocol()
 
 void Setting::setServer(int ixsrv)
 {
-    AServer se = AuthManager::instance()->getServer(ixsrv);
-    QString newsrv = se.name;
+    AServer *se = AuthManager::instance()->getServer(ixsrv);
+    QString newsrv = se->name();
     mSettings.setValue(LocationSettingsName(), ixsrv);
     mSettings.setValue(LocationSettingsStrName(), newsrv);
     emit serverChanged();
@@ -656,9 +656,9 @@ void Setting::loadServer()
     int ixsrv = -1;
     // verify that the sever exists
     if (savedsrv > -1) {
-        AServer  sr1 = AuthManager::instance()->getServer(savedsrv);
-        if (!sr1.name.isEmpty()) {
-            if (sr1.name == savedname)
+        AServer  *sr1 = AuthManager::instance()->getServer(savedsrv);
+        if (!sr1->name().isEmpty()) {
+            if (sr1->name() == savedname)
                 ixsrv = savedsrv;
             else if (savedname != "undefined") {
                 ixsrv = AuthManager::instance()->serverIxFromName(savedname);
@@ -686,7 +686,7 @@ QString Setting::serverAddress()
     QString s;
     int ix = serverID();
     if (ix > -1)
-        s = AuthManager::instance()->getServer(ix).address;
+        s = AuthManager::instance()->getServer(ix)->address();
     return s;
 }
 

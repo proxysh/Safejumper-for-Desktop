@@ -21,6 +21,8 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.11
 import QtGraphicalEffects 1.0
 
+import vpn.server 1.0
+
 Rectangle {
     id: serverCard
 
@@ -32,11 +34,9 @@ Rectangle {
     // Whether or not to show connect/disconnect button
     property bool showButton: false
 
-    property string serverName: "Hong Kong"
-    property string isocode: "HK"
-    property string flagImage: "../flags/" + isocode + ".png"
-    property string serverLoad: "20%"
-    property string serverPing: "5 ms"
+    property Server currentServer
+    property string isocode: currentServer.iso
+    property string flagImage: "../flags/" + currentServer.iso+ ".png"
     property string serverEncryptionType: "SHA1"
     property string serverPort: "500"
 
@@ -48,6 +48,7 @@ Rectangle {
             } else {
                 showOptions = true;
             }
+
             serverCard.height = serverColumn.childrenRect.height + 20
         }
     }
@@ -98,7 +99,7 @@ Rectangle {
 
                 Text {
                     id: nameText
-                    text: serverCard.serverName
+                    text: currentServer.name
                     font.family: "Roboto-Bold"
                     font.bold: true
                     font.pixelSize: 16
@@ -136,7 +137,7 @@ Rectangle {
             }
 
             Text {
-                text: serverLoad
+                text: currentServer.load + "%"
                 font.family: "Roboto-Bold"
                 font.pixelSize: 16
                 font.bold: true
@@ -159,7 +160,7 @@ Rectangle {
             }
 
             Text {
-                text: serverPing
+                text: (currentServer.ping > 0 ? currentServer.ping + " ms" : "");
                 font.family: "Roboto-Bold"
                 font.pixelSize: 16
                 font.bold: true

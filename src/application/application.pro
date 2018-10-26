@@ -90,6 +90,7 @@ SOURCES += \
     ../common/pathhelper.cpp \
     pingwaiter.cpp \
     portforwarder.cpp \
+    server.cpp \
     serversmodel.cpp \
     setting.cpp \
     trayiconmanager.cpp \
@@ -106,6 +107,7 @@ HEADERS += \
     ../common/pathhelper.h \
     pingwaiter.h \
     portforwarder.h \
+    server.h \
     serversmodel.h \
     setting.h \
     trayiconmanager.h \

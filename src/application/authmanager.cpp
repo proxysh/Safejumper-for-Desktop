@@ -49,12 +49,12 @@ AuthManager * AuthManager::instance()
 
 bool AuthManager::exists()
 {
-    return (mInstance.get() != NULL);
+    return (mInstance.get() != nullptr);
 }
 
 void AuthManager::cleanup()
 {
-    if (mInstance.get() != NULL)
+    if (mInstance.get() != nullptr)
         delete mInstance.release();
 }
 
@@ -76,7 +76,7 @@ AuthManager::AuthManager()
 AuthManager::~AuthManager()
 {
     for (size_t k = 0; k < mWorkers.size(); ++k) {
-        if (mTimers.at(k) != NULL) {
+        if (mTimers.at(k) != nullptr) {
             mTimers.at(k)->stop();
             delete mTimers.at(k);
         }
@@ -217,9 +217,9 @@ const QString &AuthManager::oldIP()
     return mOldIP;
 }
 
-AServer AuthManager::getServer(int id)
+AServer *AuthManager::getServer(int id)
 {
-    AServer s;
+    AServer *s = nullptr;
     //assert(id > -1);
     if (id > -1 && id < mServersModel->count()) {
         s = mServersModel->server(id);
@@ -229,7 +229,7 @@ AServer AuthManager::getServer(int id)
     return s;
 }
 
-AServer AuthManager::getHub(int idhub)
+AServer *AuthManager::getHub(int idhub)
 {
     int idsrv = -1;
     if (idhub > -1 && idhub < mHubs.size()) {
@@ -266,12 +266,12 @@ const QList<int> &AuthManager::currentEncryptionHubs()
 {
     if (mServersModel->count() > 0 && mHubs.isEmpty()) {
         for (int k = 0; k < mServersModel->count(); ++k) {
-            if (mServersModel->server(k).name.contains("Hub", Qt::CaseInsensitive)) {
+            if (mServersModel->server(k)->name().contains("Hub", Qt::CaseInsensitive)) {
                 mHubs.append(mServersModel->server(k));
                 mHubToServer.push_back(k);                      // the same as _hub_ids[0]
                 mHubIds[0].append(k);
                 mServerIdToHubId.insert(IIMap::value_type(k, mHubs.size() - 1));
-                std::string cleared = flag::ClearName(mServersModel->server(k).name).toStdString();          // QString cleared = flag::ClearName(_servers[k].name);
+                std::string cleared = flag::ClearName(mServersModel->server(k)->name()).toStdString();          // QString cleared = flag::ClearName(_servers[k].name);
                 mHubClearedId.insert(std::make_pair(cleared, mHubs.size() - 1));
             }
         }
@@ -295,8 +295,8 @@ int AuthManager::hubidForServerNode(int srv)
 {
     int hub = -1;
     if (srv > -1 && srv < mServersModel->count()) {
-        const AServer & rs = mServersModel->server(srv);
-        std::string cleared = flag::ClearName(rs.name).toStdString();       // QString cleared = flag::ClearName(rs.name);
+        AServer *rs = mServersModel->server(srv);
+        std::string cleared = flag::ClearName(rs->name()).toStdString();       // QString cleared = flag::ClearName(rs.name);
         std::map<std::string, size_t>::iterator it = mHubClearedId.find(cleared);
         if (it != mHubClearedId.end())
             hub = (int)(*it).second;
@@ -403,7 +403,7 @@ int AuthManager::serverIxFromName(const QString & srv)
     int ix = -1;
     if (mServerNameToId.empty() && mServersModel->count() > 0) {
         for (size_t k = 0, sz = mServersModel->count(); k < sz; ++k)
-            mServerNameToId.insert(SIMap::value_type(mServersModel->server(k).name.toStdString(), k));
+            mServerNameToId.insert(SIMap::value_type(mServersModel->server(k)->name().toStdString(), k));
     }
     SIMap::iterator it = mServerNameToId.find(srv.toStdString());
     if (it != mServerNameToId.end())
@@ -926,7 +926,7 @@ void AuthManager::populateServerIdsFromNames(QStringList names, QList<int> &serv
 {
     QList<int> ids;
     for (int j = 0; j < mServersModel->count(); ++j) {
-        if (names.contains(mServersModel->server(j).name)) {
+        if (names.contains(mServersModel->server(j)->name())) {
             ids.append(j);
         }
     }
@@ -992,6 +992,8 @@ QString AuthManager::processLoginResult()
         QJsonArray serversArray = documentObject.value("servers").toArray();
 
         mServersModel->updateServers(serversArray);
+
+        emit serverListsLoaded();
     }
 
     // force hubs
@@ -1055,7 +1057,7 @@ void AuthManager::startWorker(size_t id)
                 mWaiters.at(id), &PingWaiter::PingFinished);
         connect(mWorkers.at(id), &QProcess::errorOccurred,
                 mWaiters.at(id), &PingWaiter::PingError);
-        startPing(*mWorkers.at(id), mServersModel->server(srv).address);
+        startPing(*mWorkers.at(id), mServersModel->server(srv)->address());
         connect(mTimers.at(id), &QTimer::timeout,
                 mWaiters.at(id), &PingWaiter::Timer_Terminate);
         mTimers.at(id)->setSingleShot(true);
@@ -1073,7 +1075,7 @@ void AuthManager::pingComplete(size_t idWaiter)
     mTimers.at(idWaiter)->stop();
     int p = extractPing(*mWorkers.at(idWaiter));
 //      Log::logt(_servers.at(_inprogress.at(idWaiter)).address + " Got ping " + QString::number(p));
-    mPings[mInProgress.at(idWaiter)] = p;
+    mServersModel->setPing(mInProgress.at(idWaiter), p);
     startWorker(idWaiter);
 }
 
@@ -1151,7 +1153,7 @@ int AuthManager::getServerToJump()
     } else {
         // jump to hub
         Log::logt("showNodes is not set, so getting pings of hubs");
-        int prevhub = hubIxFromServerName(getServer(prev).name);
+        int prevhub = hubIxFromServerName(getServer(prev)->name());
         Log::logt("prevhub is " + QString::number(prevhub));
         Log::logt("Looping through " + QString::number(mHubIds[enc].size()) + " hubs");
         for (int k = 0; k < mHubIds[enc].size(); ++k) {
@@ -1293,7 +1295,7 @@ void AuthManager::forwardPorts()
     }
 }
 
-const ServersModel *AuthManager::serversModel() const
+ServersModel *AuthManager::serversModel() const
 {
     return mServersModel;
 }

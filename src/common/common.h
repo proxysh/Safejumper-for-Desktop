@@ -165,17 +165,6 @@ bool launchUpdateUrl();
 
 //void SaveCb(const char * name, bool val);
 
-struct AServer {
-    QString name;       // "Chile Hub" - Hub at the end indicates hub
-    QString address;    // DNs
-    QString ip;
-    QString isoCode;
-    QVariantList ports;
-    QVariantList xorPorts;
-    int load;       // double
-    bool favorite;
-};
-
 // typedef QHash<QString, size_t>  HMSI;
 
 typedef std::map<std::string, int> SIMap;

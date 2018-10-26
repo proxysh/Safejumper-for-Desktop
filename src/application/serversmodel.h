@@ -23,6 +23,8 @@
 
 #include "common.h"
 
+#include "server.h"
+
 #include <QList>
 #include <QJsonArray>
 
@@ -38,6 +40,7 @@ public:
         favoriteRole,
         portsRole,
         xorPortsRole,
+        pingRole
     };
 
     ServersModel(QObject *parent=nullptr);
@@ -49,11 +52,13 @@ public:
 
     void updateServers(const QJsonArray &servers);
 
-    AServer server(int index);
+    Q_INVOKABLE AServer *server(int index);
     int count();
 
+    void setPing(int index, int ping);
+
 private:
-    QList<AServer> mServers;
+    QList<AServer*> mServers;
 };
 
 #endif

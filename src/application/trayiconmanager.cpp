@@ -140,7 +140,8 @@ void TrayIconManager::createTrayIconMenu()
         mTrayIconMenu->addAction(mWebManageAction.get());
         mTrayIconMenu->addAction(mSupportAction.get());
         mTrayIconMenu->addAction(mBugAction.get());
-        mTrayIconMenu->addAction(mEarnAction.get());
+        // Not used in Shieldtra
+//        mTrayIconMenu->addAction(mEarnAction.get());
         mTrayIconMenu->addSeparator();
     }
 
@@ -398,8 +399,8 @@ void TrayIconManager::constructConnectToMenu()
                 // Use list of servers instead of hubs for ECC and ECC_XOR
                 const QList<int> &servers = am->currentEncryptionServers();
                 for (int k = 0; k < servers.size(); ++k) {
-                    AServer server = am->getServer(servers.at(k));
-                    createMenuItem(mConnectToMenu.get(), server.name, servers.at(k));
+                    AServer *server = am->getServer(servers.at(k));
+                    createMenuItem(mConnectToMenu.get(), server->name(), servers.at(k));
                 }
 //            } else {
 //                const QList<int> & hubs = am->currentEncryptionHubs();
