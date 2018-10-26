@@ -1342,9 +1342,6 @@ void OpenvpnManager::setRights()
     setChmod("04555", ServicePathHelper::Instance()->netDownFilename());
     setChown(ServicePathHelper::Instance()->netDownFilename());
 
-    setChmod("04555", ServicePathHelper::Instance()->launchopenvpnFilename());
-    setChown(ServicePathHelper::Instance()->launchopenvpnFilename());
-
     system(QString("touch %1").arg(ServicePathHelper::Instance()->openvpnLogFilename()).toStdString().c_str());
     // Don't chmod the openvpn log file when running safechecker
     // Prevents prompt for authorization after every error
