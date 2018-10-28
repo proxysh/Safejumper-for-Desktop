@@ -116,7 +116,7 @@ HEADERS += \
     mainwindow.h
 
 RESOURCES += \
-    qml.qrc \
     images.qrc \
+    qml.qrc \
     maps.qrc
 

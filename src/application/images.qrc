@@ -322,5 +322,11 @@
         <file>flags/ZA.png</file>
         <file>flags/ZM.png</file>
         <file>flags/ZW.png</file>
+        <file>images/green-dot.png</file>
+        <file>images/green-ring.png</file>
+        <file>images/grey-ring.png</file>
+        <file>images/small-grey-ring.png</file>
+        <file>images/yellow-dot.png</file>
+        <file>images/red-dot.png</file>
     </qresource>
 </RCC>

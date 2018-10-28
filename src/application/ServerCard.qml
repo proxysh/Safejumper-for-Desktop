@@ -87,14 +87,28 @@ Rectangle {
 
             Column {
                 spacing: 0
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 
-                Text {
-                    id: statusText
-                    text: qsTr("NOT CONNECTED");
-                    font.family: "Roboto-Bold"
-                    font.bold: true
-                    font.pixelSize: 12
-                    color: "#C53232"
+                RowLayout {
+                    width: parent.width
+                    height: 16
+
+                    Image {
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        width: 8
+                        height: 8
+                        source: "../images/red-dot.png"
+                    }
+
+                    Text {
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        id: statusText
+                        text: qsTr("NOT CONNECTED");
+                        font.family: "Roboto-Bold"
+                        font.bold: true
+                        font.pixelSize: 12
+                        color: "#C53232"
+                    }
                 }
 
                 Text {

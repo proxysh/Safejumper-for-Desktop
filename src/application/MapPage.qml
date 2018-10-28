@@ -18,24 +18,28 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
+import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
+
+import vpn.server 1.0
 
 Item {
     id: mapPage
-    anchors.fill: parent
+//    anchors.fill: parent
 
     signal menuClicked()
     signal settingsClicked()
     signal allServersClicked()
 
+    property Server currentServer: serversModel.server(settings.server)
+
     function refresh()
     {
         console.log("Refreshing map page since server list is loaded");
-        var currentServer = serversModel.server(settings.server)
+        currentServer = serversModel.server(settings.server)
         var iso = currentServer.iso
         currentServerCard.currentServer = currentServer;
         background.source = "../maps/" + iso + "-NotConnected.png"
-
     }
 
     Connections {
@@ -114,8 +118,8 @@ Item {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: { mapPage.settingsClicked();
-                    console.log("serversModel type is " + serversModel.objectName);
+                    onClicked: {
+                        mapPage.settingsClicked();
                     }
                 }
             }
@@ -141,6 +145,55 @@ Item {
 
         width: 335
         height: childrenRect.height
+
+        RowLayout {
+            width: parent.width
+
+            Image {
+                Layout.alignment: Qt.AlignVCenter | Qt.alignLeft
+                source: "../images/chevron-left.png"
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: { authmanager.previousFavorite(); }
+                }
+            }
+
+            Rectangle {
+                Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                id: serverRectangle
+                color: "white"
+                radius: 5
+                width: 260
+                height: 48
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    horizontalOffset: 1
+                    verticalOffset: 1
+                    color: "#80000000"
+                }
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Roboto-Medium"
+                    font.pixelSize: 16
+                    color: "#091E42"
+                    text: currentServer.name
+                }
+            }
+
+            Image {
+                Layout.alignment: Qt.AlignVCenter | Qt.alignRight
+                source: "../images/chevron-right.png"
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: { authmanager.nextFavorite(); }
+                }
+            }
+        }
 
         ServerCard {
             id: currentServerCard
