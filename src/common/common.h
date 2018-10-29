@@ -53,6 +53,7 @@ const QString kLowerAppName = "shieldtra";
 #define UPDATE_URL "https://shieldtra.com/shieldtra_linux.xml"
 #endif
 
+const QString kServersUrl = "https://shieldtra.com/servers";
 const QString kLoginUrl = "https://shieldtra.com/auth";
 const QString kCreateAccountUrl = "https://shieldtra.com/v1/user/add";
 

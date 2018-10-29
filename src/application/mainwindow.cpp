@@ -78,6 +78,8 @@ MainWindow::MainWindow() :
 
     if (Setting::instance()->autoconnect())
         AuthManager::instance()->login(Setting::instance()->login(), Setting::instance()->password());
+    else
+        AuthManager::instance()->getDefaultServerList();
 }
 
 void MainWindow::shutDown()

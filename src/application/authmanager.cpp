@@ -247,6 +247,19 @@ void AuthManager::setNewIp(const QString & ip)
     }
 }
 
+void AuthManager::getDefaultServerList()
+{
+    Log::logt("Fetching default server list");
+
+    QNetworkRequest request(QUrl::fromUserInput(kServersUrl));
+
+    mDefaultServerListReply = mNAM.get(request);
+    connect(mDefaultServerListReply, SIGNAL(error(QNetworkReply::NetworkError)),
+            this, SLOT(fetchServerListError(QNetworkReply::NetworkError)));
+    connect(mDefaultServerListReply, &QNetworkReply::finished,
+            this, &AuthManager::fetchServerListFinished);
+}
+
 void AuthManager::loginNetworkError(QNetworkReply::NetworkError error)
 {
     Log::logt(QString("Login error: %1").arg(error));
@@ -1318,6 +1331,52 @@ void AuthManager::createAccountError(QNetworkReply::NetworkError error)
 void AuthManager::createAccountFinished()
 {
 
+}
+
+void AuthManager::fetchServerListError(QNetworkReply::NetworkError error)
+{
+    Log::logt("Error fetching default server list, retrying in 5 seconds");
+    QTimer::singleShot(5000, this, &AuthManager::getDefaultServerList);
+}
+
+void AuthManager::fetchServerListFinished()
+{
+    if (mDefaultServerListReply->error() != QNetworkReply::NoError) {
+        Log::logt("Error fetching default server list");
+    } else {
+        QByteArray ba = mDefaultServerListReply->readAll();
+        if (ba.isEmpty()) {
+            Log::logt("default server list is empty, trying again in 5 seconds");
+            QTimer::singleShot(5000, this, &AuthManager::getDefaultServerList);
+            return;
+        }
+
+        Log::logt("json response to default server list is " + QString(ba));
+
+        // Parse json response
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(ba, &error);
+
+        if (jsonDoc.isNull()) {
+            Log::logt("json document from default server list is invalid, trying again in 5 seconds: error: " + error.errorString());
+            QTimer::singleShot(5000, this, &AuthManager::getDefaultServerList);
+            return;
+        }
+
+        QJsonArray serversArray = jsonDoc.array();
+
+        mServersModel->updateServers(serversArray);
+
+        emit serverListsLoaded();
+    }
+
+    // force hubs
+//    const QList<int> & hubs = AuthManager::currentEncryptionHubs();
+//    if (hubs.isEmpty() && Setting::instance()->encryption() < ENCRYPTION_ECC) // Don't check hubs for ECC
+//        Log::logt("Cannot parse hubs");
+
+    if (!Setting::instance()->testing())
+        pingAllServers(); // No need to ping servers when in testing mode
 }
 
 void AuthManager::startPing(QProcess & pr, const QString & adr)

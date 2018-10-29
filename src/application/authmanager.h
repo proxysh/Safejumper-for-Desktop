@@ -134,6 +134,8 @@ public slots:
 
     void setNewIp(const QString & ip);
 
+    void getDefaultServerList();
+
 signals:
     void loginError(QString message);
     void logoutCompleted();
@@ -158,6 +160,10 @@ private slots:
 
     void createAccountError(QNetworkReply::NetworkError error);
     void createAccountFinished();
+
+    void fetchServerListError(QNetworkReply::NetworkError error);
+    void fetchServerListFinished();
+
 //    void processObfsServerNamesXml();
 //    void processEccServerNamesXml();
 //    void processAccountTypeXml();
@@ -221,6 +227,7 @@ private:
     QPointer<QNetworkReply> mReply;
     QPointer<QNetworkReply> mIPReply;
     QPointer<QNetworkReply> mCreateAccountReply;
+    QPointer<QNetworkReply> mDefaultServerListReply;
     int mIPAttemptCount;
     void clearReply();
     QPointer<QNetworkReply> mUpdateReply;
