@@ -106,6 +106,13 @@ Rectangle {
         }
     }
 
+    Connections {
+        target: authmanager
+        onServerListsLoaded: {
+            splashScreen.visible = false;
+        }
+    }
+
     Component {
         id: allServersPage
         AllServersPage {
@@ -163,6 +170,33 @@ Rectangle {
             objectName: "signupPage"
             onCloseClicked: { stack.pop(); }
 
+        }
+    }
+
+    Rectangle {
+        id: splashScreen
+        visible: true
+        anchors.fill: screen
+        z: 10
+
+        Image {
+            id: splashLogo
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 240
+            width: 210
+            height: 240
+            source: "../images/large-logo.png"
+        }
+
+        Text {
+            anchors.top: splashLogo.bottom
+            anchors.topMargin: 24
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: qsTr("Establishing a secure connection...");
+            font.family: "Roboto-Regular"
+            font.pixelSize: 20
+            color: defaultColor
         }
     }
 

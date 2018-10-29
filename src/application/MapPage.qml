@@ -174,13 +174,38 @@ Item {
                     color: "#80000000"
                 }
 
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    font.family: "Roboto-Medium"
-                    font.pixelSize: 16
-                    color: "#091E42"
-                    text: currentServer.name
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 35
+                    anchors.rightMargin: 35
+
+                    Image {
+                        id: flagImage
+                        Layout.preferredWidth: 26
+                        Layout.preferredHeight: 26
+                        fillMode: Image.Stretch
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        source: "../roundflags/" + currentServer.iso + ".png"
+                        z: 2
+
+                        Image {
+                            anchors.centerIn: parent
+                            width: 30
+                            height: 30
+                            fillMode: Image.Stretch
+                            source: "../images/small-grey-ring.png"
+                            z: 4
+                        }
+                    }
+
+
+                    Text {
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        font.family: "Roboto-Medium"
+                        font.pixelSize: 16
+                        color: "#091E42"
+                        text: currentServer.name
+                    }
                 }
             }
 

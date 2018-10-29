@@ -36,7 +36,7 @@ Rectangle {
 
     property Server currentServer
     property string isocode: currentServer.iso
-    property string flagImage: "../flags/" + currentServer.iso+ ".png"
+    property string flagImage: "../roundflags/" + currentServer.iso+ ".png"
     property string serverEncryptionType: "SHA1"
     property string serverPort: "500"
 
@@ -79,10 +79,19 @@ Rectangle {
 
             Image {
                 id: flagImage
-                width: 35
-                height: 35
+                Layout.preferredWidth: 37
+                Layout.preferredHeight: 37
+                fillMode: Image.Stretch
                 source: serverCard.flagImage
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+
+                Image {
+                    anchors.centerIn: flagImage
+                    width: 42
+                    height: 42
+                    fillMode: Image.Stretch
+                    source: "../images/green-ring.png"
+                }
             }
 
             Column {
