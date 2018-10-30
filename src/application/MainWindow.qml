@@ -129,6 +129,10 @@ Rectangle {
         onServerListsLoaded: {
             splashScreen.visible = false;
         }
+        onLoggedInChanged: {
+            if (authmanager.loggedIn && stack.currentItem.objectName == "loginPage")
+                stack.pop();
+        }
     }
 
     Component {
