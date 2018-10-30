@@ -149,7 +149,7 @@ void ServersModel::updateServers(const QJsonArray &servers)
         newServer->setXorPorts(ports);
         newServer->setLoad(server.toObject().value("serverload").toString().toInt());
         // TODO: Load if this server is a favorite from settings
-        newServer->setFavorite(false);
+        newServer->setFavorite(Setting::instance()->favorites().contains(newServer->address()));
         newServer->setPing(-1);
         mServers.append(newServer);
     }

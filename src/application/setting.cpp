@@ -35,6 +35,7 @@ static const QString kLoggingKey = "logging";
 static const QString kNotificationsKey = "notifications";
 static const QString kEncryptionKey = "encryption";
 static const QString kLanguageKey = "language";
+static const QString kFavoritesKey = "favorites";
 
 Setting::Setting()
     :mTesting(false)
@@ -539,6 +540,26 @@ QString Setting::currentLanguage()
 QStringList Setting::languages()
 {
     return kLanguageNames;
+}
+
+const QStringList Setting::favorites() const
+{
+    return mSettings.value(kFavoritesKey, "").toString().split("|");
+}
+
+void Setting::addFavorite(const QString &url)
+{
+    QStringList favoriteUrls = favorites();
+    if (!favoriteUrls.contains(url))
+        favoriteUrls << url;
+    mSettings.setValue(kFavoritesKey, favoriteUrls.join("|"));
+}
+
+void Setting::removeFavorite(const QString &url)
+{
+    QStringList favoriteUrls = favorites();
+    favoriteUrls.removeAll(url);
+    mSettings.setValue(kFavoritesKey, favoriteUrls.join("|"));
 }
 
 QString Setting::EncryptionIx()

@@ -180,6 +180,10 @@ public:
 
     QStringList languages();
 
+    const QStringList favorites() const;
+    void addFavorite(const QString &url);
+    void removeFavorite(const QString &url);
+
 signals:
     void showNodesChanged();
     void detectInsecureWifiChanged();

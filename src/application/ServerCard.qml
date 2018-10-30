@@ -48,6 +48,10 @@ Rectangle {
 
     signal showLogin();
 
+    function toggleFavorite() {
+        currentServer.favorite = !currentServer.favorite;
+    }
+
     function toggleExpansion() {
         // Do nothing if not expandable
         if (expandable) {
