@@ -160,6 +160,8 @@ Item {
             id: currentServerCard
             showButton: true
             expandable: false
+            showState: true
+            isCurrentServer: true
         }
 
         Rectangle {

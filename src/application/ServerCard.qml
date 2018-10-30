@@ -34,6 +34,12 @@ Rectangle {
     // Whether or not to show connect/disconnect button
     property bool showButton: false
 
+    // Whether to show connected/not connected above server name
+    property bool showState: false
+
+    // True if this server is currently selected
+    property bool isCurrentServer: false
+
     property Server currentServer
     property string isocode: currentServer.iso
     property string flagImage: "../roundflags/" + currentServer.iso+ ".png"
@@ -92,15 +98,16 @@ Rectangle {
                     width: 42
                     height: 42
                     fillMode: Image.Stretch
-                    source: "../images/green-ring.png"
+                    source: isCurrentServer ? "../images/green-ring.png" : "../images/grey-ring.png"
                 }
             }
 
-            Column {
+            ColumnLayout {
                 spacing: 0
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 
                 RowLayout {
+                    visible: showState
                     width: parent.width
                     height: 16
 
@@ -124,12 +131,19 @@ Rectangle {
 
                 Text {
                     id: nameText
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     text: currentServer.name
                     font.family: "Roboto-Bold"
                     font.bold: true
                     font.pixelSize: 16
                     color: "#091E42"
+                    horizontalAlignment: Text.AlignLeft
                 }
+            }
+
+            Item {
+                Layout.fillWidth: true;
+                height: parent.height
             }
 
             Image {

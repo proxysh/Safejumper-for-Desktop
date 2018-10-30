@@ -41,15 +41,19 @@ Item {
         ListView {
             id: allServersList
             anchors.top: headerArea.bottom
+            anchors.topMargin: 25
             anchors.bottom: parent.bottom
-            width: parent.width
+            width: parent.width - 40 // 20px margin on either side
+            anchors.horizontalCenter: parent.horizontalCenter
 
             model: serversModel
             spacing: 10
             clip: true
             delegate:
                 ServerCard {
-                    currentServer: model.server(index)
+                    currentServer: serversModel.server(index)
+                    expandable: true
+                    isCurrentServer: index == settings.server
 
             }
         }
