@@ -102,6 +102,12 @@ bool MainWindow::exists()
 
 void MainWindow::cleanup()
 {
+    if (VPNServiceManager::exists())
+        VPNServiceManager::cleanup();
+
+    if (AuthManager::exists())
+        AuthManager::cleanup();
+
     if (!mInstance.isNull()) {
         mInstance->closeWindow();
         mInstance->deleteLater();

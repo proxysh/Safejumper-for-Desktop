@@ -139,6 +139,8 @@ Rectangle {
         id: allServersPage
         AllServersPage {
             objectName: "allServersPage"
+            onMenuClicked: { stack.push(menuPage); }
+            onSettingsClicked: { stack.push(settingsPage); }
         }
     }
 

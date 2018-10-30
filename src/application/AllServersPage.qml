@@ -27,70 +27,30 @@ Item {
     signal settingsClicked()
     signal allServersClicked()
 
-    Item {
-        id: headerArea
-        width: parent.width
-        height: 57
-        anchors.top: parent.top
+    Rectangle {
+        id: guiRectangle
+        color: "#F4F5F7"
+        anchors.fill: parent
 
-        Rectangle {
-            id: toolBarTop
-            anchors.fill: parent
-            color: defaultColor
+        HeaderBar {
+            id: headerArea
+            onSettingsClicked: { allServersPage.settingsClicked(); }
+            onMenuClicked: { allServersPage.menuClicked(); }
+        }
 
-            layer.enabled: true
-            layer.effect: DropShadow {
-                horizontalOffset: 1
-                verticalOffset: 1
-                color: "#80000000"
-            }
+        ListView {
+            id: allServersList
+            anchors.top: headerArea.bottom
+            anchors.bottom: parent.bottom
+            width: parent.width
 
-            Image {
-                id: menuImage
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                source: "../images/menu-left.png"
+            model: serversModel
+            spacing: 10
+            clip: true
+            delegate:
+                ServerCard {
+                    currentServer: model.server(index)
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { allServersPage.menuClicked() }
-                }
-            }
-
-            Row {
-                id: centerBox
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 8
-
-                Image {
-                    id: statusIcon
-                    source: "../images/lock-unlock.png"
-                }
-
-                Text {
-                    id: statusText
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 18
-                    font.family: "Roboto"
-                    font.bold: true
-                    color: "white"
-                    text: qsTr("Not Connected");
-                }
-            }
-
-            Image {
-                id: settingsImage
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                anchors.rightMargin: 20
-                source: "../images/settings.png"
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { allServersPage.settingsClicked(); }
-                }
             }
         }
     }

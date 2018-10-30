@@ -57,74 +57,9 @@ Item {
         }
     }
 
-    Item {
-        id: headerArea
-        width: parent.width
-        height: 57
-        anchors.top: parent.top
-
-        Rectangle {
-            id: toolBarTop
-            anchors.fill: parent
-            color: defaultColor
-
-            layer.enabled: true
-            layer.effect: DropShadow {
-                horizontalOffset: 1
-                verticalOffset: 1
-                color: "#80000000"
-            }
-
-            Image {
-                id: menuImage
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                source: "../images/menu-left.png"
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { mapPage.menuClicked() }
-                }
-            }
-
-            Row {
-                id: centerBox
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 8
-
-                Image {
-                    id: statusIcon
-                    source: vpnservicemanager.stateIcon
-                }
-
-                Text {
-                    id: statusText
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 18
-                    font.family: "Roboto"
-                    font.bold: true
-                    color: "white"
-                    text: vpnservicemanager.stateWord
-                }
-            }
-
-            Image {
-                id: settingsImage
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                anchors.rightMargin: 20
-                source: "../images/settings.png"
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        mapPage.settingsClicked();
-                    }
-                }
-            }
-        }
+    HeaderBar {
+        onSettingsClicked: { mapPage.settingsClicked(); }
+        onMenuClicked: { mapPage.menuClicked(); }
     }
 
     Image {

@@ -15,5 +15,6 @@
         <file>ConfirmationPopup.qml</file>
         <file>AllServersPage.qml</file>
         <file>ServerCard.qml</file>
+        <file>HeaderBar.qml</file>
     </qresource>
 </RCC>
