@@ -32,6 +32,12 @@
 class VPNServiceManager : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString stateIcon READ stateIcon NOTIFY vpnStateChanged)
+    Q_PROPERTY(QString stateColor READ stateColor NOTIFY vpnStateChanged)
+    Q_PROPERTY(QString stateWord READ stateWord NOTIFY vpnStateChanged)
+    Q_PROPERTY(QString stateDot READ stateDot NOTIFY vpnStateChanged)
+    Q_PROPERTY(int vpnState READ state NOTIFY vpnStateChanged)
+
 public:
     static VPNServiceManager * instance();
     static bool exists();
@@ -42,6 +48,13 @@ public:
     vpnState state();
 
     void startPortLoop(bool changePort);
+
+    const QString stateIcon() const;
+    const QString stateColor() const;
+    const QString stateWord() const;
+    // Which dot image to use for the current state
+    const QString stateDot() const;
+
 signals:
     /*!
      * Notify the client who's been registered on the status change
@@ -49,6 +62,8 @@ signals:
      * @param status The status that the connection entered
      */
     void stateChanged(vpnState state);
+
+    void vpnStateChanged();
 
     /*!
      * Notify the client of status word changes
@@ -93,12 +108,12 @@ public slots:
     /*!
      * Connect to the VPN service with the settings given
      */
-    void sendConnectToVPNRequest();
+    Q_INVOKABLE void sendConnectToVPNRequest();
 
     /*!
      * Send a disconnect command to the service
      */
-    void sendDisconnectFromVPNRequest();
+    Q_INVOKABLE void sendDisconnectFromVPNRequest();
 
     /*!
      * \brief killRunningOpenvpn

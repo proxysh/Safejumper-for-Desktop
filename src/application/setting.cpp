@@ -686,7 +686,7 @@ QString Setting::serverAddress()
     QString s;
     int ix = serverID();
     if (ix > -1)
-        s = AuthManager::instance()->getServer(ix)->address();
+        s = AuthManager::instance()->getServer(ix)->ip();
     return s;
 }
 

@@ -40,6 +40,8 @@ Rectangle {
     property string serverEncryptionType: "SHA1"
     property string serverPort: "500"
 
+    signal showLogin();
+
     function toggleExpansion() {
         // Do nothing if not expandable
         if (expandable) {
@@ -106,17 +108,17 @@ Rectangle {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                         width: 8
                         height: 8
-                        source: "../images/red-dot.png"
+                        source: vpnservicemanager.stateDot
                     }
 
                     Text {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                         id: statusText
-                        text: qsTr("NOT CONNECTED");
+                        text: vpnservicemanager.stateWord;
                         font.family: "Roboto-Bold"
                         font.bold: true
                         font.pixelSize: 12
-                        color: "#C53232"
+                        color: vpnservicemanager.stateColor
                     }
                 }
 
@@ -134,7 +136,15 @@ Rectangle {
                 Layout.alignment: Qt.AlignRight
                 width: 20
                 height: 18
-                source: "../images/filledheart.png"
+                source: currentServer.favorite ? "../images/filledheart.png" : "../images/emptyheart.png";
+
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    onClicked: {
+                        toggleFavorite();
+                    }
+                }
             }
         }
 
@@ -272,13 +282,13 @@ Rectangle {
             width: parent.width
             height: 48
             radius: 5
-            color: "#2CC532"
+            color: vpnservicemanager.vpnState == 0 ? "#2CC532" : vpnservicemanager.vpnState == 1 ? "#FFAB00" : "#C53232"
             visible: showButton
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                text: qsTr("CONNECT");
+                text: vpnservicemanager.vpnState == 0 ? qsTr("CONNECT") : vpnservicemanager.vpnState == 1 ? qsTr("CONNECTING") : qsTr("DISCONNECT");
                 color: 'white'
                 font.family: "Roboto-Bold"
                 font.bold: true
@@ -287,15 +297,11 @@ Rectangle {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: { mainwindow.connect(); }
+                onClicked: {
+                    screen.connectToVPN();
+                }
             }
         }
 
-    }
-
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        onClicked: { toggleExpansion(); }
     }
 } // End of rect

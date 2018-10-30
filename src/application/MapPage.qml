@@ -30,6 +30,7 @@ Item {
     signal menuClicked()
     signal settingsClicked()
     signal allServersClicked()
+    signal showLogin()
 
     property Server currentServer: serversModel.server(settings.server)
 
@@ -95,7 +96,7 @@ Item {
 
                 Image {
                     id: statusIcon
-                    source: "../images/lock-unlock.png"
+                    source: vpnservicemanager.stateIcon
                 }
 
                 Text {
@@ -105,7 +106,7 @@ Item {
                     font.family: "Roboto"
                     font.bold: true
                     color: "white"
-                    text: qsTr("Not Connected");
+                    text: vpnservicemanager.stateWord
                 }
             }
 

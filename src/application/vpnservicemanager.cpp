@@ -335,6 +335,7 @@ void VPNServiceManager::socket_readyRead()
                 emit killSwitch(); // Emit kill switch signal, login window will perform if needed
 
             emit stateChanged(mState);
+            emit vpnStateChanged();
         }
         break;
 
@@ -395,6 +396,93 @@ void VPNServiceManager::startPortLoop(bool changePort)
     mPortDialogShown = false;
     mInPortLoop = true;
     tryNextPort();
+}
+
+const QString VPNServiceManager::stateIcon() const
+{
+    // Default to not connected
+    QString retval = "../images/lock-unlock.png";
+
+    switch (mState) {
+    case vpnStateConnected:
+        retval = "../images/lock.png";
+        break;
+
+    case vpnStateConnecting:
+        retval = "../images/loop.png";
+        break;
+
+    case vpnStateDisconnected:
+    default:
+        break;
+    }
+
+    return retval;
+}
+
+const QString VPNServiceManager::stateColor() const
+{
+    // Default to not connected
+    QString retval = "#C53232";
+
+    switch(mState) {
+    case vpnStateConnected:
+        retval = "#2CC532";
+        break;
+
+    case vpnStateConnecting:
+        retval = "#FFAB00";
+        break;
+
+    case vpnStateDisconnected:
+    default:
+        break;
+    }
+
+    return retval;
+}
+
+const QString VPNServiceManager::stateWord() const
+{
+    QString retval = tr("Not Connected");
+
+    switch(mState) {
+    case vpnStateConnected:
+        retval = tr("Connected");
+        break;
+
+    case vpnStateConnecting:
+        retval = tr("Connecting");
+        break;
+
+    case vpnStateDisconnected:
+    default:
+        break;
+    }
+
+    return retval;
+}
+
+const QString VPNServiceManager::stateDot() const
+{
+    // Default to not connected dot
+    QString retval = "../images/red-dot.png";
+
+    switch (mState) {
+    case vpnStateConnected:
+        retval = "../images/green-dot.png";
+        break;
+
+    case vpnStateConnecting:
+        retval = "../images/yellow-dot.png";
+        break;
+
+    case vpnStateDisconnected:
+    default:
+        break;
+    }
+
+    return retval;
 }
 
 void VPNServiceManager::tryNextPort()

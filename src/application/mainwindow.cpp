@@ -44,6 +44,7 @@ MainWindow::MainWindow() :
     rootContext()->setContextProperty("serversModel", AuthManager::instance()->serversModel());
     rootContext()->setContextProperty("settings", Setting::instance());
     rootContext()->setContextProperty("mainwindow", this);
+    rootContext()->setContextProperty("vpnservicemanager", VPNServiceManager::instance());
 
     setSource(QUrl("qrc:/qml/MainWindow.qml"));
 

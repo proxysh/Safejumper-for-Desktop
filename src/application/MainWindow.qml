@@ -44,6 +44,30 @@ Rectangle {
         component.visible = false;
     }
 
+    function showLogin()
+    {
+        if (stack.currentItem.objectName == "loginPage")
+            // Do nothing
+            ;
+        else if (stack.currentItem.objectName == "signupPage")
+            stack.pop();
+        else
+            stack.push(loginPage);
+    }
+
+    function connectToVPN()
+    {
+        if (!authmanager.loggedIn)
+            showLogin();
+
+        // TODO: Confirm disconnect/jump if currently connected
+        else if (vpnservicemanager.vpnState == 1 || vpnservicemanager.vpnState == 2) // Connecting
+            vpnservicemanager.sendDisconnectFromVPNRequest();
+
+        else
+            vpnservicemanager.sendConnectToVPNRequest();
+    }
+
     FastBlur {
         id: blurItem
         source: stack
@@ -77,13 +101,7 @@ Rectangle {
         target: mainwindow
         onConfirmExit: { showPopup(exitConfirmation); }
         onLogout: {
-            if (stack.currentItem.objectName == "loginPage")
-                // Do nothing
-                ;
-            else if (stack.currentItem.objectName == "signupPage")
-                stack.pop();
-            else
-                stack.push(loginPage);
+            showLogin();
         }
         onMapScreen: {
             if (stack.currentItem.objectName == "mapPage")
