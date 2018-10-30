@@ -261,6 +261,55 @@ void AuthManager::getDefaultServerList()
             this, &AuthManager::fetchServerListFinished);
 }
 
+void AuthManager::nextFavorite()
+{
+    // Set server to next favorite
+    // Find next favorite
+    int startIndex = Setting::instance()->serverID();
+    int index = startIndex;
+    bool found = false;
+    while (!found) {
+        index++;
+
+        // Start over if we go past the end of the list
+        if (index >= mServersModel->count())
+            index = 0;
+
+        // If we loop back on the startindex, give up
+        if (index == startIndex)
+            return;
+
+        if (mServersModel->server(index)->favorite()) {
+            found = true;
+            Setting::instance()->setServer(index);
+        }
+    }
+}
+
+void AuthManager::previousFavorite()
+{
+    // Set server to previous favorite
+    int startIndex = Setting::instance()->serverID();
+    int index = startIndex;
+    bool found = false;
+    while (!found) {
+        index--;
+
+        // Start over if we go past the end of the list
+        if (index < 0)
+            index = mServersModel->count() - 1;
+
+        // If we loop back on the startindex, give up
+        if (index == startIndex)
+            return;
+
+        if (mServersModel->server(index)->favorite()) {
+            found = true;
+            Setting::instance()->setServer(index);
+        }
+    }
+}
+
 void AuthManager::loginNetworkError(QNetworkReply::NetworkError error)
 {
     Log::logt(QString("Login error: %1").arg(error));

@@ -136,6 +136,9 @@ public slots:
 
     void getDefaultServerList();
 
+    Q_INVOKABLE void nextFavorite();
+    Q_INVOKABLE void previousFavorite();
+
 signals:
     void loginError(QString message);
     void logoutCompleted();

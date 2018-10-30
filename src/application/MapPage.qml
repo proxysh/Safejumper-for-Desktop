@@ -36,7 +36,6 @@ Item {
 
     function refresh()
     {
-        console.log("Refreshing map page since server list is loaded");
         currentServer = serversModel.server(settings.server)
         var iso = currentServer.iso
         currentServerCard.currentServer = currentServer;
