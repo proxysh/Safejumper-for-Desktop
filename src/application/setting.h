@@ -206,8 +206,6 @@ signals:
 private:
     Setting();
     static std::auto_ptr<Setting> mInstance;
-    static std::vector<QString> mProtocols[ENCRYPTION_COUNT];
-    static std::vector<int> mPorts[ENCRYPTION_COUNT];
 
     QString mDefaultDNS[2];
     bool mTesting;

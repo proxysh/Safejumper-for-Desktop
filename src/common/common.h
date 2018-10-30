@@ -56,6 +56,7 @@ const QString kLowerAppName = "shieldtra";
 const QString kServersUrl = "https://shieldtra.com/servers";
 const QString kLoginUrl = "https://shieldtra.com/auth";
 const QString kCreateAccountUrl = "https://shieldtra.com/v1/user/add";
+const QString kOvpnUrl = "https://shieldtra.com/config";
 
 bool IsValidIp(const QString & ip);
 bool IsValidPort(const QString & s);

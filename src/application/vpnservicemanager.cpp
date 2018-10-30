@@ -202,10 +202,10 @@ void VPNServiceManager::sendStatusRequest()
 void VPNServiceManager::sendCredentials()
 {
     Log::logt("sendCredentials called");
-    if (m_socket.isValid()) {
+    if (ensureConnected()) {
         QJsonObject jObj;
 
-        Log::logt("Sending command 'cmdSetCredentials'");
+        Log::logt("Sending command 'cmdSetCredentials', name is " + AuthManager::instance()->VPNName() + " password is " + AuthManager::instance()->VPNPassword());
         jObj["cmd"] = cmdSetCredentials;
         jObj["vpnusername"] = AuthManager::instance()->VPNName();
         jObj["vpnpassword"] = AuthManager::instance()->VPNPassword();

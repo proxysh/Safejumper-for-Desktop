@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <QDateTime>
+#include <QNetworkReply>
 #include <QObject>
 #include <QProcess>
 #include <QTcpSocket>
@@ -109,6 +110,9 @@ private slots:
     void logStderr();
     void logStdout();
 
+    void getOvpnError(QNetworkReply::NetworkError error);
+    void getOvpnFinished();
+
 private:
     OpenvpnManager();
     void startConnecting(); // Start connecting with the current settings
@@ -156,6 +160,9 @@ private:
     void enableTap();	// for Windows enumerate interfaces and for all TAP force call Enable
 #endif
 
+    void getOvpn();
+    void continueConnecting();
+
     static std::auto_ptr<OpenvpnManager> mInstance;
 
     std::auto_ptr<QFileSystemWatcher> mFileSystemWatcher;	// OpenVpn log file
@@ -194,6 +201,8 @@ private:
     QString mDNS2;
 
     bool mNetDown;
+
+    QByteArray mOvpnContent;
 };
 
 #endif // OPENVPNMANAGER_H

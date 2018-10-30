@@ -107,8 +107,9 @@ void AuthManager::login(const QString & name, const QString & password)
     mAccountLogin = name;
     mAccountPassword = password;
 
-    mVPNLogin.clear();
-    mVPNPassword.clear();                    // TODO: -2 secure clear
+    // Shieldtra seems to use the same login and password for vpn as for server list, etc.
+    mVPNLogin = mAccountLogin;
+    mVPNPassword = mAccountPassword;
     mLoggedIn = false;
     mCancellingLogin = false;
     Log::logt("Starting login with name '" + QUrl::toPercentEncoding(name, "", "") + "'");
@@ -951,8 +952,6 @@ QString AuthManager::processLoginResult()
 {
     QString message;
     clearServerLists();
-    mVPNLogin.clear();
-    mVPNPassword.clear();
     if (mReply->error() != QNetworkReply::NoError) {
         mLoggedIn = false;
         return mReply->errorString();
@@ -1317,8 +1316,10 @@ void AuthManager::loginFinished()
 {
     QString message = processLoginResult();
     Log::logt("loginFinished called message is " + message);
-    if (message.isEmpty())
+    if (message.isEmpty()) {
+        VPNServiceManager::instance()->sendCredentials();
         emit loggedInChanged();
+    }
     else
         emit loginError(message);
 }

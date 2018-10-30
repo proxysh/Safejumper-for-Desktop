@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QThread>
 #include <QTimer>
+#include <QUrlQuery>
 #include <stdexcept>
 
 #include "servicelog.h"
@@ -154,73 +155,7 @@ void OpenvpnManager::startConnecting()
     mError = false;
     mProcessing = false;
 
-#ifndef NO_PARAMFILE
-    if (!writeConfigFile()) {
-        return; // Error, so return
-    }
-#endif  // NO_PARAMFILE
-
-    QStringList args = getOpenvpnArgs();
-    if (mFixDNS ||
-            !mDNS1.isEmpty() ||
-            !mDNS2.isEmpty())
-        OsSpecific::instance()->fixDnsLeak();
-
-    QString prog = ServicePathHelper::Instance()->openvpnFilename();
-    Log::serviceLog("Prog is: " + prog);
-    QString params = args.join(' ');
-    Log::serviceLog("Args are:" + params);
-
-    bool ok = false;
-    try {
-#ifndef Q_OS_WIN
-        Log::serviceLog("######  before exec ####");
-
-        int result = QProcess::execute(prog.remove("\\"), args);
-
-        Log::serviceLog("Result of openvpn execution is " + QString::number(result));
-        // Wait 1 seconds to let openvpn open the socket we connect to
-        sleep(1);
-        Log::serviceLog("before attaching to OpenVPN");
-        connectToOpenvpnSocket();   // TODO: -1 wait for slow starting cases
-        setupFileWatcher();
-        Log::serviceLog("after attaching to OpenVPN");
-#else
-        mProcess.reset(new QProcess());
-        connect(mProcess.get(), SIGNAL(error(QProcess::ProcessError)),
-                this, SLOT(processError(QProcess::ProcessError)));
-        connect(mProcess.get(), SIGNAL(started()),
-                this, SLOT(processStarted()));
-        connect(mProcess.get(), SIGNAL(stateChanged(QProcess::ProcessState)),
-                this, SLOT(processStateChanged(QProcess::ProcessState)));
-        connect(mProcess.get(), SIGNAL(finished(int, QProcess::ExitStatus)),
-                this, SLOT(processFinished(int, QProcess::ExitStatus)));
-        connect(mProcess.get(), SIGNAL(readyReadStandardError()),
-                this, SLOT(logStderr()));
-        connect(mProcess.get(), SIGNAL(readyReadStandardOutput()),
-                this, SLOT(logStdout()));
-        mProcess->start(prog, args);
-        mProcess->waitForStarted(2000);
-        Log::serviceLog("Process ID is: " + QString::number(mProcess->processId()));
-#endif
-        ok = true;
-    } catch(std::exception & ex) {
-        Log::serviceLog(ex.what());
-        emit sendError(ex.what());
-    }
-
-    if (mParametersTempFile.get())
-        delete mParametersTempFile.release();
-
-    if (ok) {
-        Log::serviceLog("openvpn launched, starting timer");
-        mStartDateTime = QDateTime::currentDateTimeUtc();
-        startTimer();
-    } else
-        setState(vpnStateDisconnected);
-
-    Log::serviceLog("launchopenvpn done");
-#undef NO_PARAMFILE
+    getOvpn();
 }
 
 void OpenvpnManager::launchObfsproxy()
@@ -277,45 +212,7 @@ bool OpenvpnManager::writeConfigFile()
         emit sendError(se);
         return false;
     }
-    ff.write("client\n");
-    ff.write("dev tun\n");
-    ff.write("setenv FORWARD_COMPATIBLE 1\n");
-    ff.write("proto ");
-    ff.write(mTcpOrUdp.toLatin1());
-    ff.write("\n");       // "tcp"/"udp"
-//ff.write("proto udp\n");
-//ff.write("proto tcp\n");
-
-    if (mHostname.isEmpty() || mPort.isEmpty()) {
-        QString message = "Server or port is empty, select a location";
-        Log::serviceLog(message);
-        emit sendError(message);
-        return false;
-    }
-    ff.write("remote ");
-    ff.write(mHostname.toLatin1());
-    ff.write(" ");
-    ff.write(mPort.toLatin1());
-    ff.write("\n");
-
-//ff.write("remote 176.67.168.144 465\n");  // france 7
-//ff.write("remote 217.18.246.133 465\n");
-
-//ff.write("remote 176.9.137.187 465\n");   // germany 9 :ecc
-
-//ff.write("remote 176.67.168.144 995\n");  // ecc+xor
-
-    ff.write("cipher AES-256-CBC\n");
-    ff.write("auth SHA512\n");
-    ff.write("auth-user-pass\n");
-    ff.write("remote-cert-tls server\n");
-    ff.write("resolv-retry infinite\n");
-    ff.write("nobind\n");
-    ff.write("comp-lzo\n");
-    ff.write("verb 3\n");
-    ff.write("reneg-sec 0\n");
-    ff.write("route-method exe\n");
-    ff.write("route-delay 2 0\n");
+    ff.write(mOvpnContent);
 
 //    if (mEncryption == ENCRYPTION_ECC || mEncryption == ENCRYPTION_ECCXOR) {
 ////          ff.write("tls-cipher ECDHE-ECDSA-AES256-GCM-SHA384\n");
@@ -346,14 +243,6 @@ bool OpenvpnManager::writeConfigFile()
 //            "</ca>\n"
 //        );
 //    }
-
-    if (mFixDNS) {
-        qDebug() << "Fixdns is enabled, so setting dns servers";
-#ifdef Q_OS_WIN
-        if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS10)
-            ff.write("block-outside-dns\n");
-#endif
-    }
 
     if (!mDNS1.isEmpty()) {
         ff.write(QString("dhcp-option DNS %1\n").arg(mDNS1).toUtf8());
@@ -698,6 +587,124 @@ void OpenvpnManager::logStderr()
 void OpenvpnManager::logStdout()
 {
     Log::serviceLog("ReadStdout(): " + mProcess->readAllStandardOutput());
+}
+
+void OpenvpnManager::getOvpnError(QNetworkReply::NetworkError error)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    emit sendError("Unable to fetch configuration from " + reply->url().toString());
+    stop();
+
+}
+
+void OpenvpnManager::getOvpnFinished()
+{
+    // Got template
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    QNetworkAccessManager *manager = reply->manager();
+
+    if (reply->error() != QNetworkReply::NoError) {
+        Log::serviceLog("Error fetching template:" + reply->errorString());
+        stop();
+        return;
+    }
+
+//    AServer server = AuthManager::instance()->getServer(index);
+
+//    log::logt("Got template for server " + server.name + " with port " + QString::number(portnumber));
+
+    mOvpnContent = reply->readAll();
+
+//    templateBytes.replace('\r', QString());
+
+    reply->deleteLater();
+    manager->deleteLater();
+
+    continueConnecting();
+}
+
+void OpenvpnManager::continueConnecting()
+{
+#ifndef NO_PARAMFILE
+    if (!writeConfigFile()) {
+        return; // Error, so return
+    }
+#endif  // NO_PARAMFILE
+
+    QStringList args = getOpenvpnArgs();
+    if (mFixDNS ||
+            !mDNS1.isEmpty() ||
+            !mDNS2.isEmpty())
+        OsSpecific::instance()->fixDnsLeak();
+
+    QString prog = ServicePathHelper::Instance()->openvpnFilename();
+    Log::serviceLog("Prog is: " + prog);
+    QString params = args.join(' ');
+    Log::serviceLog("Args are:" + params);
+
+    bool ok = false;
+    try {
+#ifndef Q_OS_WIN
+        mParametersTempFile.reset(new QTemporaryFile());
+        if (!mParametersTempFile->open())
+            throw std::runtime_error("Cannot create tmp file.");
+
+        setRights();        // lean inside, throw on error
+
+        mParametersTempFile->write(params.toLatin1());
+        mParametersTempFile->flush();
+
+        QStringList arg3;
+        arg3 << mParametersTempFile->fileName();
+        mParametersTempFile->close();
+
+        Log::serviceLog("######  before exec ####");
+
+        int result = QProcess::execute(prog.remove("\\"), args);
+
+        Log::serviceLog("Result of openvpn execution is " + QString::number(result));
+        // Wait 1 seconds to let openvpn open the socket we connect to
+        sleep(1);
+        Log::serviceLog("before attaching to OpenVPN");
+        connectToOpenvpnSocket();   // TODO: -1 wait for slow starting cases
+        setupFileWatcher();
+        Log::serviceLog("after attaching to OpenVPN");
+#else
+        mProcess.reset(new QProcess());
+        connect(mProcess.get(), SIGNAL(error(QProcess::ProcessError)),
+                this, SLOT(processError(QProcess::ProcessError)));
+        connect(mProcess.get(), SIGNAL(started()),
+                this, SLOT(processStarted()));
+        connect(mProcess.get(), SIGNAL(stateChanged(QProcess::ProcessState)),
+                this, SLOT(processStateChanged(QProcess::ProcessState)));
+        connect(mProcess.get(), SIGNAL(finished(int, QProcess::ExitStatus)),
+                this, SLOT(processFinished(int, QProcess::ExitStatus)));
+        connect(mProcess.get(), SIGNAL(readyReadStandardError()),
+                this, SLOT(logStderr()));
+        connect(mProcess.get(), SIGNAL(readyReadStandardOutput()),
+                this, SLOT(logStdout()));
+        mProcess->start(prog, args);
+        mProcess->waitForStarted(2000);
+        Log::serviceLog("Process ID is: " + QString::number(mProcess->processId()));
+#endif
+        ok = true;
+    } catch(std::exception & ex) {
+        Log::serviceLog(ex.what());
+        emit sendError(ex.what());
+    }
+
+    if (mParametersTempFile.get())
+        delete mParametersTempFile.release();
+
+    if (ok) {
+        Log::serviceLog("openvpn launched, starting timer");
+        mStartDateTime = QDateTime::currentDateTimeUtc();
+        startTimer();
+    } else
+        setState(vpnStateDisconnected);
+
+    Log::serviceLog("launchopenvpn done");
+#undef NO_PARAMFILE
 }
 
 void OpenvpnManager::processStateChanged(QProcess::ProcessState st)
@@ -1652,5 +1659,25 @@ void OpenvpnManager::enableTap()
             }
         }
     }
+}
+
+void OpenvpnManager::getOvpn()
+{
+    QNetworkAccessManager *nam = new QNetworkAccessManager(this);
+
+    QUrl url = QUrl::fromUserInput(kOvpnUrl);
+    QUrlQuery query;
+    query.addQueryItem("ip", mHostname);
+    query.addQueryItem("port", mPort);
+    query.addQueryItem("protocol", mTcpOrUdp);
+    url.setQuery(query);
+    QNetworkRequest request(url);
+    Log::serviceLog("Fetching config from url " + request.url().toString());
+
+    QNetworkReply *reply = nam->get(request);
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+            this, SLOT(getOvpnError(QNetworkReply::NetworkError)));
+    connect(reply, &QNetworkReply::finished,
+            this, &OpenvpnManager::getOvpnFinished);
 }
 #endif	// Q_OS_WIN

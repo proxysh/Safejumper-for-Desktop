@@ -36,9 +36,6 @@ static const QString kNotificationsKey = "notifications";
 static const QString kEncryptionKey = "encryption";
 static const QString kLanguageKey = "language";
 
-std::vector<QString> Setting::mProtocols[ENCRYPTION_COUNT];
-std::vector<int> Setting::mPorts[ENCRYPTION_COUNT];
-
 Setting::Setting()
     :mTesting(false)
 {
@@ -697,12 +694,12 @@ int Setting::serverID()
 
 QString Setting::port()
 {
-    int ix = currentProtocol();
     int p = 80;
+    int ix = currentProtocol();
     int enc = encryption();
-    std::vector<int> & v_ports = mPorts[enc];
-    if (ix > -1 && ix < (int)v_ports.size())
-        p = v_ports.at(ix);
+    QList<int> portnumbers = mPortumbersByEncryption.value(enc);
+    if (ix > -1 && ix < portnumbers.size())
+        p = portnumbers.at(ix);
     return QString::number(p);
 }
 
@@ -711,8 +708,8 @@ int Setting::determineNextPort()
     int ix = currentProtocol();
     ++ix;
     int enc = encryption();
-    std::vector<int> & v_ports = mPorts[enc];
-    if (ix >= (int)v_ports.size())
+    QList<int> portnumbers = mPortumbersByEncryption.value(enc);
+    if (ix >= portnumbers.size())
         ix = 0;
     return ix;
 }
