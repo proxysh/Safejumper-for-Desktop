@@ -18,6 +18,7 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
+import QtGraphicalEffects 1.0
 
 Rectangle {
     id: menuPage
@@ -27,7 +28,48 @@ Rectangle {
     signal settingsClicked();
     signal logoutClicked();
 
+    property bool blur: false
+
+    function showPopup(component)
+    {
+        blur = true;
+        component.visible = true;
+    }
+
+    function hidePopup(component)
+    {
+        blur = false;
+        component.visible = false;
+    }
+
+    FastBlur {
+        id: blurItem
+        source: menuColumn
+        radius: 32
+        anchors.fill: parent
+        z: 10
+        visible: blur
+    }
+
+    LogsPopup {
+        id: logsPopup
+        visible: false
+        z: 20
+
+        onCopy: {
+            // Copy logs content to clipboard
+            hidePopup(logsPopup);
+            mainwindow.copyLogsToClipboard();
+        }
+
+        onCancel: {
+            hidePopup(logsPopup);
+        }
+
+    }
+
     Column {
+        id: menuColumn
         anchors.fill: parent
 
         Item {
@@ -73,18 +115,21 @@ Rectangle {
             buttonText: qsTr("Server List");
         }
 
-        MenuButton {
-            id: notificationsButton
-            buttonIcon: "../images/notification.png"
-            hoverButtonIcon: "../images/notification-hover.png"
-            buttonText: qsTr("Notifications");
-        }
+//        MenuButton {
+//            id: notificationsButton
+//            buttonIcon: "../images/notification.png"
+//            hoverButtonIcon: "../images/notification-hover.png"
+//            buttonText: qsTr("Notifications");
+//        }
 
         MenuButton {
             id: logsButton
             buttonIcon: "../images/list.png"
             hoverButtonIcon: "../images/list-hover.png"
             buttonText: qsTr("Show Logs");
+            onClicked: {
+                showPopup(logsPopup);
+            }
         }
 
         MenuButton {

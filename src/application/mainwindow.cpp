@@ -28,12 +28,14 @@
 #include "trayiconmanager.h"
 #include "vpnservicemanager.h"
 
+#include <QClipboard>
 #include <QDesktopServices>
 #include <QHttpMultiPart>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QTextStream>
 
 MainWindow::MainWindow() :
     QQuickView(),
@@ -138,7 +140,28 @@ void MainWindow::showFeedback()
 
 void MainWindow::showConnection()
 {
-//    ui->stackedWidget->setCurrentIndex(kConnectionPage);
+    //    ui->stackedWidget->setCurrentIndex(kConnectionPage);
+}
+
+const QString MainWindow::logsContent() const
+{
+    QString retval;
+    QFile f(PathHelper::Instance()->applicationLogFilename());
+    if (!f.open(QFile::ReadOnly | QFile::Text))
+        return retval;
+
+    QTextStream in(&f);
+    retval = in.readAll();
+
+    f.close();
+    return retval;
+}
+
+void MainWindow::copyLogsToClipboard() const
+{
+    QString logText = logsContent();
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText(logText);
 }
 
 QPointer<MainWindow> MainWindow::mInstance;

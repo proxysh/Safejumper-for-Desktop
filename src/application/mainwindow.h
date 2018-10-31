@@ -30,6 +30,9 @@ class QProgressDialog;
 class MainWindow : public QQuickView
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString logscontent READ logsContent)
+
 public:
 
     ~MainWindow();
@@ -39,6 +42,10 @@ public:
 
     void showFeedback();
     void showConnection();
+
+    const QString logsContent() const;
+
+    Q_INVOKABLE void copyLogsToClipboard() const;
 
 public slots:
     void portDialogResult(bool cyclePort);
