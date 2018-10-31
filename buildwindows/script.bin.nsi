@@ -9,7 +9,7 @@ Page instfiles "" "" ""
 Page custom ""  ""
 
 !define VERSION         "1.0"
-!define BUILD             "94"
+!define BUILD             "1"
 
 Section main
 
