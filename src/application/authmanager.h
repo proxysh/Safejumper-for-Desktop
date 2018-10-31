@@ -94,7 +94,7 @@ public:
     const QString & newIP();
     const QString & oldIP();
 
-    const QList<int> & currentEncryptionServers();		// return IDs of servers inside _servers available for this encryption
+    const QList<int> currentEncryptionServers();		// return IDs of servers inside _servers available for this encryption
     const QList<int> & currentEncryptionHubs();					// return IDs of habs inside _servers
 
     const std::vector<std::pair<bool, int> > & getLevel0();		// <is hub, hub id / srv id>
@@ -200,7 +200,6 @@ private:
     bool mSeeded;
     void seed();
 
-    QList<int> mServerIds[ENCRYPTION_COUNT];		// IDs inside _servers available for each encryption
     QList<AServer*> mHubs;
     QList<int> mHubIds[ENCRYPTION_COUNT];		// IDs of hubs inside _servers available for each encryption		// _hub_ids[0] the same as _HubToServer
     std::vector<std::pair<bool, int> > mLevel0;		// <is hub, hub id / srv id>
@@ -235,7 +234,6 @@ private:
     void clearReply();
     QPointer<QNetworkReply> mUpdateReply;
 
-    QList<size_t> mPings;		// ping for each server; -1 on err
     std::vector<int> getPings(const std::vector<size_t> & toping);	// from _pings; do not wait for pings; return vec of the same size
     std::queue<size_t> mToPing;				// id inside _servers
     bool mPingsLoaded;

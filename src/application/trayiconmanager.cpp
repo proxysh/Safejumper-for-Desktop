@@ -390,7 +390,7 @@ void TrayIconManager::constructConnectToMenu()
         if (am->loggedIn()) {
             clearConnectToMenu();
 
-            if (mConnectToMenu.get() == NULL) {	// one time during entire program run
+            if (mConnectToMenu.get() == nullptr) {	// one time during entire program run
                 mConnectToMenu.reset(mTrayIconMenu->addMenu("Connect to ..."));
                 mTrayIconMenu->removeAction(mConnectToAction.get());
                 mTrayIconMenu->insertMenu(mDisconnectAction.get(), mConnectToMenu.get());
@@ -398,6 +398,7 @@ void TrayIconManager::constructConnectToMenu()
 //            if (Setting::instance()->showNodes() || Setting::instance()->encryption() >= ENCRYPTION_ECC) {
                 // Use list of servers instead of hubs for ECC and ECC_XOR
                 const QList<int> &servers = am->currentEncryptionServers();
+                qDebug() << "current encryption servers list has size " << servers.size();
                 for (int k = 0; k < servers.size(); ++k) {
                     AServer *server = am->getServer(servers.at(k));
                     createMenuItem(mConnectToMenu.get(), server->name(), servers.at(k));

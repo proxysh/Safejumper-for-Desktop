@@ -121,6 +121,7 @@ Rectangle {
         }
         onLogsScreen: {
             // Show logs popup
+            showPopup(logsPopup);
         }
     }
 
@@ -164,6 +165,9 @@ Rectangle {
                 authmanager.logout();
                 stack.push(loginPage);
             }
+            onLogsClicked: {
+                showPopup(logsPopup);
+            }
         }
     }
 
@@ -194,6 +198,22 @@ Rectangle {
             objectName: "signupPage"
             onCloseClicked: { stack.pop(); }
 
+        }
+    }
+
+    LogsPopup {
+        id: logsPopup
+        visible: false
+        z: 20
+
+        onCopy: {
+            // Copy logs content to clipboard
+            hidePopup(logsPopup);
+            mainwindow.copyLogsToClipboard();
+        }
+
+        onCancel: {
+            hidePopup(logsPopup);
         }
     }
 

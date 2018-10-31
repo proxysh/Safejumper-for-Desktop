@@ -319,10 +319,10 @@ void AuthManager::loginNetworkError(QNetworkReply::NetworkError error)
     emit loginError(QString("Network error logging in: %1").arg(reply->errorString()));
 }
 
-const QList<int> &AuthManager::currentEncryptionServers()
+const QList<int> AuthManager::currentEncryptionServers()
 {
     int enc = Setting::instance()->encryption();
-    return mServerIds[enc];
+    return mServersModel->serversForEncryption(enc);
 }
 
 const QList<int> &AuthManager::currentEncryptionHubs()
@@ -477,8 +477,8 @@ int AuthManager::serverIxFromName(const QString & srv)
 int AuthManager::pingFromServerIx(int srv)
 {
     int pn = -1;
-    if (srv > -1 && srv < mPings.size())
-        pn = mPings.at(srv);
+    if (srv > -1 && srv < mServersModel->count())
+        pn = mServersModel->server(srv)->ping();
     return pn;
 }
 
@@ -490,7 +490,6 @@ void AuthManager::clearServerLists()
     mHubToServer.clear();
     mServerIdToHubId.clear();
     mServerNameToId.clear();
-    mPings.clear();
 }
 
 void AuthManager::clearReply()
@@ -1071,9 +1070,6 @@ QString AuthManager::processLoginResult()
 void AuthManager::pingAllServers()
 {
     Log::logt("pingAllServers called");
-    // Fill mPings with as many -1 entries as there are servers
-    while (mPings.size() < mServersModel->count())
-        mPings.append(-1);
     for (int k = 0; k < mServersModel->count(); ++k)
         mToPing.push(k);
 
@@ -1146,7 +1142,7 @@ void AuthManager::pingError(size_t idWaiter)
     mTimers.at(idWaiter)->stop();
     int p = extractPing(*mWorkers.at(idWaiter));
 //      Log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process error, extracted ping: " + QString::number(p));
-    mPings[mInProgress.at(idWaiter)] = p;
+    mServersModel->setPing(mInProgress.at(idWaiter), p);
     startWorker(idWaiter);
 }
 
@@ -1156,7 +1152,7 @@ void AuthManager::pingTerminated(size_t idWaiter)
     mWorkers.at(idWaiter)->terminate();
     int p = extractPing(*mWorkers.at(idWaiter));
 //      Log::logt(_servers.at(_inprogress.at(idWaiter)).address + " ping process terminated, extracted ping: " + QString::number(p));
-    mPings[mInProgress.at(idWaiter)] = p;
+    mServersModel->setPing(mInProgress.at(idWaiter), p);
     startWorker(idWaiter);
 }
 
@@ -1172,15 +1168,11 @@ std::vector<int> AuthManager::getPings(const std::vector<size_t> & toping)
 {
     std::vector<int> v;
     v.assign(toping.size(), -1);
-    if (mPings.empty())
-        Log::logt("GetPings(): Empty pings collection");
-    else {
-        for (size_t k = 0; k < toping.size(); ++k) {
-            if (toping.at(k) >= (size_t)mPings.size())
-                Log::logt("GetPings(): Server id greater than size of pings coll");
-            else
-                v.at(k) = mPings.at(toping.at(k));
-        }
+    for (size_t k = 0; k < toping.size(); ++k) {
+        if (toping.at(k) >= mServersModel->count())
+            Log::logt("GetPings(): Server id greater than size of pings coll");
+        else
+            v.at(k) = mServersModel->server(toping.at(k))->ping();
     }
     return v;
 }
@@ -1207,9 +1199,10 @@ int AuthManager::getServerToJump()
     if (Setting::instance()->showNodes()) {
         Log::logt("showNodes is set, so getting pings of all servers");
         // jump to server
-        for (int k = 0; k < mServerIds[enc].size(); ++k) {
-            if (mServerIds[enc].at(k) != prev)
-                toping.push_back(mServerIds[enc].at(k));
+        QList<int> servers = mServersModel->serversForEncryption(enc);
+        for (int k = 0; k < servers.size(); ++k) {
+            if (servers.at(k) != prev)
+                toping.push_back(servers.at(k));
         }
     } else {
         // jump to hub

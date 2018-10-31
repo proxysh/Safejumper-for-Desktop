@@ -36,6 +36,7 @@ class VPNServiceManager : public QObject
     Q_PROPERTY(QString stateColor READ stateColor NOTIFY vpnStateChanged)
     Q_PROPERTY(QString stateWord READ stateWord NOTIFY vpnStateChanged)
     Q_PROPERTY(QString stateDot READ stateDot NOTIFY vpnStateChanged)
+    Q_PROPERTY(QString stateMapSuffix READ stateMapSuffix NOTIFY vpnStateChanged)
     Q_PROPERTY(int vpnState READ state NOTIFY vpnStateChanged)
 
 public:
@@ -54,6 +55,7 @@ public:
     const QString stateWord() const;
     // Which dot image to use for the current state
     const QString stateDot() const;
+    const QString stateMapSuffix() const;
 
 signals:
     /*!

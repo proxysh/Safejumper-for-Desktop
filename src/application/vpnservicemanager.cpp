@@ -485,6 +485,29 @@ const QString VPNServiceManager::stateDot() const
     return retval;
 }
 
+const QString VPNServiceManager::stateMapSuffix() const
+{
+    QString retval = "-NotConnected.png";
+
+    switch (mState) {
+    case vpnStateConnected:
+        retval = "-Connected.png";
+        break;
+
+    case vpnStateConnecting:
+        retval = "-Connecting.png";
+        break;
+
+    case vpnStateDisconnected:
+    default:
+        break;
+    }
+
+    qDebug() << "stateMapSuffix is " << retval;
+
+    return retval;
+}
+
 void VPNServiceManager::tryNextPort()
 {
     if (mChangingPorts)

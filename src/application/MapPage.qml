@@ -39,7 +39,14 @@ Item {
         currentServer = serversModel.server(settings.server)
         var iso = currentServer.iso
         currentServerCard.currentServer = currentServer;
-        background.source = "../maps/" + iso + "-NotConnected.png"
+        background.source = "../maps/" + iso + vpnservicemanager.stateMapSuffix
+    }
+
+    function stateChanged()
+    {
+        currentServer = serversModel.server(settings.server)
+        var iso = currentServer.iso
+        background.source = "../maps/" + iso + vpnservicemanager.stateMapSuffix
     }
 
     Connections {
@@ -56,6 +63,13 @@ Item {
         }
     }
 
+    Connections {
+        target: vpnservicemanager
+        onVpnStateChanged: {
+            stateChanged();
+        }
+    }
+
     HeaderBar {
         onSettingsClicked: { mapPage.settingsClicked(); }
         onMenuClicked: { mapPage.menuClicked(); }
@@ -66,7 +80,7 @@ Item {
         z: -1
         anchors.top: headerArea.top - 55
         anchors.left: parent.left
-        source: "../maps/" + serversModel.server(settings.server).iso + "-NotConnected.png"
+        source: "../maps/" + serversModel.server(settings.server).iso + vpnservicemanager.stateMapSuffix
     }
 
     Column {

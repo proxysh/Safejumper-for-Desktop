@@ -178,3 +178,14 @@ void ServersModel::setPing(int index, int ping)
     if (index >= 0 && index < mServers.size())
         mServers.at(index)->setPing(ping);
 }
+
+QList<int> ServersModel::serversForEncryption(int encryption)
+{
+    // Shieldtra all servers are for all encryption types, so just return
+    // the same list here
+    QList<int> ids;
+    for (int i = 0; i < mServers.count(); ++i)
+        ids << i;
+
+    return ids;
+}

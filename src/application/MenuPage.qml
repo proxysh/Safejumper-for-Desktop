@@ -27,46 +27,7 @@ Rectangle {
     signal closeClicked();
     signal settingsClicked();
     signal logoutClicked();
-
-    property bool blur: false
-
-    function showPopup(component)
-    {
-        blur = true;
-        component.visible = true;
-    }
-
-    function hidePopup(component)
-    {
-        blur = false;
-        component.visible = false;
-    }
-
-    FastBlur {
-        id: blurItem
-        source: menuColumn
-        radius: 32
-        anchors.fill: parent
-        z: 10
-        visible: blur
-    }
-
-    LogsPopup {
-        id: logsPopup
-        visible: false
-        z: 20
-
-        onCopy: {
-            // Copy logs content to clipboard
-            hidePopup(logsPopup);
-            mainwindow.copyLogsToClipboard();
-        }
-
-        onCancel: {
-            hidePopup(logsPopup);
-        }
-
-    }
+    signal logsClicked();
 
     Column {
         id: menuColumn
@@ -128,7 +89,7 @@ Rectangle {
             hoverButtonIcon: "../images/list-hover.png"
             buttonText: qsTr("Show Logs");
             onClicked: {
-                showPopup(logsPopup);
+                menpPage.logsClicked();
             }
         }
 

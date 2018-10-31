@@ -57,6 +57,8 @@ public:
 
     void setPing(int index, int ping);
 
+    QList<int> serversForEncryption(int encryption);
+
 private:
     QList<AServer*> mServers;
 };
