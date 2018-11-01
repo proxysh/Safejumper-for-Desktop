@@ -323,6 +323,10 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
+                    // Select this server if it's not the current server
+                    if (settings.server != currentServer.id)
+                        settings.server = currentServer.id;
+
                     screen.connectToVPN();
                 }
             }

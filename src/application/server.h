@@ -34,6 +34,7 @@ class AServer: public QObject {
     Q_PROPERTY(int load READ load WRITE setLoad NOTIFY loadChanged)
     Q_PROPERTY(int ping READ ping WRITE setPing NOTIFY pingChanged)
     Q_PROPERTY(bool favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
+    Q_PROPERTY(int id READ id)
 
 public:
     AServer();
@@ -66,6 +67,9 @@ public:
     void setPing(int ping);
     int ping() const;
 
+    void setId(int id);
+    int id() const;
+
 signals:
     void nameChanged();
     void addressChanged();
@@ -87,6 +91,7 @@ private:
     int mLoad;       // double
     bool mFavorite;
     int mPing;
+    int mId;
 };
 
 #endif // COMMON_H

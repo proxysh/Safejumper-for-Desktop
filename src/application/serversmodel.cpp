@@ -116,8 +116,10 @@ void ServersModel::updateServers(const QJsonArray &servers)
     QStringList xorPortsList;
     QList<int> xorPortNumbersList;
 
+    int id = 0;
     Q_FOREACH(const QJsonValue &server, servers) {
         AServer *newServer = new AServer();
+        newServer->setId(id);
         newServer->setIP(server.toObject().value("ip").toString());
         newServer->setName(server.toObject().value("name").toString());
         newServer->setAddress(server.toObject().value("hostname").toString());
@@ -152,6 +154,7 @@ void ServersModel::updateServers(const QJsonArray &servers)
         newServer->setFavorite(Setting::instance()->favorites().contains(newServer->address()));
         newServer->setPing(-1);
         mServers.append(newServer);
+        ++id;
     }
 
     Setting::instance()->setEncryptionPorts(ENCRYPTION_TLSCRYPT, tlsPortsList, tlsPortNumbersList);

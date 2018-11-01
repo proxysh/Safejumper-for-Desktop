@@ -133,3 +133,13 @@ int AServer::ping() const
 {
     return mPing;
 }
+
+void AServer::setId(int id)
+{
+    mId = id;
+}
+
+int AServer::id() const
+{
+    return mId;
+}
