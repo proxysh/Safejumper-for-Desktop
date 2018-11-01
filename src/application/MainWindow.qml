@@ -42,12 +42,14 @@ Rectangle {
     {
         screen.blur = true;
         component.visible = true;
+        console.log("mainwindow showPopup called with component " + component);
     }
 
     function hidePopup(component)
     {
         screen.blur = false;
         component.visible = false;
+        console.log("mainwindow hidePopup called with component " + component);
     }
 
     function showLogin()
@@ -90,28 +92,46 @@ Rectangle {
     }
 
     ConfirmationPopup {
-        id: exitConfirmation
-        title: qsTr("Exit");
-        subtitle: qsTr("Would you like to shut Shieldtra down?");
+        id: logoutConfirmation
+        title: qsTr("Logout");
+        subtitle: qsTr("Would you like to log out?");
         confirmText: qsTr("CONFIRM");
-        cancelText: qsTr("CANCEL");
         visible: false
         z: 20
 
         onConfirm: {
-            hidePopup(exitConfirmation);
+            screen.hidePopup(logoutConfirmation);
+            authmanager.logout();
+            stack.push(loginPage);
+        }
+
+        onCancel: {
+            screen.hidePopup(logoutConfirmation);
+        }
+    }
+
+    ConfirmationPopup {
+        id: exitConfirmation
+        title: qsTr("Exit");
+        subtitle: qsTr("Would you like to shut Shieldtra down?");
+        confirmText: qsTr("CONFIRM");
+        visible: false
+        z: 20
+
+        onConfirm: {
+            screen.hidePopup(exitConfirmation);
             mainwindow.shutDown();
         }
 
         onCancel: {
-            hidePopup(exitConfirmation);
+            screen.hidePopup(exitConfirmation);
         }
 
     }
 
     Connections {
         target: mainwindow
-        onConfirmExit: { showPopup(exitConfirmation); }
+        onConfirmExit: { screen.showPopup(exitConfirmation); }
         onLogout: {
             showLogin();
         }
@@ -133,7 +153,7 @@ Rectangle {
         }
         onLogsScreen: {
             // Show logs popup
-            showPopup(logsPopup);
+            screen.showPopup(logsPopup);
         }
     }
 
@@ -177,11 +197,10 @@ Rectangle {
             onCloseClicked: { stack.pop(); }
             onSettingsClicked: { stack.push(settingsPage); }
             onLogoutClicked: {
-                authmanager.logout();
-                stack.push(loginPage);
+                screen.showPopup(logoutConfirmation);
             }
             onLogsClicked: {
-                showPopup(logsPopup);
+                screen.showPopup(logsPopup);
             }
         }
     }
@@ -192,8 +211,7 @@ Rectangle {
             objectName: "settingsPage"
             onCloseClicked: { stack.pop(); }
             onLogoutClicked: {
-                authmanager.logout();
-                stack.push(loginPage);
+                screen.showPopup(logoutConfirmation);
             }
         }
     }
@@ -223,12 +241,12 @@ Rectangle {
 
         onCopy: {
             // Copy logs content to clipboard
-            hidePopup(logsPopup);
+            screen.hidePopup(logsPopup);
             mainwindow.copyLogsToClipboard();
         }
 
         onCancel: {
-            hidePopup(logsPopup);
+            screen.hidePopup(logsPopup);
         }
     }
 
@@ -239,7 +257,7 @@ Rectangle {
         z: 20
 
         onCancel: {
-            hidePopup(errorPopup);
+            screen.hidePopup(errorPopup);
         }
     }
 
