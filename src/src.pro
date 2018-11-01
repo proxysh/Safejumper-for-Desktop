@@ -49,7 +49,7 @@ SUBDIRS += \
     # codesigner.commands += $(COPY_DIR) $$shell_quote($${OUT_PWD}/$${APPNAME}.dSYM) $$shell_quote($${OUT_PWD}/$${APPNAME}/Contents/MacOS/$${APPNAME}.dSYM);
 
     # deploy qt dependencies
-    codesigner.commands += macdeployqt $$shell_quote($${OUT_PWD}/application/$${APPNAME}) -always-overwrite -codesign=$${CERTSHA1};
+    codesigner.commands += macdeployqt $$shell_quote($${OUT_PWD}/application/$${APPNAME}) -qmldir=../src/application -always-overwrite -codesign=$${CERTSHA1};
 
     # set the modification and access times of files
     codesigner.commands += touch -c $$shell_quote($${OUT_PWD}/application/$${APPNAME});
