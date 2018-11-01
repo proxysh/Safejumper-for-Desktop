@@ -328,5 +328,6 @@
         <file>roundflags/ZA.png</file>
         <file>roundflags/ZM.png</file>
         <file>roundflags/ZW.png</file>
+        <file>images/down-arrow.png</file>
     </qresource>
 </RCC>

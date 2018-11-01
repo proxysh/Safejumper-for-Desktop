@@ -32,6 +32,12 @@ Rectangle {
 
     property bool blur: false
 
+    ListModel {
+        id: encryptionModel
+        ListElement { name: "TLSCrypt" }
+        ListElement { name: "TLSCrypt+XOR" }
+    }
+
     function showPopup(component)
     {
         screen.blur = true;

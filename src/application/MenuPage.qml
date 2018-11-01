@@ -89,7 +89,7 @@ Rectangle {
             hoverButtonIcon: "../images/list-hover.png"
             buttonText: qsTr("Show Logs");
             onClicked: {
-                menpPage.logsClicked();
+                menuPage.logsClicked();
             }
         }
 

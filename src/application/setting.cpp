@@ -36,6 +36,8 @@ static const QString kNotificationsKey = "notifications";
 static const QString kEncryptionKey = "encryption";
 static const QString kLanguageKey = "language";
 static const QString kFavoritesKey = "favorites";
+static const QString kServerEncryptionKey = "serverEncryption%1";
+static const QString kServerProtocolKey = "serverProtocol%1-%2";
 
 Setting::Setting()
     :mTesting(false)
@@ -509,6 +511,15 @@ QStringList Setting::currentEncryptionPorts()
     return mPortsByEncryption.value(enc);
 }
 
+QStringList Setting::portsForEncryption(int encryptionType) const
+{
+    if (encryptionType >= 0 && encryptionType < ENCRYPTION_COUNT)
+        return mPortsByEncryption.value(encryptionType);
+    else
+        Log::logt(QString("ports for invalid encryption type %1 requested").arg(encryptionType));
+    return mPortsByEncryption.value(0);
+}
+
 int Setting::language()
 {
     return mSettings.value(kLanguageKey, languageEnglish).toInt();
@@ -560,6 +571,52 @@ void Setting::removeFavorite(const QString &url)
     QStringList favoriteUrls = favorites();
     favoriteUrls.removeAll(url);
     mSettings.setValue(kFavoritesKey, favoriteUrls.join("|"));
+}
+
+int Setting::serverEncryption(const QString &serverAddress)
+{
+    if (mSettings.contains(kServerEncryptionKey.arg(serverAddress)))
+        return mSettings.value(kServerEncryptionKey.arg(serverAddress)).toInt();
+    else
+        return encryption();
+}
+
+void Setting::setServerEncryption(const QString &serverAddress, int encryption)
+{
+    qDebug() << "setServerEncryption called with address " << serverAddress
+             << " and encryption " << encryption;
+    mSettings.setValue(kServerEncryptionKey.arg(serverAddress), encryption);
+}
+
+int Setting::serverProtocol(const QString &serverAddress, int encryption)
+{
+    if (mSettings.contains(kServerProtocolKey.arg(serverAddress).arg(encryption)))
+        return mSettings.value(kServerProtocolKey.arg(serverAddress).arg(encryption)).toInt();
+    else
+        return currentProtocol();
+}
+
+void Setting::setServerProtocol(const QString &serverAddress, int encryption, int protocol)
+{
+    mSettings.setValue(kServerProtocolKey.arg(serverAddress).arg(encryption), protocol);
+}
+
+QString Setting::portNumber(int encryptionType, int protocol)
+{
+    int p = 80;
+    QList<int> portnumbers = mPortumbersByEncryption.value(encryptionType);
+    if (protocol > -1 && protocol < portnumbers.size())
+        p = portnumbers.at(protocol);
+    return QString::number(p);
+}
+
+QString Setting::tcpOrUdp(int encryptionType, int protocol)
+{
+    QString description = mPortsByEncryption.value(encryptionType).at(protocol);
+    if (description.contains("udp", Qt::CaseInsensitive))
+        return "udp";
+    else
+        return "tcp";
 }
 
 QString Setting::EncryptionIx()

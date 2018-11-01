@@ -227,12 +227,16 @@ void VPNServiceManager::sendConnectToVPNRequest()
 
         Log::logt("Sending command 'connectToVPN'");
 
+        QString currentServerAddress = AuthManager::instance()->getServer(Setting::instance()->serverID())->address();
+        int encryption = Setting::instance()->serverEncryption(currentServerAddress);
+        int protocol = Setting::instance()->serverProtocol(currentServerAddress, encryption);
+
         jObj["cmd"] = cmdStart;
-        jObj["encryption"] = Setting::instance()->encryption();
+        jObj["encryption"] = encryption;
         jObj["server"] = Setting::instance()->serverAddress();
-        jObj["port"] = Setting::instance()->port();
+        jObj["port"] = Setting::instance()->portNumber(encryption, protocol);
         jObj["localport"] = Setting::instance()->localPort();
-        jObj["tcporudp"] = Setting::instance()->tcpOrUdp();
+        jObj["tcporudp"] = Setting::instance()->tcpOrUdp(encryption, protocol);
         jObj["disableIPV6"] = Setting::instance()->disableIPv6();
         jObj["fixDNS"] = Setting::instance()->fixDns();
 

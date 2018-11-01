@@ -174,6 +174,8 @@ public:
     void setEncryptionPorts(int encryptionType, QStringList ports, QList<int> portNumbers);
     QStringList currentEncryptionPorts();
 
+    Q_INVOKABLE QStringList portsForEncryption(int encryptionType) const;
+
     int language();
     void setLanguage(int language);
     QString currentLanguage();
@@ -183,6 +185,19 @@ public:
     const QStringList favorites() const;
     void addFavorite(const QString &url);
     void removeFavorite(const QString &url);
+
+    // Get server's encryption setting by it's hostname if stored.
+    // If this server has no encryption setting, just give the current default encryption
+    Q_INVOKABLE int serverEncryption(const QString &serverAddress);
+    Q_INVOKABLE void setServerEncryption(const QString &serverAddress, int encryption);
+
+    // Get server's protocol for given encryption type if any, otherwise get default protocol
+    Q_INVOKABLE int serverProtocol(const QString &serverAddress, int encryption);
+    // Set server's protocol for given encryption type
+    Q_INVOKABLE void setServerProtocol(const QString &serverAddress, int encryption, int protocol);
+
+    QString portNumber(int encryptionType, int protocol);
+    QString tcpOrUdp(int encryptionType, int protocol);
 
 signals:
     void showNodesChanged();

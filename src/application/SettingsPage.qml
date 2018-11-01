@@ -40,12 +40,6 @@ Item {
         component.visible = false;
     }
 
-    ListModel {
-        id: encryptionModel
-        ListElement { name: "TLSCrypt" }
-        ListElement { name: "TLSCrypt+XOR" }
-    }
-
     FastBlur {
         id: blurItem
         source: guiRectangle

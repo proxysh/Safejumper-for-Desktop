@@ -236,33 +236,66 @@ Rectangle {
             visible: showOptions
         }
 
-        RowLayout {
-            id: encryptionTypeRow
+        ComboBox {
+            id: encryptionBox
+            width: parent.width
             visible: showOptions
+            font.family: "Roboto-Medium"
+            font.pixelSize: 16
+            currentIndex: settings.serverEncryption(currentServer.address)
 
-            height: 58
-            width: parent.width - 40 // 20 px margin on both sides
-            anchors.horizontalCenter: parent.horizontalCenter
+            onActivated: {
+                settings.setServerEncryption(currentServer.address, index);
+            }
 
-            Column {
-                spacing: 0
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            model: encryptionModel
+
+            delegate: ItemDelegate {
+                      width: encryptionBox.width
+                      contentItem: Text {
+                          text: modelData
+                          font: encryptionBox.font
+                          elide: Text.ElideRight
+                          verticalAlignment: Text.AlignVCenter
+                      }
+                highlighted: encryptionBox.highlightedIndex === index
+            }
+
+            indicator: Image {
+                x: encryptionBox.width - width - encryptionBox.rightPadding
+                y: encryptionBox.topPadding + (encryptionBox.availableHeight - height) / 2
+                width: 10
+                height: 6
+                source: "../images/down-arrow.png"
+            }
+
+            contentItem: Column {
+                topPadding: 12
+                leftPadding: 20
+                rightPadding: encryptionBox.indicator.width + encryptionBox.spacing
+                spacing: 2
 
                 Text {
-                    text: qsTr("ENCRYPTION TYPE");
-                    font.family: "Roboto-Bold"
-                    font.bold: true
+                    font.family: "Roboto-Black"
                     font.pixelSize: 12
                     color: "#6C798F"
+                    text: qsTr("ENCRYPTION TYPE");
                 }
 
                 Text {
-                    text: serverEncryptionType
-                    font.family: "Roboto-Medium"
-                    font.pixelSize: 16
-                    color: "#172B4D"
-                }
+                     text: encryptionBox.displayText
+                     font: encryptionBox.font
+                     color: "#172B4D"
+                     verticalAlignment: Text.AlignVCenter
+                     elide: Text.ElideRight
+                 }
             }
+
+             background: Rectangle {
+                 implicitWidth: 120
+                 implicitHeight: 58
+                 color: "white"
+             }
         }
 
         Rectangle {
@@ -273,33 +306,66 @@ Rectangle {
             visible: showOptions
         }
 
-        RowLayout {
-            id: portRow
+        ComboBox {
+            id: portBox
+            width: parent.width
             visible: showOptions
+            font.family: "Roboto-Medium"
+            font.pixelSize: 16
+            currentIndex: settings.serverProtocol(currentServer.address, encryptionBox.currentIndex)
 
-            height: 58
-            width: parent.width - 40 // 20 px margin on both sides
-            anchors.horizontalCenter: parent.horizontalCenter
+            onActivated: {
+                settings.setServerProtocol(currentServer.address, encryptionBox.currentIndex, index);
+            }
 
-            Column {
-                spacing: 0
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            model: settings.portsForEncryption(encryptionBox.currentIndex)
+
+            delegate: ItemDelegate {
+                      width: portBox.width
+                      contentItem: Text {
+                          text: modelData
+                          font: portBox.font
+                          elide: Text.ElideRight
+                          verticalAlignment: Text.AlignVCenter
+                      }
+                highlighted: portBox.highlightedIndex === index
+            }
+
+            indicator: Image {
+                x: portBox.width - width - portBox.rightPadding
+                y: portBox.topPadding + (portBox.availableHeight - height) / 2
+                width: 10
+                height: 6
+                source: "../images/down-arrow.png"
+            }
+
+            contentItem: Column {
+                topPadding: 12
+                leftPadding: 20
+                rightPadding: portBox.indicator.width + portBox.spacing
+                spacing: 2
 
                 Text {
-                    text: qsTr("PORT NO");
-                    font.family: "Roboto-Bold"
-                    font.bold: true
+                    font.family: "Roboto-Black"
                     font.pixelSize: 12
                     color: "#6C798F"
+                    text: qsTr("PORT NO");
                 }
 
                 Text {
-                    text: serverPort
-                    font.family: "Roboto-Medium"
-                    font.pixelSize: 16
-                    color: "#172B4D"
-                }
+                     text: portBox.displayText
+                     font: portBox.font
+                     color: "#172B4D"
+                     verticalAlignment: Text.AlignVCenter
+                     elide: Text.ElideRight
+                 }
             }
+
+             background: Rectangle {
+                 implicitWidth: 120
+                 implicitHeight: 58
+                 color: "white"
+             }
         }
 
         Rectangle {
