@@ -1361,9 +1361,11 @@ void AuthManager::loginFinished()
     if (message.isEmpty()) {
         VPNServiceManager::instance()->sendCredentials();
         emit loggedInChanged();
-    }
-    else
+    } else {
+        if (Setting::instance()->autoconnect())
+            getDefaultServerList();
         emit loginError(message);
+    }
 }
 
 void AuthManager::createAccountError(QNetworkReply::NetworkError error)

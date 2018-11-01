@@ -68,6 +68,12 @@ Rectangle {
             vpnservicemanager.sendConnectToVPNRequest();
     }
 
+    function showError(message)
+    {
+        errorPopup.subtitle = message;
+        showPopup(errorPopup);
+    }
+
     FastBlur {
         id: blurItem
         source: stack
@@ -133,6 +139,9 @@ Rectangle {
         onLoggedInChanged: {
             if (authmanager.loggedIn && stack.currentItem.objectName == "loginPage")
                 stack.pop();
+        }
+        onLoginError: {
+            showError(message);
         }
     }
 
@@ -214,6 +223,17 @@ Rectangle {
 
         onCancel: {
             hidePopup(logsPopup);
+        }
+    }
+
+    ErrorPopup {
+        id: errorPopup
+        visible: false
+        title: qsTr("Error");
+        z: 20
+
+        onCancel: {
+            hidePopup(errorPopup);
         }
     }
 
