@@ -116,12 +116,12 @@ QString PathHelper::proxyshCaCertFilename()
 
 QString PathHelper::upScriptFilename()
 {
-    return resourcesPath() + QString("/client.up.%1.sh").arg(kLowerAppName);
+    return resourcesPath() + QString("/client.up.sh");
 }
 
 QString PathHelper::downScriptFilename()
 {
-    return resourcesPath() + QString("/client.down.%1.sh").arg(kLowerAppName);
+    return resourcesPath() + QString("/client.down.sh");
 }
 
 QString PathHelper::netDownFilename()

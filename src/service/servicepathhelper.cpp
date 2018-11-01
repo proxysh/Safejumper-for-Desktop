@@ -148,7 +148,7 @@ QString ServicePathHelper::upScriptFilename()
 #ifdef Q_OS_LINUX
     if (!mUseSystemdResolver)
 #endif
-        return resourcesPath() + QString("/client.up.%1.sh").arg(kLowerAppName);
+        return resourcesPath() + QString("/client.up.sh");
 #ifdef Q_OS_LINUX
     else
         return resourcesPath() + "/update-systemd-resolved";
@@ -160,7 +160,7 @@ QString ServicePathHelper::downScriptFilename()
 #ifdef Q_OS_LINUX
     if (!mUseSystemdResolver)
 #endif
-        return resourcesPath() + QString("/client.down.%1.sh").arg(kLowerAppName);
+        return resourcesPath() + QString("/client.down.sh");
 #ifdef Q_OS_LINUX
     else
         return resourcesPath() + "/update-systemd-resolved";
