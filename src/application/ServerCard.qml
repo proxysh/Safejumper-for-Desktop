@@ -57,16 +57,16 @@ Rectangle {
         if (expandable) {
             if (showOptions) {
                 showOptions = false;
+                showButton = false;
             } else {
                 showOptions = true;
+                showButton = true;
             }
-
-            serverCard.height = serverColumn.childrenRect.height + 20
         }
     }
 
     width: 335
-    height: serverColumn.childrenRect.height + 20 // 20px top margin
+    height: serverColumn.height + 20 // 20px top margin
     color: "white"
     radius: 5
 
@@ -75,6 +75,13 @@ Rectangle {
         horizontalOffset: 1
         verticalOffset: 1
         color: "#80000000"
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            toggleExpansion();
+        }
     }
 
     Column {
