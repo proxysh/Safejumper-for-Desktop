@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Shieldtra</string>
 	<key>CFBundleIconFile</key>
-	<string>safejumper.icns</string>
+	<string>application.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.shieldtra.Shieldtra</string>
 	<key>CFBundlePackageType</key>

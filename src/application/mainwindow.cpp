@@ -37,6 +37,10 @@
 #include <QQmlEngine>
 #include <QTextStream>
 
+#ifdef Q_OS_DARWIN
+#include "smjobbless.h"
+#endif
+
 MainWindow::MainWindow() :
     QQuickView(),
     mNam(nullptr),
@@ -47,6 +51,15 @@ MainWindow::MainWindow() :
     rootContext()->setContextProperty("settings", Setting::instance());
     rootContext()->setContextProperty("mainwindow", this);
     rootContext()->setContextProperty("vpnservicemanager", VPNServiceManager::instance());
+
+#ifdef Q_OS_DARWIN
+    bool helperInstalled = installPrivilegedHelperTool();
+
+    while (!helperInstalled) {
+        helperInstalled = installPrivilegedHelperTool();
+        usleep(100);
+    }
+#endif
 
     setSource(QUrl("qrc:/qml/MainWindow.qml"));
 

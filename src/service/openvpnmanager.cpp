@@ -1660,6 +1660,7 @@ void OpenvpnManager::enableTap()
         }
     }
 }
+#endif	// Q_OS_WIN
 
 void OpenvpnManager::getOvpn()
 {
@@ -1680,4 +1681,3 @@ void OpenvpnManager::getOvpn()
     connect(reply, &QNetworkReply::finished,
             this, &OpenvpnManager::getOvpnFinished);
 }
-#endif	// Q_OS_WIN
