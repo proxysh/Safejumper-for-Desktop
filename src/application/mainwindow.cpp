@@ -77,6 +77,7 @@ MainWindow::MainWindow() :
 
     setFlags(Qt::Dialog);
     setIcon(QIcon(":/images/logo.png"));
+    setTitle(kAppName);
 
     // Setting::Instance()->LoadServer();
     Setting::instance()->loadProtocol();

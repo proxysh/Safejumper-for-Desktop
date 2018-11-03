@@ -31,6 +31,7 @@ SUBDIRS += \
     organizer.commands += $(COPY) $$PWD/service/$${HELPERAPP_INFO} $$shell_quote($$OUT_PWD/application/$${APPNAME}/Contents/Resources);
     organizer.commands += $(COPY) $$PWD/service/$${HELPER_APP_LAUNCHD_INFO} $$shell_quote($$OUT_PWD/application/$${APPNAME}/Contents/Resources);
     organizer.commands += $(COPY) $$OUT_PWD/netdown/netdown $$shell_quote($$OUT_PWD/application/$${APPNAME}/Contents/Resources);
+    organizer.commands += $(COPY) $$PWD/languages/*.qm $$shell_quote($$OUT_PWD/application/$${APPNAME}/Contents/Resources);
 
     organizer.commands += sudo $(COPY) -r $$OUT_PWD/Resources/* $$RESOURCES_INST_DIR;
     organizer.commands += $(COPY) $$OUT_PWD/application.icns $$RESOURCES_INST_DIR;

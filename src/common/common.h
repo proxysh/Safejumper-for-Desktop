@@ -80,8 +80,18 @@ static QStringList kLanguageNames = {
 };
 
 const QStringList kLanguageTranslations = {
+#ifdef Q_OS_WIN
     "gui_en.qm",
     "gui_zh.qm"
+#else
+#ifdef Q_OS_DARWIN
+    "/Applications/Shieldtra.app/Contents/Resources/gui_en.qm",
+    "/Applications/Shieldtra.app/Contents/Resources/gui_zh.qm"
+#else
+    "/opt/shieldtra/gui_en.qm",
+    "/opt/shieldtra/gui_zh.qm"
+#endif
+#endif
 };
 
 enum vpnState {
