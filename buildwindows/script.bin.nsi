@@ -24,7 +24,6 @@ SectionIn RO
        
        File  libeay32.dll
        File  vcredist_x86.exe
-       File  proxysh.crt
        File  ssleay32.dll
        File  application.ico
        File  shieldtra.exe
