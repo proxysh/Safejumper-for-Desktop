@@ -124,8 +124,8 @@ void AuthManager::login(const QString & name, const QString & password)
     mReply = mNAM.post(request, postData.toString(QUrl::FullyEncoded).toUtf8());
     connect(mReply, SIGNAL(error(QNetworkReply::NetworkError)),
             this, SLOT(loginNetworkError(QNetworkReply::NetworkError)));
-    connect(mReply, &QNetworkReply::finished,
-            this, &AuthManager::loginFinished);
+    connect(mReply, SIGNAL(finished()),
+            this, SLOT(loginFinished()));
 
     if (Setting::instance()->rememberMe()) {
         Setting::instance()->setLogin(name);
@@ -257,8 +257,8 @@ void AuthManager::getDefaultServerList()
     mDefaultServerListReply = mNAM.get(request);
     connect(mDefaultServerListReply, SIGNAL(error(QNetworkReply::NetworkError)),
             this, SLOT(fetchServerListError(QNetworkReply::NetworkError)));
-    connect(mDefaultServerListReply, &QNetworkReply::finished,
-            this, &AuthManager::fetchServerListFinished);
+    connect(mDefaultServerListReply, SIGNAL(finished()),
+            this, SLOT(fetchServerListFinished()));
 }
 
 void AuthManager::nextFavorite()
@@ -703,8 +703,8 @@ void AuthManager::checkUpdates()
     if (!us.isEmpty()) {
         Log::logt(QString("Checking for updates from %1").arg(UPDATE_URL));
         mUpdateReply = mNAM.get(BuildRequest(QUrl(us)));
-        connect(mUpdateReply, &QNetworkReply::finished,
-                this, &AuthManager::processUpdatesXml);
+        connect(mUpdateReply, SIGNAL(finished()),
+                this, SLOT(processUpdatesXml()));
     }
 }
 
@@ -714,8 +714,8 @@ void AuthManager::getOldIP()
     Log::logt("StartDwnl_OldIp() attempt " + QString::number(mIPAttemptCount));
     static const QString us = "https://proxy.sh/ip.php";
     mIPReply = AuthManager::instance()->mNAM.get(BuildRequest(QUrl(us)));
-    connect(mIPReply, &QNetworkReply::finished,
-            this, &AuthManager::processOldIP);
+    connect(mIPReply, SIGNAL(finished()),
+            this, SLOT(processOldIP()));
 }
 
 //void AuthManager::getDns()

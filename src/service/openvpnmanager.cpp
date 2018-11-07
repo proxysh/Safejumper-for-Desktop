@@ -1359,9 +1359,6 @@ void OpenvpnManager::setRights()
 #endif		// Q_OS_DARWIN
 
 #ifdef Q_OS_LINUX
-    setChown(ServicePathHelper::Instance()->launchopenvpnFilename());
-    setChmod("777", ServicePathHelper::Instance()->launchopenvpnFilename());				// odrer is important
-
     setChown(ServicePathHelper::Instance()->netDownFilename());
     setChmod("777", ServicePathHelper::Instance()->netDownFilename());
 #endif

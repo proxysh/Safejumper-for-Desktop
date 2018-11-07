@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT	   += network xml core gui widgets quick
+QT	   += network xml core gui widgets qml quick
 
 TARGET = shieldtra
 APPNAME = Shieldtra
