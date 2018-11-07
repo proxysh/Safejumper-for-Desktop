@@ -1,0 +1,15 @@
+# shieldtra - Shieldtra VPN Service.
+#
+# This task runs shieldtra's service daemon.
+
+description	"Shieldtra service daemon"
+
+start on runlevel [2345]
+stop on shutdown
+expect daemon
+respawn
+
+script
+    exec /opt/shieldtra/shieldtraservice
+end script
+

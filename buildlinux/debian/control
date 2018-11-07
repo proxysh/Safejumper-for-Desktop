@@ -1,12 +1,12 @@
-Source: safejumper
+Source: shieldtra 
 Section: net
 Priority: extra
 Standards-Version: 3.9.3
 Maintainer: Jeremy Whiting <info@3monkeysinternational.com>
 Build-Depends: debhelper (>= 8.0.0) 
 
-Package: safejumper
+Package: shieldtra
 Depends: liblzo2-2, liblz4-1, libxcb-xinerama0, libxcb-render-util0, libxcb-icccm4, net-tools
 Architecture: any
-Description: VPN client for proxy_sh.
-  Safejumper is a lightweight OpenVPN client specifically designed for the Proxy.sh VPN network.
+Description: VPN client for Shieldtra.
+  Shieldtra is a lightweight OpenVPN client specifically designed for the Shieldtra VPN network.

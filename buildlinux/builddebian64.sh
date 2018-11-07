@@ -2,21 +2,18 @@
 # Run this script from the buildlinux folder to build a debian/ubuntu package
 qmake ../src
 make
-cp safejumper/safejumper linuxfiles
-cp service/safejumperservice linuxfiles
-cp launchopenvpn/launchopenvpn linuxfiles
+cp application/shieldtra linuxfiles
+cp service/shieldtraservice linuxfiles
 cp netdown/netdown linuxfiles
 cp openvpn64 linuxfiles/openvpn
-rm -fR linuxfiles/env
-cp -r env64 linuxfiles/env
 
-# Then the content of linuxfiles mostly goes into /opt/safejumper/.
+# Then the content of linuxfiles mostly goes into /opt/shieldtra/.
 
 # To package debian/ubuntu do the following:
 
-tar -zcpvf ../safejumper_$1_orig.tar.gz linuxfiles
+tar -zcpvf ../shieldtra_$1_orig.tar.gz linuxfiles
 cd ../
-tar -zxpvf safejumper_$1_orig.tar.gz
+tar -zxpvf shieldtra_$1_orig.tar.gz
 cp -r buildlinux/debian linuxfiles/
 cd linuxfiles
 dpkg-buildpackage -b -uc -us

@@ -1,9 +1,9 @@
 [Unit]
-Description=safejumper vpn daemon
+Description=shieldtra vpn daemon
 
 [Service]
 Type=forking
-ExecStart=/opt/safejumper/safejumperservice
+ExecStart=/opt/shieldtra/shieldtraservice
 Restart=on-failure
 
 [Install]
