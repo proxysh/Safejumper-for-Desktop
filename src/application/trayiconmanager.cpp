@@ -264,16 +264,16 @@ void TrayIconManager::stateChanged(vpnState st)
     switch (st) {
     case vpnStateDisconnected:
         updateActionsEnabled(false);
-        message = kAppName + " is Disconnected";
+        message = tr("You are disconnected from %1 VPN.").arg(kAppName);
         break;
     case vpnStateConnecting:
         updateActionsEnabled(true);
-        message = kAppName + " is Connecting";
+        message = tr("You are connecting to %1 VPN.").arg(kAppName);
         break;
     case vpnStateConnected:
         mJumpAction->setEnabled(true);
         mSwitchCountryAction->setEnabled(true);
-        message = kAppName + " is Connected";
+        message = tr("You are connected to %1 VPN.").arg(kAppName);
         break;
     default:
         break;
@@ -382,12 +382,14 @@ void TrayIconManager::createMenuItem(QMenu * m, const QString & name, size_t srv
 
 void TrayIconManager::constructConnectToMenu()
 {
+    qDebug() << "constructConnectToMenu called";
     if (Setting::instance()->testing())
         return;
 
     if (AuthManager::exists()) {
         AuthManager * am = AuthManager::instance();
         if (am->loggedIn()) {
+            qDebug() << "Logged in, so clearing connect to menu";
             clearConnectToMenu();
 
             if (mConnectToMenu.get() == nullptr) {	// one time during entire program run
@@ -445,9 +447,10 @@ void TrayIconManager::clearConnectToMenu()
     mHubMenus.clear();
 
     // destroy menu items
-    if (mConnectToMenu.get())
-        if (!mConnectToMenu->isEmpty())
-            mConnectToMenu->clear();			// delete actions
+    if (mConnectToMenu.get() && !mConnectToMenu->isEmpty()) {
+        qDebug() << "Clearing connect to menu";
+        mConnectToMenu->clear();			// delete actions
+    }
 }
 
 static void s_set_enabled(QAction * ac, bool enabled, const char * /*icon_word */)
