@@ -70,10 +70,10 @@ MainWindow::MainWindow() :
     // of the setting object
     languageChanged();
 
-    setMaximumHeight(755);
-    setMinimumHeight(755);
-    setMaximumWidth(375);
-    setMinimumWidth(375);
+    setMaximumHeight(604);
+    setMinimumHeight(604);
+    setMaximumWidth(300);
+    setMinimumWidth(300);
 
     setFlags(Qt::Dialog);
     setIcon(QIcon(":/images/logo.png"));

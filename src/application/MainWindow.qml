@@ -26,6 +26,8 @@ Rectangle {
     color: "white"
     width: 375
     height: 755
+    scale: 0.8
+    transformOrigin: Item.TopLeft
 
     property color defaultColor: "#FEBE10"
     property string shopUrl: "https://www.mbaex.com"
