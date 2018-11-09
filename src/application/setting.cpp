@@ -33,6 +33,7 @@
 
 static const QString kLoggingKey = "logging";
 static const QString kNotificationsKey = "notifications";
+static const QString kPingEnabledKey = "pingEnabled";
 static const QString kEncryptionKey = "encryption";
 static const QString kLanguageKey = "language";
 static const QString kFavoritesKey = "favorites";
@@ -284,6 +285,17 @@ void Setting::setNotifications(bool v)
 {
     mSettings.setValue(kNotificationsKey, v);
     emit notificationsChanged();
+}
+
+bool Setting::pingEnabled()
+{
+    return mSettings.value(kPingEnabledKey, true).toBool();
+}
+
+void Setting::setPingEnabled(bool v)
+{
+    mSettings.setValue(kPingEnabledKey, v);
+    emit pingEnabledChanged();
 }
 
 bool Setting::testing()

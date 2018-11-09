@@ -42,6 +42,7 @@ class Setting: public QObject
     Q_PROPERTY(bool fixdns READ fixDns WRITE setFixDns NOTIFY fixDnsChanged)
     Q_PROPERTY(bool logging READ logging WRITE setLogging NOTIFY loggingChanged)
     Q_PROPERTY(bool notifications READ notifications WRITE setNotifications NOTIFY notificationsChanged)
+    Q_PROPERTY(bool pingEnabled READ pingEnabled WRITE setPingEnabled NOTIFY pingEnabledChanged)
     Q_PROPERTY(QString dns1 READ dns1 WRITE setDNS1 NOTIFY dns1Changed)
     Q_PROPERTY(QString dns2 READ dns2 WRITE setDNS2 NOTIFY dns2Changed)
     Q_PROPERTY(QString localPort READ localPort WRITE setLocalPort NOTIFY localPortChanged)
@@ -93,6 +94,9 @@ public:
 
     bool notifications();
     void setNotifications(bool v);
+
+    bool pingEnabled();
+    void setPingEnabled(bool v);
 
     bool showNodes();
     void setShowNodes(bool v);
@@ -217,6 +221,7 @@ signals:
     void loggingChanged();
     void localPortChanged();
     void notificationsChanged();
+    void pingEnabledChanged();
     void rememberMeChanged();
     void loginChanged();
     void passwordChanged();

@@ -723,6 +723,8 @@ Item {
                 ToggleSetting {
                     title: qsTr("Disable Ping");
                     content: qsTr("App will not display information about ping to save bandwidth.");
+                    toggleChecked: !settings.pingEnabled
+                    onToggled: { settings.pingEnabled = !toggleChecked; }
                 }
 
                 // Local openvpn port

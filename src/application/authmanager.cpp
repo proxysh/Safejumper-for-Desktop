@@ -1061,7 +1061,7 @@ QString AuthManager::processLoginResult()
 //    if (hubs.isEmpty() && Setting::instance()->encryption() < ENCRYPTION_ECC) // Don't check hubs for ECC
 //        Log::logt("Cannot parse hubs");
 
-    if (!Setting::instance()->testing())
+    if (!Setting::instance()->testing() && Setting::instance()->pingEnabled())
         pingAllServers(); // No need to ping servers when in testing mode
 
     return message;
@@ -1420,7 +1420,7 @@ void AuthManager::fetchServerListFinished()
 //    if (hubs.isEmpty() && Setting::instance()->encryption() < ENCRYPTION_ECC) // Don't check hubs for ECC
 //        Log::logt("Cannot parse hubs");
 
-    if (!Setting::instance()->testing())
+    if (!Setting::instance()->testing() && Setting::instance()->pingEnabled())
         pingAllServers(); // No need to ping servers when in testing mode
 }
 

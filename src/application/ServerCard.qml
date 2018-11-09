@@ -78,7 +78,7 @@ Rectangle {
     }
 
     MouseArea {
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: expandable ? Qt.PointingHandCursor : Qt.ArrowCursor
         anchors.fill: parent
         onClicked: {
             toggleExpansion();
@@ -198,7 +198,7 @@ Rectangle {
 
             Text {
                 text: currentServer.load + "%"
-                font.family: "Roboto-Bold"
+                font.family: "Roboto"
                 font.pixelSize: 16
                 font.bold: true
                 color: "#7A869A"
@@ -206,24 +206,27 @@ Rectangle {
             }
 
             Rectangle {
-                width: 100
+                width: 1
                 height: parent.height
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                Layout.fillWidth: true
             }
 
             Image {
                 id: pingIcon
                 source: "../images/ping.png"
+                visible: settings.pingEnabled
                 width: 20
                 height: 21
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             }
 
             Text {
+                visible: settings.pingEnabled
                 text: (currentServer.ping > 0 ? currentServer.ping + " ms" : "");
                 font.family: "Roboto-Bold"
                 font.pixelSize: 16
-                font.bold: true
+//                font.bold: true
                 color: "#7A869A"
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             }
@@ -393,7 +396,7 @@ Rectangle {
                 text: vpnservicemanager.vpnState == 0 ? qsTr("CONNECT") : vpnservicemanager.vpnState == 1 ? qsTr("CONNECTING") : qsTr("DISCONNECT");
                 color: 'white'
                 font.family: "Roboto-Bold"
-                font.bold: true
+//                font.bold: true
                 font.pixelSize: 16
             }
 
