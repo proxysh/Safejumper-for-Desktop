@@ -118,5 +118,6 @@ HEADERS += \
 RESOURCES += \
     images.qrc \
     qml.qrc \
-    maps.qrc
+    maps.qrc \
+    fonts.qrc
 

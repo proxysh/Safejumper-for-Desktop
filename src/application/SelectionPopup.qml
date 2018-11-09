@@ -47,7 +47,7 @@ Column {
             height: 48
             anchors.left: parent.left
 
-            Rectangle {
+            ShadowRect {
                 id: itemRect
                 width: 295
                 height: 48
@@ -85,18 +85,11 @@ Column {
                             selectionPopup.selectedIndex = index;
                     }
                 }
-
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    horizontalOffset: 1
-                    verticalOffset: 1
-                    color: "#80000000"
-                }
             }
         }
     }
 
-    Rectangle {
+    ShadowRect {
         id: itemSelectionBox
 
         width: 335
@@ -143,17 +136,9 @@ Column {
                 spacing: 8
             }
         }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
-
     } // End of rect
 
-    Rectangle {
+    ShadowRect {
         id: saveButton
         width: 335
         height: 48
@@ -177,16 +162,9 @@ Column {
                 selectionPopup.itemSelected(selectionPopup.selectedIndex);
             }
         }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
     }
 
-    Rectangle {
+    ShadowRect {
         id: cancelButton
         width: 335
         height: 48
@@ -207,13 +185,6 @@ Column {
             cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: { selectionPopup.cancel(); }
-        }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
         }
     }
 

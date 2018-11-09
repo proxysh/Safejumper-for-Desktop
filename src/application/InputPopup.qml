@@ -35,7 +35,7 @@ Column {
     signal cancel()
     signal inputSaved(int value)
 
-    Rectangle {
+    ShadowRect {
         width: 335
         // Add 36 for top margin and 16 for bottom margin
         height: inputColumn.childrenRect.height + 36 + 16
@@ -77,19 +77,12 @@ Column {
                 width: parent.width
             }
 
-            Rectangle {
+            ShadowRect {
                 width: 295
                 height: 56
 
                 color: "white"
                 radius: 5
-
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    horizontalOffset: 1
-                    verticalOffset: 1
-                    color: "#80000000"
-                }
 
                 Column {
                     anchors.fill: parent
@@ -125,17 +118,9 @@ Column {
                 }
             }
         }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
-
     } // End of rect
 
-    Rectangle {
+    ShadowRect {
         id: saveButton
         width: 335
         height: 48
@@ -159,16 +144,9 @@ Column {
                 inputPopup.inputSaved(inputBox.text);
             }
         }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
     }
 
-    Rectangle {
+    ShadowRect {
         id: cancelButton
         width: 335
         height: 48
@@ -189,13 +167,6 @@ Column {
             cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: { inputPopup.cancel(); }
-        }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
         }
     }
 

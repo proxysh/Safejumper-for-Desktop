@@ -34,7 +34,7 @@ Column {
     signal cancel()
     signal dnsIPsSaved(string dns1, string dns2)
 
-    Rectangle {
+    ShadowRect {
         width: 335
         // Add 36 for top margin and 36 for bottom margin
         height: inputColumn.childrenRect.height + 36 + 36
@@ -76,19 +76,12 @@ Column {
                 width: parent.width
             }
 
-            Rectangle {
+            ShadowRect {
                 width: 295
                 height: 56
 
                 color: "white"
                 radius: 5
-
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    horizontalOffset: 1
-                    verticalOffset: 1
-                    color: "#80000000"
-                }
 
                 Column {
                     anchors.fill: parent
@@ -129,19 +122,12 @@ Column {
                 width: parent.width
             }
 
-            Rectangle {
+            ShadowRect {
                 width: 295
                 height: 56
 
                 color: "white"
                 radius: 5
-
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    horizontalOffset: 1
-                    verticalOffset: 1
-                    color: "#80000000"
-                }
 
                 Column {
                     anchors.fill: parent
@@ -186,7 +172,7 @@ Column {
                 id: buttonsRow
                 spacing: 0
 
-                Rectangle {
+                ShadowRect {
                     id: saveButton
                     width: 140
                     height: 48
@@ -210,13 +196,6 @@ Column {
                             dnsPopup.dnsIPsSaved(dns1Box.text, dns2Box.text);
                         }
                     }
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
                 }
 
                 Item {
@@ -224,7 +203,7 @@ Column {
                     height: parent.height
                 }
 
-                Rectangle {
+                ShadowRect {
                     id: cancelButton
                     width: 140
                     height: 48
@@ -246,23 +225,8 @@ Column {
                         anchors.fill: parent
                         onClicked: { dnsPopup.cancel(); }
                     }
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
                 }
             }
-        } // End of column
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
-    } // End of rect
-
-} // End of Item
+        } // End of Column
+    } // End of ShadowRect
+} // End of Column

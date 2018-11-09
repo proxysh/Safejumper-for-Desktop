@@ -23,7 +23,7 @@ import QtGraphicalEffects 1.0
 
 import vpn.server 1.0
 
-Rectangle {
+ShadowRect {
     id: serverCard
 
     property bool expandable: true
@@ -69,13 +69,6 @@ Rectangle {
     height: serverColumn.height + 20 // 20px top margin
     color: "white"
     radius: 5
-
-    layer.enabled: true
-    layer.effect: DropShadow {
-        horizontalOffset: 1
-        verticalOffset: 1
-        color: "#80000000"
-    }
 
     MouseArea {
         cursorShape: expandable ? Qt.PointingHandCursor : Qt.ArrowCursor
@@ -395,8 +388,8 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 text: vpnservicemanager.vpnState == 0 ? qsTr("CONNECT") : vpnservicemanager.vpnState == 1 ? qsTr("CONNECTING") : qsTr("DISCONNECT");
                 color: 'white'
-                font.family: "Roboto-Bold"
-//                font.bold: true
+                font.family: "Roboto"
+                font.bold: true
                 font.pixelSize: 16
             }
 

@@ -17,5 +17,6 @@
         <file>ServerCard.qml</file>
         <file>HeaderBar.qml</file>
         <file>LogsPopup.qml</file>
+        <file>ShadowRect.qml</file>
     </qresource>
 </RCC>

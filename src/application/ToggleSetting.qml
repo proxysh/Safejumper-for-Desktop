@@ -21,20 +21,13 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.11
 import QtGraphicalEffects 1.0
 
-Rectangle {
+ShadowRect {
     id: toggleSetting
 
     width: 335
     height: 114
     color: "white"
     radius: 5
-
-    layer.enabled: true
-    layer.effect: DropShadow {
-        horizontalOffset: 1
-        verticalOffset: 1
-        color: "#80000000"
-    }
 
     signal toggled(bool toggleChecked)
     property bool toggleChecked: true

@@ -223,7 +223,7 @@ Item {
                 width: parent.width - 40 // 20 px margin on both sides
                 spacing: 10
 
-                Rectangle {
+                ShadowRect {
                     id: accountDetails
                     width: parent.width
                     height: 224
@@ -231,13 +231,6 @@ Item {
 
                     color: "white"
                     radius: 5
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
 
                     Column {
                         anchors.fill: parent
@@ -426,20 +419,13 @@ Item {
                 }
 
                 // Default encryption
-                Rectangle {
+                ShadowRect {
                     id: encryptionBox
                     width: parent.width
                     height: 103
 
                     color: "white"
                     radius: 5
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
 
                     Column {
                         anchors.fill: parent
@@ -509,20 +495,13 @@ Item {
                 }
 
                 // Default port
-                Rectangle {
+                ShadowRect {
                     id: portBox
                     width: parent.width
                     height: 103
 
                     color: "white"
                     radius: 5
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
 
                     Column {
                         anchors.fill: parent
@@ -609,20 +588,13 @@ Item {
                 }
 
                 // Default dns servers
-                Rectangle {
+                ShadowRect {
                     id: dnsservers
                     width: parent.width
                     height: 144
 
                     color: "white"
                     radius: 5
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
 
                     Column {
                         anchors.fill: parent
@@ -728,20 +700,13 @@ Item {
                 }
 
                 // Local openvpn port
-                Rectangle {
+                ShadowRect {
                     id: localPortBox
                     width: parent.width
                     height: 103
 
                     color: "white"
                     radius: 5
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
 
                     Column {
                         anchors.fill: parent
@@ -820,20 +785,13 @@ Item {
                 }
 
                 // Language
-                Rectangle {
+                ShadowRect {
                     id: languageBox
                     width: parent.width
                     height: 103
 
                     color: "white"
                     radius: 5
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
 
                     Column {
                         anchors.fill: parent
@@ -919,20 +877,13 @@ Item {
 
 
                 // Now update check button/box
-                Rectangle {
+                ShadowRect {
                     id: updates
                     width: parent.width
                     height: 100
 
                     color: "white"
                     radius: 5
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
 
                     Column {
                         anchors.fill: parent
@@ -969,20 +920,13 @@ Item {
                 }
 
                 // Now logout button/box
-                Rectangle {
+                ShadowRect {
                     id: logout
                     width: parent.width
                     height: 114
 
                     color: defaultColor
                     radius: 5
-
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        horizontalOffset: 1
-                        verticalOffset: 1
-                        color: "#80000000"
-                    }
 
                     MouseArea {
                         cursorShape: Qt.PointingHandCursor

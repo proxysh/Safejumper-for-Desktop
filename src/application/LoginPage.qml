@@ -66,20 +66,13 @@ Rectangle {
             width: parent.width
         }
 
-        Rectangle {
+        ShadowRect {
             id: emailBox
             width: 327
             height: 56
 
             color: "white"
             radius: 5
-
-            layer.enabled: true
-            layer.effect: DropShadow {
-                horizontalOffset: 1
-                verticalOffset: 1
-                color: "#80000000"
-            }
 
             Column {
                 anchors.fill: parent
@@ -116,20 +109,13 @@ Rectangle {
         }
 
         // Now logout button/box
-        Rectangle {
+        ShadowRect {
             id: passwordBox
             width: parent.width
             height: 56
 
             color: "white"
             radius: 5
-
-            layer.enabled: true
-            layer.effect: DropShadow {
-                horizontalOffset: 1
-                verticalOffset: 1
-                color: "#80000000"
-            }
 
             TextField {
                 id: passwordInput
@@ -203,19 +189,12 @@ Rectangle {
             }
         }
 
-        Rectangle {
+        ShadowRect {
             id: loginButton
             width: parent.width
             height: 56
             color: defaultColor
             radius: 5
-
-            layer.enabled: true
-            layer.effect: DropShadow {
-                horizontalOffset: 1
-                verticalOffset: 1
-                color: "#80000000"
-            }
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -250,19 +229,12 @@ Rectangle {
             font.pixelSize: 16
         }
 
-        Rectangle {
+        ShadowRect {
             id: signupButton
             color: "white"
             width: parent.width
             height: 56
             radius: 5
-
-            layer.enabled: true
-            layer.effect: DropShadow {
-                horizontalOffset: 1
-                verticalOffset: 1
-                color: "#80000000"
-            }
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter

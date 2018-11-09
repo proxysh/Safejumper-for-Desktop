@@ -36,7 +36,7 @@ Column {
     signal cancel()
     signal confirm()
 
-    Rectangle {
+    ShadowRect {
         id: confirmationBox
 
         width: 335
@@ -73,16 +73,9 @@ Column {
             }
         }
 
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
-
     } // End of rect
 
-    Rectangle {
+    ShadowRect {
         id: okButton
         width: 335
         height: 48
@@ -106,16 +99,9 @@ Column {
                 confirmationPopup.confirm();
             }
         }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
     }
 
-    Rectangle {
+    ShadowRect {
         id: cancelButton
         width: 335
         height: 48
@@ -138,13 +124,6 @@ Column {
             onClicked: {
                 confirmationPopup.cancel();
             }
-        }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
         }
     }
 } // End of Item

@@ -33,7 +33,7 @@ Column {
 
     signal cancel()
 
-    Rectangle {
+    ShadowRect {
         id: errorBox
 
         width: 335
@@ -69,17 +69,9 @@ Column {
                 anchors.horizontalCenter: parent.horizontalCenter
             }
         }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
-
     } // End of rect
 
-    Rectangle {
+    ShadowRect {
         id: okButton
         width: 335
         height: 48
@@ -102,13 +94,6 @@ Column {
             onClicked: {
                 errorPopup.cancel();
             }
-        }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
         }
     }
 } // End of Item

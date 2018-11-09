@@ -23,6 +23,7 @@
 #endif
 
 #include <QApplication>
+#include <QFontDatabase>
 #include <QTranslator>
 #ifndef Q_OS_OSX
 #include "qtsingleapplication.h"
@@ -55,6 +56,15 @@ int main(int argc, char *argv[])
     QApplication::setQuitOnLastWindowClosed(false);
 
     g_pTheApp = new THE_APP_CLASS(argc, argv);
+
+    QFontDatabase::addApplicationFont(":/fonts/Roboto.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Medium.ttf");
+
+    QFontDatabase database;
+    Q_FOREACH(const QString &family, database.families()) {
+        qDebug() << "Found font with family: " << family;
+    }
 
     Log::logt("Starting Application");
     MainWindow::instance()->show();

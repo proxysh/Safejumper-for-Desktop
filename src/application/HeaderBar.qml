@@ -33,17 +33,10 @@ Item {
     signal menuClicked()
     signal settingsClicked()
 
-    Rectangle {
+    ShadowRect {
         id: toolBarTop
         anchors.fill: parent
         color: defaultColor
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
 
         Image {
             id: menuImage
@@ -74,8 +67,8 @@ Item {
                 id: statusText
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 18
-                font.family: "Roboto-Bold"
-//                font.bold: true
+                font.family: "Roboto"
+                font.bold: true
                 color: "white"
                 text: vpnservicemanager.stateWord
             }

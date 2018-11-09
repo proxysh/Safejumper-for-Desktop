@@ -109,20 +109,13 @@ Item {
                 }
             }
 
-            Rectangle {
+            ShadowRect {
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                 id: serverRectangle
                 color: "white"
                 radius: 5
                 width: 260
                 height: 48
-
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    horizontalOffset: 1
-                    verticalOffset: 1
-                    color: "#80000000"
-                }
 
                 RowLayout {
                     anchors.fill: parent
@@ -156,6 +149,12 @@ Item {
                         color: "#091E42"
                         text: currentServer.name
                     }
+
+                    Item {
+                        Layout.fillWidth: true
+                        height: 1
+                        width: 1
+                    }
                 }
             }
 
@@ -179,26 +178,19 @@ Item {
             isCurrentServer: true
         }
 
-        Rectangle {
+        ShadowRect {
             id: allServersButton
             width: parent.width
             height: 56
             color: "white"
             radius: 5
 
-            layer.enabled: true
-            layer.effect: DropShadow {
-                horizontalOffset: 1
-                verticalOffset: 1
-                color: "#80000000"
-            }
-
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("SHOW ALL SERVERS");
                 color: defaultColor
-                font.family: "Roboto-Bold"
+                font.family: "Roboto"
                 font.bold: true
                 font.pixelSize: 16
             }

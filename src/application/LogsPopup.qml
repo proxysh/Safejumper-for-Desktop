@@ -33,7 +33,7 @@ Column {
     signal copy()
     signal cancel()
 
-    Rectangle {
+    ShadowRect {
         id: logsBox
 
         anchors.horizontalCenter: parent.horizontalCenter
@@ -80,17 +80,9 @@ Column {
                 }
             }
         }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
-
     } // End of rect
 
-    Rectangle {
+    ShadowRect {
         id: copyButton
         width: 335
         height: 48
@@ -114,16 +106,9 @@ Column {
                 logsPopup.copy();
             }
         }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
-        }
     }
 
-    Rectangle {
+    ShadowRect {
         id: cancelButton
         width: 335
         height: 48
@@ -146,13 +131,6 @@ Column {
             onClicked: {
                 logsPopup.cancel();
             }
-        }
-
-        layer.enabled: true
-        layer.effect: DropShadow {
-            horizontalOffset: 1
-            verticalOffset: 1
-            color: "#80000000"
         }
     }
 } // End of Item
