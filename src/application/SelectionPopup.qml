@@ -171,6 +171,7 @@ Column {
         }
 
         MouseArea {
+            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: {
                 selectionPopup.itemSelected(selectionPopup.selectedIndex);
@@ -203,6 +204,7 @@ Column {
         }
 
         MouseArea {
+            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: { selectionPopup.cancel(); }
         }

@@ -60,6 +60,7 @@ Rectangle {
             source: toggleSetting.toggleChecked ? "../images/checked-toggle.png" : "../images/unchecked-toggle.png"
 
             MouseArea {
+                cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
                 onClicked: {
                     console.log("Toggle clicked");

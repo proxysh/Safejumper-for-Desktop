@@ -43,6 +43,7 @@ Rectangle {
             source: "../images/back-black.png"
 
             MouseArea {
+                cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
                 onClicked: { loginPage.closeClicked() }
             }
@@ -160,6 +161,7 @@ Rectangle {
                     source: "../images/eye.png"
 
                     MouseArea {
+                        cursorShape: Qt.PointingHandCursor
                         anchors.fill: parent
                         onClicked: {
                             if (passwordInput.echoMode == TextInput.Password)
@@ -226,6 +228,7 @@ Rectangle {
             }
 
             MouseArea {
+                cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
                 onClicked: {
                     authmanager.login(emailInput.text, passwordInput.text);
@@ -272,6 +275,7 @@ Rectangle {
             }
 
             MouseArea {
+                cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
 
                 onClicked: { loginPage.signupClicked(); }

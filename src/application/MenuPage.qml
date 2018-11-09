@@ -46,6 +46,7 @@ Rectangle {
                 source: "../images/x-circle.png"
 
                 MouseArea {
+                    cursorShape: Qt.PointingHandCursor
                     anchors.fill: parent
                     onClicked: { menuPage.closeClicked(); }
                 }
@@ -113,7 +114,7 @@ Rectangle {
             id: logoutButton
             buttonIcon: "../images/logout.png"
             hoverButtonIcon: "../images/logout-hover.png"
-            buttonText: qsTr("Logout");
+            buttonText: authmanager.loggedIn ? qsTr("Logout") : qsTr("Login");
             onClicked: { menuPage.logoutClicked(); }
         }
 

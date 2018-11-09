@@ -97,6 +97,7 @@ Column {
         }
 
         MouseArea {
+            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: {
                 errorPopup.cancel();

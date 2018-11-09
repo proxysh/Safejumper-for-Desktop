@@ -173,6 +173,7 @@ Item {
                     source: "../images/back-white.png"
 
                     MouseArea {
+                        cursorShape: Qt.PointingHandCursor
                         anchors.fill: parent
                         onClicked: { settingsPage.closeClicked() }
                     }
@@ -363,6 +364,15 @@ Item {
                             height: 49
                             radius: 5
 
+                            Rectangle {
+                                id: removeTopCorners
+                                width: parent.width
+                                anchors.top: parent.top
+                                height: parent.radius
+                                color: parent.color
+                                visible: parent.visible
+                            }
+
                             Text {
                                 font.pixelSize: 16
                                 font.family: "Roboto"
@@ -374,6 +384,7 @@ Item {
                             }
 
                             MouseArea {
+                                cursorShape: Qt.PointingHandCursor
                                 anchors.fill: parent
                                 onClicked: { mainwindow.launchUrl(shopUrl); }
                             }
@@ -456,6 +467,7 @@ Item {
                                 height: 18
 
                                 MouseArea {
+                                    cursorShape: Qt.PointingHandCursor
                                     anchors.fill: parent
                                     onClicked: { showPopup(encryptionPopup); }
                                 }
@@ -538,6 +550,7 @@ Item {
                                 height: 18
 
                                 MouseArea {
+                                    cursorShape: Qt.PointingHandCursor
                                     anchors.fill: parent
                                     onClicked:
                                         {
@@ -637,6 +650,7 @@ Item {
                                 height: 18
 
                                 MouseArea {
+                                    cursorShape: Qt.PointingHandCursor
                                     anchors.fill: parent;
                                     onClicked: { showPopup(dnsPopup); }
                                 }
@@ -753,6 +767,7 @@ Item {
                                 height: 18
 
                                 MouseArea {
+                                    cursorShape: Qt.PointingHandCursor
                                     anchors.fill: parent
                                     onClicked:
                                         {
@@ -844,6 +859,7 @@ Item {
                                 height: 18
 
                                 MouseArea {
+                                    cursorShape: Qt.PointingHandCursor
                                     anchors.fill: parent
                                     onClicked:
                                         {
@@ -967,6 +983,7 @@ Item {
                     }
 
                     MouseArea {
+                        cursorShape: Qt.PointingHandCursor
                         anchors.fill: parent
                         onClicked: { settingsPage.logoutClicked(); }
                     }

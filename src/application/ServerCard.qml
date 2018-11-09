@@ -78,6 +78,7 @@ Rectangle {
     }
 
     MouseArea {
+        cursorShape: Qt.PointingHandCursor
         anchors.fill: parent
         onClicked: {
             toggleExpansion();
@@ -164,6 +165,7 @@ Rectangle {
                 source: currentServer.favorite ? "../images/filledheart.png" : "../images/emptyheart.png";
 
                 MouseArea {
+                    cursorShape: Qt.PointingHandCursor
                     id: mouseArea
                     anchors.fill: parent
                     onClicked: {
@@ -376,6 +378,15 @@ Rectangle {
             color: vpnservicemanager.vpnState == 0 ? "#2CC532" : vpnservicemanager.vpnState == 1 ? "#FFAB00" : "#C53232"
             visible: showButton
 
+            Rectangle {
+                id: removeTopCorners
+                width: parent.width
+                anchors.top: parent.top
+                height: parent.radius
+                color: parent.color
+                visible: parent.visible
+            }
+
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
@@ -387,6 +398,7 @@ Rectangle {
             }
 
             MouseArea {
+                cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
                 onClicked: {
                     // Select this server if it's not the current server

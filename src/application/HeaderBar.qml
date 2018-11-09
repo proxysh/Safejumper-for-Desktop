@@ -53,6 +53,7 @@ Item {
             source: "../images/menu-left.png"
 
             MouseArea {
+                cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
                 onClicked: { headerArea.menuClicked() }
             }
@@ -73,8 +74,8 @@ Item {
                 id: statusText
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 18
-                font.family: "Roboto"
-                font.bold: true
+                font.family: "Roboto-Bold"
+//                font.bold: true
                 color: "white"
                 text: vpnservicemanager.stateWord
             }
@@ -88,6 +89,7 @@ Item {
             source: "../images/settings.png"
 
             MouseArea {
+                cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
                 onClicked: {
                     headerArea.settingsClicked();

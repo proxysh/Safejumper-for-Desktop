@@ -108,6 +108,7 @@ Column {
         }
 
         MouseArea {
+            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: {
                 logsPopup.copy();
@@ -140,6 +141,7 @@ Column {
         }
 
         MouseArea {
+            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: {
                 logsPopup.cancel();

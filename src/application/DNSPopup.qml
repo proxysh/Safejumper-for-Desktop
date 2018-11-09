@@ -204,6 +204,7 @@ Column {
                     }
 
                     MouseArea {
+                        cursorShape: Qt.PointingHandCursor
                         anchors.fill: parent
                         onClicked: {
                             dnsPopup.dnsIPsSaved(dns1Box.text, dns2Box.text);
@@ -241,6 +242,7 @@ Column {
                     }
 
                     MouseArea {
+                        cursorShape: Qt.PointingHandCursor
                         anchors.fill: parent
                         onClicked: { dnsPopup.cancel(); }
                     }

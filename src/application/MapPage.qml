@@ -103,6 +103,7 @@ Item {
                 source: "../images/chevron-left.png"
 
                 MouseArea {
+                    cursorShape: Qt.PointingHandCursor
                     anchors.fill: parent
                     onClicked: { authmanager.previousFavorite(); }
                 }
@@ -163,6 +164,7 @@ Item {
                 source: "../images/chevron-right.png"
 
                 MouseArea {
+                    cursorShape: Qt.PointingHandCursor
                     anchors.fill: parent
                     onClicked: { authmanager.nextFavorite(); }
                 }
@@ -202,6 +204,7 @@ Item {
             }
 
             MouseArea {
+                cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
                 onClicked: {
                     mapPage.allServersClicked();

@@ -153,6 +153,7 @@ Column {
         }
 
         MouseArea {
+            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: {
                 inputPopup.inputSaved(inputBox.text);
@@ -185,6 +186,7 @@ Column {
         }
 
         MouseArea {
+            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: { inputPopup.cancel(); }
         }

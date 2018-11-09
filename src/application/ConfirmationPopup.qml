@@ -100,6 +100,7 @@ Column {
         }
 
         MouseArea {
+            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: {
                 confirmationPopup.confirm();
@@ -132,6 +133,7 @@ Column {
         }
 
         MouseArea {
+            cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: {
                 confirmationPopup.cancel();
