@@ -84,6 +84,14 @@ Rectangle {
         showPopup(errorPopup);
     }
 
+    function logout()
+    {
+        if (authmanager.loggedIn)
+            screen.showPopup(logoutConfirmation);
+        else
+            showLogin();
+    }
+
     FastBlur {
         id: blurItem
         source: stack
@@ -135,7 +143,7 @@ Rectangle {
         target: mainwindow
         onConfirmExit: { screen.showPopup(exitConfirmation); }
         onLogout: {
-            showLogin();
+            logout();
         }
         onMapScreen: {
             if (stack.currentItem.objectName == "mapPage")
@@ -199,7 +207,7 @@ Rectangle {
             onCloseClicked: { stack.pop(); }
             onSettingsClicked: { stack.push(settingsPage); }
             onLogoutClicked: {
-                screen.showPopup(logoutConfirmation);
+                screen.logout();
             }
             onLogsClicked: {
                 screen.showPopup(logsPopup);
@@ -213,7 +221,7 @@ Rectangle {
             objectName: "settingsPage"
             onCloseClicked: { stack.pop(); }
             onLogoutClicked: {
-                screen.showPopup(logoutConfirmation);
+                screen.logout();
             }
         }
     }
