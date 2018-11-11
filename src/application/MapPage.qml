@@ -144,7 +144,8 @@ Item {
 
                     Text {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                        font.family: "Roboto-Medium"
+                        font.family: "Roboto"
+                        font.weight: Font.Medium
                         font.pixelSize: 16
                         color: "#091E42"
                         text: currentServer.name

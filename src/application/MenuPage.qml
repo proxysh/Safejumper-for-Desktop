@@ -25,9 +25,21 @@ Rectangle {
     color: defaultColor
 
     signal closeClicked();
+    signal mapClicked();
+    signal allServersClicked();
     signal settingsClicked();
     signal logoutClicked();
     signal logsClicked();
+
+    function clearHighlights()
+    {
+        mapButton.highlighted = false;
+        serverButton.highlighted = false;
+        logsButton.highlighted = false;
+        shopButton.highlighted = false;
+        settingsButton.highlighted = false;
+        logoutButton.highlighted = false;
+    }
 
     Column {
         id: menuColumn
@@ -67,7 +79,11 @@ Rectangle {
             hoverButtonIcon: "../images/map-hover.png"
             buttonText: qsTr("Map View");
             highlighted: true
-            onClicked: { menuPage.closeClicked(); }
+            onClicked: {
+                clearHighlights();
+                mapButton.highlighted = true;
+                menuPage.mapClicked();
+            }
         }
 
         MenuButton {
@@ -75,6 +91,11 @@ Rectangle {
             buttonIcon: "../images/server.png"
             hoverButtonIcon: "../images/server-hover.png"
             buttonText: qsTr("Server List");
+            onClicked: {
+                clearHighlights();
+                serverButton.highlighted = true;
+                menuPage.allServersClicked();
+            }
         }
 
 //        MenuButton {
@@ -90,6 +111,8 @@ Rectangle {
             hoverButtonIcon: "../images/list-hover.png"
             buttonText: qsTr("Show Logs");
             onClicked: {
+                clearHighlights();
+                logsButton.highlighted = true;
                 menuPage.logsClicked();
             }
         }
@@ -99,7 +122,11 @@ Rectangle {
             buttonIcon: "../images/shopping.png"
             hoverButtonIcon: "../images/shopping-hover.png"
             buttonText: qsTr("Shop");
-            onClicked: { mainwindow.launchUrl(shopUrl); }
+            onClicked: {
+                clearHighlights();
+                shopButton.highlighted = true;
+                mainwindow.launchUrl(shopUrl);
+            }
         }
 
         MenuButton {
@@ -107,7 +134,11 @@ Rectangle {
             buttonIcon: "../images/settings.png"
             hoverButtonIcon: "../images/settings-hover.png"
             buttonText: qsTr("Settings");
-            onClicked: { menuPage.settingsClicked(); }
+            onClicked: {
+                clearHighlights();
+                settingsButton.highlighted = true;
+                menuPage.settingsClicked();
+            }
         }
 
         MenuButton {
@@ -115,7 +146,11 @@ Rectangle {
             buttonIcon: "../images/logout.png"
             hoverButtonIcon: "../images/logout-hover.png"
             buttonText: authmanager.loggedIn ? qsTr("Logout") : qsTr("Login");
-            onClicked: { menuPage.logoutClicked(); }
+            onClicked: {
+                clearHighlights();
+                logoutButton.highlighted = true;
+                menuPage.logoutClicked();
+            }
         }
 
         Image {

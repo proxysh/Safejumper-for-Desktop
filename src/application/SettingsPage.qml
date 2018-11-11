@@ -642,7 +642,8 @@ Item {
                             spacing: 16
                             Text {
                                 font.pixelSize: 12
-                                font.family: "Roboto-Black"
+                                font.family: "Roboto"
+                                font.weight: Font.Black
                                 color: "#6C798F"
                                 text: qsTr("PRIMARY");
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
@@ -651,7 +652,8 @@ Item {
 
                             Text {
                                 font.pixelSize: 16
-                                font.family: "Roboto-Medium"
+                                font.family: "Roboto"
+                                font.weight: Font.Medium
                                 color: "#091E42"
                                 text: settings.dns1
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -672,7 +674,8 @@ Item {
                             spacing: 16
                             Text {
                                 font.pixelSize: 12
-                                font.family: "Roboto-Black"
+                                font.family: "Roboto"
+                                font.weight: Font.Black
                                 color: "#6C798F"
                                 text: qsTr("SECONDARY");
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
@@ -681,7 +684,8 @@ Item {
 
                             Text {
                                 font.pixelSize: 16
-                                font.family: "Roboto-Medium"
+                                font.family: "Roboto"
+                                font.weight: Font.Medium
                                 color: "#091E42"
                                 text: settings.dns2
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -757,7 +761,8 @@ Item {
                             spacing: 16
                             Text {
                                 font.pixelSize: 12
-                                font.family: "Roboto-Black"
+                                font.family: "Roboto"
+                                font.weight: Font.Black
                                 color: "#6C798F"
                                 text: qsTr("PORT");
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
@@ -766,7 +771,8 @@ Item {
 
                             Text {
                                 font.pixelSize: 16
-                                font.family: "Roboto-Medium"
+                                font.family: "Roboto"
+                                font.weight: Font.Medium
                                 color: "#091E42"
                                 text: settings.localPort
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -842,7 +848,8 @@ Item {
                             spacing: 16
                             Text {
                                 font.pixelSize: 12
-                                font.family: "Roboto-Black"
+                                font.family: "Roboto"
+                                font.weight: Font.Black
                                 color: "#6C798F"
                                 text: qsTr("LANGUAGE");
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
@@ -851,7 +858,8 @@ Item {
 
                             Text {
                                 font.pixelSize: 16
-                                font.family: "Roboto-Medium"
+                                font.family: "Roboto"
+                                font.weight: Font.Medium
                                 color: "#091E42"
                                 text: settings.currentLanguage
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -924,6 +932,7 @@ Item {
                     id: logout
                     width: parent.width
                     height: 114
+                    visible: authmanager.loggedIn
 
                     color: defaultColor
                     radius: 5

@@ -62,7 +62,22 @@ Rectangle {
         }
 
         Item {
-            height: 108
+            height: 48
+            width: parent.width
+        }
+
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: 28
+            font.family: "Roboto"
+            font.weight: bold
+            font.pixelSize: 24
+            color: "#172B4D"
+            text: qsTr("Log into your account.");
+        }
+
+        Item {
+            height: 24
             width: parent.width
         }
 
@@ -83,7 +98,8 @@ Rectangle {
 
                 Text {
                     font.pixelSize: 12
-                    font.family: "Roboto-Black"
+                    font.family: "Roboto"
+                    font.weight: Font.Black
                     color: "#6C798F"
                     text: qsTr("EMAIL");
                 }
@@ -164,8 +180,9 @@ Rectangle {
         CheckBox {
             id: rememberButton
             checked: settings.rememberMe
-            text: qsTr("Remember Me");
-            font.family: "Roboto-Medium"
+            text: qsTr("Remember me");
+            font.family: "Roboto"
+            font.weight: Font.Medium
             font.pixelSize: 16
 
             indicator: Image {
@@ -200,7 +217,7 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: 16
-                font.family: "Roboto-Bold"
+                font.family: "Roboto"
                 font.bold: true
                 color: "white"
                 text: qsTr("LOGIN");
@@ -225,7 +242,8 @@ Rectangle {
             text: qsTr("Don't have an account?");
             color: "#020433"
             anchors.horizontalCenter: parent.horizontalCenter
-            font.family: "Roboto-Medium"
+            font.family: "Roboto"
+            font.weight: Font.Medium
             font.pixelSize: 16
         }
 

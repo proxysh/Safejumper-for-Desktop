@@ -103,7 +103,7 @@ Item {
             }
 
             Text {
-                font.family: "Roboto-Bold"
+                font.family: "Roboto"
                 font.bold: true
                 color: "#172B4D"
                 font.pixelSize: 24
@@ -132,7 +132,8 @@ Item {
 
                     Text {
                         font.pixelSize: 12
-                        font.family: "Roboto-Black"
+                        font.family: "Roboto"
+                        font.weight: Font.Black
                         color: "#6C798F"
                         text: qsTr("EMAIL");
                     }
@@ -173,7 +174,8 @@ Item {
 
                     Text {
                         font.pixelSize: 12
-                        font.family: "Roboto-Black"
+                        font.family: "Roboto"
+                        font.weight: Font.Black
                         color: "#6C798F"
                         text: qsTr("FULL NAME");
                     }
@@ -326,7 +328,7 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     font.pixelSize: 16
-                    font.family: "Roboto-Bold"
+                    font.family: "Roboto"
                     font.bold: true
                     color: "white"
                     text: qsTr("CREATE AN ACCOUNT");

@@ -93,7 +93,8 @@ Column {
 
                     Text {
                         font.pixelSize: 12
-                        font.family: "Roboto-Black"
+                        font.family: "Roboto"
+                        font.weight: Font.Black
                         color: "#6C798F"
                         text: qsTr("PORT");
                     }

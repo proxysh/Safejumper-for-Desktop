@@ -92,6 +92,17 @@ Rectangle {
             showLogin();
     }
 
+    function showMap()
+    {
+        stack.pop(null);
+    }
+
+    function showAllServers()
+    {
+        stack.pop(null);
+        stack.push(allServersPage);
+    }
+
     FastBlur {
         id: blurItem
         source: stack
@@ -163,6 +174,7 @@ Rectangle {
         }
         onLogsScreen: {
             // Show logs popup
+            screen.pop(null); // First pop back to map page
             screen.showPopup(logsPopup);
         }
     }
@@ -181,67 +193,58 @@ Rectangle {
         }
     }
 
-    Component {
+    AllServersPage {
         id: allServersPage
-        AllServersPage {
-            objectName: "allServersPage"
-            onMenuClicked: { stack.push(menuPage); }
-            onSettingsClicked: { stack.push(settingsPage); }
-        }
+        objectName: "allServersPage"
+        onMenuClicked: { stack.push(menuPage); }
+        onSettingsClicked: { stack.push(settingsPage); }
     }
 
-    Component {
+    MapPage {
         id: mapPage
-        MapPage {
-            objectName: "mapPage"
-            onMenuClicked: { stack.push(menuPage); }
-            onSettingsClicked: { stack.push(settingsPage); }
-            onAllServersClicked: { stack.push(allServersPage); }
-        }
+        objectName: "mapPage"
+        onMenuClicked: { stack.push(menuPage); }
+        onSettingsClicked: { stack.push(settingsPage); }
+        onAllServersClicked: { stack.push(allServersPage); }
     }
 
-    Component {
+    MenuPage {
         id: menuPage
-        MenuPage {
-            objectName: "menuPage"
-            onCloseClicked: { stack.pop(); }
-            onSettingsClicked: { stack.push(settingsPage); }
-            onLogoutClicked: {
-                screen.logout();
-            }
-            onLogsClicked: {
-                screen.showPopup(logsPopup);
-            }
+        objectName: "menuPage"
+        onCloseClicked: { stack.pop(); }
+        onMapClicked: { showMap(); }
+        onAllServersClicked: { showAllServers(); }
+        onSettingsClicked: { stack.push(settingsPage); }
+        onLogoutClicked: {
+            screen.logout();
+        }
+        onLogsClicked: {
+            stack.pop(null); // First pop back to map page
+            screen.showPopup(logsPopup);
         }
     }
 
-    Component {
+    SettingsPage {
         id: settingsPage
-        SettingsPage {
-            objectName: "settingsPage"
-            onCloseClicked: { stack.pop(); }
-            onLogoutClicked: {
-                screen.logout();
-            }
+        objectName: "settingsPage"
+        onCloseClicked: { stack.pop(); }
+        onLogoutClicked: {
+            screen.logout();
         }
     }
 
-    Component {
+    LoginPage {
         id: loginPage
-        LoginPage {
-            objectName: "loginPage"
-            onCloseClicked: { stack.pop(); }
-            onSignupClicked: { stack.push(signupPage); }
-        }
+        objectName: "loginPage"
+        onCloseClicked: { stack.pop(); }
+        onSignupClicked: { stack.push(signupPage); }
     }
 
-    Component {
+    SignupPage {
         id: signupPage
-        SignupPage {
-            objectName: "signupPage"
-            onCloseClicked: { stack.pop(); }
+        objectName: "signupPage"
+        onCloseClicked: { stack.pop(); }
 
-        }
     }
 
     LogsPopup {
@@ -292,7 +295,7 @@ Rectangle {
             anchors.topMargin: 24
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("Establishing a secure connection...");
-            font.family: "Roboto-Regular"
+            font.family: "Roboto"
             font.pixelSize: 20
             color: defaultColor
         }

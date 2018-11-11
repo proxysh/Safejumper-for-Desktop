@@ -59,7 +59,7 @@ SUBDIRS += \
     # Sign the application, using the provided entitlements
     CODESIGN_ALLOCATE_PATH=$$system(xcrun -find codesign_allocate)
     codesigner.commands += export CODESIGN_ALLOCATE=$${CODESIGN_ALLOCATE_PATH};
-    codesigner.commands += codesign --force --sign $${CERTSHA1} -r=\'designated => (anchor apple generic and identifier \"$${BUNDLEID}\" and (cert leaf[field.1.2.840.113635.100.6.1.9] exists or certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists and certificate leaf[subject.OU]=$${CERT_OU}))\' --timestamp=none $$shell_quote($$OUT_PWD/application/$${APPNAME});
+    codesigner.commands += codesign --force --sign $${CERTSHA1} -r=\'designated => (anchor apple generic and identifier \"$${BUNDLEID}\" and (cert leaf[field.1.2.840.113635.100.6.1.9] exists or certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists and certificate leaf[subject.OU]=$${CERT_OU}))\' --timestamp=none $$shell_quote($$OUT_PWD/application/$${APPNAME}) > /dev/null;
 
     first.depends = $(first) organizer codesigner
     export(first.depends)

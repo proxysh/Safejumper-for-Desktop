@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
     g_pTheApp = new THE_APP_CLASS(argc, argv);
 
     QFontDatabase::addApplicationFont(":/fonts/Roboto.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Black.ttf");
     QFontDatabase::addApplicationFont(":/fonts/Roboto-Bold.ttf");
     QFontDatabase::addApplicationFont(":/fonts/Roboto-Medium.ttf");
 

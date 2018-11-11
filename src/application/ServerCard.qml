@@ -66,7 +66,7 @@ ShadowRect {
     }
 
     width: 335
-    height: serverColumn.height + 20 // 20px top margin
+    height: serverColumn.height
     color: "white"
     radius: 5
 
@@ -83,11 +83,12 @@ ShadowRect {
         width: parent.width
         anchors.bottom: parent.bottom
         spacing: 0
+        padding: 0
 
         RowLayout {
             spacing: 16
             width: parent.width - 40
-            height: 46
+            height: 66
             anchors.horizontalCenter: parent.horizontalCenter // 20px margin on both sides
 
             Image {
@@ -103,7 +104,7 @@ ShadowRect {
                     width: 42
                     height: 42
                     fillMode: Image.Stretch
-                    source: isCurrentServer ? "../images/green-ring.png" : "../images/grey-ring.png"
+                    source: (isCurrentServer & vpnservicemanager.vpnState == 2)? "../images/green-ring.png" : "../images/grey-ring.png"
                 }
             }
 
@@ -127,7 +128,7 @@ ShadowRect {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                         id: statusText
                         text: vpnservicemanager.stateWord;
-                        font.family: "Roboto-Bold"
+                        font.family: "Roboto"
                         font.bold: true
                         font.pixelSize: 12
                         color: vpnservicemanager.stateColor
@@ -138,7 +139,7 @@ ShadowRect {
                     id: nameText
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     text: currentServer.name
-                    font.family: "Roboto-Bold"
+                    font.family: "Roboto"
                     font.bold: true
                     font.pixelSize: 16
                     color: "#091E42"
@@ -177,7 +178,7 @@ ShadowRect {
 
         RowLayout {
             // Ping and load row
-            height: 44
+            height: 45
             width: parent.width - 40 // 20px margin on both sides
             anchors.horizontalCenter: parent.horizontalCenter
 
@@ -217,9 +218,9 @@ ShadowRect {
             Text {
                 visible: settings.pingEnabled
                 text: (currentServer.ping > 0 ? currentServer.ping + " ms" : "");
-                font.family: "Roboto-Bold"
+                font.family: "Roboto"
                 font.pixelSize: 16
-//                font.bold: true
+                font.bold: true
                 color: "#7A869A"
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             }
@@ -238,7 +239,8 @@ ShadowRect {
             id: encryptionBox
             width: parent.width
             visible: showOptions
-            font.family: "Roboto-Medium"
+            font.family: "Roboto"
+            font.weight: Font.Medium
             font.pixelSize: 16
             currentIndex: settings.serverEncryption(currentServer.address)
 
@@ -274,7 +276,8 @@ ShadowRect {
                 spacing: 2
 
                 Text {
-                    font.family: "Roboto-Black"
+                    font.family: "Roboto"
+                    font.weight: Font.Black
                     font.pixelSize: 12
                     color: "#6C798F"
                     text: qsTr("ENCRYPTION TYPE");
@@ -308,7 +311,8 @@ ShadowRect {
             id: portBox
             width: parent.width
             visible: showOptions
-            font.family: "Roboto-Medium"
+            font.family: "Roboto"
+            font.weight: Font.Medium
             font.pixelSize: 16
             currentIndex: settings.serverProtocol(currentServer.address, encryptionBox.currentIndex)
 
@@ -344,7 +348,8 @@ ShadowRect {
                 spacing: 2
 
                 Text {
-                    font.family: "Roboto-Black"
+                    font.family: "Roboto"
+                    font.weight: Font.Black
                     font.pixelSize: 12
                     color: "#6C798F"
                     text: qsTr("PORT NO");
@@ -369,7 +374,7 @@ ShadowRect {
         Rectangle {
             id: connectButton
             width: parent.width
-            height: 48
+            height: 49
             radius: 5
             color: vpnservicemanager.vpnState == 0 ? "#2CC532" : vpnservicemanager.vpnState == 1 ? "#FFAB00" : "#C53232"
             visible: showButton
