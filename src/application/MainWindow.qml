@@ -285,7 +285,7 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 240
-            width: 210
+            width: 240
             height: 240
             source: "../images/large-logo.png"
         }
@@ -305,5 +305,41 @@ Rectangle {
         id: stack
         initialItem: mapPage
         anchors.fill: screen
+
+        popEnter: Transition {
+                  XAnimator {
+                      from: (stack.mirrored ? -1 : 1) * -stack.width
+                      to: 0
+                      duration: 2000
+                      easing.type: Easing.OutCubic
+                  }
+              }
+
+        popExit: Transition {
+          XAnimator {
+              from: 0
+              to: (stack.mirrored ? -1 : 1) * stack.width
+              duration: 2000
+              easing.type: Easing.OutCubic
+          }
+        }
+
+        pushEnter: Transition {
+                  XAnimator {
+                      from: (stack.mirrored ? -1 : 1) * stack.width
+                      to: 0
+                      duration: 2000
+                      easing.type: Easing.OutCubic
+                  }
+              }
+
+        pushExit: Transition {
+          XAnimator {
+              from: 0
+              to: (stack.mirrored ? -1 : 1) * -stack.width
+              duration: 2000
+              easing.type: Easing.OutCubic
+          }
+        }
     }
 }
