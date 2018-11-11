@@ -49,12 +49,21 @@ Item {
             model: serversModel
             spacing: 10
             clip: true
+            currentIndex: settings.server
+            focus: true
             delegate:
                 ServerCard {
+                    expandable: false
                     currentServer: serversModel.server(index)
-                    expandable: true
                     isCurrentServer: index == settings.server
+                    showOptions: index == allServersList.currentIndex
+                    showButton: index == allServersList.currentIndex
 
+                    MouseArea {
+                        cursorShape: Qt.PointingHandCursor
+                        anchors.fill: parent
+                        onClicked: { allServersList.currentIndex = index; }
+                    }
             }
         }
     }
