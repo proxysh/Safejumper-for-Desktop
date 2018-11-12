@@ -67,6 +67,9 @@ class Setting: public QObject
     Q_PROPERTY(QStringList languages READ languages NOTIFY languageChanged)
 
     Q_PROPERTY(int server READ serverID WRITE setServer NOTIFY serverChanged)
+    // Property for which server is visible in the "favorite" box above the server
+    // card on the map page
+    Q_PROPERTY(int favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
 
 public:
     ~Setting();
@@ -120,6 +123,9 @@ public:
     QString serverAddress();			// "" if none
     int serverID();				// -1 if none selected
     QString port();				// "" if none
+
+    int favorite();
+    void setFavorite(int id);
 
     QString localPort();
     void setLocalPort(QString port);
@@ -209,6 +215,7 @@ signals:
     void encryptionChanged();
     void protocolChanged();
     void serverChanged();
+    void favoriteChanged();
 
     void startupChanged();
     void autoconnectChanged();

@@ -174,7 +174,7 @@ Rectangle {
         }
         onLogsScreen: {
             // Show logs popup
-            screen.pop(null); // First pop back to map page
+            stack.pop(null); // First pop back to map page
             screen.showPopup(logsPopup);
         }
     }

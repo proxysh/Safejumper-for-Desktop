@@ -33,10 +33,12 @@ Item {
     signal showLogin()
 
     property Server currentServer: serversModel.server(settings.server)
+    property Server favoriteServer: serversModel.server(settings.favorite)
 
     function refresh()
     {
         currentServer = serversModel.server(settings.server)
+        favoriteServer = serversModel.server(settings.favorite)
         var iso = currentServer.iso
         currentServerCard.currentServer = currentServer;
         background.source = "../maps/" + iso + vpnservicemanager.stateMapSuffix
@@ -59,6 +61,9 @@ Item {
     Connections {
         target: settings
         onServerChanged: {
+            refresh();
+        }
+        onFavoriteChanged: {
             refresh();
         }
     }
@@ -128,7 +133,7 @@ Item {
                         Layout.preferredHeight: 26
                         fillMode: Image.Stretch
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                        source: "../roundflags/" + currentServer.iso + ".png"
+                        source: "../roundflags/" + favoriteServer.iso + ".png"
                         z: 2
 
                         Image {
@@ -148,13 +153,20 @@ Item {
                         font.weight: Font.Medium
                         font.pixelSize: 16
                         color: "#091E42"
-                        text: currentServer.name
+                        text: favoriteServer.name
                     }
 
                     Item {
                         Layout.fillWidth: true
                         height: 1
                         width: 1
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        settings.server = settings.favorite
                     }
                 }
             }

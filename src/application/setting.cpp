@@ -37,6 +37,7 @@ static const QString kPingEnabledKey = "pingEnabled";
 static const QString kEncryptionKey = "encryption";
 static const QString kLanguageKey = "language";
 static const QString kFavoritesKey = "favorites";
+static const QString kFavoriteKey = "favorite";
 static const QString kServerEncryptionKey = "serverEncryption%1";
 static const QString kServerProtocolKey = "serverProtocol%1-%2";
 
@@ -791,6 +792,17 @@ QString Setting::port()
     if (ix > -1 && ix < portnumbers.size())
         p = portnumbers.at(ix);
     return QString::number(p);
+}
+
+int Setting::favorite()
+{
+    return mSettings.value(kFavoriteKey, 0).toInt();
+}
+
+void Setting::setFavorite(int id)
+{
+    mSettings.setValue(kFavoriteKey, id);
+    emit favoriteChanged();
 }
 
 int Setting::determineNextPort()

@@ -265,7 +265,7 @@ void AuthManager::nextFavorite()
 {
     // Set server to next favorite
     // Find next favorite
-    int startIndex = Setting::instance()->serverID();
+    int startIndex = Setting::instance()->favorite();
     int index = startIndex;
     bool found = false;
     while (!found) {
@@ -281,7 +281,7 @@ void AuthManager::nextFavorite()
 
         if (mServersModel->server(index)->favorite()) {
             found = true;
-            Setting::instance()->setServer(index);
+            Setting::instance()->setFavorite(index);
         }
     }
 }
@@ -289,7 +289,7 @@ void AuthManager::nextFavorite()
 void AuthManager::previousFavorite()
 {
     // Set server to previous favorite
-    int startIndex = Setting::instance()->serverID();
+    int startIndex = Setting::instance()->favorite();
     int index = startIndex;
     bool found = false;
     while (!found) {
@@ -305,7 +305,7 @@ void AuthManager::previousFavorite()
 
         if (mServersModel->server(index)->favorite()) {
             found = true;
-            Setting::instance()->setServer(index);
+            Setting::instance()->setFavorite(index);
         }
     }
 }

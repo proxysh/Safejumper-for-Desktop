@@ -890,7 +890,7 @@ Item {
                     width: parent.width
                     height: 100
 
-                    color: "white"
+                    color: "lightgray"
                     radius: 5
 
                     Column {
@@ -909,7 +909,7 @@ Item {
                                 font.family: "Roboto"
                                 font.bold: true
                                 color: defaultColor
-                                text: qsTr("Check for Updates");
+                                text: qsTr("Updates");
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -919,7 +919,7 @@ Item {
                             font.pixelSize: 14
                             font.family: "Roboto"
                             color: "#6C798F"
-                            text: qsTr("Check for application updates.");
+                            text: qsTr("Check whether there is a software update available on the Internet.");
                             anchors.leftMargin: 20
                             anchors.left: parent.left
                             wrapMode: Text.WordWrap
