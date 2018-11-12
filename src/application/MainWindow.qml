@@ -185,10 +185,13 @@ Rectangle {
             splashScreen.visible = false;
         }
         onLoggedInChanged: {
-            if (authmanager.loggedIn && stack.currentItem.objectName == "loginPage")
+            if (authmanager.loggedIn && stack.currentItem.objectName == "loginPage") {
                 stack.pop();
+                loginPage.loginFinished();
+            }
         }
         onLoginError: {
+            loginPage.loginFinished();
             showError(message);
         }
     }

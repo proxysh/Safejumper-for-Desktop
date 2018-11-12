@@ -371,43 +371,54 @@ ShadowRect {
              }
         }
 
-        Rectangle {
+        Connections {
+            target: vpnservicemanager
+            onVpnStateChanged: {
+                connectButton.enabled = true;
+            }
+        }
+
+        Button {
             id: connectButton
             width: parent.width
             height: 49
-            radius: 5
-            color: vpnservicemanager.vpnState == 0 ? "#2CC532" : vpnservicemanager.vpnState == 1 ? "#FFAB00" : "#C53232"
             visible: showButton
 
-            Rectangle {
-                id: removeTopCorners
-                width: parent.width
-                anchors.top: parent.top
-                height: parent.radius
-                color: parent.color
-                visible: parent.visible
+            background: Rectangle {
+                radius: 5
+                color: vpnservicemanager.vpnState == 0 ? "#2CC532" : vpnservicemanager.vpnState == 1 ? "#FFAB00" : "#C53232"
+                opacity: enabled ? 1.0 : 0.3
+                layer.enabled: true
+
+                Rectangle {
+                    id: removeTopCorners
+                    width: parent.width
+                    anchors.top: parent.top
+                    height: 5
+                    color: parent.color
+                }
+
             }
 
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
+            contentItem: Text {
+                horizontalAlignment: Qt.AlignHCenter
+                verticalAlignment: Qt.AlignVCenter
                 text: vpnservicemanager.vpnState == 0 ? qsTr("CONNECT") : vpnservicemanager.vpnState == 1 ? qsTr("CONNECTING") : qsTr("DISCONNECT");
                 color: 'white'
+                opacity: enabled ? 1.0 : 0.3
                 font.family: "Roboto"
                 font.bold: true
                 font.pixelSize: 16
             }
 
-            MouseArea {
-                cursorShape: Qt.PointingHandCursor
-                anchors.fill: parent
-                onClicked: {
-                    // Select this server if it's not the current server
-                    if (settings.server != currentServer.id)
-                        settings.server = currentServer.id;
+            onClicked: {
+                connectButton.enabled = false
 
-                    screen.connectToVPN();
-                }
+                // Select this server if it's not the current server
+                if (settings.server != currentServer.id)
+                    settings.server = currentServer.id;
+
+                screen.connectToVPN();
             }
         }
 

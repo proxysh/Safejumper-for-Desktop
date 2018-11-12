@@ -28,6 +28,11 @@ Rectangle {
     signal closeClicked()
     signal signupClicked()
 
+    function loginFinished()
+    {
+        loginButton.enabled = true;
+    }
+
     Column {
         id: loginColumn
         anchors.horizontalCenter: parent.horizontalCenter
@@ -206,16 +211,20 @@ Rectangle {
             }
         }
 
-        ShadowRect {
+        Button {
             id: loginButton
             width: parent.width
             height: 56
-            color: defaultColor
-            radius: 5
+            background: ShadowRect {
+                opacity: enabled ? 1 : 0.3
+                color: defaultColor
+                radius: 5
+            }
 
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
+            contentItem: Text {
+                opacity: enabled ? 1.0 : 0.3
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 16
                 font.family: "Roboto"
                 font.bold: true
@@ -223,12 +232,9 @@ Rectangle {
                 text: qsTr("LOGIN");
             }
 
-            MouseArea {
-                cursorShape: Qt.PointingHandCursor
-                anchors.fill: parent
-                onClicked: {
-                    authmanager.login(emailInput.text, passwordInput.text);
-                }
+            onClicked: {
+                enabled = false;
+                authmanager.login(emailInput.text, passwordInput.text);
             }
         }
 
