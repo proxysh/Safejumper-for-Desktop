@@ -64,6 +64,7 @@ Column {
             Text {
                 font.family: "Roboto"
                 font.pixelSize: 18
+                font.weight: Font.Medium
                 color: "#6C798F"
                 text: confirmationPopup.subtitle
                 horizontalAlignment: Qt.AlignHCenter

@@ -332,8 +332,7 @@ void TrayIconManager::webManagTriggered()
 
 void TrayIconManager::supportTriggered()
 {
-    MainWindow::instance()->closeWindow();
-    OpenUrl_Support();
+    MainWindow::instance()->launchCustomerService();
 }
 
 void TrayIconManager::earnTriggered()

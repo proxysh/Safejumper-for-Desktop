@@ -42,16 +42,22 @@ Rectangle {
 
     function showPopup(component)
     {
+        if (screen.blur) {
+            // Already showing a popup, so hide all popups
+            hidePopup(customerServicePopup);
+            hidePopup(errorPopup);
+            hidePopup(logoutConfirmation);
+            hidePopup(exitConfirmation);
+        }
+
         screen.blur = true;
         component.visible = true;
-        console.log("mainwindow showPopup called with component " + component);
     }
 
     function hidePopup(component)
     {
         screen.blur = false;
         component.visible = false;
-        console.log("mainwindow hidePopup called with component " + component);
     }
 
     function showLogin()
@@ -150,6 +156,16 @@ Rectangle {
 
     }
 
+    CustomerServicePopup {
+        id: customerServicePopup
+        visible: false
+        z: 20
+        onLaunchCSSite: {
+            screen.hidePopup(customerServicePopup);
+            mainwindow.launchCustomerService();
+        }
+    }
+
     Connections {
         target: mainwindow
         onConfirmExit: { screen.showPopup(exitConfirmation); }
@@ -233,6 +249,10 @@ Rectangle {
         onCloseClicked: { stack.pop(); }
         onLogoutClicked: {
             screen.logout();
+        }
+        onCustomerServiceClicked: {
+            stack.pop(null); // First go back to map page
+            screen.showPopup(customerServicePopup);
         }
     }
 

@@ -178,6 +178,11 @@ void MainWindow::copyLogsToClipboard() const
     clipboard->setText(logText);
 }
 
+void MainWindow::launchCustomerService() const
+{
+    OpenUrl_Support();
+}
+
 QPointer<MainWindow> MainWindow::mInstance;
 MainWindow * MainWindow::instance()
 {

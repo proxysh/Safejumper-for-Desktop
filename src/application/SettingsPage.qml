@@ -25,6 +25,7 @@ Item {
 
     signal closeClicked()
     signal logoutClicked();
+    signal customerServiceClicked();
 
     property bool blur: false
 
@@ -202,6 +203,14 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: 20
                     source: "../images/question.png"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            settingsPage.customerServiceClicked();
+                        }
+                    }
                 }
             }
         }
@@ -234,6 +243,7 @@ Item {
 
                     Column {
                         anchors.fill: parent
+                        spacing: 0
 
                         RowLayout {
                             // Account details header
@@ -266,7 +276,7 @@ Item {
 
                         RowLayout {
                             width: parent.width
-                            height: 39
+                            height: 38
 
                             Text {
                                 font.pixelSize: 12
@@ -281,6 +291,7 @@ Item {
                             Text {
                                 font.pixelSize: 16
                                 font.family: "Roboto"
+                                font.weight: Font.Medium
                                 color: "#091E42"
                                 text: authmanager.email
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -297,7 +308,7 @@ Item {
 
                         RowLayout {
                             width: parent.width
-                            height: 39
+                            height: 38
 
                             Text {
                                 font.pixelSize: 12
@@ -312,6 +323,7 @@ Item {
                             Text {
                                 font.pixelSize: 16
                                 font.family: "Roboto"
+                                font.weight: Font.Medium
                                 color: "#091E42"
                                 text: authmanager.subscription
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -328,7 +340,7 @@ Item {
 
                         RowLayout {
                             width: parent.width
-                            height: 39
+                            height: 38
 
                             Text {
                                 font.pixelSize: 12
@@ -343,6 +355,7 @@ Item {
                             Text {
                                 font.pixelSize: 16
                                 font.family: "Roboto"
+                                font.weight: Font.Medium
                                 color: "#091E42"
                                 text: authmanager.expiration
                                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -371,7 +384,7 @@ Item {
                                 font.family: "Roboto"
                                 font.bold: true
                                 color: "white"
-                                text: qsTr("UPGRADE YOUR ACCOUNT");
+                                text: qsTr("MANAGE YOUR ACCOUNT");
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.verticalCenter: parent.verticalCenter
                             }

@@ -37,17 +37,24 @@ ShadowRect {
     RowLayout {
         id: titleRow
         width: parent.width
+        anchors.top: parent.top
+        anchors.topMargin: 16
 
         Text {
             font.family: "Roboto"
             font.bold: true
             font.pixelSize: 16
+            lineHeight: 24
+            lineHeightMode: Text.FixedHeight
             color: defaultColor
             text: title
+            elide: Text.ElideRight
             Layout.leftMargin: 20
         }
 
         Image {
+            Layout.preferredWidth: 64
+            Layout.preferredHeight: 42
             Layout.rightMargin: 10
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             source: toggleSetting.toggleChecked ? "../images/checked-toggle.png" : "../images/unchecked-toggle.png"
@@ -69,10 +76,13 @@ ShadowRect {
         id: body
         width: 295
         anchors.top: titleRow.bottom
-        anchors.topMargin: 20
+        anchors.topMargin: 8
         anchors.horizontalCenter: parent.horizontalCenter
         font.family: "Roboto"
         font.pixelSize: 14
+        font.weight: Text.Normal
+        lineHeight: 20
+        lineHeightMode: Text.FixedHeight
         color: "#6C798F"
         text: content
         wrapMode: Text.WordWrap

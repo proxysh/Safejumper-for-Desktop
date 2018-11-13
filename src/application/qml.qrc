@@ -18,5 +18,6 @@
         <file>HeaderBar.qml</file>
         <file>LogsPopup.qml</file>
         <file>ShadowRect.qml</file>
+        <file>CustomerServicePopup.qml</file>
     </qresource>
 </RCC>

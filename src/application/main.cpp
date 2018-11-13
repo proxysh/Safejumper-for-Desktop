@@ -61,11 +61,12 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont(":/fonts/Roboto-Black.ttf");
     QFontDatabase::addApplicationFont(":/fonts/Roboto-Bold.ttf");
     QFontDatabase::addApplicationFont(":/fonts/Roboto-Medium.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Regular.ttf");
 
-    QFontDatabase database;
-    Q_FOREACH(const QString &family, database.families()) {
-        qDebug() << "Found font with family: " << family;
-    }
+//    QFontDatabase database;
+//    Q_FOREACH(const QString &family, database.families()) {
+//        qDebug() << "Found font with family: " << family;
+//    }
 
     Log::logt("Starting Application");
     MainWindow::instance()->show();

@@ -46,6 +46,7 @@ public:
     const QString logsContent() const;
 
     Q_INVOKABLE void copyLogsToClipboard() const;
+    Q_INVOKABLE void launchCustomerService() const;
 
 public slots:
     void portDialogResult(bool cyclePort);
