@@ -363,6 +363,11 @@ Item {
                             }
                         }
 
+                        Item {
+                            width: parent.width
+                            height: 3
+                        }
+
                         Rectangle {
                             // Upgrade account button
                             color: "#2CC532"

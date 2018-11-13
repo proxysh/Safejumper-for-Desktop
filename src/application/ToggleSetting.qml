@@ -50,12 +50,13 @@ ShadowRect {
             text: title
             elide: Text.ElideRight
             Layout.leftMargin: 20
+            Layout.maximumWidth: 231
         }
 
         Image {
             Layout.preferredWidth: 64
             Layout.preferredHeight: 42
-            Layout.rightMargin: 10
+            Layout.rightMargin: 18
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             source: toggleSetting.toggleChecked ? "../images/checked-toggle.png" : "../images/unchecked-toggle.png"
 
