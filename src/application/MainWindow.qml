@@ -212,11 +212,62 @@ Rectangle {
         }
     }
 
+    // Popup used for selecting encryption for all servers cards
+    SelectionPopup {
+        id: encryptionPopup
+        title: qsTr("Encryption");
+        subtitle: qsTr("Select your desired encryption type.");
+        visible: false
+        itemModel: encryptionModel
+        z: 20
+
+        onItemSelected: {
+            hidePopup(encryptionPopup);
+            allServersPage.setEncryption(index);
+        }
+
+        onCancel: {
+            hidePopup(encryptionPopup);
+        }
+    }
+
+    // Popup used for selecting port on all servers page cards
+    SelectionPopup {
+        id: portPopup
+        title: qsTr("Port");
+        subtitle: qsTr("Select the port you would like to use.");
+        visible: false
+        itemModel: settings.ports
+        z: 20
+
+        onItemSelected: {
+            hidePopup(portPopup);
+            console.log("Item selected at index " + index);
+            allServersPage.setPort(index);
+        }
+
+        onCancel: {
+            hidePopup(portPopup);
+        }
+    }
+
     AllServersPage {
         id: allServersPage
         objectName: "allServersPage"
         onMenuClicked: { stack.push(menuPage); }
         onSettingsClicked: { stack.push(settingsPage); }
+        onSelectEncryption: {
+            console.log("onSelectEncryption called in mainwindow");
+            encryptionPopup.selectedIndex = settings.serverEncryption(serversModel.server(index).address);
+            showPopup(encryptionPopup);
+        }
+
+        onSelectPort: {
+            var serverAddress = serversModel.server(index).address;
+            var encryption = settings.serverEncryption(serverAddress)
+            portPopup.selectedIndex = settings.serverProtocol(serverAddress, encryption);
+            showPopup(portPopup);
+        }
     }
 
     MapPage {

@@ -26,7 +26,7 @@ import vpn.server 1.0
 ShadowRect {
     id: serverCard
 
-    property bool expandable: true
+    property bool selectable: true
 
     // Whether or not to show encryption and port options
     property bool showOptions: false
@@ -46,24 +46,33 @@ ShadowRect {
     property string serverEncryptionType: "SHA1"
     property string serverPort: "500"
 
-    signal showLogin();
+    signal selected();
+
+    signal selectEncryption(int index);
+    signal selectPort(int index);
 
     function toggleFavorite() {
         currentServer.favorite = !currentServer.favorite;
     }
 
-    function toggleExpansion() {
-        // Do nothing if not expandable
-        if (expandable) {
-            if (showOptions) {
-                showOptions = false;
-                showButton = false;
-            } else {
-                showOptions = true;
-                showButton = true;
-            }
-        }
+    function refresh() {
+        encryptionText.text = settings.encryptionNameForIndex(settings.serverEncryption(currentServer.address));
+        protocolText.text = settings.protocolNameForIndex(settings.serverEncryption(currentServer.address),
+                                         settings.serverProtocol(currentServer.address, encryptionBox.currentIndex));
     }
+
+//    function toggleExpansion() {
+//        // Do nothing if not expandable
+//        if (expandable) {
+//            if (showOptions) {
+//                showOptions = false;
+//                showButton = false;
+//            } else {
+//                showOptions = true;
+//                showButton = true;
+//            }
+//        }
+//    }
 
     width: 335
     height: serverColumn.height
@@ -71,10 +80,10 @@ ShadowRect {
     radius: 5
 
     MouseArea {
-        cursorShape: expandable ? Qt.PointingHandCursor : Qt.ArrowCursor
+        cursorShape: selectable ? Qt.PointingHandCursor : Qt.ArrowCursor
         anchors.fill: parent
         onClicked: {
-            toggleExpansion();
+            serverCard.selected();
         }
     }
 
@@ -235,68 +244,63 @@ ShadowRect {
             visible: showOptions
         }
 
-        ComboBox {
+        RowLayout {
             id: encryptionBox
-            width: parent.width
+            width: parent.width - 40 // 20px on either side
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: 57
             visible: showOptions
-            font.family: "Roboto"
-            font.weight: Font.Medium
-            font.pixelSize: 16
-            currentIndex: settings.serverEncryption(currentServer.address)
 
-            onActivated: {
-                settings.setServerEncryption(currentServer.address, index);
-            }
-
-            model: encryptionModel
-
-            delegate: ItemDelegate {
-                      width: encryptionBox.width
-                      contentItem: Text {
-                          text: modelData
-                          font: encryptionBox.font
-                          elide: Text.ElideRight
-                          verticalAlignment: Text.AlignVCenter
-                      }
-                highlighted: encryptionBox.highlightedIndex === index
-            }
-
-            indicator: Image {
-                x: encryptionBox.width - width - encryptionBox.rightPadding
-                y: encryptionBox.topPadding + (encryptionBox.availableHeight - height) / 2
-                width: 10
-                height: 6
-                source: "../images/down-arrow.png"
-            }
-
-            contentItem: Column {
+            Column {
                 topPadding: 12
-                leftPadding: 20
-                rightPadding: encryptionBox.indicator.width + encryptionBox.spacing
+                rightPadding: 30
                 spacing: 2
 
                 Text {
                     font.family: "Roboto"
                     font.weight: Font.Black
                     font.pixelSize: 12
+                    lineHeight: 16
+                    lineHeightMode: Text.FixedHeight
                     color: "#6C798F"
                     text: qsTr("ENCRYPTION TYPE");
                 }
 
                 Text {
-                     text: encryptionBox.displayText
-                     font: encryptionBox.font
-                     color: "#172B4D"
-                     verticalAlignment: Text.AlignVCenter
-                     elide: Text.ElideRight
+                    id: encryptionText
+                    text: settings.encryptionNameForIndex(settings.serverEncryption(currentServer.address))
+                    font.family: "Roboto"
+                    font.weight: Font.Medium
+                    font.pixelSize: 16
+                    lineHeight: 20
+                    lineHeightMode: Text.FixedHeight
+                    color: "#172B4D"
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
                  }
             }
 
-             background: Rectangle {
-                 implicitWidth: 120
-                 implicitHeight: 58
-                 color: "white"
-             }
+            Item {
+                height: parent.height
+                width: 1
+                Layout.fillWidth: true
+            }
+
+            Image {
+                width: 10
+                height: 6
+                source: "../images/down-arrow.png"
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        console.log("encryption drop down selected, calling selectEncryption");
+                        serverCard.selectEncryption(currentServer.id);
+                    }
+                }
+            }
         }
 
         Rectangle {
@@ -307,68 +311,64 @@ ShadowRect {
             visible: showOptions
         }
 
-        ComboBox {
+        RowLayout {
             id: portBox
-            width: parent.width
+            width: parent.width - 40 // 20px on either side
+            anchors.horizontalCenter: parent.horizontalCenter
+            height: 57
             visible: showOptions
-            font.family: "Roboto"
-            font.weight: Font.Medium
-            font.pixelSize: 16
-            currentIndex: settings.serverProtocol(currentServer.address, encryptionBox.currentIndex)
 
-            onActivated: {
-                settings.setServerProtocol(currentServer.address, encryptionBox.currentIndex, index);
-            }
-
-            model: settings.portsForEncryption(encryptionBox.currentIndex)
-
-            delegate: ItemDelegate {
-                      width: portBox.width
-                      contentItem: Text {
-                          text: modelData
-                          font: portBox.font
-                          elide: Text.ElideRight
-                          verticalAlignment: Text.AlignVCenter
-                      }
-                highlighted: portBox.highlightedIndex === index
-            }
-
-            indicator: Image {
-                x: portBox.width - width - portBox.rightPadding
-                y: portBox.topPadding + (portBox.availableHeight - height) / 2
-                width: 10
-                height: 6
-                source: "../images/down-arrow.png"
-            }
-
-            contentItem: Column {
+            Column {
                 topPadding: 12
-                leftPadding: 20
-                rightPadding: portBox.indicator.width + portBox.spacing
+                rightPadding: 30
                 spacing: 2
 
                 Text {
                     font.family: "Roboto"
                     font.weight: Font.Black
                     font.pixelSize: 12
+                    lineHeight: 16
+                    lineHeightMode: Text.FixedHeight
                     color: "#6C798F"
                     text: qsTr("PORT NO");
                 }
 
                 Text {
-                     text: portBox.displayText
-                     font: portBox.font
-                     color: "#172B4D"
-                     verticalAlignment: Text.AlignVCenter
-                     elide: Text.ElideRight
+                    id: protocolText
+                    text: settings.protocolNameForIndex(settings.serverEncryption(currentServer.address),
+                                                     settings.serverProtocol(currentServer.address, encryptionBox.currentIndex))
+                    font.family: "Roboto"
+                    font.weight: Font.Medium
+                    font.pixelSize: 16
+                    lineHeight: 20
+                    lineHeightMode: Text.FixedHeight
+                    color: "#172B4D"
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
                  }
             }
 
-             background: Rectangle {
-                 implicitWidth: 120
-                 implicitHeight: 58
-                 color: "white"
-             }
+            Item {
+                height: parent.height
+                width: 1
+                Layout.fillWidth: true
+            }
+
+            Image {
+                width: 10
+                height: 6
+                source: "../images/down-arrow.png"
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        console.log("port drop down selected, calling selectPort");
+                        serverCard.selectPort(currentServer.id);
+                    }
+                }
+            }
         }
 
         Connections {

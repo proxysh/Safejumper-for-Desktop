@@ -479,6 +479,23 @@ QString Setting::encryptionName()
     return encryptionNames.at(currentEncryption);
 }
 
+QString Setting::encryptionNameForIndex(int index)
+{
+    if (index >= 0 && index < encryptionNames.size())
+        return encryptionNames.at(index);
+    return QString();
+}
+
+QString Setting::protocolNameForIndex(int encryption, int index)
+{
+    if (mPortsByEncryption.contains(encryption)) {
+        QStringList names = mPortsByEncryption.value(encryption);
+        if (index >= 0 && index < names.size())
+            return names.at(index);
+    }
+    return QString();
+}
+
 QString Setting::encryptionCount()
 {
     return tr("%1 OPTIONS AVAILABLE").arg(encryptionNames.count());

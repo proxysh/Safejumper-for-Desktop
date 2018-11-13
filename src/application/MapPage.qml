@@ -186,7 +186,7 @@ Item {
         ServerCard {
             id: currentServerCard
             showButton: true
-            expandable: false
+            selectable: false
             showState: true
             isCurrentServer: true
         }

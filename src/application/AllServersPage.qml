@@ -25,7 +25,24 @@ Item {
 
     signal menuClicked()
     signal settingsClicked()
-    signal allServersClicked()
+
+    signal selectEncryption(int index)
+    signal selectPort(int index)
+
+    function setEncryption(index)
+    {
+        // Set the encryption type for the currently selected server
+        settings.setServerEncryption(serversModel.server(allServersList.currentIndex).address, index);
+        allServersList.currentItem.refresh();
+    }
+
+    function setPort(index)
+    {
+        // Set the port for the currently selected server
+        var encryption = settings.serverEncryption(allServersList.currentIndex)
+        settings.setServerProtocol(serversModel.server(allServersList.currentIndex).address, encryption, index);
+        allServersList.currentItem.refresh();
+    }
 
     Rectangle {
         id: guiRectangle
@@ -53,16 +70,24 @@ Item {
             focus: true
             delegate:
                 ServerCard {
-                    expandable: false
+                    selectable: true
                     currentServer: serversModel.server(index)
                     isCurrentServer: index == settings.server
                     showOptions: index == allServersList.currentIndex
                     showButton: index == allServersList.currentIndex
 
-                    MouseArea {
-                        cursorShape: Qt.PointingHandCursor
-                        anchors.fill: parent
-                        onClicked: { allServersList.currentIndex = index; }
+                    onSelected: {
+                        allServersList.currentIndex = index;
+                    }
+
+                    onSelectEncryption: {
+                        console.log("onSelectEncryption called in allserverspage");
+                        allServersPage.selectEncryption(index);
+                    }
+
+                    onSelectPort: {
+                        console.log("onSelectPort called in allserverspage");
+                        allServersPage.selectPort(index);
                     }
             }
         }

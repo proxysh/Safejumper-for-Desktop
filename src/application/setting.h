@@ -169,6 +169,10 @@ public:
     // Name of current encryption type
     QString encryptionName();
 
+    Q_INVOKABLE QString encryptionNameForIndex(int index);
+
+    Q_INVOKABLE QString protocolNameForIndex(int encryption, int index);
+
     // A string to show how many encryption options are available
     QString encryptionCount();
 
