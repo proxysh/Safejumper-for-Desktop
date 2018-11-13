@@ -16,5 +16,19 @@
         <file>fonts/Roboto-Regular.ttf</file>
         <file>fonts/Roboto-Thin.ttf</file>
         <file>fonts/Roboto-ThinItalic.ttf</file>
+	<file>fonts/Nunito-Black.ttf</file>
+	<file>fonts/Nunito-BlackItalic.ttf</file>
+	<file>fonts/Nunito-Bold.ttf</file>
+	<file>fonts/Nunito-BoldItalic.ttf</file>
+	<file>fonts/Nunito-ExtraBold.ttf</file>
+	<file>fonts/Nunito-ExtraBoldItalic.ttf</file>
+	<file>fonts/Nunito-ExtraLight.ttf</file>
+	<file>fonts/Nunito-ExtraLightItalic.ttf</file>
+	<file>fonts/Nunito-Italic.ttf</file>
+	<file>fonts/Nunito-Light.ttf</file>
+	<file>fonts/Nunito-LightItalic.ttf</file>
+	<file>fonts/Nunito-Regular.ttf</file>
+	<file>fonts/Nunito-SemiBold.ttf</file>
+	<file>fonts/Nunito-SemiBoldItalic.ttf</file>
     </qresource>
 </RCC>

@@ -23,6 +23,7 @@
 #endif
 
 #include <QApplication>
+#include <QDirIterator>
 #include <QFontDatabase>
 #include <QTranslator>
 #ifndef Q_OS_OSX
@@ -57,11 +58,12 @@ int main(int argc, char *argv[])
 
     g_pTheApp = new THE_APP_CLASS(argc, argv);
 
-    QFontDatabase::addApplicationFont(":/fonts/Roboto.ttf");
-    QFontDatabase::addApplicationFont(":/fonts/Roboto-Black.ttf");
-    QFontDatabase::addApplicationFont(":/fonts/Roboto-Bold.ttf");
-    QFontDatabase::addApplicationFont(":/fonts/Roboto-Medium.ttf");
-    QFontDatabase::addApplicationFont(":/fonts/Roboto-Regular.ttf");
+    QDirIterator it(":/fonts");
+    while (it.hasNext()) {
+        QString fontFile = it.next();
+//        qDebug() << "Adding font from file " << fontFile;
+        QFontDatabase::addApplicationFont(fontFile);
+    }
 
 //    QFontDatabase database;
 //    Q_FOREACH(const QString &family, database.families()) {
