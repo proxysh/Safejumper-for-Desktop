@@ -75,7 +75,7 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             height: 28
             font.family: "Roboto"
-            font.weight: bold
+            font.bold: true
             font.pixelSize: 24
             color: "#172B4D"
             text: qsTr("Log into your account.");
