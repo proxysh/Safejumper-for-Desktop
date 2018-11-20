@@ -110,6 +110,8 @@ void ServersModel::updateServers(const QJsonArray &servers)
 {
     beginResetModel();
 
+    mServers.clear();
+
     QStringList tlsPortsList;
     QList<int> tlsPortNumbersList;
 
