@@ -84,8 +84,9 @@ Rectangle {
             vpnservicemanager.sendConnectToVPNRequest();
     }
 
-    function showError(message)
+    function loginError(message)
     {
+        errorPopup.title = qsTr("Incorrect credentials");
         errorPopup.subtitle = message;
         showPopup(errorPopup);
     }
@@ -208,7 +209,7 @@ Rectangle {
         }
         onLoginError: {
             loginPage.loginFinished();
-            showError(message);
+            loginError(message);
         }
     }
 

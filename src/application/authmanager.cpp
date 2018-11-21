@@ -1032,10 +1032,10 @@ QString AuthManager::processLoginResult()
 
         if (userStatus == 0)
             // Disabled account
-            return tr("Account is disabled");
+            return tr("The email and the password you've submitted do not match our database.");
 
         if (expiration.daysTo(QDate::currentDate()) > 0)
-            return tr("Account is expired");
+            return tr("The account has expired");
 
         mSubscription = subscriptions.at(userType);
         emit subscriptionChanged();

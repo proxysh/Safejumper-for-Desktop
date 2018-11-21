@@ -37,7 +37,7 @@ Column {
         id: errorBox
 
         width: 335
-        height: messageColumn.childrenRect.height + 36 + 36
+        height: messageColumn.childrenRect.height + 28 + 28
         color: "white"
         radius: 5
 
@@ -45,9 +45,9 @@ Column {
             id: messageColumn
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.topMargin: 36
+            anchors.topMargin: 28
             anchors.top: parent.top
-            spacing: 0
+            spacing: 16
 
             Text {
                 font.family: "Roboto"
@@ -67,6 +67,7 @@ Column {
                 width: 335-40 // 20px margin on both sides
                 wrapMode: Text.WordWrap
                 anchors.horizontalCenter: parent.horizontalCenter
+                horizontalAlignment: Text.AlignHCenter | Text.AlignVCenter
             }
         }
     } // End of rect
