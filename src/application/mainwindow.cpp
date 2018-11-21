@@ -93,6 +93,11 @@ MainWindow::MainWindow() :
     connect(TrayIconManager::instance(), &TrayIconManager::logsTriggered,
             this, &MainWindow::showLogs);
 
+#ifndef Q_OS_DARWIN
+    connect(g_pTheApp, &QtSingleApplication::messageReceived,
+            this, &MainWindow::messageReceived);
+#endif
+
     if (Setting::instance()->autoconnect())
         AuthManager::instance()->login(Setting::instance()->login(), Setting::instance()->password());
     else
@@ -379,5 +384,12 @@ void MainWindow::exitTriggered()
 {
     showAndFocus();
     emit confirmExit();
+}
+
+void MainWindow::messageReceived(const QString &message)
+{
+    if (message == "show") {
+        showAndFocus();
+    }
 }
 

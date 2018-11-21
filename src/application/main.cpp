@@ -70,6 +70,12 @@ int main(int argc, char *argv[])
 //        qDebug() << "Found font with family: " << family;
 //    }
 
+#ifndef Q_OS_DARWIN
+    if (g_pTheApp->isRunning()) {
+        return g_pTheApp->sendMessage("show");
+    }
+#endif
+
     Log::logt("Starting Application");
     MainWindow::instance()->show();
     int res = g_pTheApp->exec();

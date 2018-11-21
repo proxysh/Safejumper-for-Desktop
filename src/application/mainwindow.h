@@ -88,6 +88,8 @@ private slots:
 
     void exitTriggered();
 
+    void messageReceived(const QString &message);
+
 private:
     static QPointer<MainWindow> mInstance;
     explicit MainWindow();
