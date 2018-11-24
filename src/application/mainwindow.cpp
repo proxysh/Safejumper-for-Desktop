@@ -30,11 +30,13 @@
 
 #include <QClipboard>
 #include <QDesktopServices>
+#include <QDesktopWidget>
 #include <QHttpMultiPart>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QStyle>
 #include <QTextStream>
 
 #ifdef Q_OS_DARWIN
@@ -78,6 +80,15 @@ MainWindow::MainWindow() :
     setFlags(Qt::Dialog);
     setIcon(QIcon(":/images/logo.png"));
     setTitle(kAppName);
+
+    setGeometry(
+        QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            size(),
+            qApp->desktop()->availableGeometry()
+        )
+    );
 
     // Setting::Instance()->LoadServer();
     Setting::instance()->loadProtocol();
