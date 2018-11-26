@@ -101,7 +101,7 @@ Column {
             id: selectionColumn
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.topMargin: 36
+            anchors.topMargin: 30
             anchors.top: parent.top
             spacing: 0
 
@@ -112,6 +112,11 @@ Column {
                 color: defaultColor
                 text: selectionPopup.title
                 anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            Item {
+                height: 10
+                width: parent.width
             }
 
             Text {
