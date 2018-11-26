@@ -62,6 +62,13 @@ Column {
                     checked: selectionPopup.selectedIndex == index
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        acceptedButtons: Qt.NoButton
+                    }
+
                     indicator: Image {
                               x: radioButton.leftPadding
                               y: parent.height / 2 - height / 2
@@ -70,7 +77,8 @@ Column {
 
                     contentItem: Text {
                               text: radioButton.text
-                              font.family: "Nunito-SemiBold"
+                              font.family: "Nunito"
+                              font.weight: Font.Bold
                               font.pixelSize: 16
                               opacity: 1
                               color: "#020433"
