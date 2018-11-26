@@ -190,12 +190,18 @@ Rectangle {
             font.weight: Font.Medium
             font.pixelSize: 16
 
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                acceptedButtons: Qt.NoButton
+            }
+
             indicator: Image {
                 x: rememberButton.leftPadding
                 y: parent.height / 2 - height / 2
                 width: 26
                 height: 26
-                source: rememberButton.checked ? "../images/checkedcircle.png" : "../images/empty-radio-button.png";
+                source: rememberButton.checked ? "../images/checkedcircle.png" : "../images/emptycircle.png";
             }
 
             contentItem: Text {
@@ -215,6 +221,13 @@ Rectangle {
             id: loginButton
             width: parent.width
             height: 56
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                acceptedButtons: Qt.NoButton
+            }
+
             background: ShadowRect {
                 opacity: enabled ? 1 : 0.3
                 color: defaultColor

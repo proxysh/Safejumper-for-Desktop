@@ -150,6 +150,14 @@ Item {
         }
     }
 
+    UpdatesPopup {
+        id: updatesPopup
+        z: 20
+        onCancel: {
+            hidePopup(updatesPopup);
+        }
+    }
+
     Rectangle {
         id: guiRectangle
         color: "#F4F5F7"
@@ -218,8 +226,8 @@ Item {
         Flickable {
             width: parent.width
             anchors.top: headerArea.bottom
-            anchors.topMargin: 20
-            anchors.bottomMargin: 20
+            anchors.topMargin: 5
+            anchors.bottomMargin: 5
             anchors.bottom: parent.bottom
             contentHeight: settingsColumn.childrenRect.height
             clip: true
@@ -418,7 +426,7 @@ Item {
                 }
 
                 ToggleSetting {
-                    title: qsTr("Reconnect when VPN disconnects");
+                    title: qsTr("Auto-reconnect VPN");
                     content: qsTr("App will automatically attempt to reconnect to VPN when it disconnects.");
                     toggleChecked: settings.reconnect
                     onToggled: { settings.reconnect = toggleChecked; }
@@ -445,6 +453,12 @@ Item {
                     color: "white"
                     radius: 5
 
+                    MouseArea {
+                        cursorShape: Qt.PointingHandCursor
+                        anchors.fill: parent
+                        onClicked: { showPopup(encryptionPopup); }
+                    }
+
                     Column {
                         anchors.fill: parent
 
@@ -470,11 +484,6 @@ Item {
                                 width: 18
                                 height: 18
 
-                                MouseArea {
-                                    cursorShape: Qt.PointingHandCursor
-                                    anchors.fill: parent
-                                    onClicked: { showPopup(encryptionPopup); }
-                                }
                             }
                         }
 
@@ -521,6 +530,15 @@ Item {
                     color: "white"
                     radius: 5
 
+                    MouseArea {
+                        cursorShape: Qt.PointingHandCursor
+                        anchors.fill: parent
+                        onClicked:
+                            {
+                                showPopup(portPopup);
+                            }
+                    }
+
                     Column {
                         anchors.fill: parent
 
@@ -545,15 +563,6 @@ Item {
                                 Layout.rightMargin: 20
                                 width: 18
                                 height: 18
-
-                                MouseArea {
-                                    cursorShape: Qt.PointingHandCursor
-                                    anchors.fill: parent
-                                    onClicked:
-                                        {
-                                            showPopup(portPopup);
-                                        }
-                                }
                             }
                         }
 
@@ -614,6 +623,12 @@ Item {
                     color: "white"
                     radius: 5
 
+                    MouseArea {
+                        cursorShape: Qt.PointingHandCursor
+                        anchors.fill: parent;
+                        onClicked: { showPopup(dnsPopup); }
+                    }
+
                     Column {
                         anchors.fill: parent
 
@@ -638,12 +653,6 @@ Item {
                                 Layout.rightMargin: 20
                                 width: 18
                                 height: 18
-
-                                MouseArea {
-                                    cursorShape: Qt.PointingHandCursor
-                                    anchors.fill: parent;
-                                    onClicked: { showPopup(dnsPopup); }
-                                }
                             }
                         }
 
@@ -730,6 +739,15 @@ Item {
                     color: "white"
                     radius: 5
 
+                    MouseArea {
+                        cursorShape: Qt.PointingHandCursor
+                        anchors.fill: parent
+                        onClicked:
+                            {
+                                showPopup(localPortPopup);
+                            }
+                    }
+
                     Column {
                         anchors.fill: parent
 
@@ -754,15 +772,6 @@ Item {
                                 Layout.rightMargin: 20
                                 width: 18
                                 height: 18
-
-                                MouseArea {
-                                    cursorShape: Qt.PointingHandCursor
-                                    anchors.fill: parent
-                                    onClicked:
-                                        {
-                                            showPopup(localPortPopup);
-                                        }
-                                }
                             }
                         }
 
@@ -817,6 +826,15 @@ Item {
                     color: "white"
                     radius: 5
 
+                    MouseArea {
+                        cursorShape: Qt.PointingHandCursor
+                        anchors.fill: parent
+                        onClicked:
+                            {
+                                showPopup(languagePopup);
+                            }
+                    }
+
                     Column {
                         anchors.fill: parent
 
@@ -841,15 +859,6 @@ Item {
                                 Layout.rightMargin: 20
                                 width: 18
                                 height: 18
-
-                                MouseArea {
-                                    cursorShape: Qt.PointingHandCursor
-                                    anchors.fill: parent
-                                    onClicked:
-                                        {
-                                            showPopup(languagePopup);
-                                        }
-                                }
                             }
                         }
 
@@ -908,8 +917,18 @@ Item {
                     width: parent.width
                     height: 100
 
-                    color: "lightgray"
+                    color: "#dededf"
                     radius: 5
+
+                    MouseArea {
+                        cursorShape: Qt.PointingHandCursor
+                        anchors.fill: parent
+                        onClicked:
+                            {
+                                showPopup(updatesPopup);
+                                updatesPopup.checkForUpdates();
+                            }
+                    }
 
                     Column {
                         anchors.fill: parent
@@ -1004,7 +1023,7 @@ Item {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: "grey"
+                    color: "#c1c1c1"
                     text: settings.version
                     font.pixelSize: 12
                     font.family: "Roboto"

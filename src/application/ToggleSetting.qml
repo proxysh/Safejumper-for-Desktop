@@ -38,7 +38,7 @@ ShadowRect {
         id: titleRow
         width: parent.width
         anchors.top: parent.top
-        anchors.topMargin: 16
+        anchors.topMargin: 10
 
         Text {
             font.family: "Roboto"
@@ -54,22 +54,12 @@ ShadowRect {
         }
 
         Image {
-            Layout.preferredWidth: 64
+            Layout.preferredWidth: 66
             Layout.preferredHeight: 42
             Layout.rightMargin: 18
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             source: toggleSetting.toggleChecked ? "../images/checked-toggle.png" : "../images/unchecked-toggle.png"
 
-            MouseArea {
-                cursorShape: Qt.PointingHandCursor
-                anchors.fill: parent
-                onClicked: {
-                    console.log("Toggle clicked");
-                    toggleSetting.toggleChecked = !toggleSetting.toggleChecked;
-                    toggleSetting.toggled(toggleSetting.toggleChecked);
-                    console.log("Toggle checked is now " + toggleSetting.toggleChecked);
-                }
-            }
         }
     }
 
@@ -87,5 +77,16 @@ ShadowRect {
         color: "#6C798F"
         text: content
         wrapMode: Text.WordWrap
+    }
+
+    MouseArea {
+        cursorShape: Qt.PointingHandCursor
+        anchors.fill: parent
+        onClicked: {
+            console.log("Toggle clicked");
+            toggleSetting.toggleChecked = !toggleSetting.toggleChecked;
+            toggleSetting.toggled(toggleSetting.toggleChecked);
+            console.log("Toggle checked is now " + toggleSetting.toggleChecked);
+        }
     }
 } // End of rect

@@ -160,6 +160,7 @@ Item {
 
                 MouseArea {
                     anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         settings.server = settings.favorite
                     }

@@ -39,7 +39,7 @@ const QString kLowerAppName = "shieldtra";
 #define APP_BUILD "1"
 #define APP_VERSION "1.0"
 
-#define APPLICATION_VERSION QObject::tr("Version: %1 build %2").arg(APP_VERSION).arg(APP_BUILD)
+#define APPLICATION_VERSION QObject::tr("Version %1 (build %2)").arg(APP_VERSION).arg(APP_BUILD)
 
 #ifdef Q_OS_DARWIN
 #define UPDATE_URL "https://shieldtra.com/shieldtra_mac.xml"

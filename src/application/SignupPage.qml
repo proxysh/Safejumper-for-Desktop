@@ -80,6 +80,7 @@ Item {
                 source: "../images/back-black.png"
 
                 MouseArea {
+                    cursorShape: Qt.PointingHandCursor
                     anchors.fill: parent
                     onClicked: { signupPage.closeClicked() }
                 }

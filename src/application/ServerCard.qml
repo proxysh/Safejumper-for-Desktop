@@ -391,6 +391,12 @@ ShadowRect {
             height: 49
             visible: showButton
 
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                acceptedButtons: Qt.NoButton
+            }
+
             background: Rectangle {
                 radius: 5
                 color: vpnservicemanager.vpnState == 0 ? "#2CC532" : vpnservicemanager.vpnState == 1 ? "#FFAB00" : "#C53232"

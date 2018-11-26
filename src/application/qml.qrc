@@ -19,5 +19,6 @@
         <file>LogsPopup.qml</file>
         <file>ShadowRect.qml</file>
         <file>CustomerServicePopup.qml</file>
+        <file>UpdatesPopup.qml</file>
     </qresource>
 </RCC>

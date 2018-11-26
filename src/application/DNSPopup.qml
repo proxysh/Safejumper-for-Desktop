@@ -47,7 +47,7 @@ Column {
             anchors.leftMargin: 20
             anchors.right: parent.right
             anchors.rightMargin: 20
-            anchors.topMargin: 36
+            anchors.topMargin: 24
             anchors.top: parent.top
             spacing: 0
 
@@ -57,6 +57,7 @@ Column {
                 font.pixelSize: 20
                 color: defaultColor
                 text: dnsPopup.title
+                horizontalAlignment: Text.AlignHCenter
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
@@ -68,6 +69,7 @@ Column {
                 wrapMode: Text.WordWrap
                 color: "#6C798F"
                 text: dnsPopup.subtitle
+                horizontalAlignment: Text.AlignHCenter
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
@@ -107,6 +109,7 @@ Column {
                         color: "#97A0AF"
                         font.family: "Roboto"
                         font.bold: true
+                        selectByMouse: true
 
                         text: dnsPopup.dns1
 
@@ -154,6 +157,7 @@ Column {
                         color: "#97A0AF"
                         font.family: "Roboto"
                         font.bold: true
+                        selectByMouse: true
 
                         text: dnsPopup.dns2
 
