@@ -45,11 +45,12 @@ Column {
         Column {
             id: logsColumn
             anchors.fill: parent
-            anchors.topMargin: 36
-            anchors.bottomMargin: 36
-            spacing: 8
+            anchors.topMargin: 12
+            anchors.bottomMargin: 12
+            spacing: 12
 
             Text {
+                id: titleText
                 font.family: "Roboto"
                 font.bold: true
                 font.pixelSize: 20
@@ -60,7 +61,7 @@ Column {
 
             Flickable {
                 width: 295
-                height: 500
+                height: logsBox.height -titleText.height - 36
                 anchors.left: parent.left
                 anchors.leftMargin: 20
                 contentHeight: logsText.height

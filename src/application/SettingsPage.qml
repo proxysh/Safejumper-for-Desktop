@@ -501,7 +501,7 @@ Item {
 
                             Text {
                                 font.pixelSize: 12
-                                font.family: "Nunito-ExtraBold"
+                                font.family: "Nunito"
                                 font.bold: true
                                 color: "#6C798F"
                                 text: settings.encryptionCount
@@ -580,7 +580,7 @@ Item {
 
                             Text {
                                 font.pixelSize: 12
-                                font.family: "Nunito-ExtraBold"
+                                font.family: "Nunito"
                                 font.bold: true
                                 color: "#6C798F"
                                 text: settings.portCount
