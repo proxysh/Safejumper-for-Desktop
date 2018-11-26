@@ -448,7 +448,7 @@ const QString VPNServiceManager::stateColor() const
 
 const QString VPNServiceManager::stateWord() const
 {
-    QString retval = tr("Not Connected");
+    QString retval = tr("Not connected");
 
     switch(mState) {
     case vpnStateConnected:
