@@ -126,13 +126,14 @@ Item {
                     anchors.fill: parent
                     anchors.leftMargin: 35
                     anchors.rightMargin: 35
+                    spacing: 15
 
                     Image {
                         id: flagImage
                         Layout.preferredWidth: 26
                         Layout.preferredHeight: 26
                         fillMode: Image.Stretch
-                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                         source: "../roundflags/" + favoriteServer.iso + ".png"
                         z: 2
 
@@ -154,12 +155,6 @@ Item {
                         font.pixelSize: 16
                         color: "#091E42"
                         text: favoriteServer.name
-                    }
-
-                    Item {
-                        Layout.fillWidth: true
-                        height: 1
-                        width: 1
                     }
                 }
 
