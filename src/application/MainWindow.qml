@@ -269,7 +269,7 @@ Rectangle {
     AllServersPage {
         id: allServersPage
         objectName: "allServersPage"
-        onMenuClicked: { stack.push(menuPage); }
+        onBackClicked: { stack.pop(); }
         onSettingsClicked: { stack.push(settingsPage); }
         onSelectEncryption: {
             console.log("onSelectEncryption called in mainwindow");

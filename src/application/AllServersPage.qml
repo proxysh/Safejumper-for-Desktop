@@ -23,7 +23,7 @@ import QtGraphicalEffects 1.0
 Item {
     id: allServersPage
 
-    signal menuClicked()
+    signal backClicked()
     signal settingsClicked()
 
     signal selectEncryption(int index)
@@ -51,8 +51,9 @@ Item {
 
         HeaderBar {
             id: headerArea
+            backButton: true
             onSettingsClicked: { allServersPage.settingsClicked(); }
-            onMenuClicked: { allServersPage.menuClicked(); }
+            onBackClicked: { allServersPage.backClicked(); }
         }
 
         ListView {

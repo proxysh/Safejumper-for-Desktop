@@ -30,8 +30,11 @@ Item {
     height: 57
     anchors.top: parent.top
 
+    property bool backButton: false
+
     signal menuClicked()
     signal settingsClicked()
+    signal backClicked()
 
     ShadowRect {
         id: toolBarTop
@@ -44,11 +47,27 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: 20
             source: "../images/menu-left.png"
+            visible: !backButton
 
             MouseArea {
                 cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
                 onClicked: { headerArea.menuClicked() }
+            }
+        }
+
+        Image {
+            id: backImage
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            source: "../images/back-white.png"
+            visible: backButton
+
+            MouseArea {
+                cursorShape: Qt.PointingHandCursor
+                anchors.fill: parent
+                onClicked: { headerArea.backClicked() }
             }
         }
 
