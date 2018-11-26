@@ -34,6 +34,8 @@ Rectangle {
 
     property bool blur: false
 
+    property var currentPopup
+
     ListModel {
         id: encryptionModel
         ListElement { name: "TLSCrypt" }
@@ -52,12 +54,18 @@ Rectangle {
 
         screen.blur = true;
         component.visible = true;
+        currentPopup = component;
     }
 
     function hidePopup(component)
     {
         screen.blur = false;
         component.visible = false;
+    }
+
+    function hidecurrentPopup()
+    {
+        hidePopup(currentPopup);
     }
 
     function showLogin()
@@ -117,6 +125,12 @@ Rectangle {
         anchors.fill: parent
         z: 10
         visible: screen.blur
+
+        MouseArea {
+            anchors.fill: blurItem
+            enabled: blurItem.visible
+            onClicked: { hidecurrentPopup(); }
+        }
     }
 
     ConfirmationPopup {
