@@ -244,61 +244,64 @@ ShadowRect {
             visible: showOptions
         }
 
-        RowLayout {
+        Rectangle {
             id: encryptionBox
-            width: parent.width - 40 // 20px on either side
+            width: parent.width - 40 // 20 px on either side
             anchors.horizontalCenter: parent.horizontalCenter
             height: 57
             visible: showOptions
 
-            Column {
-                topPadding: 12
-                rightPadding: 30
-                spacing: 2
+            MouseArea {
+                anchors.fill: encryptionBox
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    console.log("encryption down selected, calling selectEncryption");
+                    serverCard.selectEncryption(currentServer.id);
+                }
+            }
 
-                Text {
-                    font.family: "Roboto"
-                    font.weight: Font.Black
-                    font.pixelSize: 12
-                    lineHeight: 16
-                    lineHeightMode: Text.FixedHeight
-                    color: "#6C798F"
-                    text: qsTr("ENCRYPTION TYPE");
+            RowLayout {
+                anchors.fill: parent
+                Column {
+                    topPadding: 10
+                    rightPadding: 30
+                    spacing: 2
+
+                    Text {
+                        font.family: "Roboto"
+                        font.weight: Font.Black
+                        font.pixelSize: 11
+                        lineHeight: 16
+                        lineHeightMode: Text.FixedHeight
+                        color: "#6C798F"
+                        text: qsTr("ENCRYPTION TYPE");
+                    }
+
+                    Text {
+                        id: encryptionText
+                        text: settings.encryptionNameForIndex(settings.serverEncryption(currentServer.address))
+                        font.family: "Roboto"
+                        font.weight: Font.Medium
+                        font.pixelSize: 15
+                        lineHeight: 20
+                        lineHeightMode: Text.FixedHeight
+                        color: "#172B4D"
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                     }
                 }
 
-                Text {
-                    id: encryptionText
-                    text: settings.encryptionNameForIndex(settings.serverEncryption(currentServer.address))
-                    font.family: "Roboto"
-                    font.weight: Font.Medium
-                    font.pixelSize: 16
-                    lineHeight: 20
-                    lineHeightMode: Text.FixedHeight
-                    color: "#172B4D"
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                 }
-            }
+                Item {
+                    height: parent.height
+                    width: 1
+                    Layout.fillWidth: true
+                }
 
-            Item {
-                height: parent.height
-                width: 1
-                Layout.fillWidth: true
-            }
-
-            Image {
-                width: 10
-                height: 6
-                source: "../images/down-arrow.png"
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        console.log("encryption drop down selected, calling selectEncryption");
-                        serverCard.selectEncryption(currentServer.id);
-                    }
+                Image {
+                    width: 10
+                    height: 6
+                    source: "../images/down-arrow.png"
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 }
             }
         }
@@ -311,62 +314,66 @@ ShadowRect {
             visible: showOptions
         }
 
-        RowLayout {
+        Rectangle {
             id: portBox
-            width: parent.width - 40 // 20px on either side
+            width: parent.width - 40
             anchors.horizontalCenter: parent.horizontalCenter
             height: 57
             visible: showOptions
 
-            Column {
-                topPadding: 12
-                rightPadding: 30
-                spacing: 2
+            MouseArea {
+                anchors.fill: portBox
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    console.log("port drop down selected, calling selectPort");
+                    serverCard.selectPort(currentServer.id);
+                }
+            }
 
-                Text {
-                    font.family: "Roboto"
-                    font.weight: Font.Black
-                    font.pixelSize: 12
-                    lineHeight: 16
-                    lineHeightMode: Text.FixedHeight
-                    color: "#6C798F"
-                    text: qsTr("PORT NO");
+            RowLayout {
+                anchors.fill: parent
+
+                Column {
+                    topPadding: 10
+                    rightPadding: 30
+                    spacing: 2
+
+                    Text {
+                        font.family: "Roboto"
+                        font.weight: Font.Black
+                        font.pixelSize: 11
+                        lineHeight: 16
+                        lineHeightMode: Text.FixedHeight
+                        color: "#6C798F"
+                        text: qsTr("PORT NO");
+                    }
+
+                    Text {
+                        id: protocolText
+                        text: settings.protocolNameForIndex(settings.serverEncryption(currentServer.address),
+                                                         settings.serverProtocol(currentServer.address, encryptionBox.currentIndex))
+                        font.family: "Roboto"
+                        font.weight: Font.Medium
+                        font.pixelSize: 15
+                        lineHeight: 20
+                        lineHeightMode: Text.FixedHeight
+                        color: "#172B4D"
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                     }
                 }
 
-                Text {
-                    id: protocolText
-                    text: settings.protocolNameForIndex(settings.serverEncryption(currentServer.address),
-                                                     settings.serverProtocol(currentServer.address, encryptionBox.currentIndex))
-                    font.family: "Roboto"
-                    font.weight: Font.Medium
-                    font.pixelSize: 16
-                    lineHeight: 20
-                    lineHeightMode: Text.FixedHeight
-                    color: "#172B4D"
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                 }
-            }
+                Item {
+                    height: parent.height
+                    width: 1
+                    Layout.fillWidth: true
+                }
 
-            Item {
-                height: parent.height
-                width: 1
-                Layout.fillWidth: true
-            }
-
-            Image {
-                width: 10
-                height: 6
-                source: "../images/down-arrow.png"
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        console.log("port drop down selected, calling selectPort");
-                        serverCard.selectPort(currentServer.id);
-                    }
+                Image {
+                    width: 10
+                    height: 6
+                    source: "../images/down-arrow.png"
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 }
             }
         }
