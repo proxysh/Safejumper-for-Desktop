@@ -21,6 +21,7 @@ SectionIn RO
        Pop $0
        nsExec::Exec '$INSTDIR\shieldtraservice.exe -u'
        Pop $0
+	   nsExec::Exec 'taskkill /f /im openvpn.exe'
        
        File  libeay32.dll
        File  vcredist_x86.exe
