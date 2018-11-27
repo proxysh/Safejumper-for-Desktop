@@ -425,13 +425,12 @@ ShadowRect {
             }
 
             onClicked: {
-                connectButton.enabled = false
-
                 // Select this server if it's not the current server
                 if (settings.server != currentServer.id)
                     settings.server = currentServer.id;
 
-                screen.connectToVPN();
+                if (screen.connectToVPN())
+                    connectButton.enabled = false;
             }
         }
 

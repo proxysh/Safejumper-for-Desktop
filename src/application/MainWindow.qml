@@ -82,8 +82,10 @@ Rectangle {
 
     function connectToVPN()
     {
-        if (!authmanager.loggedIn)
+        if (!authmanager.loggedIn) {
             showLogin();
+            return false;
+        }
 
         // TODO: Confirm disconnect/jump if currently connected
         else if (vpnservicemanager.vpnState == 1 || vpnservicemanager.vpnState == 2) // Connecting
@@ -91,6 +93,8 @@ Rectangle {
 
         else
             vpnservicemanager.sendConnectToVPNRequest();
+
+        return true;
     }
 
     function loginError(message)
