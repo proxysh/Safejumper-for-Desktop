@@ -25,7 +25,7 @@
 
 #include "servicepathhelper.h"
 
-Log *Log::mInstance = 0;
+Log *Log::mInstance = nullptr;
 bool Log::mEnabled = false;
 
 void Log::logt(const QString & s)

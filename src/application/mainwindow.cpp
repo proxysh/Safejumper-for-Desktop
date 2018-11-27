@@ -176,12 +176,23 @@ void MainWindow::showConnection()
 const QString MainWindow::logsContent() const
 {
     QString retval;
+
+    QFile serviceFile(PathHelper::Instance()->serviceLogFilename());
+    if (serviceFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream serviceTextStream(&serviceFile);
+        retval = "Service log:\n";
+        retval += serviceTextStream.readAll();
+    } else {
+        retval += "Unable to open service log at: " + PathHelper::Instance()->serviceLogFilename() + "\n";
+    }
+
     QFile f(PathHelper::Instance()->applicationLogFilename());
     if (!f.open(QFile::ReadOnly | QFile::Text))
         return retval;
 
     QTextStream in(&f);
-    retval = in.readAll();
+    retval += "\nGui log:\n";
+    retval += in.readAll();
 
     f.close();
     return retval;

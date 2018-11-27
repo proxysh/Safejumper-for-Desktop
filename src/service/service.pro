@@ -1,6 +1,6 @@
 QT       += core network
 CONFIG   += console qt c++11
-DEFINES += QTSERVICE_DEBUG
+# DEFINES += QTSERVICE_DEBUG
 
 lessThan(QT_MAJOR_VERSION, 5) | lessThan(QT_MINOR_VERSION, 4) : error(Shieldtra requires Qt 5.6 or newer but Qt $$[QT_VERSION] was detected.)
 

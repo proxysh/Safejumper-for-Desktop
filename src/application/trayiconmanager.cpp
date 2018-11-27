@@ -531,7 +531,6 @@ bool TrayIconManager::isDark() const
 {
     QString result = OsSpecific::instance()->runCommandFast("defaults read -g AppleInterfaceStyle");
     bool dark = result.contains("Dark");
-    Log::logt(QString("Current theme ") + result);
     return dark;
 }
 #endif

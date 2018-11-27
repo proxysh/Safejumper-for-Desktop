@@ -16,8 +16,9 @@ QVPNClientConnection::QVPNClientConnection(QObject *parent, quintptr socketDescr
     : QObject(parent),
       m_socket(nullptr),
       m_state(vpnStateDisconnected),
-      mReconnecting(false),
       mKillSwitch(false),
+      mDNSLeakProtection(false),
+      mReconnecting(false),
       mDisconnectRequested(false)
 {
 //    Log::serviceLog(__FUNCTION__);

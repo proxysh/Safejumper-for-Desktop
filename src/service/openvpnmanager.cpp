@@ -48,12 +48,15 @@ const QString kLocalAddress = "127.0.0.1";
 
 OpenvpnManager::OpenvpnManager()
     : mState(vpnStateDisconnected),
-      mStateTimer(NULL),
+      mStateTimer(nullptr),
       mPID(0),
-      mSocket(0),
+      mSocket(nullptr),
       mTesting(false),
       mNetDown(false)
 {
+#ifndef Q_OS_WIN
+    setRights();
+#endif
 }
 
 OpenvpnManager::~OpenvpnManager()
@@ -1355,6 +1358,9 @@ void OpenvpnManager::setRights()
 #ifndef SAFECHECKER
     setChmod("777", ServicePathHelper::Instance()->openvpnLogFilename());
 #endif // SAFECHECKER
+
+    system(QString("touch %1").arg(ServicePathHelper::Instance()->serviceLogFilename()).toStdString().c_str());
+    setChmod("0744", ServicePathHelper::Instance()->serviceLogFilename());
 
 #endif		// Q_OS_DARWIN
 
