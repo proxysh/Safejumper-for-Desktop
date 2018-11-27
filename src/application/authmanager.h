@@ -113,7 +113,7 @@ public:
 
     uint64_t getRandom64();
 
-    void checkUpdates();		// use own reply; can download in parallel with others; executed by main window at start regardless other actions
+    Q_INVOKABLE void checkForUpdates();		// use own reply; can download in parallel with others; executed by main window at start regardless other actions
     void getOldIP();
 
     void pingComplete(size_t idWaiter);
@@ -155,7 +155,8 @@ signals:
     void newIpLoaded(QString newIp);
     void subscriptionChanged();
 
-    void confirmation(const QString &message);
+    void newVersionFound();
+    void noUpdateFound();
 
 private slots:
     void loginNetworkError(QNetworkReply::NetworkError error);

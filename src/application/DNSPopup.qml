@@ -37,7 +37,7 @@ Column {
     ShadowRect {
         width: 335
         // Add 36 for top margin and 36 for bottom margin
-        height: inputColumn.childrenRect.height + 36 + 36
+        height: inputColumn.childrenRect.height + 24 + 24
         color: "white"
         radius: 5
 
@@ -47,7 +47,7 @@ Column {
             anchors.leftMargin: 20
             anchors.right: parent.right
             anchors.rightMargin: 20
-            anchors.topMargin: 24
+            anchors.topMargin: 20
             anchors.top: parent.top
             spacing: 0
 
@@ -59,6 +59,11 @@ Column {
                 text: dnsPopup.title
                 horizontalAlignment: Text.AlignHCenter
                 anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            Item {
+                width: parent.width
+                height: 8
             }
 
             Text {

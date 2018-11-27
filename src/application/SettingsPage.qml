@@ -152,6 +152,7 @@ Item {
 
     UpdatesPopup {
         id: updatesPopup
+        visible: false
         z: 20
         onCancel: {
             hidePopup(updatesPopup);

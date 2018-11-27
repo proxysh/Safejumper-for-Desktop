@@ -30,18 +30,34 @@ Column {
 
     property string subtitle
 
+    property bool updateAvailable: false
+
     signal cancel()
 
     function checkForUpdates()
     {
         // Show checking for updates text
         subtitle = qsTr("Checking for updates...");
+        updateAvailable = false;
+        authmanager.checkForUpdates();
+    }
+
+    Connections {
+        target: authmanager
+        onNewVersionFound: {
+            subtitle = qsTr("New version found, update?");
+            updateAvailable = true;
+        }
+        onNoUpdateFound: {
+            subtitle = qsTr("No update found.");
+            updateAvailable = false;
+        }
     }
 
     ShadowRect {
         width: 335
         // Add 36 for top margin and 16 for bottom margin
-        height: inputColumn.childrenRect.height + 36 + 16
+        height: inputColumn.childrenRect.height + 20 + 200
         color: "white"
         radius: 5
 
@@ -51,7 +67,7 @@ Column {
             anchors.leftMargin: 20
             anchors.right: parent.right
             anchors.rightMargin: 20
-            anchors.topMargin: 36
+            anchors.topMargin: 20
             anchors.top: parent.top
             spacing: 0
 
@@ -62,6 +78,11 @@ Column {
                 color: defaultColor
                 text: qsTr("Updates")
                 anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            Item {
+                width: parent.width
+                height: 12
             }
 
             Text {
@@ -84,6 +105,8 @@ Column {
         color: "#97A0AF"
         radius: 5
 
+        visible: updateAvailable
+
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
@@ -96,7 +119,10 @@ Column {
             MouseArea {
                 cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
-                onClicked: { updatesPopup.cancel(); }
+                onClicked: {
+                    updatesPopup.cancel();
+                    // Also launch update url
+                }
             }
         }
     }

@@ -697,7 +697,7 @@ void AuthManager::clearReply()
 //            this, &AuthManager::processExpirationXml);
 //}
 
-void AuthManager::checkUpdates()
+void AuthManager::checkForUpdates()
 {
     QString us(UPDATE_URL);
     if (!us.isEmpty()) {
@@ -705,6 +705,8 @@ void AuthManager::checkUpdates()
         mUpdateReply = mNAM.get(BuildRequest(QUrl(us)));
         connect(mUpdateReply, SIGNAL(finished()),
                 this, SLOT(processUpdatesXml()));
+    } else {
+        emit noUpdateFound();
     }
 }
 
@@ -870,6 +872,7 @@ void AuthManager::processUpdatesXml()
 {
     if (mUpdateReply->error() != QNetworkReply::NoError) {
         Log::logt(mUpdateReply->errorString());
+        emit noUpdateFound();
         return;
     }
     QByteArray ba = mUpdateReply->readAll();
@@ -888,6 +891,7 @@ void AuthManager::processUpdatesXml()
     */
     if (ba.isEmpty()) {
         Log::logt("Cannot get Updates info. Server response is empty.");
+        emit noUpdateFound();
         return;
     }
     // parse XML response
@@ -905,11 +909,13 @@ void AuthManager::processUpdatesXml()
     QString msg;
     if (!doc.setContent(QString(ba), &msg)) {
         Log::logt("Error parsing XML Updates info\n" + msg);
+        emit noUpdateFound();
         return;
     }
     QDomNodeList nl = doc.elementsByTagName("build");
     if (nl.size() <= 0) {
         Log::logt("Missing 'build' node");
+        emit noUpdateFound();
         return;
     }
     QDomNode n = nl.item(0);
@@ -919,7 +925,7 @@ void AuthManager::processUpdatesXml()
         int upd = ss.toInt(&ok);
         Log::logt(QString("Got updated xml, server version is %1, local version is %2").arg(upd).arg(APP_BUILD_NUM));
         if (ok && APP_BUILD_NUM < upd) {
-            emit confirmation(QString("New version %1 available. Update?").arg(upd));
+            emit newVersionFound();
             Setting::instance()->updateMessageShown();
         }
     }
