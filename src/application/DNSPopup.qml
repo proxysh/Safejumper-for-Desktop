@@ -83,47 +83,12 @@ Column {
                 width: parent.width
             }
 
-            ShadowRect {
+            HintedTextField {
+                id: dns1Box
                 width: 295
                 height: 56
-
-                color: "white"
-                radius: 5
-
-                Column {
-                    anchors.fill: parent
-                    anchors.topMargin: 8
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
-                    spacing: 4
-
-                    Text {
-                        font.pixelSize: 12
-                        font.family: "Roboto"
-                        font.weight: Font.Black
-                        color: "#6C798F"
-                        text: qsTr("PRIMARY");
-                    }
-
-                    TextField {
-                        id: dns1Box
-                        width: parent.width
-                        leftPadding: 0
-                        placeholderText: qsTr("Enter value");
-                        font.pixelSize: 16
-                        color: "#97A0AF"
-                        font.family: "Roboto"
-                        font.bold: true
-                        selectByMouse: true
-
-                        text: dnsPopup.dns1
-
-                        background: Rectangle {
-                                  color: "transparent"
-                                  border.color: "transparent"
-                              }
-                    }
-                }
+                hint: qsTr("PRIMARY");
+                value: dnsPopup.dns1
             }
 
             Item {
@@ -131,47 +96,12 @@ Column {
                 width: parent.width
             }
 
-            ShadowRect {
+            HintedTextField {
+                id: dns2Box
                 width: 295
                 height: 56
-
-                color: "white"
-                radius: 5
-
-                Column {
-                    anchors.fill: parent
-                    anchors.topMargin: 8
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
-                    spacing: 4
-
-                    Text {
-                        font.pixelSize: 12
-                        font.family: "Roboto"
-                        font.weight: Font.Black
-                        color: "#6C798F"
-                        text: qsTr("SECONDARY");
-                    }
-
-                    TextField {
-                        id: dns2Box
-                        width: parent.width
-                        leftPadding: 0
-                        placeholderText: qsTr("Enter value");
-                        font.pixelSize: 16
-                        color: "#97A0AF"
-                        font.family: "Roboto"
-                        font.bold: true
-                        selectByMouse: true
-
-                        text: dnsPopup.dns2
-
-                        background: Rectangle {
-                                  color: "transparent"
-                                  border.color: "transparent"
-                              }
-                    }
-                }
+                hint: qsTr("SECONDARY");
+                value: dnsPopup.dns2
             }
 
             Item {
@@ -204,7 +134,7 @@ Column {
                         cursorShape: Qt.PointingHandCursor
                         anchors.fill: parent
                         onClicked: {
-                            dnsPopup.dnsIPsSaved(dns1Box.text, dns2Box.text);
+                            dnsPopup.dnsIPsSaved(dns1Box.value, dns2Box.value);
                         }
                     }
                 }

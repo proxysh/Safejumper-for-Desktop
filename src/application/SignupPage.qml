@@ -116,186 +116,36 @@ Item {
                 width: parent.width
             }
 
-            ShadowRect {
+            HintedTextField {
                 id: emailBox
                 width: 327
                 height: 56
-
-                color: "white"
-                radius: 5
-
-                Column {
-                    anchors.fill: parent
-                    anchors.topMargin: 8
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
-                    spacing: 4
-
-                    Text {
-                        font.pixelSize: 12
-                        font.family: "Roboto"
-                        font.weight: Font.Black
-                        color: "#6C798F"
-                        text: qsTr("EMAIL");
-                    }
-
-                    TextField {
-                        id: emailInput
-                        width: parent.width
-                        leftPadding: 0
-                        placeholderText: qsTr("Email address");
-                        font.pixelSize: 16
-                        color: "#97A0AF"
-                        font.family: "Roboto"
-                        font.bold: true
-
-                        background: Rectangle {
-                                  color: "transparent"
-                                  border.color: "transparent"
-                              }
-                    }
-                }
+                hint: qsTr("EMAIL");
             }
 
             // Full name box
-            ShadowRect {
+            HintedTextField {
                 id: nameBox
                 width: 327
                 height: 56
-
-                color: "white"
-                radius: 5
-
-                Column {
-                    anchors.fill: parent
-                    anchors.topMargin: 8
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
-                    spacing: 4
-
-                    Text {
-                        font.pixelSize: 12
-                        font.family: "Roboto"
-                        font.weight: Font.Black
-                        color: "#6C798F"
-                        text: qsTr("FULL NAME");
-                    }
-
-                    TextField {
-                        id: nameInput
-                        width: parent.width
-                        leftPadding: 0
-                        placeholderText: qsTr("Full name");
-                        font.pixelSize: 16
-                        color: "#97A0AF"
-                        font.family: "Roboto"
-                        font.bold: true
-
-                        background: Rectangle {
-                                  color: "transparent"
-                                  border.color: "transparent"
-                              }
-                    }
-                }
+                hint: qsTr("FULL NAME");
             }
 
             // Password box
-            ShadowRect {
+            HintedTextField {
                 id: passwordBox
+                password: true
                 width: parent.width
                 height: 56
-
-                color: "white"
-                radius: 5
-
-                TextField {
-                    id: passwordInput
-                    width: parent.width - 32
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-                    echoMode: TextInput.Password
-                    leftPadding: 0
-                    font.pixelSize: 16
-                    color: "#97A0AF"
-                    font.family: "Roboto"
-                    font.bold: true
-
-                    placeholderText: qsTr("Password");
-
-                    background: Rectangle {
-                              color: "transparent"
-                              border.color: "transparent"
-                          }
-
-                    Image {
-                        anchors.right: passwordInput.right
-                        anchors.verticalCenter: passwordInput.verticalCenter
-    //                    anchors.rightMargin: 16
-                        source: "../images/eye.png"
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                if (passwordInput.echoMode == TextInput.Password)
-                                    passwordInput.echoMode = TextInput.Normal
-                                else
-                                    passwordInput.echoMode = TextInput.Password
-                            }
-                        }
-
-                    }
-                }
+                hint: qsTr("PASSWORD");
             }
 
-            ShadowRect {
+            HintedTextField {
                 id: passwordBox2
+                password: true
                 width: parent.width
                 height: 56
-
-                color: "white"
-                radius: 5
-
-                TextField {
-                    id: passwordInput2
-                    width: parent.width - 32
-                    anchors.left: parent.left
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
-                    anchors.verticalCenter: parent.verticalCenter
-                    echoMode: TextInput.Password
-                    leftPadding: 0
-                    font.pixelSize: 16
-                    color: "#97A0AF"
-                    font.family: "Roboto"
-                    font.bold: true
-
-                    placeholderText: qsTr("Re-Enter Password");
-
-                    background: Rectangle {
-                              color: "transparent"
-                              border.color: "transparent"
-                          }
-
-                    Image {
-                        anchors.right: passwordInput2.right
-                        anchors.verticalCenter: passwordInput2.verticalCenter
-    //                    anchors.rightMargin: 16
-                        source: "../images/eye.png"
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                if (passwordInput2.echoMode == TextInput.Password)
-                                    passwordInput2.echoMode = TextInput.Normal
-                                else
-                                    passwordInput2.echoMode = TextInput.Password
-                            }
-                        }
-
-                    }
-                }
+                hint: qsTr("RE-ENTER PASSWORD");
             }
 
             Item {
@@ -338,8 +188,8 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        if (passwordInput.text == passwordInput2.text) {
-                            authmanager.createAccount(emailInput.text, nameInput.text, passwordInput.text);
+                        if (passwordBox.value == passwordBox2.value) {
+                            authmanager.createAccount(emailBox.value, nameBox.value, passwordBox.value);
                         } else {
                             showPopup(passwordsPopup)
                         }

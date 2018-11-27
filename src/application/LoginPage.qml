@@ -33,6 +33,12 @@ Rectangle {
         loginButton.enabled = true;
     }
 
+    function performLogin()
+    {
+        loginButton.enabled = false;
+        authmanager.login(emailBox.value, passwordBox.value);
+    }
+
     Column {
         id: loginColumn
         anchors.horizontalCenter: parent.horizontalCenter
@@ -86,100 +92,24 @@ Rectangle {
             width: parent.width
         }
 
-        ShadowRect {
+        HintedTextField {
             id: emailBox
             width: 327
             height: 56
-
-            color: "white"
-            radius: 5
-
-            Column {
-                anchors.fill: parent
-                anchors.topMargin: 8
-                anchors.leftMargin: 16
-                anchors.rightMargin: 16
-                spacing: 4
-
-                Text {
-                    font.pixelSize: 12
-                    font.family: "Roboto"
-                    font.weight: Font.Black
-                    color: "#6C798F"
-                    text: qsTr("EMAIL");
-                }
-
-                TextField {
-                    id: emailInput
-                    width: parent.width
-                    leftPadding: 0
-                    placeholderText: qsTr("Email address");
-                    font.pixelSize: 16
-                    color: "#97A0AF"
-                    font.family: "Roboto"
-                    font.bold: true
-
-                    text: settings.rememberMe ? settings.login : ""
-
-                    background: Rectangle {
-                              color: "transparent"
-                              border.color: "transparent"
-                          }
-                }
-            }
+            hint: qsTr("EMAIL");
+            value: settings.rememberMe ? settings.login : ""
+            onAccepted: { performLogin(); }
         }
 
         // Now logout button/box
-        ShadowRect {
+        HintedTextField {
             id: passwordBox
+            password: true
             width: parent.width
             height: 56
-
-            color: "white"
-            radius: 5
-
-            TextField {
-                id: passwordInput
-                width: parent.width - 32
-                anchors.left: parent.left
-                anchors.leftMargin: 16
-                anchors.rightMargin: 16
-                anchors.verticalCenter: parent.verticalCenter
-                echoMode: TextInput.Password
-                leftPadding: 0
-                font.pixelSize: 16
-                color: "#97A0AF"
-                font.family: "Roboto"
-                font.bold: true
-
-                placeholderText: qsTr("Password");
-
-                text: settings.rememberMe ? settings.password : ""
-
-                background: Rectangle {
-                          color: "transparent"
-                          border.color: "transparent"
-                      }
-
-                Image {
-                    anchors.right: passwordInput.right
-                    anchors.verticalCenter: passwordInput.verticalCenter
-//                    anchors.rightMargin: 16
-                    source: "../images/eye.png"
-
-                    MouseArea {
-                        cursorShape: Qt.PointingHandCursor
-                        anchors.fill: parent
-                        onClicked: {
-                            if (passwordInput.echoMode == TextInput.Password)
-                                passwordInput.echoMode = TextInput.Normal
-                            else
-                                passwordInput.echoMode = TextInput.Password
-                        }
-                    }
-
-                }
-            }
+            hint: qsTr("PASSWORD");
+            value: settings.rememberMe ? settings.password : ""
+            onAccepted: { performLogin(); }
         }
 
         CheckBox {
@@ -214,6 +144,10 @@ Rectangle {
 
             onCheckStateChanged: {
                 settings.rememberMe = rememberButton.checked;
+                if (!settings.rememberMe) {
+                    emailBox.value = "";
+                    passwordBox.value = "";
+                }
             }
         }
 
@@ -246,8 +180,7 @@ Rectangle {
             }
 
             onClicked: {
-                enabled = false;
-                authmanager.login(emailInput.text, passwordInput.text);
+                performLogin();
             }
         }
 

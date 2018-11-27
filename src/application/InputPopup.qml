@@ -23,9 +23,8 @@ import QtGraphicalEffects 1.0
 
 Column {
     id: inputPopup
-    anchors.bottom: parent.bottom
+    anchors.verticalCenter: parent.verticalCenter
     anchors.horizontalCenter: parent.horizontalCenter
-    anchors.bottomMargin: 20
     spacing: 8
 
     property string title
@@ -37,8 +36,8 @@ Column {
 
     ShadowRect {
         width: 335
-        // Add 36 for top margin and 16 for bottom margin
-        height: inputColumn.childrenRect.height + 36 + 16
+        // Add 20 for top margin and 20 for bottom margin
+        height: inputColumn.childrenRect.height + 20 + 20
         color: "white"
         radius: 5
 
@@ -48,7 +47,7 @@ Column {
             anchors.leftMargin: 20
             anchors.right: parent.right
             anchors.rightMargin: 20
-            anchors.topMargin: 36
+            anchors.topMargin: 20
             anchors.top: parent.top
             spacing: 0
 
@@ -59,6 +58,12 @@ Column {
                 color: defaultColor
                 text: inputPopup.title
                 anchors.horizontalCenter: parent.horizontalCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Item {
+                height: 16
+                width: parent.width
             }
 
             Text {
@@ -70,6 +75,7 @@ Column {
                 color: "#6C798F"
                 text: inputPopup.subtitle
                 anchors.horizontalCenter: parent.horizontalCenter
+                horizontalAlignment: Text.AlignHCenter
             }
 
             Item {
@@ -77,46 +83,12 @@ Column {
                 width: parent.width
             }
 
-            ShadowRect {
+            HintedTextField {
+                id: inputBox
                 width: 295
                 height: 56
-
-                color: "white"
-                radius: 5
-
-                Column {
-                    anchors.fill: parent
-                    anchors.topMargin: 8
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
-                    spacing: 4
-
-                    Text {
-                        font.pixelSize: 12
-                        font.family: "Roboto"
-                        font.weight: Font.Black
-                        color: "#6C798F"
-                        text: qsTr("PORT");
-                    }
-
-                    TextField {
-                        id: inputBox
-                        width: parent.width
-                        leftPadding: 0
-                        placeholderText: qsTr("Enter value");
-                        font.pixelSize: 16
-                        color: "#97A0AF"
-                        font.family: "Roboto"
-                        font.bold: true
-
-                        text: inputPopup.value
-
-                        background: Rectangle {
-                                  color: "transparent"
-                                  border.color: "transparent"
-                              }
-                    }
-                }
+                hint: qsTr("PORT");
+                value: inputPopup.value
             }
         }
     } // End of rect
@@ -142,7 +114,7 @@ Column {
             cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: {
-                inputPopup.inputSaved(inputBox.text);
+                inputPopup.inputSaved(inputBox.value);
             }
         }
     }

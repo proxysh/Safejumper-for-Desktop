@@ -114,7 +114,7 @@ Item {
     InputPopup {
         id: localPortPopup
         title: qsTr("Local OpenVPN Port");
-        subtitle: qsTr("Select a port for communication with OpenVPN");
+        subtitle: qsTr("Define the port through which OpenVPN will communicate locally.");
         visible: false
         value: settings.localPort
         z: 20
