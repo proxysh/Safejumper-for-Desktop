@@ -31,6 +31,7 @@ Rectangle {
 
     property color defaultColor: "#FEBE10"
     property string shopUrl: "https://www.mbaex.com"
+    property string updateUrl: "https://www.mbaex.com/software"
 
     property bool blur: false
 

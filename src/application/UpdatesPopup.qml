@@ -56,8 +56,8 @@ Column {
 
     ShadowRect {
         width: 335
-        // Add 36 for top margin and 16 for bottom margin
-        height: inputColumn.childrenRect.height + 20 + 200
+        // Add 20 for top margin and 20 for bottom margin
+        height: inputColumn.childrenRect.height + 20 + 20
         color: "white"
         radius: 5
 
@@ -94,6 +94,7 @@ Column {
                 color: "#6C798F"
                 text: updatesPopup.subtitle
                 anchors.horizontalCenter: parent.horizontalCenter
+                horizontalAlignment: Text.AlignHCenter
             }
         }
     }
@@ -121,7 +122,7 @@ Column {
                 anchors.fill: parent
                 onClicked: {
                     updatesPopup.cancel();
-                    // Also launch update url
+                    mainwindow.launchUrl(updateUrl);
                 }
             }
         }

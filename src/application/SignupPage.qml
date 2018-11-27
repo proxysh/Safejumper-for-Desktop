@@ -109,6 +109,7 @@ Item {
                 color: "#172B4D"
                 font.pixelSize: 24
                 text: qsTr("Get started absolutely free.");
+                anchors.horizontalCenter: parent.horizontalCenter
             }
 
             Item {

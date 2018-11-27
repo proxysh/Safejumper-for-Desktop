@@ -187,7 +187,7 @@ Rectangle {
         Item {
             // spacer
             width: parent.width
-            height: 60
+            height: 48
         }
 
         Text {

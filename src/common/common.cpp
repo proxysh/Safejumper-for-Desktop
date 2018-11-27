@@ -73,11 +73,6 @@ bool OpenUrl_Bug()
     return OpenUrl("https://www.mbaex.com");
 }
 
-bool launchUpdateUrl()
-{
-    return OpenUrl("https://www.mbaex.com/software");
-}
-
 // maybe empty str >>> false
 // true only for numberic: [1-65535]
 bool IsValidPort(const QString & s)
