@@ -32,6 +32,7 @@
 #include <QDesktopServices>
 #include <QDesktopWidget>
 #include <QHttpMultiPart>
+#include <QKeyEvent>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QQmlContext>
@@ -72,10 +73,18 @@ MainWindow::MainWindow() :
     // of the setting object
     languageChanged();
 
+    Log::logt(QString("device pixel ratio is %1").arg(devicePixelRatio()));
+    if (devicePixelRatio() == 2.0) {
+//        setMaximumHeight(483);
+//        setMinimumHeight(483);
+//        setMaximumWidth(240);
+//        setMinimumWidth(240);
+    } else {
+//        setMinimumHeight(604);
+//        setMinimumWidth(300);
+    }
     setMaximumHeight(604);
-    setMinimumHeight(604);
     setMaximumWidth(300);
-    setMinimumWidth(300);
 
     setFlags(Qt::Dialog);
     setIcon(QIcon(":/images/logo.png"));
@@ -127,6 +136,26 @@ void MainWindow::launchUrl(const QString &url)
     QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode));
 }
 
+//bool MainWindow::event(QEvent *ev)
+//{
+//    if (ev->type() == QEvent::Close) {
+//        qDebug() << "Close event, calling exitTriggered";
+//        ev->accept();
+//        exitTriggered();
+//        return true;
+//    } else {
+//        return QWindow::event(ev);
+//    }
+//}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QSize size = event->size();
+    Log::logt(QString("Resize event changed window size to width: %1, height: %2")
+              .arg(size.width()).arg(size.height()));
+    QWindow::resizeEvent(event);
+}
+
 bool MainWindow::exists()
 {
     return (!mInstance.isNull());
@@ -155,11 +184,6 @@ MainWindow::~MainWindow()
     }
 }
 
-void MainWindow::closeEvent(QCloseEvent * event)
-{
-    event->ignore();
-}
-
 void MainWindow::showFeedback()
 {
 //    ui->titleLineEdit->clear();
@@ -175,6 +199,7 @@ void MainWindow::showConnection()
 
 const QString MainWindow::logsContent() const
 {
+    qDebug() << "logsContent called";
     QString retval;
 
     QFile serviceFile(PathHelper::Instance()->serviceLogFilename());

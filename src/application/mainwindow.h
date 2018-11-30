@@ -30,9 +30,6 @@ class QProgressDialog;
 class MainWindow : public QQuickView
 {
     Q_OBJECT
-
-    Q_PROPERTY(QString logscontent READ logsContent)
-
 public:
 
     ~MainWindow();
@@ -43,7 +40,7 @@ public:
     void showFeedback();
     void showConnection();
 
-    const QString logsContent() const;
+    Q_INVOKABLE const QString logsContent() const;
 
     Q_INVOKABLE void copyLogsToClipboard() const;
     Q_INVOKABLE void launchCustomerService() const;
@@ -74,7 +71,8 @@ signals:
     void logsScreen();
 
 protected:
-    virtual void closeEvent(QCloseEvent * event);
+//    virtual bool event(QEvent *ev) Q_DECL_OVERRIDE;
+    virtual void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
 private slots:
     // Feedback page slots

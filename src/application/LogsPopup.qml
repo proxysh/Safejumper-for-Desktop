@@ -33,6 +33,12 @@ Column {
     signal copy()
     signal cancel()
 
+    function updateLogs()
+    {
+        console.log("updateLogs called");
+        logsText.text = mainwindow.logsContent();
+    }
+
     ShadowRect {
         id: logsBox
 
@@ -73,7 +79,7 @@ Column {
                     font.family: "Roboto"
                     font.pixelSize: 10
                     color: "#6C798F"
-                    text: mainwindow.logscontent
+//                    text: mainwindow.logscontent
                     horizontalAlignment: Qt.AlignLeft
                     width: 295 // 20px margin on both sides
                     wrapMode: Text.WordWrap

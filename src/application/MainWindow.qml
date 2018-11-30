@@ -47,10 +47,7 @@ Rectangle {
     {
         if (screen.blur) {
             // Already showing a popup, so hide all popups
-            hidePopup(customerServicePopup);
-            hidePopup(errorPopup);
-            hidePopup(logoutConfirmation);
-            hidePopup(exitConfirmation);
+            hidePopup(currentPopup);
         }
 
         screen.blur = true;
@@ -160,7 +157,7 @@ Rectangle {
     ConfirmationPopup {
         id: exitConfirmation
         title: qsTr("Exit");
-        subtitle: qsTr("Would you like to shut Shieldtra down?");
+        subtitle: qsTr("Would you like to shut the VPN software completely down?");
         confirmText: qsTr("CONFIRM");
         visible: false
         z: 20
@@ -188,7 +185,9 @@ Rectangle {
 
     Connections {
         target: mainwindow
-        onConfirmExit: { screen.showPopup(exitConfirmation); }
+        onConfirmExit: {
+            screen.showPopup(exitConfirmation);
+        }
         onLogout: {
             logout();
         }
@@ -211,6 +210,7 @@ Rectangle {
         onLogsScreen: {
             // Show logs popup
             stack.pop(null); // First pop back to map page
+            logsPopup.updateLogs();
             screen.showPopup(logsPopup);
         }
     }
@@ -310,6 +310,7 @@ Rectangle {
         }
         onLogsClicked: {
             stack.pop(null); // First pop back to map page
+            logsPopup.updateLogs();
             screen.showPopup(logsPopup);
         }
     }
