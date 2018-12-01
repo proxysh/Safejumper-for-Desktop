@@ -92,8 +92,8 @@ rm -rf $RPM_BUILD_ROOT
 /opt/shieldtra/shieldtraservice
 /opt/shieldtra/netdown
 /opt/shieldtra/openvpn
-/opt/shieldtra/client.down.shieldtra.sh
-/opt/shieldtra/client.up.shieldtra.sh
+/opt/shieldtra/client.down.sh
+/opt/shieldtra/client.up.sh
 /opt/shieldtra/update-systemd-resolved
 /opt/shieldtra/detectresolve.sh
 /usr/share/applications/shieldtra.desktop
