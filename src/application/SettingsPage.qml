@@ -916,9 +916,9 @@ Item {
                 ShadowRect {
                     id: updates
                     width: parent.width
-                    height: 100
+                    height: 105
 
-                    color: "#dededf"
+                    color: "#ecedef"
                     radius: 5
 
                     MouseArea {
@@ -969,7 +969,7 @@ Item {
                 ShadowRect {
                     id: logout
                     width: parent.width
-                    height: 114
+                    height: 119
                     visible: authmanager.loggedIn
 
                     color: defaultColor
@@ -992,12 +992,12 @@ Item {
                             anchors.leftMargin: 20
                             anchors.right: parent.right
 
-                            Image {
-                                source: "../images/logout.png"
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: 18
-                                height: 18
-                            }
+//                            Image {
+//                                source: "../images/logout.png"
+//                                anchors.verticalCenter: parent.verticalCenter
+//                                width: 18
+//                                height: 18
+//                            }
 
                             Text {
                                 font.pixelSize: 16
