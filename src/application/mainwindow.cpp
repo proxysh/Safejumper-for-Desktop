@@ -84,7 +84,9 @@ MainWindow::MainWindow() :
 //        setMinimumWidth(300);
     }
     setMaximumHeight(604);
+    setMinimumHeight(604);
     setMaximumWidth(300);
+    setMinimumWidth(300);
 
     setFlags(Qt::Dialog);
     setIcon(QIcon(":/images/logo.png"));
