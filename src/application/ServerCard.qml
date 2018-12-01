@@ -263,7 +263,7 @@ ShadowRect {
             RowLayout {
                 anchors.fill: parent
                 Column {
-                    topPadding: 10
+                    Layout.alignment: Qt.AlignVCenter
                     rightPadding: 30
                     spacing: 2
 
@@ -334,7 +334,7 @@ ShadowRect {
                 anchors.fill: parent
 
                 Column {
-                    topPadding: 10
+                    Layout.alignment: Qt.AlignVCenter
                     rightPadding: 30
                     spacing: 2
 
