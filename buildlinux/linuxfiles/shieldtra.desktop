@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Shieldtra
+Comment=VPN connection to shieldtra service
+Exec=/opt/shieldtra/shieldtra
+Terminal=false
+Icon=shieldtra
+Categories=Qt;Network;
+StartupNotify=true
