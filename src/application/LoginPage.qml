@@ -190,14 +190,14 @@ Rectangle {
             height: 48
         }
 
-        Text {
-            text: qsTr("Don't have an account?");
-            color: "#020433"
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.family: "Roboto"
-            font.weight: Font.Medium
-            font.pixelSize: 16
-        }
+//        Text {
+//            text: qsTr("Don't have an account?");
+//            color: "#020433"
+//            anchors.horizontalCenter: parent.horizontalCenter
+//            font.family: "Roboto"
+//            font.weight: Font.Medium
+//            font.pixelSize: 16
+//        }
 
 //        ShadowRect {
 //            id: signupButton
