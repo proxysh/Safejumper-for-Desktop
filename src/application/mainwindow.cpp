@@ -84,11 +84,13 @@ MainWindow::MainWindow() :
     setIcon(QIcon(":/images/logo.png"));
     setTitle(kAppName);
 
+    QSize windowSize(300, 604);
+
     setGeometry(
         QStyle::alignedRect(
             Qt::LeftToRight,
             Qt::AlignCenter,
-            size(),
+            windowSize,
             qApp->desktop()->availableGeometry()
         )
     );
