@@ -64,6 +64,13 @@ MainWindow::MainWindow() :
     }
 #endif
 
+    setMaximumHeight(604);
+    setMinimumHeight(604);
+    setMaximumWidth(300);
+    setMinimumWidth(300);
+
+    setResizeMode(QQuickView::SizeRootObjectToView);
+
     setSource(QUrl("qrc:/qml/MainWindow.qml"));
 
     connect(Setting::instance(), &Setting::languageChanged,
@@ -72,21 +79,6 @@ MainWindow::MainWindow() :
     // Call it here, since the language was loaded by the above instantiation
     // of the setting object
     languageChanged();
-
-    Log::logt(QString("device pixel ratio is %1").arg(devicePixelRatio()));
-    if (devicePixelRatio() == 2.0) {
-//        setMaximumHeight(483);
-//        setMinimumHeight(483);
-//        setMaximumWidth(240);
-//        setMinimumWidth(240);
-    } else {
-//        setMinimumHeight(604);
-//        setMinimumWidth(300);
-    }
-    setMaximumHeight(604);
-    setMinimumHeight(604);
-    setMaximumWidth(300);
-    setMinimumWidth(300);
 
     setFlags(Qt::Dialog);
     setIcon(QIcon(":/images/logo.png"));
