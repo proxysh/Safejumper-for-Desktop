@@ -227,17 +227,19 @@ Item {
         Flickable {
             width: parent.width
             anchors.top: headerArea.bottom
-            anchors.topMargin: 5
-            anchors.bottomMargin: 5
+//            anchors.topMargin: 5
+//            anchors.bottomMargin: 5
             anchors.bottom: parent.bottom
-            contentHeight: settingsColumn.childrenRect.height
+            contentHeight: settingsColumn.childrenRect.height + 40
             clip: true
 
             Column {
                 id: settingsColumn
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
+                anchors.topMargin: 20
                 anchors.bottom: parent.bottom
+                anchors.bottomMargin: 20
                 width: parent.width - 40 // 20 px margin on both sides
                 spacing: 10
 
