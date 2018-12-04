@@ -26,7 +26,7 @@ Rectangle {
     color: "#F4F5F7"
 
     signal closeClicked()
-    signal signupClicked()
+//    signal signupClicked()
 
     function loginFinished()
     {
@@ -199,29 +199,29 @@ Rectangle {
             font.pixelSize: 16
         }
 
-        ShadowRect {
-            id: signupButton
-            color: "white"
-            width: parent.width
-            height: 56
-            radius: 5
+//        ShadowRect {
+//            id: signupButton
+//            color: "white"
+//            width: parent.width
+//            height: 56
+//            radius: 5
 
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                font.family: "Roboto"
-                font.bold: true
-                font.pixelSize: 16
-                color: defaultColor
-                text: qsTr("SIGN UP");
-            }
+//            Text {
+//                anchors.verticalCenter: parent.verticalCenter
+//                anchors.horizontalCenter: parent.horizontalCenter
+//                font.family: "Roboto"
+//                font.bold: true
+//                font.pixelSize: 16
+//                color: defaultColor
+//                text: qsTr("SIGN UP");
+//            }
 
-            MouseArea {
-                cursorShape: Qt.PointingHandCursor
-                anchors.fill: parent
+//            MouseArea {
+//                cursorShape: Qt.PointingHandCursor
+//                anchors.fill: parent
 
-                onClicked: { loginPage.signupClicked(); }
-            }
-        }
+//                onClicked: { loginPage.signupClicked(); }
+//            }
+//        }
     }
 }

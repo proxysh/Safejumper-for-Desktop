@@ -332,15 +332,14 @@ Rectangle {
         id: loginPage
         objectName: "loginPage"
         onCloseClicked: { stack.pop(); }
-        onSignupClicked: { stack.push(signupPage); }
+//        onSignupClicked: { stack.push(signupPage); }
     }
 
-    SignupPage {
-        id: signupPage
-        objectName: "signupPage"
-        onCloseClicked: { stack.pop(); }
-
-    }
+//    SignupPage {
+//        id: signupPage
+//        objectName: "signupPage"
+//        onCloseClicked: { stack.pop(); }
+//    }
 
     LogsPopup {
         id: logsPopup
