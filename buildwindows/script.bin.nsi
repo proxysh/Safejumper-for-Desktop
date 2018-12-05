@@ -8,8 +8,8 @@ Page directory "" "" ""
 Page instfiles "" "" ""
 Page custom ""  ""
 
-!define VERSION         "1.0"
-!define BUILD             "1"
+!define VERSION         "5.0"
+!define BUILD             "100"
 
 Section main
 
@@ -21,7 +21,10 @@ SectionIn RO
        Pop $0
        nsExec::Exec '$INSTDIR\shieldtraservice.exe -u'
        Pop $0
-	   nsExec::Exec 'taskkill /f /im openvpn.exe'
+       nsExec::Exec 'taskkill /f /im openvpn.exe'
+       Pop $0
+       nsExec::Exec 'taskkill /f /im shieldtraservice.exe'
+       Pop $0
        
        File  libeay32.dll
        File  vcredist_x86.exe
