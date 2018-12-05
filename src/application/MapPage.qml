@@ -39,7 +39,7 @@ Item {
     {
         currentServer = serversModel.server(settings.server)
         favoriteServer = serversModel.server(settings.favorite)
-        var iso = currentServer.iso
+        var iso = favoriteServer.iso
         currentServerCard.currentServer = currentServer;
         background.source = "../maps/" + iso + vpnservicemanager.stateMapSuffix
     }
@@ -47,7 +47,8 @@ Item {
     function stateChanged()
     {
         currentServer = serversModel.server(settings.server)
-        var iso = currentServer.iso
+        favoriteServer = serversModel.server(settings.favorite)
+        var iso = favoriteServer.iso
         background.source = "../maps/" + iso + vpnservicemanager.stateMapSuffix
     }
 
@@ -85,7 +86,7 @@ Item {
         z: -1
         anchors.top: headerArea.top - 55
         anchors.left: parent.left
-        source: "../maps/" + serversModel.server(settings.server).iso + vpnservicemanager.stateMapSuffix
+        source: "../maps/" + serversModel.server(settings.favorite).iso + vpnservicemanager.stateMapSuffix
     }
 
     Column {
