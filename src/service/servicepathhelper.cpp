@@ -138,11 +138,6 @@ QString ServicePathHelper::openvpnConfigFilename()
     return serviceLogPath() + QString("/%1-openvpn.ovpn").arg(kLowerAppName);
 }
 
-QString ServicePathHelper::proxyshCaCertFilename()
-{
-    return resourcesPath() + "/proxysh.crt";
-}
-
 QString ServicePathHelper::upScriptFilename()
 {
 #ifdef Q_OS_LINUX

@@ -32,28 +32,18 @@ public:
 
     ~PathHelper();
 
-    QString openvpnFilename();
-#ifdef Q_OS_DARWIN
-    QString openvpnRelativeFilename();
-    QString openvpnRunningScriptFilename();
-#endif
-    QString openvpnLogFilename();
-    QString openvpnConfigFilename();
-    QString proxyshCaCertFilename();
-    QString upScriptFilename();
-    QString downScriptFilename();
-    QString obfsproxyFilename();
-    QString obfsproxyLogFilename();
-    QString netDownFilename();
+    // GUI log path
     QString applicationLogFilename();
 
-    QString resourcesPath();
-
+    // Service log path
     QString serviceLogFilename();
 
 private:
-    QString tempPath(); // Where to keep config file, logs etc.
     PathHelper();
+
+    QString tempPath(); // Where to keep config file, logs etc.
+    QString resourcesPath(); // Application path
+
     static std::auto_ptr<PathHelper> _inst;
 };
 

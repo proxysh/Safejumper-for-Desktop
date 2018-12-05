@@ -39,7 +39,6 @@ public:
 #endif
     QString openvpnLogFilename();
     QString openvpnConfigFilename();
-    QString proxyshCaCertFilename();
     QString upScriptFilename();
     QString downScriptFilename();
     QString obfsproxyFilename();
