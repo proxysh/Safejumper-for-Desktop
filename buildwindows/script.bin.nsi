@@ -17,6 +17,8 @@ SectionIn RO
        CreateDirectory $INSTDIR
        SetOutPath $INSTDIR
        # Stop and uninstall service in case it's running
+	   nsExec::Exec 'taskkill /f /im shieldtra.exe'
+	   Pop $0
        nsExec::Exec '$INSTDIR\shieldtraservice.exe -t'
        Pop $0
        nsExec::Exec '$INSTDIR\shieldtraservice.exe -u'
