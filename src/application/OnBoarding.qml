@@ -50,6 +50,12 @@ Rectangle {
         id: page1
         objectName: "page1"
 
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: { nextPage(); }
+        }
+
         ColumnLayout {
             anchors.fill: parent
             spacing: 0
@@ -103,6 +109,12 @@ Rectangle {
     Rectangle {
         id: page2
         objectName: "page2"
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: { nextPage(); }
+        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -158,6 +170,12 @@ Rectangle {
         id: page3
         objectName: "page3"
 
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: { nextPage(); }
+        }
+
         ColumnLayout {
             anchors.fill: parent
             spacing: 0
@@ -211,6 +229,12 @@ Rectangle {
     Rectangle {
         id: page4
         objectName: "page4"
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: { nextPage(); }
+        }
 
         ColumnLayout {
             anchors.fill: parent
@@ -266,6 +290,12 @@ Rectangle {
         id: page5
         objectName: "page5"
 
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: { nextPage(); }
+        }
+
         ColumnLayout {
             anchors.fill: parent
             spacing: 0
@@ -319,6 +349,12 @@ Rectangle {
     Rectangle {
         id: page6
         objectName: "page6"
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onClicked: { nextPage(); }
+        }
 
         ColumnLayout {
             anchors.fill: parent

@@ -33,6 +33,12 @@ Rectangle {
     property string shopUrl: "https://www.mbaex.com"
     property string updateUrl: "https://www.mbaex.com/software"
 
+    // Increase, and if it hits 3 go directly to login page
+    property int onboardingTimes: 0
+
+    // Increase when going directly to login page and if it hits 10, go back to onboarding
+    property int loginTimes: 0
+
     property bool blur: false
 
     property var currentPopup
@@ -76,14 +82,21 @@ Rectangle {
             ;
         else if (stack.currentItem.objectName == "signupPage")
             stack.pop();
-        else if (onboardingScreens.visible) {
+        else if (!onboardingScreens.visible && onboardingTimes < 3)  {
+            // Showing onboarding screen
+            onboardingTimes++;
+            onboardingScreens.visible = true;
+            stack.visible = false
+        } else {
+            loginTimes++;
+            if (loginTimes > 10) {
+                loginTimes = 0;
+                onboardingTimes = 0;
+            }
+
             onboardingScreens.visible = false;
             stack.visible = true
             stack.push(loginPage);
-        }
-        else {
-            onboardingScreens.visible = true;
-            stack.visible = false
         }
     }
 
