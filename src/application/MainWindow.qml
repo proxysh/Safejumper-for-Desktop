@@ -50,6 +50,9 @@ Rectangle {
             hidePopup(currentPopup);
         }
 
+        if (onboardingScreens.visible)
+            onboardingScreens.visible = false;
+
         screen.blur = true;
         component.visible = true;
         currentPopup = component;
@@ -73,8 +76,15 @@ Rectangle {
             ;
         else if (stack.currentItem.objectName == "signupPage")
             stack.pop();
-        else
+        else if (onboardingScreens.visible) {
+            onboardingScreens.visible = false;
+            stack.visible = true
             stack.push(loginPage);
+        }
+        else {
+            onboardingScreens.visible = true;
+            stack.visible = false
+        }
     }
 
     function connectToVPN()
@@ -392,6 +402,17 @@ Rectangle {
             font.family: "Roboto"
             font.pixelSize: 20
             color: defaultColor
+        }
+    }
+
+    OnBoarding {
+        id: onboardingScreens
+        visible: false
+        anchors.fill: screen
+        z: 5
+
+        onGotoLogin: {
+            showLogin();
         }
     }
 

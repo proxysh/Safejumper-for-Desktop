@@ -28,5 +28,6 @@
         <file>QtGraphicalEffects/qmldir</file>
         <file>QtGraphicalEffects/private/DropShadowBase.qml</file>
         <file>QtGraphicalEffects/private/qmldir</file>
+        <file>OnBoarding.qml</file>
     </qresource>
 </RCC>

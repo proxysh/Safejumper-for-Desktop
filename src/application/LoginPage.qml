@@ -131,7 +131,7 @@ Rectangle {
                 y: parent.height / 2 - height / 2
                 width: 26
                 height: 26
-                source: rememberButton.checked ? "../images/checkedcircle.png" : "../images/emptycircle.png";
+                source: rememberButton.checked ? "../images/checkedcircle.png" : "../images/uncheckedcircle.png";
             }
 
             contentItem: Text {

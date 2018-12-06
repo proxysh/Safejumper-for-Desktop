@@ -329,5 +329,6 @@
         <file>roundflags/ZM.png</file>
         <file>roundflags/ZW.png</file>
         <file>images/down-arrow.png</file>
+        <file>images/uncheckedcircle.png</file>
     </qresource>
 </RCC>
