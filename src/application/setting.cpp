@@ -875,6 +875,11 @@ bool Setting::rememberMe()
 void Setting::setRememberMe(bool v)
 {
     mSettings.setValue("cb_Rememberme", v);
+    if (!v) {
+        // Time to forget previously remembered login
+        mSettings.remove("eLogin");
+        mSettings.remove("ePsw");
+    }
     emit rememberMeChanged();
 }
 
