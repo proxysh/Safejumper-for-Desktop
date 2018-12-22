@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 
 Rectangle {
     id: onboardingScreen
-    color: white
+    color: 'white'
 
     property int page: 1
 
@@ -80,7 +80,7 @@ Rectangle {
             Text {
                 text: qsTr("Protect your Internet");
                 font.family: "Roboto"
-                font.weight: bold
+                font.bold: true
                 font.pixelSize: 21
                 Layout.alignment: Qt.AlignHCenter
                 color: "#172B4D"
@@ -140,7 +140,7 @@ Rectangle {
             Text {
                 text: qsTr("Secure & anonymous");
                 font.family: "Roboto"
-                font.weight: bold
+                font.bold: true
                 font.pixelSize: 21
                 Layout.alignment: Qt.AlignHCenter
                 color: "#172B4D"
@@ -200,7 +200,7 @@ Rectangle {
             Text {
                 text: qsTr("Unblock any content");
                 font.family: "Roboto"
-                font.weight: bold
+                font.bold: true
                 font.pixelSize: 21
                 Layout.alignment: Qt.AlignHCenter
                 color: "#172B4D"
@@ -260,7 +260,7 @@ Rectangle {
             Text {
                 text: qsTr("Control your assets");
                 font.family: "Roboto"
-                font.weight: bold
+                font.bold: true
                 font.pixelSize: 21
                 Layout.alignment: Qt.AlignHCenter
                 color: "#172B4D"
@@ -320,7 +320,7 @@ Rectangle {
             Text {
                 text: qsTr("24/7 customer service");
                 font.family: "Roboto"
-                font.weight: bold
+                font.bold: true
                 font.pixelSize: 21
                 Layout.alignment: Qt.AlignHCenter
                 color: "#172B4D"
@@ -380,7 +380,7 @@ Rectangle {
             Text {
                 text: qsTr("100% non-logging");
                 font.family: "Roboto"
-                font.weight: bold
+                font.bold: true
                 font.pixelSize: 21
                 Layout.alignment: Qt.AlignHCenter
                 color: "#172B4D"
@@ -493,7 +493,7 @@ Rectangle {
             opacity: enabled ? 1 : 0.3
             border.color: defaultColor
             border.width: 2
-            color: white
+            color: 'white'
             radius: 5
         }
 
