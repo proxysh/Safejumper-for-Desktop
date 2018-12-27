@@ -251,4 +251,5 @@ void QVPNClientConnection::sendMessage(const QJsonObject &jObj)
     QString strJson(doc.toJson(QJsonDocument::Compact));
     m_socket->write(strJson.toLatin1(), strJson.length());
     m_socket->write("\n");
+    Log::serviceLog(QString("Sent notification json to gui %1").arg(strJson));
 }

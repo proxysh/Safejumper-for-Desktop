@@ -311,13 +311,13 @@ void VPNServiceManager::socket_readyRead()
     QStringList notifyStrList = notifyStr.split('\n', QString::SkipEmptyParts);
 
     Q_FOREACH(const QString &notifyToken, notifyStrList) {
-        qDebug() << "Notification token is : " << notifyToken;
+        Log::logt(QString("Notification from service is: %1").arg(notifyToken));
 
         // parse json
         QJsonDocument jsonDoc = QJsonDocument::fromJson(notifyToken.toLatin1());
         QJsonObject jsonObj = jsonDoc.object();
         if (jsonObj.isEmpty()) {
-            qDebug() << "json object is empty, so continuing";
+            Log::logt("json object is empty, so continuing");
             continue;
         }
 
@@ -327,7 +327,7 @@ void VPNServiceManager::socket_readyRead()
         switch (code) {
         case notifyStatusChange: {
             qint32 state = jsonObj.value("state").toInt();
-            qDebug() << "Got state change to " << state;
+            Log::logt(QString("Got state change to %1").arg(state));
 
 //            Log::logt(QString("Got state change to %1").arg(vpnStateWord((vpnState)state)));
 
