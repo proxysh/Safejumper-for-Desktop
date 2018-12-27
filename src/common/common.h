@@ -35,8 +35,8 @@ const QString kAppName = "Shieldtra";
 const QString kOrgName = "com.shieldtra";
 const QString kLowerAppName = "shieldtra";
 
-#define APP_BUILD_NUM 100
-#define APP_BUILD "100"
+#define APP_BUILD_NUM 101
+#define APP_BUILD "101"
 #define APP_VERSION "5.0"
 
 #define APPLICATION_VERSION QObject::tr("Version %1 (build %2)").arg(APP_VERSION).arg(APP_BUILD)
