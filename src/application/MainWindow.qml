@@ -320,6 +320,7 @@ Rectangle {
             var serverAddress = serversModel.server(index).address;
             var encryption = settings.serverEncryption(serverAddress)
             portPopup.selectedIndex = settings.serverProtocol(serverAddress, encryption);
+            portPopup.itemModel = serversModel.server(index).supportedPorts(encryption);
             showPopup(portPopup);
         }
     }

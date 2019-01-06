@@ -81,6 +81,11 @@ void AServer::setPorts(const QVariantList &ports)
 {
     mPorts = ports;
     emit portsChanged();
+
+    for (int i = 0; i < mPorts.size(); ++i) {
+        mPortNames << QString("TCP %1").arg(mPorts.at(i).toInt())
+                   << QString("UDP %1").arg(mPorts.at(i).toInt());
+    }
 }
 
 const QVariantList AServer::ports() const
@@ -92,6 +97,11 @@ void AServer::setXorPorts(const QVariantList &xorPorts)
 {
     mXorPorts = xorPorts;
     emit xorPortsChanged();
+
+    for (int i = 0; i < mXorPorts.size(); ++i) {
+        mXorPortNames << QString("TCP %1").arg(mXorPorts.at(i).toInt())
+                   << QString("UDP %1").arg(mXorPorts.at(i).toInt());
+    }
 }
 
 const QVariantList AServer::xorPorts() const
@@ -144,4 +154,12 @@ void AServer::setId(int id)
 int AServer::id() const
 {
     return mId;
+}
+
+const QVariantList AServer::supportedPorts(int encryption)
+{
+    if (encryption == 0)
+        return mPortNames;
+    else
+        return mXorPortNames;
 }

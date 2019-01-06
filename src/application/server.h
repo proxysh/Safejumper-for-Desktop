@@ -54,9 +54,11 @@ public:
 
     void setPorts(const QVariantList &ports);
     const QVariantList ports() const;
+    void setPortNames(const QVariantList &portNames);
 
     void setXorPorts(const QVariantList &xorPorts);
     const QVariantList xorPorts() const;
+    void setXorPortNames(const QVariantList &xorPortNames);
 
     void setLoad(int load);
     int load() const;
@@ -69,6 +71,8 @@ public:
 
     void setId(int id);
     int id() const;
+
+    Q_INVOKABLE const QVariantList supportedPorts(int encryption);
 
 signals:
     void nameChanged();
@@ -88,6 +92,8 @@ private:
     QString mIsoCode;
     QVariantList mPorts;
     QVariantList mXorPorts;
+    QVariantList mPortNames;
+    QVariantList mXorPortNames;
     int mLoad;       // double
     bool mFavorite;
     int mPing;
