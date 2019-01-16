@@ -25,9 +25,12 @@
 #include "common.h"
 #include "log.h"
 #include "osspecific.h"
+#include "server.h"
 
 #include <QApplication>
+#include <QDomDocument>
 #include <QDir>
+#include <QSvgRenderer>
 
 //In future, we’ll add things such as “OpenVPN with XOR TCP 448” or “OpenVPN with TOR UDP 4044”.
 
@@ -50,6 +53,82 @@ Setting::Setting()
     Log::instance()->enableLogging(logging());
 
     setLanguage(language());
+
+    QFile svgFile(":/maps/world.svg");
+    if (!svgFile.open(QIODevice::ReadOnly)) {
+        Log::logt("Unable to open world.svg file");
+    } else {
+        mSvgData.setContent(&svgFile);
+    }
+
+    QSvgRenderer renderer(mSvgData.toByteArray());
+
+    QStringList isoCodes;isoCodes <<
+    isoCodes << "GB";
+    isoCodes << "AU";
+    isoCodes << "AT";
+    isoCodes << "BE";
+    isoCodes << "BR";
+    isoCodes << "BG";
+    isoCodes << "CA";
+    isoCodes << "CL";
+    isoCodes << "CN";
+    isoCodes << "CR";
+    isoCodes << "CZ";
+    isoCodes << "EE";
+    isoCodes << "FI";
+    isoCodes << "FR";
+    isoCodes << "DE";
+    isoCodes << "HK";
+    isoCodes << "HU";
+    isoCodes << "IS";
+    isoCodes << "IE";
+    isoCodes << "IL";
+    isoCodes << "IN";
+    isoCodes << "IM";
+    isoCodes << "IT";
+    isoCodes << "JP";
+    isoCodes << "KG";
+    isoCodes << "LV";
+    isoCodes << "LI";
+    isoCodes << "LT";
+    isoCodes << "LU";
+    isoCodes << "MD";
+    isoCodes << "NL";
+    isoCodes << "NZ";
+    isoCodes << "NO";
+    isoCodes << "PK";
+    isoCodes << "PA";
+    isoCodes << "PL";
+    isoCodes << "PT";
+    isoCodes << "RO";
+    isoCodes << "RU";
+    isoCodes << "RS";
+    isoCodes << "SG";
+    isoCodes << "SI";
+    isoCodes << "ZA";
+    isoCodes << "ES";
+    isoCodes << "SE";
+    isoCodes << "CH";
+    isoCodes << "TW";
+    isoCodes << "TH";
+    isoCodes << "TR";
+    isoCodes << "US";
+    isoCodes << "UA";
+
+    // Iterate over countries calculating x and y position to use for each to be centered
+    for(const QString &iso : isoCodes) {
+        if (renderer.elementExists(iso)) {
+            qDebug() << "Element with iso code " << iso << " exists, calculating x/y position";
+            // Calculate center of bounding rect
+            QRectF bounds = renderer.boundsOnElement(iso);
+            qDebug() << "top left is " << bounds;
+            qDebug() << "Center x,y are " << bounds.center().x() << bounds.center().y();
+            QPointF center = bounds.center();
+            // Subtract half of screen width and screen height to put bounding rect in center
+            mCornerByCountry.insert(iso, QPointF(center.x() - 187, center.y() - 300));
+        }
+    }
 }
 
 Setting::~Setting()
@@ -79,6 +158,17 @@ void Setting::PopulateColls(std::vector<QString> & v_strs, std::vector<int> & v_
             v_ports.push_back(ports[k]);
         }
     }
+}
+
+const QString Setting::favoriteIsoCode()
+{
+    int index = favorite();
+
+    AServer *server = AuthManager::instance()->getServer(index);
+    if (server)
+        return server->iso();
+
+    return "CN";
 }
 
 //const std::vector<QString> & Setting::currentEncryptionProtocols()
@@ -820,6 +910,48 @@ void Setting::setFavorite(int id)
 {
     mSettings.setValue(kFavoriteKey, id);
     emit favoriteChanged();
+}
+
+QString Setting::mapData()
+{
+    const QString kSvgString = "data:image/svg+xml;utf8,%1";
+
+    QString iso = favoriteIsoCode();
+    qDebug() << "Getting map data for iso code " << iso;
+    QDomDocument svgData = mSvgData.cloneNode(true).toDocument();
+    QDomElement path;
+    QDomNodeList paths = svgData.elementsByTagName("path");
+    for (int i = 0; i < paths.size(); ++i) {
+        if (!paths.at(i).isNull() && paths.at(i).toElement().attribute("id") == iso) {
+            path = paths.at(i).toElement();
+            break;
+        }
+    }
+
+    QString style = path.attribute("style");
+    style.replace("fill:#dfe1e6", "fill:" + kNotConnectedFill);
+    path.setAttribute("style", style);
+
+    QString mapString = svgData.toString();
+    return kSvgString.arg(mapString);
+}
+
+int Setting::mapXOffset()
+{
+    QString iso = favoriteIsoCode();
+    if (mCornerByCountry.contains(iso))
+        return mCornerByCountry.value(iso).x();
+
+    return 0;
+}
+
+int Setting::mapYOffset()
+{
+    QString iso = favoriteIsoCode();
+    if (mCornerByCountry.contains(iso))
+        return mCornerByCountry.value(iso).y();
+
+    return 0;
 }
 
 int Setting::determineNextPort()

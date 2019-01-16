@@ -21,6 +21,8 @@
 
 #include <memory>
 #include <vector>
+
+#include <QDomDocument>
 #include <QFile>
 #include <QString>
 #include <QTranslator>
@@ -126,6 +128,11 @@ public:
 
     int favorite();
     void setFavorite(int id);
+
+    // svg data for map file with current favorite country color modified
+    Q_INVOKABLE QString mapData();
+    Q_INVOKABLE int mapXOffset();
+    Q_INVOKABLE int mapYOffset();
 
     QString localPort();
     void setLocalPort(QString port);
@@ -250,6 +257,8 @@ private:
 
     static void PopulateColls(std::vector<QString> & v_strs, std::vector<int> & v_ports, size_t sz, const char ** protocols, const int * ports);
 
+    const QString favoriteIsoCode();
+
     QString ProtocolSettingsName();
     QString ProtocolSettingsStrName();
     QString EncryptionIx();
@@ -262,6 +271,9 @@ private:
     QSettings mSettings;
 
     QTranslator mTranslator;
+
+    QDomDocument mSvgData;
+    QMap<QString, QPointF> mCornerByCountry;
 };
 
 #endif // SETTING_H

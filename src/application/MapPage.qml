@@ -41,7 +41,9 @@ Item {
         favoriteServer = serversModel.server(settings.favorite)
         var iso = favoriteServer.iso
         currentServerCard.currentServer = currentServer;
-        background.source = "../maps/" + iso + vpnservicemanager.stateMapSuffix
+        background.source = settings.mapData() // "../maps/" + iso + vpnservicemanager.stateMapSuffix
+        background.x = -settings.mapXOffset()
+        background.y = -settings.mapYOffset()
     }
 
     function stateChanged()
@@ -49,7 +51,9 @@ Item {
         currentServer = serversModel.server(settings.server)
         favoriteServer = serversModel.server(settings.favorite)
         var iso = favoriteServer.iso
-        background.source = "../maps/" + iso + vpnservicemanager.stateMapSuffix
+        background.source = settings.mapData() // "../maps/" + iso + vpnservicemanager.stateMapSuffix
+        background.x = -settings.mapXOffset()
+        background.y = -settings.mapYOffset()
     }
 
     Connections {
@@ -84,9 +88,22 @@ Item {
     Image {
         id: background
         z: -1
-        anchors.top: headerArea.top - 55
-        anchors.left: parent.left
-        source: "../maps/" + serversModel.server(settings.favorite).iso + vpnservicemanager.stateMapSuffix
+        x: -settings.mapXOffset()
+        y: -settings.mapYOffset()
+        width: 2000
+        height: 1001
+        fillMode: Image.PreserveAspectCrop
+        source: settings.mapData() // "../maps/" + allserversmodel.server(settings.favorite).iso + vpnservicemanager.stateMapSuffix
+        sourceSize.width: 2000
+        sourceSize.height: 1001
+        verticalAlignment: Qt.AlignTop
+        horizontalAlignment: Qt.AlignLeft
+        clip: true
+    }
+
+    Image {
+        source: "../images/mapshadow.png"
+        anchors.bottom: parent.bottom
     }
 
     Column {

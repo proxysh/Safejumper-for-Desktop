@@ -58,6 +58,10 @@ const QString kLoginUrl = "https://shieldtra.com/auth";
 const QString kCreateAccountUrl = "https://shieldtra.com/v1/user/add";
 const QString kOvpnUrl = "https://shieldtra.com/config";
 
+const QString kNotConnectedFill = "#7a869a";
+const QString kConnectingFill = "#ffab00";
+const QString kConnectedFill = "#2cc532";
+
 bool IsValidIp(const QString & ip);
 bool IsValidPort(const QString & s);
 

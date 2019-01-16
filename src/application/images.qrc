@@ -330,5 +330,6 @@
         <file>roundflags/ZW.png</file>
         <file>images/down-arrow.png</file>
         <file>images/uncheckedcircle.png</file>
+        <file>images/mapshadow.png</file>
     </qresource>
 </RCC>
