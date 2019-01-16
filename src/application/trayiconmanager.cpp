@@ -217,6 +217,7 @@ void TrayIconManager::createMenuActions()
                            tr("Close"), this));
 #ifdef Q_OS_DARWIN
     mCloseAction->setShortcut(QKeySequence::Quit);
+    mCloseAction->setMenuRole(QAction::QuitRole);
 #endif
     connect(mCloseAction.get(), SIGNAL(triggered()), this, SLOT(closeTriggered()));
 }
