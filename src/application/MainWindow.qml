@@ -438,7 +438,7 @@ Rectangle {
                   XAnimator {
                       from: (stack.mirrored ? -1 : 1) * -stack.width
                       to: 0
-                      duration: 2000
+                      duration: 500
                       easing.type: Easing.OutCubic
                   }
               }
@@ -447,7 +447,7 @@ Rectangle {
           XAnimator {
               from: 0
               to: (stack.mirrored ? -1 : 1) * stack.width
-              duration: 2000
+              duration: 500
               easing.type: Easing.OutCubic
           }
         }
@@ -456,7 +456,7 @@ Rectangle {
                   XAnimator {
                       from: (stack.mirrored ? -1 : 1) * stack.width
                       to: 0
-                      duration: 2000
+                      duration: 500
                       easing.type: Easing.OutCubic
                   }
               }
@@ -465,7 +465,7 @@ Rectangle {
           XAnimator {
               from: 0
               to: (stack.mirrored ? -1 : 1) * -stack.width
-              duration: 2000
+              duration: 500
               easing.type: Easing.OutCubic
           }
         }
