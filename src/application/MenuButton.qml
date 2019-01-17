@@ -45,11 +45,11 @@ Rectangle {
         anchors.leftMargin: 48
         spacing: 16
         Image {
-            width: 36
-            height: 36
             fillMode: Image.Pad
             anchors.verticalCenter: parent.verticalCenter
             source: mouseArea.containsMouse ? hoverButtonIcon : buttonIcon
+            horizontalAlignment: Image.horizontalCenter
+            verticalAlignment: Image.verticalCenter
         }
 
         Text {
