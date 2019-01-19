@@ -120,6 +120,7 @@ Item {
 
         RowLayout {
             width: parent.width
+            visible: settings.showFavorites
 
             Image {
                 Layout.alignment: Qt.AlignVCenter | Qt.alignLeft

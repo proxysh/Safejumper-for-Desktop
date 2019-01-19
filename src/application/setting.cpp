@@ -678,12 +678,21 @@ const QStringList Setting::favorites() const
     return mSettings.value(kFavoritesKey, "").toString().split("|");
 }
 
-void Setting::addFavorite(const QString &url)
+void Setting::addFavorite(const QString &url, int index)
 {
     QStringList favoriteUrls = favorites();
-    if (!favoriteUrls.contains(url))
+    if (!favoriteUrls.contains(url)) {
         favoriteUrls << url;
+        qSort(favoriteUrls);
+
+        if (favoriteUrls.count() == 1) {
+            // New only favorite, so select it as the current favorite also
+            setFavorite(index);
+        }
+    }
+
     mSettings.setValue(kFavoritesKey, favoriteUrls.join("|"));
+    emit favoritesChanged();
 }
 
 void Setting::removeFavorite(const QString &url)
@@ -691,6 +700,7 @@ void Setting::removeFavorite(const QString &url)
     QStringList favoriteUrls = favorites();
     favoriteUrls.removeAll(url);
     mSettings.setValue(kFavoritesKey, favoriteUrls.join("|"));
+    emit favoritesChanged();
 }
 
 int Setting::serverEncryption(const QString &serverAddress)
@@ -737,6 +747,11 @@ QString Setting::tcpOrUdp(int encryptionType, int protocol)
         return "udp";
     else
         return "tcp";
+}
+
+bool Setting::showFavorites()
+{
+    return AuthManager::instance()->favoritesCount() > 0;
 }
 
 QString Setting::EncryptionIx()

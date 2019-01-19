@@ -194,3 +194,15 @@ QList<int> ServersModel::serversForEncryption(int encryption)
 
     return ids;
 }
+
+QList<int> ServersModel::favoriteServers()
+{
+    QList<int> favorites;
+
+    for(int i = 0; i < mServers.count(); ++i) {
+        if (mServers.at(i)->favorite())
+            favorites << i;
+    }
+
+    return favorites;
+}

@@ -112,7 +112,7 @@ void AServer::setFavorite(bool favorite)
 {
     mFavorite = favorite;
     if (favorite)
-        Setting::instance()->addFavorite(mAddress);
+        Setting::instance()->addFavorite(mAddress, mId);
     else
         Setting::instance()->removeFavorite(mAddress);
     emit favoriteChanged();

@@ -59,6 +59,9 @@ public:
 
     QList<int> serversForEncryption(int encryption);
 
+    // Which server indexes of the model are favorites
+    Q_INVOKABLE QList<int> favoriteServers();
+
 private:
     QList<AServer*> mServers;
 };

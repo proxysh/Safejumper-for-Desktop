@@ -126,6 +126,9 @@ public:
 
     ServersModel *serversModel() const;
 
+    // How many servers are in the current favorites list
+    int favoritesCount();
+
 public slots:
     void login(const QString & name, const QString & password);
     void logout();

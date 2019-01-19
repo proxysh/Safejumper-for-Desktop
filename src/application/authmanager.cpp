@@ -1360,6 +1360,11 @@ ServersModel *AuthManager::serversModel() const
     return mServersModel;
 }
 
+int AuthManager::favoritesCount()
+{
+    return mServersModel->favoriteServers().count();
+}
+
 void AuthManager::loginFinished()
 {
     QString message = processLoginResult();

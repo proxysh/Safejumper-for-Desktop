@@ -73,6 +73,8 @@ class Setting: public QObject
     // card on the map page
     Q_PROPERTY(int favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
 
+    Q_PROPERTY(bool showFavorites READ showFavorites NOTIFY favoritesChanged)
+
 public:
     ~Setting();
     static Setting *instance();
@@ -204,7 +206,7 @@ public:
     QStringList languages();
 
     const QStringList favorites() const;
-    void addFavorite(const QString &url);
+    void addFavorite(const QString &url, int index);
     void removeFavorite(const QString &url);
 
     // Get server's encryption setting by it's hostname if stored.
@@ -220,6 +222,8 @@ public:
     QString portNumber(int encryptionType, int protocol);
     QString tcpOrUdp(int encryptionType, int protocol);
 
+    bool showFavorites();
+
 signals:
     void showNodesChanged();
     void detectInsecureWifiChanged();
@@ -227,6 +231,7 @@ signals:
     void protocolChanged();
     void serverChanged();
     void favoriteChanged();
+    void favoritesChanged(); // When the list of favorites changes
 
     void startupChanged();
     void autoconnectChanged();
