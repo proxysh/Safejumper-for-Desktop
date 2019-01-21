@@ -126,6 +126,7 @@ Rectangle {
 
     function logout()
     {
+        hideMenu();
         if (authmanager.loggedIn)
             screen.showPopup(logoutConfirmation);
         else
@@ -135,6 +136,16 @@ Rectangle {
     function showMap()
     {
         stack.pop(null);
+    }
+
+    function showMenu()
+    {
+        showMenuAnimation.start();
+    }
+
+    function hideMenu()
+    {
+        hideMenuAnimation.start();
     }
 
     function showAllServers()
@@ -316,18 +327,23 @@ Rectangle {
     MapPage {
         id: mapPage
         objectName: "mapPage"
-        onMenuClicked: { stack.push(menuPage); }
+        onMenuClicked: { showMenu(); }
         onSettingsClicked: { stack.push(settingsPage); }
         onAllServersClicked: { stack.push(allServersPage); }
     }
 
     MenuPage {
         id: menuPage
+        z: 10
+        x: -screen.width
+        y: 0
+        width: screen.width
+        height: screen.height
         objectName: "menuPage"
-        onCloseClicked: { stack.pop(); }
-        onMapClicked: { showMap(); }
-        onAllServersClicked: { showAllServers(); }
-        onSettingsClicked: { stack.push(settingsPage); }
+        onCloseClicked: { hideMenu(); }
+        onMapClicked: { showMap(); hideMenu(); }
+        onAllServersClicked: { showAllServers(); hideMenu(); }
+        onSettingsClicked: { stack.push(settingsPage); hideMenu(); }
         onLogoutClicked: {
             screen.logout();
         }
@@ -335,6 +351,25 @@ Rectangle {
             stack.pop(null); // First pop back to map page
             logsPopup.updateLogs();
             screen.showPopup(logsPopup);
+            hideMenu();
+        }
+
+        XAnimator {
+            id: showMenuAnimation
+            from: -screen.width
+            to: 0
+            duration: 500
+            easing.type: Easing.OutCubic
+            target: menuPage
+        }
+
+        XAnimator {
+            id: hideMenuAnimation
+            from: 0
+            to: -screen.width
+            duration: 500
+            easing.type: Easing.OutCubic
+            target: menuPage
         }
     }
 
