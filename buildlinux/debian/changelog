@@ -1,3 +1,9 @@
+shieldtra (2019.01.21.0) unstable; urgency=medium
+
+  * Updated packaging to qml gui for version 5.0 build 101
+
+ -- Jeremy Whiting <info@3monkeysinternational.com>  Mon, 21 Jan 2019 21:41:00 -0600
+
 shieldtra (2018.11.06.0) unstable; urgency=medium
 
   * Updated packaging to qml gui for version 1.0 build 1
