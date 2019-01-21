@@ -26,6 +26,7 @@
 #include "log.h"
 #include "osspecific.h"
 #include "server.h"
+#include "vpnservicemanager.h"
 
 #include <QApplication>
 #include <QDomDocument>
@@ -944,6 +945,16 @@ QString Setting::mapData()
     const QString kSvgString = "data:image/svg+xml;utf8,%1";
 
     QString iso = favoriteIsoCode();
+    QString fill = kNotConnectedFill;
+
+    if (serverID() == favorite() || AuthManager::instance()->favoritesCount() == 0) {
+        // We are connecting to the favorite or there are no favorites
+        int state = VPNServiceManager::instance()->state();
+        if (state == vpnStateConnected)
+            fill = kConnectedFill;
+        else if (state == vpnStateConnecting)
+            fill = kConnectingFill;
+    }
     qDebug() << "Getting map data for iso code " << iso;
     QDomDocument svgData = mSvgData.cloneNode(true).toDocument();
     QDomElement path;
@@ -956,7 +967,7 @@ QString Setting::mapData()
     }
 
     QString style = path.attribute("style");
-    style.replace("fill:#dfe1e6", "fill:" + kNotConnectedFill);
+    style.replace("fill:#dfe1e6", "fill:" + fill);
     path.setAttribute("style", style);
 
     QString mapString = svgData.toString();
