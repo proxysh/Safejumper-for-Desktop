@@ -128,7 +128,7 @@ Column {
             font.family: "Roboto"
             font.bold: true
             font.pixelSize: 16
-            text: qsTr("CANCEL");
+            text: qsTr("CLOSE");
             color: "white"
         }
 
