@@ -165,10 +165,17 @@ const QString Setting::favoriteIsoCode()
     int index = favorite();
 
     AServer *server = AuthManager::instance()->getServer(index);
+    if (server && server->favorite())
+        return server->iso();
+
+    // Favorites is not visible, so show the current server's map instead
+    index = serverID();
+    server = AuthManager::instance()->getServer(index);
     if (server)
         return server->iso();
 
-    return "CN";
+    // Default to china for now if both of the above fail
+    return "US";
 }
 
 //const std::vector<QString> & Setting::currentEncryptionProtocols()
