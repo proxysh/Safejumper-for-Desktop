@@ -346,7 +346,6 @@ Rectangle {
             screen.logout();
         }
         onCustomerServiceClicked: {
-            stack.pop(null); // First go back to map page
             screen.showPopup(customerServicePopup);
         }
     }
