@@ -129,6 +129,11 @@ Setting::Setting()
             mCornerByCountry.insert(iso, QPointF(center.x() - 187, center.y() - 300));
         }
     }
+
+    // Emit favorites changed when server list is loaded since
+    // we may have some favorites in the list now
+    connect(AuthManager::instance(), &AuthManager::serverListsLoaded,
+            this, &Setting::favoritesChanged);
 }
 
 Setting::~Setting()
