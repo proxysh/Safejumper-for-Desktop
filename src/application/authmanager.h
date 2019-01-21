@@ -142,6 +142,9 @@ public slots:
     Q_INVOKABLE void nextFavorite();
     Q_INVOKABLE void previousFavorite();
 
+    Q_INVOKABLE bool hasNextFavorite();
+    Q_INVOKABLE bool hasPreviousFavorite();
+
 signals:
     void loginError(QString message);
     void logoutCompleted();

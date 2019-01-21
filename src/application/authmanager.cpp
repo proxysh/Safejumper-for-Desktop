@@ -271,13 +271,15 @@ void AuthManager::nextFavorite()
     while (!found) {
         index++;
 
-        // Start over if we go past the end of the list
-        if (index >= mServersModel->count())
-            index = 0;
+        // Don't go past the end of the list
+        if (index >= mServersModel->count()) {
+            return;
+        }
 
         // If we loop back on the startindex, give up
-        if (index == startIndex)
+        if (index == startIndex) {
             return;
+        }
 
         if (mServersModel->server(index)->favorite()) {
             found = true;
@@ -295,9 +297,10 @@ void AuthManager::previousFavorite()
     while (!found) {
         index--;
 
-        // Start over if we go past the end of the list
-        if (index < 0)
-            index = mServersModel->count() - 1;
+        // Don't go past the beginning of the list
+        if (index < 0) {
+            return;
+        }
 
         // If we loop back on the startindex, give up
         if (index == startIndex)
@@ -308,6 +311,28 @@ void AuthManager::previousFavorite()
             Setting::instance()->setFavorite(index);
         }
     }
+}
+
+bool AuthManager::hasNextFavorite()
+{
+    int currentFavorite = Setting::instance()->favorite();
+
+    QList<int> favorites = mServersModel->favoriteServers();
+
+    int index = favorites.indexOf(currentFavorite);
+
+    return favorites.size() > (index + 1);
+}
+
+bool AuthManager::hasPreviousFavorite()
+{
+    int currentFavorite = Setting::instance()->favorite();
+
+    QList<int> favorites = mServersModel->favoriteServers();
+
+    int index = favorites.indexOf(currentFavorite);
+
+    return index > 0;
 }
 
 void AuthManager::loginNetworkError(QNetworkReply::NetworkError error)

@@ -44,6 +44,8 @@ Item {
         background.source = settings.mapData() // "../maps/" + iso + vpnservicemanager.stateMapSuffix
         background.x = -settings.mapXOffset()
         background.y = -settings.mapYOffset()
+        leftButton.visible = authmanager.hasPreviousFavorite()
+        rightButton.visible = authmanager.hasNextFavorite()
     }
 
     function stateChanged()
@@ -54,6 +56,12 @@ Item {
         background.source = settings.mapData() // "../maps/" + iso + vpnservicemanager.stateMapSuffix
         background.x = -settings.mapXOffset()
         background.y = -settings.mapYOffset()
+    }
+
+    function updateFavorites()
+    {
+        leftButton.visible = authmanager.hasPreviousFavorite()
+        rightButton.visible = authmanager.hasNextFavorite()
     }
 
     Connections {
@@ -70,6 +78,9 @@ Item {
         }
         onFavoriteChanged: {
             refresh();
+        }
+        onFavoritesChanged: {
+            updateFavorites();
         }
     }
 
@@ -123,8 +134,10 @@ Item {
             visible: settings.showFavorites
 
             Image {
+                id: leftButton
                 Layout.alignment: Qt.AlignVCenter | Qt.alignLeft
                 source: "../images/chevron-left.png"
+                visible: authmanager.hasPreviousFavorite()
 
                 MouseArea {
                     cursorShape: Qt.PointingHandCursor
@@ -187,8 +200,10 @@ Item {
             }
 
             Image {
+                id: rightButton
                 Layout.alignment: Qt.AlignVCenter | Qt.alignRight
                 source: "../images/chevron-right.png"
+                visible: authmanager.hasNextFavorite()
 
                 MouseArea {
                     cursorShape: Qt.PointingHandCursor
