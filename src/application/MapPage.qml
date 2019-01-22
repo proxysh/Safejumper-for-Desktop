@@ -44,8 +44,8 @@ Item {
         background.source = settings.mapData() // "../maps/" + iso + vpnservicemanager.stateMapSuffix
         background.x = -settings.mapXOffset()
         background.y = -settings.mapYOffset()
-        leftButton.visible = authmanager.hasPreviousFavorite()
-        rightButton.visible = authmanager.hasNextFavorite()
+        leftButton.opacity = authmanager.hasPreviousFavorite() ? 1.0 : 0.0
+        rightButton.opacity = authmanager.hasNextFavorite() ? 1.0 : 0.0
     }
 
     function stateChanged()
@@ -60,8 +60,8 @@ Item {
 
     function updateFavorites()
     {
-        leftButton.visible = authmanager.hasPreviousFavorite()
-        rightButton.visible = authmanager.hasNextFavorite()
+        leftButton.opacity = authmanager.hasPreviousFavorite() ? 1.0 : 0.0
+        rightButton.opacity = authmanager.hasNextFavorite() ? 1.0 : 0.0
     }
 
     Connections {
@@ -137,10 +137,11 @@ Item {
                 id: leftButton
                 Layout.alignment: Qt.AlignVCenter | Qt.alignLeft
                 source: "../images/chevron-left.png"
-                visible: authmanager.hasPreviousFavorite()
+                opacity: authmanager.hasPreviousFavorite() ? 1.0 : 0.0
 
                 MouseArea {
-                    cursorShape: Qt.PointingHandCursor
+                    enabled: leftButton.opacity == 1.0
+                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                     anchors.fill: parent
                     onClicked: { authmanager.previousFavorite(); }
                 }
@@ -203,10 +204,11 @@ Item {
                 id: rightButton
                 Layout.alignment: Qt.AlignVCenter | Qt.alignRight
                 source: "../images/chevron-right.png"
-                visible: authmanager.hasNextFavorite()
+                opacity: authmanager.hasNextFavorite() ? 1.0 : 0.0
 
                 MouseArea {
-                    cursorShape: Qt.PointingHandCursor
+                    enabled: rightButton.opacity == 1.0
+                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                     anchors.fill: parent
                     onClicked: { authmanager.nextFavorite(); }
                 }
