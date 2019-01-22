@@ -120,7 +120,7 @@ void ServersModel::updateServers(const QJsonArray &servers)
 
     int id = 0;
     Q_FOREACH(const QJsonValue &server, servers) {
-        AServer *newServer = new AServer();
+        AServer *newServer = new AServer(this);
         newServer->setId(id);
         newServer->setIP(server.toObject().value("ip").toString());
         newServer->setName(server.toObject().value("name").toString());

@@ -20,7 +20,10 @@
 
 #include "setting.h"
 
-AServer::AServer()
+#include <QDebug>
+
+AServer::AServer(QObject *parent)
+    :QObject(parent)
 {
     mLoad = 0;
     mPing = -1;
@@ -28,7 +31,6 @@ AServer::AServer()
 
 AServer::~AServer()
 {
-
 }
 
 void AServer::setName(const QString &name)

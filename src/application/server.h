@@ -37,7 +37,7 @@ class AServer: public QObject {
     Q_PROPERTY(int id READ id)
 
 public:
-    AServer();
+    AServer(QObject *parent = nullptr);
     virtual ~AServer();
 
     void setName(const QString &name);

@@ -267,17 +267,13 @@ void AuthManager::nextFavorite()
     // Find next favorite
     int startIndex = Setting::instance()->favorite();
     int index = startIndex;
+    Log::logt(QString("Next favorite called, current favorite has index %1").arg(index));
     bool found = false;
     while (!found) {
         index++;
 
         // Don't go past the end of the list
         if (index >= mServersModel->count()) {
-            return;
-        }
-
-        // If we loop back on the startindex, give up
-        if (index == startIndex) {
             return;
         }
 
@@ -302,10 +298,6 @@ void AuthManager::previousFavorite()
             return;
         }
 
-        // If we loop back on the startindex, give up
-        if (index == startIndex)
-            return;
-
         if (mServersModel->server(index)->favorite()) {
             found = true;
             Setting::instance()->setFavorite(index);
@@ -321,7 +313,7 @@ bool AuthManager::hasNextFavorite()
 
     int index = favorites.indexOf(currentFavorite);
 
-    return favorites.size() > (index + 1);
+    return favorites.count() - 1 > index;
 }
 
 bool AuthManager::hasPreviousFavorite()

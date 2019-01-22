@@ -955,7 +955,7 @@ QString Setting::mapData()
         else if (state == vpnStateConnecting)
             fill = kConnectingFill;
     }
-    qDebug() << "Getting map data for iso code " << iso;
+    Log::logt(QString("Getting map data for iso code %1").arg(iso));;
     QDomDocument svgData = mSvgData.cloneNode(true).toDocument();
     QDomElement path;
     QDomNodeList paths = svgData.elementsByTagName("path");
