@@ -48,6 +48,8 @@ SectionIn RO
 	   File  ..\src\languages\gui_en.qm
        SetOutPath $INSTDIR\platforms
        File  platforms\qwindows.dll
+	   SetOutPath $INSTDIR\imageformats
+	   File imageformats\qsvg.dll
 	   SetOutPath $INSTDIR\QtGraphicalEffects
 	   File  /r QtGraphicalEffects\*
 	   SetOutPath $INSTDIR\QtQuick
