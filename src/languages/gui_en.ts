@@ -19,12 +19,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/authmanager.cpp" line="1041"/>
+        <location filename="../application/authmanager.cpp" line="1058"/>
         <source>The email and the password you&apos;ve submitted do not match our database.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/authmanager.cpp" line="1044"/>
+        <location filename="../application/authmanager.cpp" line="1061"/>
         <source>The account has expired</source>
         <translation type="unfinished"></translation>
     </message>
@@ -151,7 +151,7 @@
     </message>
     <message>
         <location filename="../application/LogsPopup.qml" line="131"/>
-        <source>CANCEL</source>
+        <source>CLOSE</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -163,58 +163,58 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="163"/>
+        <location filename="../application/MainWindow.qml" line="174"/>
         <source>Logout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="164"/>
+        <location filename="../application/MainWindow.qml" line="175"/>
         <source>Would you like to log out?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="165"/>
-        <location filename="../application/MainWindow.qml" line="184"/>
+        <location filename="../application/MainWindow.qml" line="176"/>
+        <location filename="../application/MainWindow.qml" line="195"/>
         <source>CONFIRM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="182"/>
+        <location filename="../application/MainWindow.qml" line="193"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="183"/>
+        <location filename="../application/MainWindow.qml" line="194"/>
         <source>Would you like to shut the VPN software completely down?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="261"/>
+        <location filename="../application/MainWindow.qml" line="272"/>
         <source>Encryption</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="262"/>
+        <location filename="../application/MainWindow.qml" line="273"/>
         <source>Select your desired encryption type.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="280"/>
+        <location filename="../application/MainWindow.qml" line="291"/>
         <source>Port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="281"/>
+        <location filename="../application/MainWindow.qml" line="292"/>
         <source>Select the port you would like to use.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="386"/>
+        <location filename="../application/MainWindow.qml" line="421"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/MainWindow.qml" line="414"/>
+        <location filename="../application/MainWindow.qml" line="449"/>
         <source>Establishing a secure connection...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -226,7 +226,7 @@
         <translation type="obsolete">Not Connected</translation>
     </message>
     <message>
-        <location filename="../application/MapPage.qml" line="201"/>
+        <location filename="../application/MapPage.qml" line="236"/>
         <source>SHOW ALL SERVERS</source>
         <translation type="unfinished"></translation>
     </message>
@@ -340,14 +340,14 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../application/setting.cpp" line="569"/>
-        <location filename="../common/common.h" line="78"/>
+        <location filename="../application/setting.cpp" line="672"/>
+        <location filename="../common/common.h" line="82"/>
         <source>English</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/setting.cpp" line="570"/>
-        <location filename="../common/common.h" line="79"/>
+        <location filename="../application/setting.cpp" line="673"/>
+        <location filename="../common/common.h" line="83"/>
         <source>Simplified Chinese</source>
         <translation type="unfinished"></translation>
     </message>
@@ -379,7 +379,7 @@
     </message>
     <message>
         <location filename="../application/ServerCard.qml" line="348"/>
-        <source>PORT NO</source>
+        <source>PORT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -401,8 +401,8 @@
 <context>
     <name>Setting</name>
     <message>
-        <location filename="../application/setting.cpp" line="501"/>
-        <location filename="../application/setting.cpp" line="506"/>
+        <location filename="../application/setting.cpp" line="604"/>
+        <location filename="../application/setting.cpp" line="609"/>
         <source>%1 OPTIONS AVAILABLE</source>
         <translation type="unfinished"></translation>
     </message>
@@ -760,17 +760,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../application/trayiconmanager.cpp" line="267"/>
+        <location filename="../application/trayiconmanager.cpp" line="268"/>
         <source>You are disconnected from %1 VPN.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/trayiconmanager.cpp" line="271"/>
+        <location filename="../application/trayiconmanager.cpp" line="272"/>
         <source>You are connecting to %1 VPN.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/trayiconmanager.cpp" line="276"/>
+        <location filename="../application/trayiconmanager.cpp" line="277"/>
         <source>You are connected to %1 VPN.</source>
         <translation type="unfinished"></translation>
     </message>
