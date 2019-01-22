@@ -345,7 +345,7 @@ ShadowRect {
                         lineHeight: 16
                         lineHeightMode: Text.FixedHeight
                         color: "#6C798F"
-                        text: qsTr("PORT NO");
+                        text: qsTr("PORT");
                     }
 
                     Text {
