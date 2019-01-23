@@ -96,13 +96,19 @@ Item {
         onMenuClicked: { mapPage.menuClicked(); }
     }
 
+    Rectangle {
+        anchors.fill: parent
+        z: -2
+        color: "#B3d4ff"
+    }
+
     Image {
         id: background
         z: -1
         x: -settings.mapXOffset()
         y: -settings.mapYOffset()
-        width: 2000
-        height: 1001
+        width: 2200
+        height: 2001
         fillMode: Image.PreserveAspectCrop
         source: settings.mapData() // "../maps/" + allserversmodel.server(settings.favorite).iso + vpnservicemanager.stateMapSuffix
         sourceSize.width: 2000

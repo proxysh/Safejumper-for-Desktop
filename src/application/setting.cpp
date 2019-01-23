@@ -95,6 +95,7 @@ Setting::Setting()
     isoCodes << "LT";
     isoCodes << "LU";
     isoCodes << "MD";
+    isoCodes << "MX";
     isoCodes << "NL";
     isoCodes << "NZ";
     isoCodes << "NO";
